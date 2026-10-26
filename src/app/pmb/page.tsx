@@ -13,14 +13,20 @@ import {
   ArrowRight
 } from "lucide-react";
 
+interface ProgramOption {
+  id: string;
+  name: string;
+  degreeLevel: string;
+}
+
 export default async function PmbPage() {
-  let programs: any[] = [];
+  let programs: ProgramOption[] = [];
   try {
-    programs = await prisma.program.findMany({
+    programs = (await prisma.program.findMany({
       select: { id: true, name: true, degreeLevel: true },
       orderBy: { name: "asc" },
-    });
-  } catch (e) {
+    })) as ProgramOption[];
+  } catch {
     console.warn("DB offline, using fallback");
   }
 

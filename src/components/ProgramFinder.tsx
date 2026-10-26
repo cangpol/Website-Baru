@@ -10,7 +10,7 @@ import {
   GraduationCap
 } from "lucide-react";
 
-interface ProgramItem {
+export interface ProgramItem {
   id: string;
   name: string;
   slug: string;

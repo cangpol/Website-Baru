@@ -93,7 +93,7 @@ export default function MitraKerjasamaPage() {
   ];
 
   const filteredMitra = useMemo(() => {
-    let list = allMitraList.filter((m) => {
+    const list = allMitraList.filter((m) => {
       const matchCat = selectedCategory === "all" || m.kategori === selectedCategory;
       const matchSearch =
         m.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -166,7 +166,7 @@ export default function MitraKerjasamaPage() {
 
                 <select
                   value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value as any)}
+                  onChange={(e) => setSortOrder(e.target.value as "name-asc" | "category")}
                   className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-blue-600 bg-white cursor-pointer"
                 >
                   <option value="name-asc">Urutkan: Nama A - Z</option>

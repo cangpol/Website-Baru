@@ -1,23 +1,23 @@
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
 import NumbersCounter from "@/components/NumbersCounter";
-import ProgramFinder from "@/components/ProgramFinder";
+import ProgramFinder, { type ProgramItem } from "@/components/ProgramFinder";
 import LifeAtUpitraSection from "@/components/LifeAtUpitraSection";
 import PartnersSection from "@/components/PartnersSection";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
-import { getAllArticles, staticEvents } from "@/lib/newsData";
+import { getAllArticles, staticEvents, NewsArticle, CampusEvent } from "@/lib/newsData";
 import { Newspaper, Calendar, Clock, MapPin, ArrowRight, Award, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default async function HomePage() {
-  let programs: any[] = [];
-  let articles: any[] = [];
-  let events: any[] = [];
+  let programs: ProgramItem[] = [];
+  let articles: NewsArticle[] = [];
+  let events: CampusEvent[] = [];
 
   try {
-    programs = await prisma.program.findMany({
+    programs = (await prisma.program.findMany({
       include: {
         faculty: true,
       },
@@ -25,19 +25,19 @@ export default async function HomePage() {
         featured: "desc",
       },
       take: 9,
-    });
+    })) as unknown as ProgramItem[];
 
-    articles = await prisma.article.findMany({
+    articles = (await prisma.article.findMany({
       where: { published: true },
       orderBy: { publishedAt: "desc" },
       take: 3,
-    });
+    })) as unknown as NewsArticle[];
 
-    events = await prisma.event.findMany({
+    events = (await prisma.event.findMany({
       orderBy: { startDate: "asc" },
       take: 3,
-    });
-  } catch (error) {
+    })) as unknown as CampusEvent[];
+  } catch {
     console.warn("Database offline, using UPITRA static defaults");
   }
 
@@ -366,7 +366,7 @@ export default async function HomePage() {
                 </div>
 
                 <div className="space-y-3.5">
-                  {displayEvents.map((ev: any) => (
+                  {displayEvents.map((ev: CampusEvent) => (
                     <div
                       key={ev.id}
                       className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs hover:border-blue-400 transition-colors flex items-start gap-3"

@@ -1,18 +1,18 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProgramFinder from "@/components/ProgramFinder";
+import ProgramFinder, { type ProgramItem } from "@/components/ProgramFinder";
 import { prisma } from "@/lib/prisma";
 import { GraduationCap } from "lucide-react";
 
 export default async function ProgramsPage() {
-  let programs: any[] = [];
+  let programs: ProgramItem[] = [];
 
   try {
-    programs = await prisma.program.findMany({
+    programs = (await prisma.program.findMany({
       include: { faculty: true },
       orderBy: { name: "asc" },
-    });
-  } catch (e) {
+    })) as unknown as ProgramItem[];
+  } catch {
     console.warn("DB offline, using UPITRA default programs");
   }
 

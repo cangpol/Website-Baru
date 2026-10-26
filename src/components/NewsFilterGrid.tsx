@@ -80,7 +80,7 @@ export default function NewsFilterGrid({ articles }: NewsFilterGridProps) {
               <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as "latest" | "popular" | "oldest")}
                 aria-label="Urutkan berita"
                 className="pl-8 pr-7 py-2 text-xs font-bold rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-slate-300 focus:outline-hidden focus:border-blue-500 cursor-pointer appearance-none"
               >
