@@ -394,8 +394,8 @@ export default function Footer() {
               Profil UPITRA
             </Link>
             <span className="text-blue-900">•</span>
-            <Link href="/akademik" className="hover:text-white transition-colors">
-              Akademik
+            <Link href="/fst" className="hover:text-white transition-colors">
+              Fakultas
             </Link>
             <span className="text-blue-900">•</span>
             <Link href="/layanan/career-center" className="hover:text-white transition-colors">

@@ -38,10 +38,10 @@ export default function Navbar() {
   const [mobileKerjasamaOpen, setMobileKerjasamaOpen] = useState(false);
   const [mobileLayananOpen, setMobileLayananOpen] = useState(false);
 
-  // Dynamic Scroll Listener
+  // Dynamic Scroll Listener for subtle shadow elevation only (zero height changes)
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 15);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -49,15 +49,10 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full transition-all duration-300">
-      
-      {/* 1. TOP SUB-HEADER BAR - Compact, Clean & Responsive */}
-      <div 
-        className={`bg-[#06172e] text-slate-200 transition-all duration-300 overflow-hidden border-b border-blue-950 ${
-          isScrolled ? "h-0 py-0 opacity-0" : "h-auto py-1.5 opacity-100"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center text-[11px] sm:text-xs">
+    <>
+      {/* 1. TOP SUB-HEADER BAR - Compact, Clean & Responsive (Naturally scrolls away without layout shift) */}
+      <div className="w-full bg-[#06172e] text-slate-200 border-b border-blue-950 py-1.5 text-[11px] sm:text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center">
           
           {/* Left: Accreditation & Location */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -96,13 +91,14 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* 2. MAIN NAVBAR - Fluid, Dynamic & Flexible */}
-      <div 
-        className={`w-full bg-white/95 backdrop-blur-md transition-all duration-300 border-b border-slate-200/80 ${
-          isScrolled ? "py-2 shadow-md" : "py-3 shadow-xs"
+      {/* 2. MAIN NAVBAR - 100% Smooth Sticky without Height Jumps or Layout Blinking */}
+      <header 
+        className={`sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-300 ${
+          isScrolled ? "shadow-md" : "shadow-xs"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+        <div className="w-full py-2.5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
           
           {/* Brand Mark UPITRA - 3D White Badge & Refined Authoritative Typography */}
           <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0" aria-label="UPITRA Beranda">
@@ -235,16 +231,6 @@ export default function Navbar() {
                     K3, Fisioterapi, D3 Keperawatan
                   </div>
                 </Link>
-
-                <div className="pt-2 mt-1 border-t border-slate-100 px-3">
-                  <Link 
-                    href="/akademik" 
-                    className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center justify-between"
-                  >
-                    <span>Portal Akademik Utama</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
               </div>
             </div>
 
@@ -742,6 +728,7 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-    </header>
+      </header>
+    </>
   );
 }

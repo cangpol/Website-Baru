@@ -29,61 +29,122 @@ interface PimpinanItem {
   kredensial: string[];
 }
 
+interface DekanItem {
+  fakultas: string;
+  fakultasShort: string;
+  nama: string;
+  jabatan: string;
+  foto: string;
+  pendidikan: string;
+  keahlian: string[];
+  prodi: string[];
+  fokus: string;
+  link: string;
+}
+
 const pimpinanList: PimpinanItem[] = [
   {
     nama: "Neil Semuel Rupidara, S.E., M.Sc., Ph.D",
     jabatan: "Rektor Universitas Pignatelli Triputra",
-    bidang: "Pimpinan Eksekutif Tertinggi Universitas",
+    bidang: "Pimpinan Eksekutif Tertinggi",
     foto: "/images/pimpinan/rektor-neil-rupidara.jpg",
     deskripsi: "Memimpin arah strategis, penguatan kelembagaan, serta kolaborasi ekosistem pendidikan UPITRA dengan Triputra Group dan mitra industri nasional.",
-    kredensial: ["University of Melbourne, Australia (Ph.D)", "Pakar Manajemen Strategis & Kepemimpinan", "Dosen & Peneliti Manajemen Korporat"],
+    kredensial: [
+      "University of Melbourne, Australia (Ph.D)",
+      "Pakar Manajemen Strategis & Kepemimpinan Korporat",
+      "Dosen & Peneliti Transformasi Manajemen Sumber Daya Manusia"
+    ],
   },
   {
     nama: "Prof. Johana Endang Prawitasari, Ph.D",
     jabatan: "Wakil Rektor 1 (Akademik & Kemahasiswaan)",
-    bidang: "Bidang Akademik, Riset & Kemahasiswaan",
+    bidang: "Bidang Akademik, Riset & Ormawa",
     foto: "/images/pimpinan/wr1-johana-prawitasari.jpg",
     deskripsi: "Bertanggung jawab atas penjaminan mutu kurikulum transformatif, peningkatan prestasi mahasiswa, kegiatan organisasi kemahasiswaan, dan riset inovatif.",
-    kredensial: ["Guru Besar / Profesor Perguruan Tinggi", "Pakar Psikologi & Pendidikan Karakter", "Pengembang Kurikulum Transformatif Nasional"],
+    kredensial: [
+      "Guru Besar / Profesor Perguruan Tinggi Nasional",
+      "Pakar Psikologi Pendidikan & Pembinaan Karakter Unggul",
+      "Pengembang Kurikulum Transformatif Berorientasi Industri"
+    ],
   },
   {
     nama: "Yohanes Bayu Samudro, S.Pd., M.Pd",
     jabatan: "Wakil Rektor 2 (Operasional, Keuangan & SDM)",
-    bidang: "Bidang Sumber Daya, Keuangan & Operasional",
+    bidang: "Bidang Sumber Daya, Keuangan & IT",
     foto: "/images/pimpinan/wr2-bayu-samudro.jpg",
-    deskripsi: "Mengelola efisiensi operasional kampus modern, keberlanjutan keuangan, pengembangan sarana dan prasarana berbasis digital, serta tata kelola SDM prima.",
-    kredensial: ["Magister Pendidikan (M.Pd)", "Pakar Manajemen Operasional Pendidikan", "Pengembang Infrastruktur Digital Kampus"],
+    deskripsi: "Mengelola efisiensi operasional kampus modern, keberlanjutan keuangan, pengembangan sarana prasarana berbasis digital, serta tata kelola SDM prima.",
+    kredensial: [
+      "Magister Pendidikan (M.Pd)",
+      "Pakar Manajemen Operasional Lembaga Pendidikan Tinggi",
+      "Arsitek Pengembangan Infrastruktur Digital Kampus Modern"
+    ],
   },
 ];
 
-const dekanatList = [
+const dekanatList: DekanItem[] = [
   {
-    fakultas: "Fakultas Sains & Technology (FST)",
-    fokus: "Informatika, Sistem Informasi, Rekayasa Perangkat Lunak",
-    desc: "Menyelenggarakan pendidikan komputasi mutakhir, kecerdasan buatan, arsitektur cloud, dan rekayasa perangkat lunak enterprise.",
-    badge: "FST",
-    color: "bg-blue-600",
+    fakultas: "Fakultas Sains & Teknologi",
+    fakultasShort: "FST",
+    nama: "Benedictus Herry Suharto, S.T., M.T.",
+    jabatan: "Dekan Fakultas Sains & Teknologi",
+    foto: "/images/dosen/1777869540_69f822e4e6193.jpg",
+    pendidikan: "S1 & S2 Teknik Elektro (Universitas Gadjah Mada)",
+    keahlian: [
+      "Internet of Things (IoT) & Embedded Robotics",
+      "Artificial Intelligence & Machine Learning Architecture",
+      "Software Engineering & Kurikulum Komputasi Industri Triputra"
+    ],
+    prodi: ["S1 Informatika", "S1 Sistem Informasi", "S1 Rekayasa Perangkat Lunak"],
+    fokus: "Transformasi komputasi digital, kecerdasan buatan (AI), rekayasa sistem cloud skala besar, dan keamanan siber.",
+    link: "/fst",
   },
   {
-    fakultas: "Faculty Ekonomic & Bussiness (FEB)",
-    fokus: "Manajemen Bisnis Internasional, Akuntansi & Digital Finance",
-    desc: "Membentuk pemimpin bisnis berkarakter unggul, akuntan publik profesional, dan analis keuangan korporat berintegritas tinggi.",
-    badge: "FEB",
-    color: "bg-amber-600",
+    fakultas: "Fakultas Ekonomi & Bisnis",
+    fakultasShort: "FEB",
+    nama: "Yenni Maria Sridarta, S.E., M.M.",
+    jabatan: "Dekan Fakultas Ekonomi & Bisnis",
+    foto: "/images/dosen/1779074566_6a0a86064028b.jpg",
+    pendidikan: "S1 Manajemen (USD), S2 Manajemen (Universitas Atma Jaya Yogyakarta)",
+    keahlian: [
+      "Manajemen Keuangan Korporasi & Analisis Investasi",
+      "Manajemen Operasional Rantai Pasok Terintegrasi (Supply Chain)",
+      "Pengembangan Budaya Organisasi & Tata Kelola SDM Strategis"
+    ],
+    prodi: ["S1 Manajemen", "S1 Akuntansi"],
+    fokus: "Manajemen rantai pasok modern, akuntansi digital, technopreneurship, dan sinergi korporasi Triputra Group.",
+    link: "/feb",
   },
   {
-    fakultas: "Faculty Social Humaniora (FSH)",
-    fokus: "Pariwisata (Hospitality & MICE), Bahasa Inggris Bisnis",
-    desc: "Mengembangkan industri hospitality bertaraf internasional, manajemen destinasi, komunikasi bisnis global, dan penerjemahan.",
-    badge: "FSH",
-    color: "bg-indigo-600",
+    fakultas: "Fakultas Sosial Humaniora",
+    fakultasShort: "FSH",
+    nama: "Dr. RR. Erna Sadiarti Budiningtyas, S.Sos., M.Sc.",
+    jabatan: "Dekan Fakultas Sosial Humaniora",
+    foto: "/images/dosen/1779170466_6a0bfca27b852.jpg",
+    pendidikan: "S1, S2, dan S3 Doktor Pariwisata (Universitas Gadjah Mada)",
+    keahlian: [
+      "Cultural Heritage Tourism & Ekowisata Berkelanjutan",
+      "Tata Kelola Hospitality & Destinasi Pariwisata Global",
+      "Komunikasi Bisnis Internasional & Diplomasi Budaya"
+    ],
+    prodi: ["S1 Pariwisata", "S1 Bahasa Inggris"],
+    fokus: "Hospitality global, pariwisata berkelanjutan, komunikasi bisnis internasional, dan diplomasi kebudayaan dunia.",
+    link: "/fsh",
   },
   {
-    fakultas: "Faculty Health (FH)",
-    fokus: "K3 (Kesehatan & Keselamatan Kerja), Fisioterapi, Keperawatan",
-    desc: "Mendidik tenaga ahli keselamatan industri, fisioterapis klinis/olahraga, dan perawat vokasi yang tanggap gawat darurat serta berbelarasa.",
-    badge: "FH",
-    color: "bg-emerald-600",
+    fakultas: "Fakultas Kesehatan",
+    fakultasShort: "FKes",
+    nama: "Dr. Budi Santoso, S.K.M., M.Kes.",
+    jabatan: "Dekan Fakultas Kesehatan",
+    foto: "/images/dosen/1778135697_69fc329171b37.jpg",
+    pendidikan: "S1 Kesehatan Masyarakat, S2 Kesehatan Kerja (K3), S3 Ilmu Kesehatan Masyarakat",
+    keahlian: [
+      "Sistem Manajemen K3 (SMK3) Industri Manufaktur & Perkebunan",
+      "Ergonomi Okupasi & Higiene Lingkungan Industri",
+      "Penjaminan Mutu Layanan Fisioterapi & Praktik Keperawatan Vokasi"
+    ],
+    prodi: ["S1 Keselamatan & Kesehatan Kerja (K3)", "S1 Fisioterapi", "D3 Keperawatan"],
+    fokus: "K3 industri manufaktur & perkebunan Triputra, rehabilitasi muskuloskeletal/olahraga, dan keperawatan vokasional profesional.",
+    link: "/fkes",
   },
 ];
 
@@ -99,11 +160,11 @@ export default function PimpinanPage() {
           <div className="max-w-7xl mx-auto space-y-4 text-center sm:text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/20 text-sky-200 text-xs font-bold uppercase tracking-wider border border-blue-400/20">
               <Users className="w-4 h-4 text-sky-400" />
-              Tata Kelola & Kepemimpinan Universitas
+              Tata Kelola &amp; Kepemimpinan Universitas
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-              Pimpinan Universitas (Rektorat)
+              Pimpinan Universitas (Rektorat &amp; Dekanat)
             </h1>
 
             <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
@@ -121,7 +182,7 @@ export default function PimpinanPage() {
                 <img 
                   src={pimpinanList[0].foto} 
                   alt={pimpinanList[0].nama}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end p-4">
                   <div className="text-white text-center w-full">
@@ -138,7 +199,7 @@ export default function PimpinanPage() {
               </span>
 
               <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
-                Membangun Ekosistem Pendidikan yang Relevan dengan Industri & Berbudi Pekerti Luhur
+                Membangun Ekosistem Pendidikan yang Relevan dengan Industri &amp; Berbudi Pekerti Luhur
               </h2>
 
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
@@ -153,77 +214,68 @@ export default function PimpinanPage() {
           </div>
         </section>
 
-        {/* 2. PROFIL LENGKAP REKTOR & PARA WAKIL REKTOR (SIMETRIS & CENTER) */}
-        <section className="py-14 bg-white border-y border-slate-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-8">
-            
-            <div className="text-center max-w-3xl mx-auto space-y-2 mb-12">
+        {/* 2. REKTORAT */}
+        <section className="py-14 bg-slate-100/70 border-t border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 space-y-12">
+            <div className="text-center max-w-3xl mx-auto space-y-2">
               <div className="text-xs font-bold text-blue-600 tracking-widest uppercase">
                 EXECUTIVE BOARD
               </div>
               <h2 className="text-2xl sm:text-4xl font-black text-[#0b2545] tracking-tight">
-                Jajaran Pimpinan Eksekutif Universitas
+                Jajaran Rektorat UPITRA
               </h2>
               <p className="text-xs sm:text-sm text-slate-600">
-                Pimpinan yang berdedikasi mengawal mutu akademik, kemahasiswaan, dan tata kelola berkelanjutan.
+                Trio pimpinan eksekutif yang mengawal keunggulan tridharma perguruan tinggi dan tata kelola berintegritas.
               </p>
             </div>
 
-            {/* Grid 3 Kolom Simetris & Center */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {pimpinanList.map((p, idx) => (
                 <div 
                   key={idx}
-                  className="bg-slate-50/90 rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-xs hover:shadow-xl hover:border-blue-400 transition-all duration-300 flex flex-col justify-between items-center text-center"
+                  className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-blue-300 transition-all flex flex-col group"
                 >
-                  <div className="w-full flex flex-col items-center">
-                    
-                    {/* Centered Portrait Frame */}
-                    <div className="relative w-48 h-60 sm:w-52 sm:h-64 rounded-2xl overflow-hidden shadow-md border-4 border-white mb-5 mx-auto bg-slate-200 shrink-0">
-                      <img 
-                        src={p.foto} 
+                  <div className="relative h-72 bg-gradient-to-t from-[#06172e] via-[#0b2545] to-[#123e75] flex items-center justify-center p-6 overflow-hidden">
+                    <div className="absolute w-44 h-44 rounded-full bg-blue-500/20 blur-2xl pointer-events-none" />
+
+                    <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full border-4 border-white/80 shadow-2xl overflow-hidden bg-slate-900 ring-4 ring-blue-500/30 group-hover:scale-105 transition-transform duration-300">
+                      <img
+                        src={p.foto}
                         alt={p.nama}
-                        className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-top"
                       />
                     </div>
 
-                    {/* Centered Bidang Tag */}
-                    <div className="mb-2">
-                      <span className="inline-block bg-blue-600/95 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
-                        {p.bidang}
-                      </span>
+                    <div className="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-[#06172e]/90 text-[10px] font-bold text-sky-300 uppercase tracking-wider border border-blue-800/60 shadow-xs">
+                      {p.bidang}
                     </div>
-
-                    {/* Centered Jabatan dengan Tinggi Baseline Seragam */}
-                    <div className="text-xs font-bold text-blue-700 uppercase tracking-wider min-h-[2.5rem] flex items-center justify-center px-2">
-                      {p.jabatan}
-                    </div>
-
-                    {/* Centered Nama dengan Tinggi Baseline Seragam */}
-                    <h3 className="text-base sm:text-lg font-black text-[#0b2545] mt-1 leading-snug min-h-[3rem] flex items-center justify-center px-2">
-                      {p.nama}
-                    </h3>
-
-                    {/* Centered Deskripsi dengan Tinggi Baseline Seragam */}
-                    <p className="text-xs text-slate-600 leading-relaxed mt-2 min-h-[4.5rem] flex items-center justify-center text-center px-1">
-                      {p.deskripsi}
-                    </p>
-
                   </div>
 
-                  {/* Kredensial List Rapi di Bawah */}
-                  <div className="pt-4 mt-4 border-t border-slate-200/90 w-full space-y-1.5 text-left">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center pb-1">
-                      Kualifikasi &amp; Kredensial:
-                    </div>
-                    {p.kredensial.map((kred, kIdx) => (
-                      <div key={kIdx} className="flex items-start gap-2 text-[11px] font-medium text-slate-700 bg-white p-2 rounded-xl border border-slate-200/70 shadow-2xs">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                        <span className="leading-tight">{kred}</span>
+                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-base sm:text-lg font-bold text-[#0b2545] leading-snug group-hover:text-blue-700 transition-colors">
+                        {p.nama}
+                      </h3>
+                      <div className="text-xs font-bold text-blue-700">
+                        {p.jabatan}
                       </div>
-                    ))}
-                  </div>
+                      <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                        {p.deskripsi}
+                      </p>
+                    </div>
 
+                    <div className="border-t border-slate-100 pt-3 space-y-2">
+                      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                        Kompetensi &amp; Rekam Jejak:
+                      </div>
+                      {p.kredensial.map((kred, kIdx) => (
+                        <div key={kIdx} className="flex items-start gap-2 text-xs text-slate-700">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                          <span className="leading-tight">{kred}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -238,60 +290,105 @@ export default function PimpinanPage() {
               FACULTY DEANSHIP
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-[#0b2545] tracking-tight">
-              Struktur Dekanat 4 Fakultas UPITRA
+              Dekanat 4 Fakultas Unggulan
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              Mengawal mutu kurikulum, keunggulan riset terapan, dan kemitraan industri di setiap rumpun keilmuan.
+              Mengawal mutu kurikulum, keunggulan riset terapan, dan kemitraan industri di setiap rumpun keilmuan:
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {dekanatList.map((dek, idx) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+            {dekanatList.map((d, idx) => (
               <div 
                 key={idx}
-                className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all flex flex-col justify-between"
+                className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-blue-300 transition-all flex flex-col justify-between group"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`px-2.5 py-1 rounded-lg text-white font-black text-xs ${dek.color}`}>
-                      {dek.badge}
-                    </span>
-                    <span className="text-[11px] font-semibold text-slate-400">
-                      Fakultas Terakreditasi
-                    </span>
+                  {/* Portrait Header */}
+                  <div className="relative h-60 bg-gradient-to-t from-[#06172e] via-[#0b2545] to-[#123e75] flex items-center justify-center p-4 overflow-hidden">
+                    <div className="absolute w-36 h-36 rounded-full bg-blue-500/20 blur-xl pointer-events-none" />
+
+                    <div className="relative w-32 h-32 rounded-full border-4 border-white/80 shadow-xl overflow-hidden bg-slate-900 ring-2 ring-blue-500/30 group-hover:scale-105 transition-transform duration-300">
+                      <img
+                        src={d.foto}
+                        alt={d.nama}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+
+                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-blue-600 text-white font-mono font-bold text-[10px] shadow-sm uppercase tracking-wider">
+                      {d.fakultasShort}
+                    </div>
                   </div>
 
-                  <h3 className="text-lg font-black text-[#0b2545] mb-1">
-                    {dek.fakultas}
-                  </h3>
-                  
-                  <div className="text-xs font-bold text-blue-600 mb-2.5">
-                    Program Studi: {dek.fokus}
-                  </div>
+                  {/* Body Content */}
+                  <div className="p-5 sm:p-6 space-y-4">
+                    <div>
+                      <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">
+                        {d.jabatan}
+                      </span>
+                      <h3 className="text-base font-bold text-[#0b2545] leading-snug mt-1 group-hover:text-blue-700 transition-colors">
+                        {d.nama}
+                      </h3>
+                      <div className="text-[11px] font-medium text-slate-500 mt-1">
+                        {d.fakultas}
+                      </div>
+                    </div>
 
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    {dek.desc}
-                  </p>
+                    {/* Education */}
+                    <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-[11px] text-slate-700 flex items-start gap-2">
+                      <GraduationCap className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                      <span className="leading-snug font-medium">{d.pendidikan}</span>
+                    </div>
+
+                    {/* Kompetensi Utama */}
+                    <div className="space-y-1.5 pt-1 border-t border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+                        Bidang Kompetensi &amp; Keahlian:
+                      </span>
+                      <div className="space-y-1.5">
+                        {d.keahlian.map((item, kIdx) => (
+                          <div key={kIdx} className="flex items-start gap-1.5 text-xs text-slate-700">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                            <span className="leading-tight text-[11.5px]">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Prodi List Tags */}
+                    <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                        Menaungi Program Studi:
+                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {d.prodi.map((pName, pIdx) => (
+                          <span 
+                            key={pIdx} 
+                            className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100"
+                          >
+                            {pName}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
+
+                {/* Bottom Footer Action */}
+                <div className="px-5 sm:px-6 pb-5 pt-2">
+                  <Link
+                    href={d.link}
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-blue-600 text-[#0b2545] hover:text-white text-xs font-bold tracking-wide transition-all duration-200 group/btn"
+                  >
+                    <span>Kunjungi Laman {d.fakultasShort}</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+
               </div>
             ))}
-          </div>
-
-          <div className="mt-12 text-center flex flex-wrap justify-center gap-4">
-            <Link 
-              href="/programs"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md transition-all"
-            >
-              <span>Eksplorasi 10 Program Studi</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <Link 
-              href="/life-at-upitra"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all"
-            >
-              <span>Kehidupan Kampus (Life at UPITRA)</span>
-            </Link>
           </div>
         </section>
 
@@ -302,4 +399,3 @@ export default function PimpinanPage() {
     </div>
   );
 }
-
