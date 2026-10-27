@@ -1,8 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
-import FacultyBentoShowcase from "@/components/FacultyBentoShowcase";
-import InstitutionalSynergySection from "@/components/InstitutionalSynergySection";
-import AdmissionSection from "@/components/AdmissionSection";
+import ImmersionProgramSection from "@/components/ImmersionProgramSection";
+import InstagramFeedSection from "@/components/InstagramFeedSection";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
@@ -41,16 +40,13 @@ export default async function HomePage() {
         {/* ACT 1: The Grand Gateway (Cinematic Hero + Fast-Track Dock + Prestige Metrics) */}
         <HeroSlider />
 
-        {/* ACT 2: Academic Excellence (Showcase 4 Fakultas & Gelar Resmi) */}
-        <FacultyBentoShowcase />
+        {/* ACT 2: Immersion Program 3+1 (Keunggulan yang Membedakan Kami) */}
+        <ImmersionProgramSection />
 
-        {/* ACT 3: Institutional Dignity & The Triputra Advantage (Prakata Rektorat + Mitra Korporat) */}
-        <InstitutionalSynergySection />
+        {/* ACT 3: Galeri Aktivitas Instagram Real-Time (@upitra_campus) */}
+        <InstagramFeedSection />
 
-        {/* ACT 4: Jalur PMB & Beasiswa Emas (4 Jalur Masuk Ringkas & CTA Admisi) */}
-        <AdmissionSection />
-
-        {/* ACT 5: Warta Kampus & Agenda Terkini (Campus Dispatch & Calendar) */}
+        {/* ACT 4: Warta Kampus & Agenda Terkini (Campus Dispatch & Calendar) */}
         <section className="py-16 sm:py-20 bg-slate-50/70 border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-8 space-y-10">
             
