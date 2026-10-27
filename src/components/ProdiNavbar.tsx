@@ -81,20 +81,20 @@ export default function ProdiNavbar({ prodi }: ProdiNavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between gap-3">
         
         {/* Left: Brand UPITRA + Distinctive Prodi Badge */}
-        <div className="flex items-center gap-2.5">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-950 to-blue-900 flex items-center justify-center p-1 shadow-xs group-hover:scale-105 transition-transform">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group" aria-label="UPITRA Beranda">
+            <div className="w-10 h-10 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-[0_10px_25px_-4px_rgba(6,23,46,0.18),0_4px_10px_-2px_rgba(6,23,46,0.08),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_4px_rgba(0,0,0,0.04)] border border-slate-100 ring-1 ring-slate-900/5 group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_30px_-4px_rgba(6,23,46,0.22)] transition-all duration-300 shrink-0">
               <img
                 src="/images/logo.png"
                 alt="Logo UPITRA"
-                className="w-7 h-7 object-contain drop-shadow-xs"
+                className="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(6,23,46,0.22)] drop-shadow-[0_1px_2px_rgba(6,23,46,0.15)] group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            <div>
-              <div className="text-base font-black tracking-tight text-[#0b2545] leading-none group-hover:text-blue-900 transition-colors">
+            <div className="flex flex-col justify-center">
+              <div className="text-lg sm:text-xl font-black tracking-[0.16em] text-[#06172e] uppercase font-sans leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.06)] group-hover:text-blue-700 transition-colors">
                 UPITRA
               </div>
-              <div className="text-[8px] tracking-wider uppercase font-bold text-blue-600 mt-0.5">
+              <div className="text-[8px] sm:text-[9px] tracking-[0.24em] uppercase font-bold text-blue-900/90 mt-1 leading-none">
                 Pignatelli Triputra
               </div>
             </div>

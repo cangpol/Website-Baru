@@ -77,21 +77,24 @@ export default function Footer() {
           
           {/* Kolom 1: Profil & Identitas Institusi (span 3 on lg) */}
           <div className="sm:col-span-2 lg:col-span-3 space-y-4">
-            <Link href="/" className="inline-flex items-center gap-3.5 group">
-              <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md border border-white/20 group-hover:scale-105 transition-transform shrink-0">
+            <Link href="/" className="inline-flex items-center gap-3.5 group" aria-label="UPITRA Beranda">
+              <div className="w-12 h-12 rounded-2xl bg-white p-2 flex items-center justify-center shadow-[0_12px_28px_-4px_rgba(0,0,0,0.5),0_4px_10px_-2px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_4px_rgba(0,0,0,0.06)] border border-white/30 ring-1 ring-white/20 group-hover:-translate-y-0.5 group-hover:shadow-[0_16px_36px_-4px_rgba(0,0,0,0.6)] transition-all duration-300 shrink-0">
                 <img
                   src="/images/logo.png"
                   alt="Logo UPITRA"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(6,23,46,0.25)] drop-shadow-[0_1px_2px_rgba(6,23,46,0.15)] group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <div className="flex flex-col">
-                <div className="text-xl font-black tracking-tight text-white group-hover:text-sky-300 transition-colors">
-                  UPITRA
+              <div className="flex flex-col justify-center">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-2xl font-black tracking-[0.16em] text-white uppercase font-sans drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] group-hover:text-sky-300 transition-colors leading-none">
+                    UPITRA
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
                 </div>
-                <div className="text-[9px] tracking-wider text-sky-400 font-bold uppercase">
+                <span className="text-[9px] tracking-[0.24em] text-sky-300/90 font-bold uppercase mt-1 leading-none">
                   Universitas Pignatelli Triputra
-                </div>
+                </span>
               </div>
             </Link>
 

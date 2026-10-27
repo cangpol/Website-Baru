@@ -104,35 +104,31 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
           
-          {/* Brand Mark UPITRA */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-[#06172e] to-[#0b2545] flex items-center justify-center p-1.5 shadow-sm group-hover:scale-105 transition-transform duration-300 border border-blue-900/30">
+          {/* Brand Mark UPITRA - 3D White Badge & Refined Authoritative Typography */}
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0" aria-label="UPITRA Beranda">
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white p-1.5 sm:p-2 flex items-center justify-center shadow-[0_10px_25px_-4px_rgba(6,23,46,0.18),0_4px_10px_-2px_rgba(6,23,46,0.08),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_4px_rgba(0,0,0,0.04)] border border-slate-100/90 ring-1 ring-slate-900/5 group-hover:-translate-y-0.5 group-hover:shadow-[0_16px_32px_-4px_rgba(6,23,46,0.22),0_6px_12px_-2px_rgba(6,23,46,0.1)] transition-all duration-300 shrink-0">
               <img
                 src="/images/logo.png"
                 alt="Logo UPITRA"
-                className="w-full h-full object-contain drop-shadow-xs"
+                className="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(6,23,46,0.22)] drop-shadow-[0_1px_2px_rgba(6,23,46,0.15)] group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            <div className="flex flex-col">
-              <span className="text-base sm:text-xl font-black tracking-tight text-[#0b2545] leading-none group-hover:text-blue-700 transition-colors">
-                UPITRA
-              </span>
-              <span className="text-[9px] sm:text-[10px] tracking-widest uppercase font-bold text-blue-700 mt-1 leading-none">
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg sm:text-2xl font-black tracking-[0.16em] text-[#06172e] uppercase font-sans drop-shadow-[0_1px_1px_rgba(0,0,0,0.06)] group-hover:text-blue-700 transition-colors leading-none">
+                  UPITRA
+                </span>
+                <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-blue-600/70" />
+              </div>
+              <span className="text-[8px] sm:text-[9.5px] font-bold tracking-[0.24em] text-blue-900/90 uppercase mt-1 leading-none">
                 Universitas Pignatelli Triputra
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-4 2xl:gap-5 text-[13px] font-bold text-slate-800 tracking-wide">
+          <nav className="hidden xl:flex items-center gap-5 2xl:gap-7 text-[13px] font-bold text-slate-800 tracking-wide">
             
-            <Link 
-              href="/" 
-              className="hover:text-blue-600 transition-colors py-1.5"
-            >
-              Beranda
-            </Link>
-
             {/* 1. PROFIL Dropdown */}
             <div className="relative group">
               <button className="cursor-pointer flex items-center gap-1 hover:text-blue-600 py-1.5 transition-colors group-hover:text-blue-600">
@@ -388,19 +384,6 @@ export default function Navbar() {
 
           </nav>
 
-          {/* Right Action Button - Desktop */}
-          <div className="hidden xl:flex items-center gap-3 shrink-0">
-            <a
-              href="https://pmb.upitra.ac.id"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs tracking-wide shadow-md shadow-blue-500/20 transition-all hover:scale-105"
-            >
-              <span>DAFTAR PMB</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
-
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -423,16 +406,8 @@ export default function Navbar() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="xl:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2.5 overflow-hidden shadow-2xl max-h-[85vh] overflow-y-auto"
           >
-            <Link 
-              href="/" 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="block px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50 hover:text-blue-700"
-            >
-              Beranda
-            </Link>
-
             {/* Mobile Accordion 1: Profil */}
-            <div className="border-t border-slate-100 pt-1.5">
+            <div>
               <button
                 onClick={() => setMobileProfilOpen(!mobileProfilOpen)}
                 className="cursor-pointer w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50"
@@ -750,26 +725,16 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-            {/* Mobile Action Buttons (Full Width) */}
-            <div className="pt-3 space-y-2 border-t border-slate-200">
+            {/* Mobile Contact & Hotline */}
+            <div className="pt-3 border-t border-slate-200">
               <a
-                href="https://pmb.upitra.ac.id"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md shadow-blue-500/20 active:scale-95 transition-transform"
-              >
-                <span>DAFTAR PMB ONLINE 2026/2027</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-
-              <a
-                href="https://wa.me/628112907500?text=Halo%20Admisi%20UPITRA%2C%20saya%20ingin%20konsultasi%20pendaftaran%20PMB"
+                href="https://wa.me/628112907500?text=Halo%20Admisi%20UPITRA%2C%20saya%20ingin%20konsultasi%20informasi%20kampus"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-100 text-[#0b2545] font-bold text-xs hover:bg-blue-50 border border-slate-200 active:scale-95 transition-transform"
               >
                 <Phone className="w-4 h-4 text-blue-600" />
-                <span>WhatsApp Admisi: 0811-290-7500</span>
+                <span>WhatsApp Hotline Admisi: 0811-290-7500</span>
               </a>
             </div>
 
