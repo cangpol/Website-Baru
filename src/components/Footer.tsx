@@ -13,7 +13,11 @@ import {
   Award, 
   Briefcase, 
   Building2, 
-  ExternalLink 
+  ExternalLink,
+  Microscope,
+  Users,
+  Handshake,
+  BookOpen
 } from "lucide-react";
 
 export default function Footer() {
@@ -40,7 +44,7 @@ export default function Footer() {
               <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500" />
             </span>
             <p className="text-xs sm:text-sm font-medium text-slate-200">
-              Penerimaan Mahasiswa Baru TA 2026/2027 Sedang Berlangsung. <span className="text-sky-300 font-semibold hidden sm:inline">Beasiswa Triputra Peduli 100% Tersedia.</span>
+              Penerimaan Mahasiswa Baru TA 2026/2027 Sedang Berlangsung. <span className="text-sky-300 font-semibold hidden sm:inline">Beasiswa Penuh Triputra Peduli 100% Tersedia.</span>
             </p>
           </div>
 
@@ -69,12 +73,12 @@ export default function Footer() {
 
       {/* Main Footer Directory */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8">
           
-          {/* Kolom 1: Profil & Identitas Institusi (span 4 col on lg) */}
-          <div className="sm:col-span-2 lg:col-span-4 space-y-5">
+          {/* Kolom 1: Profil & Identitas Institusi (span 3 on lg) */}
+          <div className="sm:col-span-2 lg:col-span-3 space-y-4">
             <Link href="/" className="inline-flex items-center gap-3.5 group">
-              <div className="w-12 h-12 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md border border-white/20 group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md border border-white/20 group-hover:scale-105 transition-transform shrink-0">
                 <img
                   src="/images/logo.png"
                   alt="Logo UPITRA"
@@ -82,183 +86,207 @@ export default function Footer() {
                 />
               </div>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-sky-300 transition-colors">
+                <div className="text-xl font-black tracking-tight text-white group-hover:text-sky-300 transition-colors">
                   UPITRA
                 </div>
-                <div className="text-[10px] tracking-wider text-sky-400 font-bold uppercase">
+                <div className="text-[9px] tracking-wider text-sky-400 font-bold uppercase">
                   Universitas Pignatelli Triputra
                 </div>
               </div>
             </Link>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-md">
-              Institusi pendidikan tinggi terkemuka di Surakarta yang mengintegrasikan keunggulan akademik, integritas karakter Ignasian, dan kesiapan karir industri melalui kolaborasi strategis dengan <strong className="text-white font-semibold">Triputra Group</strong>.
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Perguruan tinggi berkualitas di Surakarta kolaborasi strategis <strong>Yayasan Santo Ignatius Pignatelli</strong> & <strong>Triputra Group</strong>. Berfokus mencetak lulusan berkarakter unggul, berintegritas, dan siap kerja.
             </p>
 
-            <div className="flex flex-wrap gap-2.5 pt-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-800/60 text-sky-300 text-[11px] font-semibold shadow-xs">
+            <div className="flex flex-wrap gap-2 pt-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-950/80 border border-blue-800/60 text-sky-300 text-[11px] font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                <span>Akreditasi Institusi BAIK SEKALI</span>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-800/60 text-sky-300 text-[11px] font-semibold shadow-xs">
-                <Award className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                <span>Ekosistem Karir Triputra Group</span>
+                <span>Akreditasi BAIK SEKALI</span>
               </div>
             </div>
 
-            <div className="pt-2 text-xs text-slate-400 border-t border-blue-950/60 flex flex-col gap-1">
-              <span className="text-slate-300 font-medium">Bernaung di Bawah:</span>
-              <span>Yayasan Santo Ignatius Pignatelli & Triputra Group</span>
+            <div className="space-y-1.5 pt-2 border-t border-blue-950/80 text-xs">
+              <Link href="/profil/tentang-upitra" className="block text-slate-300 hover:text-sky-300 transition-colors">
+                • Tentang UPITRA
+              </Link>
+              <Link href="/profil/visi-misi-tujuan" className="block text-slate-300 hover:text-sky-300 transition-colors">
+                • Visi Misi Tujuan
+              </Link>
+              <Link href="/profil/pimpinan-universitas" className="block text-slate-300 hover:text-sky-300 transition-colors">
+                • Pimpinan Universitas
+              </Link>
+              <Link href="/profil/prestasi-dan-capaian" className="block text-slate-300 hover:text-sky-300 transition-colors">
+                • Prestasi &amp; Capaian
+              </Link>
             </div>
           </div>
 
-          {/* Kolom 2: Program Studi & 4 Fakultas (span 3 col on lg) */}
+          {/* Kolom 2: Fakultas & Program Akademik (span 3 on lg) */}
           <div className="lg:col-span-3 space-y-4">
-            <div className="border-b border-blue-900/60 pb-2.5">
+            <div className="border-b border-blue-900/60 pb-2">
               <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <Building2 className="w-3.5 h-3.5 text-sky-400" />
-                Program Akademik
+                Akademik &amp; Fakultas
               </h4>
             </div>
 
-            <div className="space-y-4 text-xs">
+            <div className="space-y-3.5 text-xs">
               {/* FST */}
               <div className="space-y-1">
-                <Link href="/programs#fst" className="font-bold text-sky-300 hover:text-white transition-colors block">
-                  Fakultas Sains & Teknologi (FST)
+                <Link href="/fst" className="font-bold text-sky-300 hover:text-white transition-colors block">
+                  Fakultas Sains &amp; Teknologi (FST)
                 </Link>
-                <div className="flex flex-col space-y-1 pl-2 border-l border-blue-900/70 text-slate-300">
-                  <Link href="/informatika" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Informatika</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.Kom.</span>
-                  </Link>
-                  <Link href="/sistem-informasi" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Sistem Informasi</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.Kom.</span>
-                  </Link>
-                  <Link href="/rekayasa-perangkat-lunak" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Rekayasa Perangkat Lunak</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.Kom.</span>
-                  </Link>
+                <div className="flex flex-col space-y-0.5 pl-2 border-l border-blue-900/70 text-slate-300 text-[11px]">
+                  <Link href="/informatika" className="hover:text-sky-300 transition-colors">S1 Informatika (S.Kom.)</Link>
+                  <Link href="/sistem-informasi" className="hover:text-sky-300 transition-colors">S1 Sistem Informasi (S.Kom.)</Link>
+                  <Link href="/rekayasa-perangkat-lunak" className="hover:text-sky-300 transition-colors">S1 Rekayasa Perangkat Lunak (S.Kom.)</Link>
                 </div>
               </div>
 
               {/* FEB */}
               <div className="space-y-1">
-                <Link href="/programs#feb" className="font-bold text-sky-300 hover:text-white transition-colors block">
-                  Fakultas Ekonomi & Bisnis (FEB)
+                <Link href="/feb" className="font-bold text-sky-300 hover:text-white transition-colors block">
+                  Fakultas Ekonomi &amp; Bisnis (FEB)
                 </Link>
-                <div className="flex flex-col space-y-1 pl-2 border-l border-blue-900/70 text-slate-300">
-                  <Link href="/manajemen" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Manajemen</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.M.</span>
-                  </Link>
-                  <Link href="/akuntansi" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Akuntansi</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.Ak.</span>
-                  </Link>
+                <div className="flex flex-col space-y-0.5 pl-2 border-l border-blue-900/70 text-slate-300 text-[11px]">
+                  <Link href="/manajemen" className="hover:text-sky-300 transition-colors">S1 Manajemen (S.M.)</Link>
+                  <Link href="/akuntansi" className="hover:text-sky-300 transition-colors">S1 Akuntansi (S.Ak.)</Link>
                 </div>
               </div>
 
               {/* FSH */}
               <div className="space-y-1">
-                <Link href="/programs#fsh" className="font-bold text-sky-300 hover:text-white transition-colors block">
+                <Link href="/fsh" className="font-bold text-sky-300 hover:text-white transition-colors block">
                   Fakultas Sosial Humaniora (FSH)
                 </Link>
-                <div className="flex flex-col space-y-1 pl-2 border-l border-blue-900/70 text-slate-300">
-                  <Link href="/pariwisata" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Pariwisata</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.Par.</span>
-                  </Link>
-                  <Link href="/bahasa-inggris" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Bahasa Inggris</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.S.</span>
-                  </Link>
+                <div className="flex flex-col space-y-0.5 pl-2 border-l border-blue-900/70 text-slate-300 text-[11px]">
+                  <Link href="/pariwisata" className="hover:text-sky-300 transition-colors">S1 Pariwisata (S.Par.)</Link>
+                  <Link href="/bahasa-inggris" className="hover:text-sky-300 transition-colors">S1 Bahasa Inggris (S.S.)</Link>
                 </div>
               </div>
 
               {/* FKes */}
               <div className="space-y-1">
-                <Link href="/programs#fh" className="font-bold text-sky-300 hover:text-white transition-colors block">
+                <Link href="/fkes" className="font-bold text-sky-300 hover:text-white transition-colors block">
                   Fakultas Kesehatan (FKes)
                 </Link>
-                <div className="flex flex-col space-y-1 pl-2 border-l border-blue-900/70 text-slate-300">
-                  <Link href="/kesehatan-dan-keselamatan-kerja" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 K3</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.K3</span>
-                  </Link>
-                  <Link href="/fisioterapi" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>S1 Fisioterapi</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">S.Ft</span>
-                  </Link>
-                  <Link href="/keperawatan" className="hover:text-sky-300 transition-colors flex items-center justify-between">
-                    <span>D3 Keperawatan</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono">A.Md.Kep</span>
-                  </Link>
+                <div className="flex flex-col space-y-0.5 pl-2 border-l border-blue-900/70 text-slate-300 text-[11px]">
+                  <Link href="/kesehatan-dan-keselamatan-kerja" className="hover:text-sky-300 transition-colors">S1 Keselamatan &amp; Kesehatan Kerja (S.K3)</Link>
+                  <Link href="/fisioterapi" className="hover:text-sky-300 transition-colors">S1 Fisioterapi (S.Ft)</Link>
+                  <Link href="/keperawatan" className="hover:text-sky-300 transition-colors">D3 Keperawatan (A.Md.Kep)</Link>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Kolom 3: PMB, Layanan & Fasilitas (span 2 col on lg) */}
+          {/* Kolom 3: Riset & Kemahasiswaan (span 2 on lg) */}
           <div className="space-y-4 lg:col-span-2">
-            <div className="border-b border-blue-900/60 pb-2.5">
+            <div className="border-b border-blue-900/60 pb-2">
               <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Briefcase className="w-3.5 h-3.5 text-sky-400" />
-                PMB & Layanan
+                <Microscope className="w-3.5 h-3.5 text-sky-400" />
+                Riset &amp; Mahasiswa
               </h4>
             </div>
 
-            <ul className="space-y-2.5 text-xs text-slate-300">
+            <ul className="space-y-2 text-xs text-slate-300">
               <li>
-                <Link href="/pmb" className="hover:text-sky-300 transition-colors block">
-                  Panduan Pendaftaran PMB
-                </Link>
-              </li>
-              <li>
-                <Link href="/pmb#beasiswa" className="hover:text-sky-300 transition-colors block">
-                  Beasiswa Triputra Peduli
-                </Link>
-              </li>
-              <li>
-                <Link href="/programs" className="hover:text-sky-300 transition-colors block">
-                  Rincian Biaya Kuliah & SPP
-                </Link>
-              </li>
-              <li>
-                <Link href="/ebrochure" className="hover:text-sky-300 transition-colors block">
-                  Unduh E-Brosur UPITRA
+                <Link href="/riset/pusat-penelitian-dan-publikasi" className="font-semibold text-sky-300 hover:text-white transition-colors block">
+                  Pusat Penelitian &amp; Publikasi
                 </Link>
               </li>
               <li className="pt-2 border-t border-blue-950">
-                <Link href="/life-at-upitra" className="hover:text-sky-300 transition-colors block">
-                  Fasilitas & Kehidupan Kampus
+                <Link href="/kemahasiswaan/tugas-dan-fungsi" className="hover:text-sky-300 transition-colors block">
+                  Tugas &amp; Fungsi Kemahasiswaan
                 </Link>
               </li>
               <li>
-                <Link href="/entrepreneurship" className="hover:text-sky-300 transition-colors block">
-                  Pusat Karir & Magang Industri
+                <Link href="/kemahasiswaan/program-pengembangan" className="hover:text-sky-300 transition-colors block">
+                  Program Pengembangan Mahasiswa
                 </Link>
               </li>
               <li>
-                <Link href="/berita" className="hover:text-sky-300 transition-colors block">
-                  Kabar & Agenda Kampus
+                <Link href="/kemahasiswaan/organisasi-mahasiswa" className="hover:text-sky-300 transition-colors block">
+                  Organisasi Mahasiswa (Ormawa)
                 </Link>
               </li>
               <li>
-                <Link href="/mitra-kerjasama" className="hover:text-sky-300 transition-colors block">
-                  Mitra Industri & Kampus Merdeka
+                <Link href="/kemahasiswaan/prestasi-mahasiswa" className="hover:text-sky-300 transition-colors block">
+                  Prestasi Mahasiswa
+                </Link>
+              </li>
+              <li>
+                <Link href="/kemahasiswaan/galeri-kegiatan" className="hover:text-sky-300 transition-colors block">
+                  Galeri Kegiatan Mahasiswa
+                </Link>
+              </li>
+              <li>
+                <Link href="/kemahasiswaan/kalender-akademik" className="hover:text-sky-300 transition-colors block">
+                  Kalender Akademik
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Kolom 4: Kampus Solo & Kontak Resmi (span 3 col on lg) */}
-          <div className="space-y-4 lg:col-span-3">
-            <div className="border-b border-blue-900/60 pb-2.5">
+          {/* Kolom 4: Kerjasama & Layanan (span 2 on lg) */}
+          <div className="space-y-4 lg:col-span-2">
+            <div className="border-b border-blue-900/60 pb-2">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <Handshake className="w-3.5 h-3.5 text-sky-400" />
+                Kerjasama &amp; Layanan
+              </h4>
+            </div>
+
+            <ul className="space-y-2 text-xs text-slate-300">
+              <li>
+                <Link href="/kerjasama/mitra-kerjasama" className="hover:text-sky-300 transition-colors block">
+                  Mitra Kerjasama
+                </Link>
+              </li>
+              <li>
+                <Link href="/kerjasama/daftar-kerjasama" className="hover:text-sky-300 transition-colors block">
+                  Daftar Kerjasama (MoU/MoA)
+                </Link>
+              </li>
+              <li>
+                <Link href="/kerjasama/kegiatan-kerjasama" className="hover:text-sky-300 transition-colors block">
+                  Kegiatan Kerjasama
+                </Link>
+              </li>
+              <li className="pt-2 border-t border-blue-950">
+                <Link href="/layanan/perpustakaan" className="hover:text-sky-300 transition-colors block">
+                  Perpustakaan &amp; E-Resources
+                </Link>
+              </li>
+              <li>
+                <Link href="/layanan/e-learning" className="hover:text-sky-300 transition-colors block">
+                  E-Learning (LMS)
+                </Link>
+              </li>
+              <li>
+                <Link href="/layanan/career-center" className="hover:text-sky-300 transition-colors block">
+                  Career Center (CDC)
+                </Link>
+              </li>
+              <li>
+                <Link href="/layanan/tracer-study" className="hover:text-sky-300 transition-colors block">
+                  Tracer Studi
+                </Link>
+              </li>
+              <li>
+                <Link href="/layanan/immersion-program" className="font-semibold text-sky-300 hover:text-white transition-colors block">
+                  Triputra Immersion Program
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Kolom 5: Kampus Solo & Kontak Resmi (span 2 on lg) */}
+          <div className="space-y-4 lg:col-span-2">
+            <div className="border-b border-blue-900/60 pb-2">
               <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-sky-400" />
-                Kampus & Kontak
+                Kampus Solo
               </h4>
             </div>
 
@@ -267,92 +295,80 @@ export default function Footer() {
                 href="https://maps.google.com/?q=Universitas+Pignatelli+Triputra+Solo" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="group flex items-start gap-2.5 hover:text-white transition-colors"
+                className="group flex items-start gap-2 hover:text-white transition-colors"
               >
-                <MapPin className="w-4 h-4 text-sky-400 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                <span className="leading-relaxed">
-                  Jl. Duwet Raya, Karangasem, Kec. Laweyan, Kota Surakarta, Jawa Tengah 57145
+                <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <span className="leading-relaxed text-[11px]">
+                  Jl. Duwet Raya, Karangasem, Laweyan, Surakarta, Jawa Tengah 57145
                 </span>
               </a>
 
-              <div className="pt-1 space-y-2">
+              <div className="space-y-1.5 pt-1">
                 <a 
                   href="tel:08112907500" 
-                  className="flex items-center gap-2.5 hover:text-sky-300 transition-colors py-1 px-2.5 rounded-md bg-blue-950/60 border border-blue-900/40 w-fit"
+                  className="flex items-center gap-2 hover:text-sky-300 transition-colors py-1 px-2 rounded-md bg-blue-950/60 border border-blue-900/40 text-[11px]"
                 >
-                  <Phone className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span className="font-semibold text-slate-200">0811-290-7500 (Call Center)</span>
+                  <Phone className="w-3 h-3 text-sky-400 shrink-0" />
+                  <span>0811-290-7500</span>
                 </a>
 
                 <a 
                   href="https://wa.me/628112907500" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 hover:text-sky-300 transition-colors py-1 px-2.5 rounded-md bg-blue-950/60 border border-blue-900/40 w-fit"
+                  className="flex items-center gap-2 hover:text-sky-300 transition-colors py-1 px-2 rounded-md bg-blue-950/60 border border-blue-900/40 text-[11px]"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span className="font-semibold text-slate-200">WhatsApp Hotline PMB</span>
+                  <MessageCircle className="w-3 h-3 text-sky-400 shrink-0" />
+                  <span>WhatsApp PMB</span>
                 </a>
 
                 <a 
                   href="mailto:pmb@upitra.ac.id" 
-                  className="flex items-center gap-2.5 hover:text-sky-300 transition-colors py-1 px-2.5 rounded-md bg-blue-950/60 border border-blue-900/40 w-fit"
+                  className="flex items-center gap-2 hover:text-sky-300 transition-colors py-1 px-2 rounded-md bg-blue-950/60 border border-blue-900/40 text-[11px]"
                 >
-                  <Mail className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                  <span className="font-mono text-slate-200">pmb@upitra.ac.id</span>
+                  <Mail className="w-3 h-3 text-sky-400 shrink-0" />
+                  <span>pmb@upitra.ac.id</span>
                 </a>
               </div>
             </div>
 
             <div className="pt-2">
-              <div className="text-[11px] font-bold text-white mb-2 uppercase tracking-wide">
-                Kanal Komunikasi Resmi
-              </div>
               <div className="flex items-center gap-2">
                 <a 
                   href="https://upitra.ac.id" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   title="Website Resmi UPITRA" 
-                  className="w-8 h-8 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs"
+                  className="w-7 h-7 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs"
                 >
-                  <Globe className="w-4 h-4" />
+                  <Globe className="w-3.5 h-3.5" />
                 </a>
                 <a 
                   href="https://wa.me/628112907500" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   title="WhatsApp PMB UPITRA" 
-                  className="w-8 h-8 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs"
+                  className="w-7 h-7 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="w-3.5 h-3.5" />
                 </a>
                 <a 
                   href="https://instagram.com" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   title="Instagram Resmi" 
-                  className="w-8 h-8 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs"
+                  className="w-7 h-7 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs text-[10px] font-bold"
                 >
-                  <span className="text-[11px] font-bold">IG</span>
+                  IG
                 </a>
                 <a 
                   href="https://youtube.com" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   title="YouTube Resmi UPITRA" 
-                  className="w-8 h-8 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs"
+                  className="w-7 h-7 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs text-[10px] font-bold"
                 >
-                  <span className="text-[11px] font-bold">YT</span>
-                </a>
-                <a 
-                  href="https://linkedin.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  title="LinkedIn UPITRA" 
-                  className="w-8 h-8 rounded-lg bg-blue-950/90 border border-blue-800/60 flex items-center justify-center text-slate-300 hover:text-white hover:bg-blue-600 transition-all shadow-xs"
-                >
-                  <span className="text-[11px] font-bold">IN</span>
+                  YT
                 </a>
               </div>
             </div>
@@ -371,21 +387,21 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-4 text-slate-400">
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Kebijakan Privasi
+            <Link href="/profil/tentang-upitra" className="hover:text-white transition-colors">
+              Profil UPITRA
             </Link>
             <span className="text-blue-900">•</span>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Syarat & Ketentuan
+            <Link href="/akademik" className="hover:text-white transition-colors">
+              Akademik
             </Link>
             <span className="text-blue-900">•</span>
-            <Link href="/sitemap" className="hover:text-white transition-colors">
-              Peta Situs
+            <Link href="/layanan/career-center" className="hover:text-white transition-colors">
+              Karir Triputra
             </Link>
             <button
               onClick={scrollToTop}
               title="Kembali ke atas"
-              className="ml-2 w-7 h-7 rounded-md bg-blue-950 border border-blue-800/70 hover:bg-blue-700 hover:text-white flex items-center justify-center text-slate-300 transition-all"
+              className="ml-2 w-7 h-7 rounded-md bg-blue-950 border border-blue-800/70 hover:bg-blue-700 hover:text-white flex items-center justify-center text-slate-300 transition-all cursor-pointer"
             >
               <ChevronUp className="w-4 h-4" />
             </button>
