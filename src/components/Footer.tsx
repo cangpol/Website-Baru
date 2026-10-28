@@ -343,35 +343,30 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Sub-Footer: Legal & Copyright Bar */}
+      {/* Sub-Footer: Ultra-Premium Centered Copyright Bar */}
       <div className="relative border-t border-blue-950 bg-[#040e1e]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-2 text-center sm:text-left">
-            <span>&copy; {new Date().getFullYear()} Universitas Pignatelli Triputra (UPITRA).</span>
-            <span className="hidden sm:inline text-blue-900">•</span>
-            <span className="text-slate-400">LLDIKTI Wilayah VI Kemendiktisaintek RI.</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-center text-xs text-slate-300 relative">
+          
+          {/* Centered Typography: Executive Letter-Spacing & Premium Contrast */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 text-center select-none">
+            <span className="font-semibold tracking-[0.12em] sm:tracking-[0.16em] uppercase text-slate-200 text-[11px] sm:text-xs">
+              &copy; {new Date().getFullYear()} Universitas Pignatelli Triputra
+            </span>
+            <span className="hidden sm:inline text-blue-800/80">•</span>
+            <span className="text-[10px] sm:text-[11px] font-medium tracking-[0.1em] text-slate-400 uppercase">
+              All Rights Reserved
+            </span>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-400">
-            <Link href="/profil/tentang-upitra" className="hover:text-white transition-colors">
-              Profil UPITRA
-            </Link>
-            <span className="text-blue-900">•</span>
-            <Link href="/fst" className="hover:text-white transition-colors">
-              Fakultas
-            </Link>
-            <span className="text-blue-900">•</span>
-            <Link href="/layanan/career-center" className="hover:text-white transition-colors">
-              Karir Triputra
-            </Link>
-            <button
-              onClick={scrollToTop}
-              title="Kembali ke atas"
-              className="ml-2 w-7 h-7 rounded-md bg-blue-950 border border-blue-800/70 hover:bg-blue-700 hover:text-white flex items-center justify-center text-slate-300 transition-all cursor-pointer"
-            >
-              <ChevronUp className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Quick Back-to-Top Action Button at Far Right */}
+          <button
+            onClick={scrollToTop}
+            title="Kembali ke atas"
+            aria-label="Kembali ke atas"
+            className="absolute right-4 sm:right-6 lg:right-8 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-blue-950/80 border border-blue-800/60 hover:border-sky-400/60 hover:bg-blue-600 hover:text-white flex items-center justify-center text-slate-300 transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+          >
+            <ChevronUp className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </footer>
