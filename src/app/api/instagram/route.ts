@@ -16,14 +16,14 @@ export interface InstagramPost {
 const fallbackInstagramPosts: InstagramPost[] = [
   {
     id: "ig_post_01",
-    caption: "🌟 Penerimaan Mahasiswa Baru TA 2026/2027 Resmi Dibuka! Raih Beasiswa 100% Triputra Peduli dan wujudkan karir impianmu bersama 10 Program Studi unggulan UPITRA. Daftar sekarang di pmb.upitra.ac.id!",
-    mediaUrl: "/images/banners/banner1.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
+    caption: "🌍 Suka petualangan & dunia kreatif? Pilih jurusan sesuai passionmu di S1 Pariwisata UPITRA! Belajar berbasis praktik dengan Immersion industri langsung dan mentor praktisi berpengalaman.",
+    mediaUrl: "/images/pariwisata/par-1.jpg",
+    permalink: "https://www.instagram.com/upitra_campus/p/Dd7vaD2TQIM/",
     timestamp: "2026-10-26T14:30:00Z",
     timeAgo: "1 hari yang lalu",
-    likeCount: 342,
-    commentCount: 28,
-    category: "PMB & Beasiswa",
+    likeCount: 368,
+    commentCount: 32,
+    category: "S1 Pariwisata",
   },
   {
     id: "ig_post_02",
