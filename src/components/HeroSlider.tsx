@@ -1,21 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import { 
-  ChevronLeft, 
-  ChevronRight, 
   ArrowRight, 
   GraduationCap, 
   Award, 
   MessageCircle, 
-  Building, 
-  Users, 
-  TrendingUp, 
   ShieldCheck,
-  FileCheck2,
-  ExternalLink
+  FileCheck2
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { PromoBanner, defaultBanners, normalizeBannerPath } from "@/lib/bannerData";
 
 interface HeroSliderProps {
@@ -23,121 +17,57 @@ interface HeroSliderProps {
 }
 
 export default function HeroSlider({ banners = defaultBanners }: HeroSliderProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
+  // Hanya gunakan 1 foto utama (Foto Nomer 1: hero-pmb.jpg)
+  const primaryBanner = (banners && banners.length > 0 ? banners[0] : defaultBanners[0]) || defaultBanners[0];
+  const [imageSrc, setImageSrc] = useState<string>(() => normalizeBannerPath(primaryBanner.image));
 
-  const bannerList = banners && banners.length > 0 ? banners : defaultBanners;
-
-  // Auto-play timer (every 6 seconds)
-  useEffect(() => {
-    if (isPaused || bannerList.length <= 1) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % bannerList.length);
-    }, 6000);
-
-    return () => clearInterval(interval);
-  }, [isPaused, bannerList.length]);
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + bannerList.length) % bannerList.length);
-  };
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % bannerList.length);
-  };
-
-  const goToSlide = (idx: number) => {
-    setCurrentIndex(idx);
-  };
-
-  // Touch handling
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    const distance = touchStartX.current - touchEndX.current;
-    if (distance > 50) nextSlide();
-    else if (distance < -50) prevSlide();
-    touchStartX.current = null;
-    touchEndX.current = null;
-  };
-
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, banner: PromoBanner) => {
-    const target = e.currentTarget;
-    const tried = target.getAttribute("data-tried") || "0";
-    if (tried === "0") {
-      target.setAttribute("data-tried", "1");
-      const cleanName = banner.image.replace(/^\/images\/(banners\/)?/, "");
-      target.src = `/images/${cleanName}`;
-    } else if (tried === "1") {
-      target.setAttribute("data-tried", "2");
-      target.src = "/images/gedung-upitra.jpg";
-    }
-  };
-
-  const isExternalUrl = (url?: string) => {
-    if (!url) return false;
-    return url.startsWith("http://") || url.startsWith("https://");
+  const handleImageError = () => {
+    setImageSrc("/images/banners/hero-kampus.jpg");
   };
 
   return (
     <section className="relative w-full bg-[#06172e] text-white overflow-hidden select-none" aria-label="Grand Gateway UPITRA">
-      {/* 1. CINEMATIC FULL-BLEED HERO CANVAS */}
-      <div 
-        className="relative w-full min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] flex items-center"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Carousel Background Slides */}
-        <div
-          className="absolute inset-0 flex h-full w-full transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
-          {bannerList.map((banner, idx) => {
-            const normalizedSrc = normalizeBannerPath(banner.image);
+      {/* 1. CINEMATIC FULL-BLEED HERO CANVAS (1 Foto Utama Statis) */}
+      <div className="relative w-full min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] flex items-center">
+        
+        {/* Static Background Image with Cinematic Depth */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden bg-[#06172e]">
+          <motion.img
+            initial={{ scale: 1.08, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            src={imageSrc}
+            alt={primaryBanner.alt || primaryBanner.title || "Universitas Pignatelli Triputra Surakarta"}
+            loading="eager"
+            decoding="async"
+            onError={handleImageError}
+            className="w-full h-full object-cover object-center scale-100 transition-transform duration-1000"
+          />
 
-            return (
-              <div key={banner.id} className="w-full h-full shrink-0 relative overflow-hidden bg-[#06172e]">
-                {/* Hero Photo Asset */}
-                <img
-                  src={normalizedSrc}
-                  alt={banner.alt || banner.title}
-                  loading={idx === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                  onError={(e) => handleImageError(e, banner)}
-                  className="absolute inset-0 w-full h-full object-cover object-center scale-100 hover:scale-105 transition-transform duration-1000"
-                />
-
-                {/* Deep Imperial Navy Gradient Overlay (Strict Blue & White Palette) */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#041122]/95 via-[#071f3d]/85 to-[#0b2545]/60 z-10" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#06172e] via-transparent to-transparent/40 z-10" />
-              </div>
-            );
-          })}
+          {/* Deep Imperial Navy Gradient Overlay (Strict Blue & White Palette) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#041122]/95 via-[#071f3d]/85 to-[#0b2545]/60 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06172e] via-transparent to-transparent/40 z-10" />
         </div>
 
-        {/* 2. HERO CONTENT LAYER */}
+        {/* 2. HERO CONTENT LAYER WITH FRAMER MOTION ENTRANCE */}
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-20 w-full">
-          <div className="max-w-3xl space-y-5 sm:space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="max-w-3xl space-y-5 sm:space-y-6"
+          >
             
             {/* University Crest / Official Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600/30 border border-blue-400/40 text-blue-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600/30 border border-blue-400/40 text-blue-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-xs"
+            >
               <ShieldCheck className="w-4 h-4 text-sky-300" />
               <span>Universitas Pignatelli Triputra • Surakarta</span>
-            </div>
+            </motion.div>
 
             {/* Main Authoritative Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.12]">
@@ -154,62 +84,33 @@ export default function HeroSlider({ banners = defaultBanners }: HeroSliderProps
 
             {/* Dual Action Buttons (Blue & White) */}
             <div className="pt-2 flex flex-wrap items-center gap-3.5">
-              <a
+              <motion.a
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 href="https://pmb.upitra.ac.id"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-blue-600/40 hover:shadow-blue-500/60 transition-all hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-blue-600/40 hover:shadow-blue-500/60 transition-all cursor-pointer"
               >
                 <span>Daftar PMB 2026/2027</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </motion.a>
 
-              <a
+              <motion.a
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 href="#akademik"
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold backdrop-blur-md border border-white/25 transition-all hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold backdrop-blur-md border border-white/25 transition-all cursor-pointer"
               >
                 <span>Jelajahi 4 Fakultas</span>
-              </a>
+              </motion.a>
             </div>
 
-          </div>
+          </motion.div>
         </div>
 
-        {/* Carousel Slider Controls (Left/Right Chevrons) */}
-        {bannerList.length > 1 && (
-          <>
-            <button
-              onClick={prevSlide}
-              aria-label="Slide sebelumnya"
-              className="cursor-pointer absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-110 z-30 focus:outline-hidden"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={nextSlide}
-              aria-label="Slide berikutnya"
-              className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all hover:scale-110 z-30 focus:outline-hidden"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </>
-        )}
-
-        {/* Slider Indicator Dots */}
-        {bannerList.length > 1 && (
-          <div className="absolute bottom-16 sm:bottom-20 right-4 sm:right-8 z-30 flex items-center gap-1.5 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15">
-            {bannerList.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => goToSlide(idx)}
-                aria-label={`Slide ${idx + 1}`}
-                className={`transition-all duration-300 rounded-full h-1.5 ${
-                  currentIndex === idx ? "w-6 bg-blue-400" : "w-1.5 bg-white/50 hover:bg-white"
-                }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {/* 3. INTEGRATED FAST-TRACK ACTION DOCK (Clean White & Navy Accents) */}

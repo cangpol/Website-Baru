@@ -8,16 +8,10 @@ import {
   Globe, 
   MessageCircle, 
   ShieldCheck, 
-  ArrowUpRight, 
   ChevronUp, 
-  Award, 
-  Briefcase, 
   Building2, 
-  ExternalLink,
   Microscope,
-  Users,
-  Handshake,
-  BookOpen
+  Handshake
 } from "lucide-react";
 
 export default function Footer() {
@@ -34,42 +28,6 @@ export default function Footer() {
         aria-hidden="true" 
         className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-3/4 max-w-5xl h-72 bg-radial from-blue-600/15 via-blue-900/5 to-transparent blur-3xl opacity-60" 
       />
-
-      {/* Top Pre-Footer Bar: Fast Mobile Hotline & Direct Access */}
-      <div className="relative border-b border-blue-900/40 bg-[#081e3b]/70 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3 text-center sm:text-left">
-            <span className="relative flex h-3 w-3 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500" />
-            </span>
-            <p className="text-xs sm:text-sm font-medium text-slate-200">
-              Penerimaan Mahasiswa Baru TA 2026/2027 Sedang Berlangsung. <span className="text-sky-300 font-semibold hidden sm:inline">Beasiswa Penuh Triputra Peduli 100% Tersedia.</span>
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-end">
-            <a
-              href="https://wa.me/628112907500?text=Halo%20Admin%20PMB%20UPITRA%2C%20saya%20ingin%20konsultasi%20pendaftaran"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600/30 hover:bg-blue-600 border border-blue-500/40 text-white text-xs font-semibold tracking-wide transition-all shadow-sm active:scale-95"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-sky-300" />
-              <span>Chat WhatsApp</span>
-            </a>
-            <a
-              href="https://pmb.upitra.ac.id"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-white text-blue-950 hover:bg-slate-100 text-xs font-bold tracking-wide transition-all shadow-sm active:scale-95"
-            >
-              <span>Daftar Online PMB</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-blue-900" />
-            </a>
-          </div>
-        </div>
-      </div>
 
       {/* Main Footer Directory */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-14">
