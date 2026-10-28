@@ -281,6 +281,11 @@ export default function Footer() {
                   Triputra Immersion Program
                 </Link>
               </li>
+              <li>
+                <Link href="/layanan/download-center" className="hover:text-sky-300 transition-colors block">
+                  Download Center (E-Brosur)
+                </Link>
+              </li>
             </ul>
           </div>
 

@@ -12,7 +12,8 @@ import {
   Sparkles, 
   ArrowRight, 
   ShieldCheck, 
-  CheckCircle2 
+  CheckCircle2,
+  Download
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -55,6 +56,13 @@ const layananCards = [
     icon: Sparkles,
     desc: "Program unggulan eksklusif mahasiswa UPITRA: penempatan praktik kerja langsung di unit-unit bisnis Triputra Group se-Indonesia dengan bimbingan mentor eksekutif.",
     tag: "Program Unggulan",
+  },
+  {
+    title: "Download Center (Pusat Unduhan Resmi)",
+    href: "/layanan/download-center",
+    icon: Download,
+    desc: "Unduh panduan resmi PMB 2026/2027, e-brosur 10 program studi lengkap, kurikulum, skema beasiswa Triputra Peduli, dan formulir akademik resmi format PDF.",
+    tag: "Brosur & Panduan",
   },
 ];
 

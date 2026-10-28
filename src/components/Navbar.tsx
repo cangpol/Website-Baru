@@ -365,6 +365,13 @@ export default function Navbar() {
                 >
                   Immersion Program
                 </Link>
+                <Link 
+                  href="/layanan/download-center" 
+                  className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-blue-700 bg-blue-50/70 hover:bg-blue-100/80 transition-colors mt-0.5"
+                >
+                  <span>Download Center</span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-600 text-white">Brosur</span>
+                </Link>
               </div>
             </div>
 
@@ -705,6 +712,14 @@ export default function Navbar() {
                       className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
                     >
                       Immersion Program
+                    </Link>
+                    <Link
+                      href="/layanan/download-center"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between text-xs font-bold text-blue-700 hover:text-blue-800 py-1"
+                    >
+                      <span>Download Center</span>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white">Brosur</span>
                     </Link>
                   </motion.div>
                 )}
