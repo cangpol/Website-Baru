@@ -220,124 +220,99 @@ export default function AIChatAssistant() {
         )}
       </AnimatePresence>
 
-      {/* 2. Floating Action Button & Tooltip */}
-      <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[10000] flex items-center">
-        
-        {/* Tooltip callout badge on desktop */}
-        <AnimatePresence>
-          {showTooltip && !open && (
-            <motion.div
-              initial={{ opacity: 0, x: 20, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 20, scale: 0.9 }}
-              transition={{ delay: 1, duration: 0.4 }}
-              className="hidden md:flex items-center gap-2.5 mr-4 px-4 py-2.5 rounded-2xl bg-white/95 backdrop-blur-md border border-sky-200/80 shadow-xl shadow-sky-900/10 text-slate-800"
-            >
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <div className="text-left">
-                <p className="text-[11px] font-bold text-[#0b2545] leading-none flex items-center gap-1">
-                  <span>Tanya UPITRA AI</span>
-                  <Sparkles className="w-3 h-3 text-sky-500 inline" />
-                </p>
-                <p className="text-[10px] text-slate-500 leading-tight mt-0.5">Asisten Virtual Online 24/7</p>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowTooltip(false);
-                }}
-                className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100 transition-colors ml-1"
-                aria-label="Tutup info"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Ambient Glow Pulse Halo - Hanya saat ditutup */}
+      {/* 2. Floating Action Button & Tooltip (Tampil eksklusif saat obrolan ditutup) */}
+      <AnimatePresence>
         {!open && (
           <motion.div
-            animate={{
-              scale: [1, 1.25, 1],
-              opacity: [0.3, 0.7, 0.3]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute inset-0 rounded-full bg-sky-400/35 blur-xl pointer-events-none"
-          />
+            initial={{ opacity: 0, scale: 0.8, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 15 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[10000] flex items-center"
+          >
+            {/* Tooltip callout badge on desktop */}
+            {showTooltip && (
+              <motion.div
+                initial={{ opacity: 0, x: 20, scale: 0.9 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 20, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                className="hidden md:flex items-center gap-2.5 mr-4 px-4 py-2.5 rounded-2xl bg-white/95 backdrop-blur-md border border-sky-200/80 shadow-xl shadow-sky-900/10 text-slate-800"
+              >
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="text-left">
+                  <p className="text-[11px] font-bold text-[#0b2545] leading-none flex items-center gap-1">
+                    <span>Tanya UPITRA AI</span>
+                    <Sparkles className="w-3 h-3 text-sky-500 inline" />
+                  </p>
+                  <p className="text-[10px] text-slate-500 leading-tight mt-0.5">Asisten Virtual Online 24/7</p>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowTooltip(false);
+                  }}
+                  className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100 transition-colors ml-1"
+                  aria-label="Tutup info"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </motion.div>
+            )}
+
+            {/* Ambient Glow Pulse Halo */}
+            <motion.div
+              animate={{
+                scale: [1, 1.25, 1],
+                opacity: [0.3, 0.7, 0.3]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="absolute inset-0 rounded-full bg-sky-400/35 blur-xl pointer-events-none"
+            />
+
+            {/* Ultra-Premium Framer Motion Floating Toggle Button */}
+            <motion.button
+              onClick={() => {
+                setOpen(true);
+                setShowTooltip(false);
+              }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              aria-label="Buka UPITRA AI Assistant"
+              className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[3px] bg-gradient-to-tr from-[#06172e] via-[#0284c7] to-[#38bdf8] shadow-[0_12px_36px_rgba(2,132,199,0.45)] cursor-pointer group flex items-center justify-center transition-all"
+            >
+              {/* Inner core circle */}
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center relative overflow-hidden shadow-inner bg-gradient-to-br from-white via-sky-50 to-blue-50">
+                {/* AI Logo Image */}
+                <img
+                  src="/images/ai/upitra-ai-icon.png"
+                  alt="UPITRA AI"
+                  className="w-11 h-11 sm:w-12 sm:h-12 object-contain group-hover:scale-110 transition-transform duration-300"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = "none";
+                  }}
+                />
+                <Bot className="w-7 h-7 text-[#0284c7] absolute pointer-events-none -z-10" />
+
+                {/* Shimmering Sparkle */}
+                <Sparkles className="w-3.5 h-3.5 text-sky-500 absolute top-2 right-2 animate-pulse" />
+              </div>
+
+              {/* Active Status Badge (Green dot) */}
+              <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white shadow-xs"></span>
+              </span>
+            </motion.button>
+          </motion.div>
         )}
+      </AnimatePresence>
 
-        {/* Ultra-Premium Framer Motion Floating Toggle Button */}
-        <motion.button
-          onClick={() => {
-            setOpen(!open);
-            setShowTooltip(false);
-          }}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          aria-label={open ? "Tutup UPITRA AI" : "Buka UPITRA AI Assistant"}
-          className={`relative w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[3px] bg-gradient-to-tr from-[#06172e] via-[#0284c7] to-[#38bdf8] shadow-[0_12px_36px_rgba(2,132,199,0.45)] cursor-pointer group flex items-center justify-center transition-all ${
-            open ? "hidden sm:flex" : "flex"
-          }`}
-        >
-          {/* Inner core circle */}
-          <div className="w-full h-full rounded-full bg-white flex items-center justify-center relative overflow-hidden shadow-inner">
-            
-            <AnimatePresence mode="wait">
-              {open ? (
-                <motion.div
-                  key="close-icon"
-                  initial={{ rotate: -90, opacity: 0, scale: 0.6 }}
-                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                  exit={{ rotate: 90, opacity: 0, scale: 0.6 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-full h-full bg-[#0b2545] flex items-center justify-center text-white"
-                >
-                  <X className="w-7 h-7 text-white" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="ai-icon"
-                  initial={{ rotate: 90, opacity: 0, scale: 0.6 }}
-                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                  exit={{ rotate: -90, opacity: 0, scale: 0.6 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white via-sky-50 to-blue-50 relative"
-                >
-                  {/* AI Logo Image */}
-                  <img
-                    src="/images/ai/upitra-ai-icon.png"
-                    alt="UPITRA AI"
-                    className="w-11 h-11 sm:w-12 sm:h-12 object-contain group-hover:scale-110 transition-transform duration-300"
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = "none";
-                    }}
-                  />
-                  <Bot className="w-7 h-7 text-[#0284c7] absolute pointer-events-none -z-10" />
-
-                  {/* Shimmering Sparkle */}
-                  <Sparkles className="w-3.5 h-3.5 text-sky-500 absolute top-2 right-2 animate-pulse" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-          </div>
-
-          {/* Active Status Badge (Green dot) */}
-          {!open && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white shadow-xs"></span>
-            </span>
-          )}
-        </motion.button>
-      </div>
-
-      {/* 3. The Interactive Chat Drawer Window (Viewport-Constrained Height) */}
+      {/* 3. The Interactive Chat Drawer Window (Viewport-Constrained Height & Anchored to Corner) */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -345,7 +320,7 @@ export default function AIChatAssistant() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 35, scale: 0.94 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed bottom-0 sm:bottom-28 right-0 sm:right-8 w-full sm:w-[430px] h-[85dvh] sm:h-[min(540px,calc(100dvh-140px))] max-h-[85dvh] sm:max-h-[calc(100dvh-130px)] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200/90 z-[9999]"
+            className="fixed bottom-0 sm:bottom-6 right-0 sm:right-6 w-full sm:w-[420px] max-w-[420px] h-[88dvh] sm:h-[580px] max-h-[88dvh] sm:max-h-[calc(100dvh-3rem)] bg-white rounded-t-3xl sm:rounded-3xl shadow-[0_25px_60px_-15px_rgba(6,23,46,0.35)] flex flex-col overflow-hidden border border-slate-200/90 z-[9999]"
           >
             {/* Header: Executive Gradient with Brand, WhatsApp Button & Close */}
             <div className="relative bg-gradient-to-r from-[#06172e] via-[#0b2545] to-[#0284c7] p-4 sm:p-4.5 text-white shrink-0 overflow-hidden shadow-md">
@@ -405,7 +380,7 @@ export default function AIChatAssistant() {
                     className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="Tutup Obrolan"
                   >
-                    <ChevronDown className="w-5 h-5" />
+                    <X className="w-5 h-5" />
                   </button>
 
                 </div>
@@ -493,7 +468,7 @@ export default function AIChatAssistant() {
               {/* Quick Questions (Scrollable without visible scrollbar) */}
               {messages.length <= 1 && (
                 <div 
-                  className="overflow-x-auto pb-1 flex gap-2 [&::-webkit-scrollbar]:hidden"
+                  className="overflow-x-auto pb-1.5 flex gap-2 no-scrollbar scroll-smooth"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {quickQuestions.map((q, qIdx) => (

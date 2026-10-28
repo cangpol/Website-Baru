@@ -8,6 +8,7 @@ import {
   RefreshCw, 
   ArrowRight
 } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
 import type { InstagramPost } from "@/app/api/instagram/route";
 
 function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -76,27 +77,42 @@ const initialPosts: InstagramPost[] = [
   },
   {
     id: "ig_post_05",
-    caption: "🎉 Wisuda & Pelepasan Sarjana UPITRA! Lebih dari 90% lulusan telah terserap bekerja di industri nasional dalam waktu kurang dari 3 bulan pasca kelulusan. Selamat berkarya untuk bangsa!",
-    mediaUrl: "/images/wisuda.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-14T13:45:00Z",
-    timeAgo: "2 minggu yang lalu",
-    likeCount: 520,
-    commentCount: 47,
-    category: "Wisuda & Karir",
-  },
-  {
-    id: "ig_post_06",
     caption: "🤝 Kunjungan industri dan penandatanganan sinergi strategis antara UPITRA dengan mitra korporasi nasional. Menghubungkan kurikulum kampus dengan kebutuhan industri masa depan.",
     mediaUrl: "/images/feb-full.jpg",
     permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-10T10:00:00Z",
+    timestamp: "2026-10-14T13:45:00Z",
     timeAgo: "2 minggu yang lalu",
-    likeCount: 310,
-    commentCount: 22,
+    likeCount: 420,
+    commentCount: 28,
     category: "Kemitraan Industri",
   },
 ];
+
+// Animation variants for staggered entrance and cards
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 24, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 280,
+      damping: 24,
+    },
+  },
+};
 
 export default function InstagramFeedSection() {
   const [posts, setPosts] = useState<InstagramPost[]>(initialPosts);
@@ -176,99 +192,132 @@ export default function InstagramFeedSection() {
 
           {/* Follow Instagram Button */}
           <div className="flex items-center gap-3 shrink-0">
-            <button
+            <motion.button
+              whileHover={{ rotate: 180, scale: 1.05 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
               onClick={refreshFeed}
               disabled={isLoading}
               title={`Segarkan Postingan Terbaru (${lastRefreshed})`}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-blue-600 transition-all shadow-xs active:scale-95 cursor-pointer disabled:opacity-50"
+              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-blue-600 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin text-blue-600" : ""}`} />
-            </button>
+            </motion.button>
 
-            <a
+            <motion.a
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring" as const, stiffness: 350, damping: 22 }}
               href="https://www.instagram.com/upitra_campus/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 hover:from-rose-600 hover:via-pink-700 hover:to-purple-700 text-white font-bold text-xs tracking-wide shadow-md shadow-pink-500/20 active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 hover:from-rose-600 hover:via-pink-700 hover:to-purple-700 text-white font-bold text-xs tracking-wide shadow-md shadow-pink-500/25 transition-all"
             >
               <InstagramIcon className="w-4 h-4" />
               <span>Ikuti @upitra_campus</span>
               <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-            </a>
+            </motion.a>
           </div>
 
         </div>
 
-        {/* INSTAGRAM GRID: 5 Posts Ordered Descending (Newest to Oldest) - Larger & Professional */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 lg:gap-5.5">
+        {/* INSTAGRAM GRID: 5 Posts with Framer Motion Staggered Entrance & Dynamic Multilayer Shadow */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 lg:gap-5.5"
+        >
           {posts.slice(0, 5).map((post, idx) => (
-            <a
+            <motion.div
               key={post.id || idx}
-              href={post.permalink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group relative aspect-square rounded-2xl overflow-hidden bg-slate-200 border border-slate-200/90 shadow-2xs hover:shadow-2xl transition-all duration-300 block ${
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.025 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring" as const, stiffness: 350, damping: 22 }}
+              className={`group relative ${
                 idx === 4 ? "col-span-2 sm:col-span-1 max-w-[280px] sm:max-w-none mx-auto w-full" : ""
               }`}
             >
-              {/* Image */}
-              <img
-                src={post.mediaUrl}
-                alt={post.caption}
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.src.includes("/images/banners/hero-kampus.jpg")) {
-                    target.src = "/images/banners/hero-kampus.jpg";
-                  }
-                }}
-                className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+              {/* Dynamic Ambient Glow Halo Behind Card */}
+              <div 
+                className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-pink-500/20 via-sky-500/20 to-purple-600/20 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" 
               />
 
-              {/* Top Category Badge */}
-              <div className="absolute top-2.5 left-2.5 z-10">
-                <span className="px-2.5 py-1 rounded-lg bg-[#06172e]/85 backdrop-blur-xs text-[10px] sm:text-[11px] font-bold text-white uppercase tracking-wider border border-white/20 shadow-xs">
-                  {post.category}
-                </span>
-              </div>
+              {/* Main Interactive Card with Multilayer Dynamic Shadow */}
+              <a
+                href={post.permalink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative aspect-square rounded-2xl overflow-hidden bg-slate-200 border border-slate-200/90 shadow-sm hover:shadow-[0_22px_45px_-12px_rgba(11,37,69,0.28),0_0_20px_-3px_rgba(236,72,153,0.18)] transition-all duration-300 block"
+              >
+                {/* Image */}
+                <img
+                  src={post.mediaUrl}
+                  alt={post.caption}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.includes("/images/banners/hero-kampus.jpg")) {
+                      target.src = "/images/banners/hero-kampus.jpg";
+                    }
+                  }}
+                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                />
 
-              {/* Time Tag (Bottom Right) */}
-              <div className="absolute bottom-2.5 right-2.5 z-10 group-hover:opacity-0 transition-opacity">
-                <span className="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-xs text-[10px] font-medium text-slate-200 shadow-2xs">
-                  {post.timeAgo}
-                </span>
-              </div>
-
-              {/* Hover Dark Overlay with Stats & Caption */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/65 to-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4 sm:p-5 text-white z-20">
-                <div className="flex justify-end">
-                  <span className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white shadow-xs">
-                    <InstagramIcon className="w-4 h-4" />
+                {/* Top Category Badge */}
+                <div className="absolute top-2.5 left-2.5 z-10">
+                  <span className="px-2.5 py-1 rounded-lg bg-[#06172e]/85 backdrop-blur-xs text-[10px] sm:text-[11px] font-bold text-white uppercase tracking-wider border border-white/20 shadow-xs">
+                    {post.category}
                   </span>
                 </div>
 
-                <div className="space-y-2.5">
-                  <p className="text-xs sm:text-[13px] leading-relaxed text-slate-100 line-clamp-4 font-medium">
-                    {post.caption}
-                  </p>
+                {/* Time Tag (Bottom Right) */}
+                <div className="absolute bottom-2.5 right-2.5 z-10 group-hover:opacity-0 transition-opacity">
+                  <span className="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-xs text-[10px] font-medium text-slate-200 shadow-2xs">
+                    {post.timeAgo}
+                  </span>
+                </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/20 text-xs text-slate-300">
-                    <span className="flex items-center gap-1.5 font-semibold text-rose-300">
-                      <Heart className="w-3.5 h-3.5 fill-rose-400 text-rose-400" />
-                      {post.likeCount}
-                    </span>
-                    <span className="flex items-center gap-1.5 font-semibold text-slate-200">
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      {post.commentCount}
+                {/* Hover Dark Overlay with Stats & Caption */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/65 to-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4 sm:p-5 text-white z-20">
+                  <div className="flex justify-end">
+                    <span className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white shadow-xs">
+                      <InstagramIcon className="w-4 h-4" />
                     </span>
                   </div>
+
+                  <div className="space-y-2.5">
+                    <p className="text-xs sm:text-[13px] leading-relaxed text-slate-100 line-clamp-4 font-medium">
+                      {post.caption}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-white/20 text-xs text-slate-300">
+                      <span className="flex items-center gap-1.5 font-semibold text-rose-300">
+                        <Heart className="w-3.5 h-3.5 fill-rose-400 text-rose-400" />
+                        {post.likeCount}
+                      </span>
+                      <span className="flex items-center gap-1.5 font-semibold text-slate-200">
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        {post.commentCount}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* BOTTOM CALL-TO-ACTION */}
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-2xs">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          whileHover={{ y: -2, boxShadow: "0 12px 30px -8px rgba(11, 37, 69, 0.08)" }}
+          className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-2xs transition-all duration-300"
+        >
           <div className="flex items-center gap-3.5">
             <div className="relative w-11 h-11 rounded-2xl p-0.5 bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0">
               <div className="w-full h-full bg-white rounded-[14px] p-1 flex items-center justify-center">
@@ -299,7 +348,7 @@ export default function InstagramFeedSection() {
             <span>Kunjungi Profil Lengkap di Instagram</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </a>
-        </div>
+        </motion.div>
 
       </div>
     </section>
