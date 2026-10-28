@@ -76,25 +76,25 @@ const initialPosts: InstagramPost[] = [
   },
   {
     id: "ig_post_05",
-    caption: "🤝 Kunjungan industri dan penandatanganan sinergi strategis antara UPITRA dengan mitra korporasi nasional. Menghubungkan kurikulum kampus dengan kebutuhan industri masa depan.",
-    mediaUrl: "/images/feb-full.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-14T13:45:00Z",
-    timeAgo: "2 minggu yang lalu",
-    likeCount: 310,
-    commentCount: 22,
-    category: "Kemitraan Industri",
-  },
-  {
-    id: "ig_post_06",
     caption: "🎉 Wisuda & Pelepasan Sarjana UPITRA! Lebih dari 90% lulusan telah terserap bekerja di industri nasional dalam waktu kurang dari 3 bulan pasca kelulusan. Selamat berkarya untuk bangsa!",
     mediaUrl: "/images/wisuda.jpg",
     permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-10T10:00:00Z",
+    timestamp: "2026-10-14T13:45:00Z",
     timeAgo: "2 minggu yang lalu",
     likeCount: 520,
     commentCount: 47,
     category: "Wisuda & Karir",
+  },
+  {
+    id: "ig_post_06",
+    caption: "🤝 Kunjungan industri dan penandatanganan sinergi strategis antara UPITRA dengan mitra korporasi nasional. Menghubungkan kurikulum kampus dengan kebutuhan industri masa depan.",
+    mediaUrl: "/images/feb-full.jpg",
+    permalink: "https://www.instagram.com/upitra_campus/",
+    timestamp: "2026-10-10T10:00:00Z",
+    timeAgo: "2 minggu yang lalu",
+    likeCount: 310,
+    commentCount: 22,
+    category: "Kemitraan Industri",
   },
 ];
 
@@ -199,15 +199,17 @@ export default function InstagramFeedSection() {
 
         </div>
 
-        {/* INSTAGRAM GRID: 6 Posts Ordered Descending (Newest to Oldest) */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4.5">
-          {posts.slice(0, 6).map((post, idx) => (
+        {/* INSTAGRAM GRID: 5 Posts Ordered Descending (Newest to Oldest) - Larger & Professional */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 lg:gap-5.5">
+          {posts.slice(0, 5).map((post, idx) => (
             <a
               key={post.id || idx}
               href={post.permalink}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative aspect-square rounded-2xl overflow-hidden bg-slate-200 border border-slate-200/90 shadow-2xs hover:shadow-xl transition-all duration-300 block"
+              className={`group relative aspect-square rounded-2xl overflow-hidden bg-slate-200 border border-slate-200/90 shadow-2xs hover:shadow-2xl transition-all duration-300 block ${
+                idx === 4 ? "col-span-2 sm:col-span-1 max-w-[280px] sm:max-w-none mx-auto w-full" : ""
+              }`}
             >
               {/* Image */}
               <img
@@ -223,39 +225,39 @@ export default function InstagramFeedSection() {
               />
 
               {/* Top Category Badge */}
-              <div className="absolute top-2 left-2 z-10">
-                <span className="px-2 py-0.5 rounded-md bg-[#06172e]/85 backdrop-blur-xs text-[9px] font-bold text-white uppercase tracking-wider border border-white/20">
+              <div className="absolute top-2.5 left-2.5 z-10">
+                <span className="px-2.5 py-1 rounded-lg bg-[#06172e]/85 backdrop-blur-xs text-[10px] sm:text-[11px] font-bold text-white uppercase tracking-wider border border-white/20 shadow-xs">
                   {post.category}
                 </span>
               </div>
 
               {/* Time Tag (Bottom Right) */}
-              <div className="absolute bottom-2 right-2 z-10 group-hover:opacity-0 transition-opacity">
-                <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-[9px] font-medium text-slate-200">
+              <div className="absolute bottom-2.5 right-2.5 z-10 group-hover:opacity-0 transition-opacity">
+                <span className="px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-xs text-[10px] font-medium text-slate-200 shadow-2xs">
                   {post.timeAgo}
                 </span>
               </div>
 
               {/* Hover Dark Overlay with Stats & Caption */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3.5 text-white z-20">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/65 to-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4 sm:p-5 text-white z-20">
                 <div className="flex justify-end">
-                  <span className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white">
+                  <span className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white shadow-xs">
                     <InstagramIcon className="w-4 h-4" />
                   </span>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-[11px] leading-snug text-slate-200 line-clamp-3 font-medium">
+                <div className="space-y-2.5">
+                  <p className="text-xs sm:text-[13px] leading-relaxed text-slate-100 line-clamp-4 font-medium">
                     {post.caption}
                   </p>
 
-                  <div className="flex items-center justify-between pt-1 border-t border-white/20 text-[10px] text-slate-300">
-                    <span className="flex items-center gap-1 font-semibold text-rose-300">
-                      <Heart className="w-3 h-3 fill-rose-400 text-rose-400" />
+                  <div className="flex items-center justify-between pt-2 border-t border-white/20 text-xs text-slate-300">
+                    <span className="flex items-center gap-1.5 font-semibold text-rose-300">
+                      <Heart className="w-3.5 h-3.5 fill-rose-400 text-rose-400" />
                       {post.likeCount}
                     </span>
-                    <span className="flex items-center gap-1 font-semibold">
-                      <MessageCircle className="w-3 h-3" />
+                    <span className="flex items-center gap-1.5 font-semibold text-slate-200">
+                      <MessageCircle className="w-3.5 h-3.5" />
                       {post.commentCount}
                     </span>
                   </div>
