@@ -318,3 +318,4 @@ export function searchAiKnowledge(query: string): { reply: string; answered: boo
     confidence: Number(topScore.toFixed(2))
   };
 }
+

@@ -46,7 +46,6 @@ function FormattedMessage({ content, isUser }: { content: string; isUser: boolea
               const cleanLine = isBullet ? line.replace(/^[\s•\-]+/, "") : isNumber ? line.replace(/^\d+\.\s*/, "") : line;
 
               const renderParts = (text: string) => {
-                // Regex for links [text](url) and **bold**
                 const tokenRegex = /(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|(https?:\/\/[^\s]+))/g;
                 const elements = [];
                 let lastIdx = 0;
@@ -221,7 +220,7 @@ export default function AIChatAssistant() {
         )}
       </AnimatePresence>
 
-      {/* 2. Floating Action Button & Tooltip (Menggantikan Tombol WhatsApp) */}
+      {/* 2. Floating Action Button & Tooltip */}
       <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[10000] flex items-center">
         
         {/* Tooltip callout badge on desktop */}
@@ -256,19 +255,21 @@ export default function AIChatAssistant() {
           )}
         </AnimatePresence>
 
-        {/* Ambient Glow Pulse Halo */}
-        <motion.div
-          animate={{
-            scale: [1, 1.25, 1],
-            opacity: [0.3, 0.7, 0.3]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute inset-0 rounded-full bg-sky-400/35 blur-xl pointer-events-none"
-        />
+        {/* Ambient Glow Pulse Halo - Hanya saat ditutup */}
+        {!open && (
+          <motion.div
+            animate={{
+              scale: [1, 1.25, 1],
+              opacity: [0.3, 0.7, 0.3]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute inset-0 rounded-full bg-sky-400/35 blur-xl pointer-events-none"
+          />
+        )}
 
         {/* Ultra-Premium Framer Motion Floating Toggle Button */}
         <motion.button
@@ -279,7 +280,9 @@ export default function AIChatAssistant() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.92 }}
           aria-label={open ? "Tutup UPITRA AI" : "Buka UPITRA AI Assistant"}
-          className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[3px] bg-gradient-to-tr from-[#06172e] via-[#0284c7] to-[#38bdf8] shadow-[0_12px_36px_rgba(2,132,199,0.45)] cursor-pointer group flex items-center justify-center"
+          className={`relative w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[3px] bg-gradient-to-tr from-[#06172e] via-[#0284c7] to-[#38bdf8] shadow-[0_12px_36px_rgba(2,132,199,0.45)] cursor-pointer group flex items-center justify-center transition-all ${
+            open ? "hidden sm:flex" : "flex"
+          }`}
         >
           {/* Inner core circle */}
           <div className="w-full h-full rounded-full bg-white flex items-center justify-center relative overflow-hidden shadow-inner">
@@ -292,7 +295,7 @@ export default function AIChatAssistant() {
                   animate={{ rotate: 0, opacity: 1, scale: 1 }}
                   exit={{ rotate: 90, opacity: 0, scale: 0.6 }}
                   transition={{ duration: 0.2 }}
-                  className="w-full h-full bg-[#06172e] flex items-center justify-center text-white"
+                  className="w-full h-full bg-[#0b2545] flex items-center justify-center text-white"
                 >
                   <X className="w-7 h-7 text-white" />
                 </motion.div>
@@ -334,7 +337,7 @@ export default function AIChatAssistant() {
         </motion.button>
       </div>
 
-      {/* 3. The Interactive Chat Drawer Window */}
+      {/* 3. The Interactive Chat Drawer Window (Viewport-Constrained Height) */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -342,10 +345,10 @@ export default function AIChatAssistant() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 35, scale: 0.94 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed bottom-0 sm:bottom-28 right-0 sm:right-8 w-full sm:w-[440px] h-[90dvh] sm:h-[620px] max-h-[100dvh] bg-white sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200/90 z-[9999]"
+            className="fixed bottom-0 sm:bottom-28 right-0 sm:right-8 w-full sm:w-[430px] h-[85dvh] sm:h-[min(540px,calc(100dvh-140px))] max-h-[85dvh] sm:max-h-[calc(100dvh-130px)] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200/90 z-[9999]"
           >
-            {/* Header: Executive Gradient with WhatsApp Button */}
-            <div className="relative bg-gradient-to-r from-[#06172e] via-[#0b2545] to-[#0284c7] p-4 sm:p-5 text-white shrink-0 overflow-hidden shadow-md">
+            {/* Header: Executive Gradient with Brand, WhatsApp Button & Close */}
+            <div className="relative bg-gradient-to-r from-[#06172e] via-[#0b2545] to-[#0284c7] p-4 sm:p-4.5 text-white shrink-0 overflow-hidden shadow-md">
               {/* Decorative shapes */}
               <div className="absolute top-0 right-0 w-36 h-36 bg-sky-400/10 rounded-full blur-2xl pointer-events-none" />
               <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-blue-500/15 rounded-full blur-xl pointer-events-none" />
@@ -354,23 +357,23 @@ export default function AIChatAssistant() {
                 
                 {/* Assistant Info */}
                 <div className="flex items-center gap-3">
-                  <div className="relative w-11 h-11 rounded-full p-0.5 bg-gradient-to-tr from-sky-400 to-white shadow-md shrink-0">
+                  <div className="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-sky-400 to-white shadow-md shrink-0">
                     <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
                       <img
                         src="/images/ai/upitra-ai-icon.png"
                         alt="UPITRA AI"
-                        className="w-9 h-9 object-contain"
+                        className="w-8 h-8 object-contain"
                         onError={(e) => {
                           (e.target as HTMLElement).style.display = "none";
                         }}
                       />
                       <Bot className="w-5 h-5 text-sky-600 absolute" />
                     </div>
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
                   </div>
 
                   <div>
-                    <h3 className="font-black text-white text-base leading-tight flex items-center gap-1.5">
+                    <h3 className="font-black text-white text-sm sm:text-base leading-tight flex items-center gap-1.5">
                       <span>UPITRA AI</span>
                       <Sparkles className="w-3.5 h-3.5 text-sky-300" />
                     </h3>
@@ -399,7 +402,7 @@ export default function AIChatAssistant() {
                   {/* Close window */}
                   <button
                     onClick={() => setOpen(false)}
-                    className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="Tutup Obrolan"
                   >
                     <ChevronDown className="w-5 h-5" />
@@ -411,7 +414,7 @@ export default function AIChatAssistant() {
             </div>
 
             {/* Chat Messages Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-slate-50/70 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-[#f8fafc] space-y-4">
               {messages.map((m, idx) => (
                 <motion.div
                   key={idx}
@@ -421,8 +424,16 @@ export default function AIChatAssistant() {
                   className={`flex w-full ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {m.role === "ai" && (
-                    <div className="w-7 h-7 rounded-full bg-white border border-sky-100 shadow-xs shrink-0 flex items-center justify-center mr-2 mt-1">
-                      <Bot className="w-4 h-4 text-sky-600" />
+                    <div className="w-8 h-8 rounded-full bg-white border border-slate-200/80 shadow-xs shrink-0 flex items-center justify-center mr-2 mt-0.5 overflow-hidden p-0.5">
+                      <img
+                        src="/images/ai/upitra-ai-icon.png"
+                        alt="AI"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                      <Bot className="w-4 h-4 text-sky-600 -z-10" />
                     </div>
                   )}
 
@@ -454,8 +465,16 @@ export default function AIChatAssistant() {
                   animate={{ opacity: 1 }}
                   className="flex items-center gap-2 text-slate-500"
                 >
-                  <div className="w-7 h-7 rounded-full bg-white border border-sky-100 shadow-xs shrink-0 flex items-center justify-center mr-1">
-                    <Bot className="w-4 h-4 text-sky-600 animate-spin" />
+                  <div className="w-8 h-8 rounded-full bg-white border border-slate-200/80 shadow-xs shrink-0 flex items-center justify-center mr-1 overflow-hidden p-0.5">
+                    <img
+                      src="/images/ai/upitra-ai-icon.png"
+                      alt="AI"
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = "none";
+                      }}
+                    />
+                    <Bot className="w-4 h-4 text-sky-600 animate-spin -z-10" />
                   </div>
                   <div className="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-sky-500 animate-bounce" style={{ animationDelay: "0ms" }}></span>
@@ -469,18 +488,21 @@ export default function AIChatAssistant() {
             </div>
 
             {/* Quick Question Chips & Input Form */}
-            <div className="bg-white border-t border-slate-100 p-3 sm:p-4 space-y-3">
+            <div className="bg-white border-t border-slate-100 p-3 sm:p-4 space-y-2.5">
               
-              {/* Quick Questions (Scrollable) */}
-              {messages.length <= 2 && (
-                <div className="overflow-x-auto pb-1 flex gap-2 no-scrollbar">
+              {/* Quick Questions (Scrollable without visible scrollbar) */}
+              {messages.length <= 1 && (
+                <div 
+                  className="overflow-x-auto pb-1 flex gap-2 [&::-webkit-scrollbar]:hidden"
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
                   {quickQuestions.map((q, qIdx) => (
                     <motion.button
                       key={qIdx}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                       onClick={() => sendMessage(q)}
-                      className="shrink-0 text-left px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 hover:border-sky-500 hover:bg-sky-50 text-[11px] font-semibold text-slate-700 hover:text-sky-700 transition-colors shadow-2xs"
+                      className="shrink-0 text-left px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 hover:border-sky-500 hover:bg-sky-50 text-[11px] font-semibold text-slate-700 hover:text-sky-700 transition-colors shadow-2xs"
                     >
                       {q}
                     </motion.button>
@@ -509,7 +531,7 @@ export default function AIChatAssistant() {
                   disabled={!input.trim() || loading}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-9 h-9 rounded-xl bg-gradient-to-r from-[#0284c7] to-[#0369a1] hover:from-[#0369a1] hover:to-[#0b2545] disabled:from-slate-300 disabled:to-slate-300 disabled:cursor-not-allowed text-white flex items-center justify-center shrink-0 shadow-sm transition-all"
+                  className="w-9 h-9 rounded-xl bg-gradient-to-r from-[#0284c7] to-[#0369a1] hover:from-[#0369a1] hover:to-[#0b2545] disabled:from-slate-300 disabled:to-slate-300 disabled:cursor-not-allowed text-white flex items-center justify-center shrink-0 shadow-sm transition-all cursor-pointer"
                   aria-label="Kirim Pesan"
                 >
                   <Send className="w-4 h-4 ml-0.5" />
