@@ -122,11 +122,11 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-5 2xl:gap-7 text-[13px] font-bold text-slate-800 tracking-wide">
+          <nav className="hidden xl:flex items-center gap-1.5 2xl:gap-2.5 text-[13px] font-bold text-slate-800 tracking-wide">
             
             {/* 1. PROFIL Dropdown */}
             <div className="relative group">
-              <button className="cursor-pointer flex items-center gap-1 hover:text-blue-600 py-1.5 transition-colors group-hover:text-blue-600">
+              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
                 <span>Profil</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
               </button>
@@ -174,14 +174,14 @@ export default function Navbar() {
             {/* 2. AKADEMIK (Tautan Langsung ke /akademik) */}
             <Link
               href="/akademik"
-              className="hover:text-blue-600 py-1.5 transition-colors"
+              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
             >
               Akademik
             </Link>
 
             {/* 3. RISET Dropdown */}
             <div className="relative group">
-              <button className="cursor-pointer flex items-center gap-1 hover:text-blue-600 py-1.5 transition-colors group-hover:text-blue-600">
+              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
                 <span>Riset</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
               </button>
@@ -198,7 +198,7 @@ export default function Navbar() {
 
             {/* 4. KEMAHASISWAAN Dropdown */}
             <div className="relative group">
-              <button className="cursor-pointer flex items-center gap-1 hover:text-blue-600 py-1.5 transition-colors group-hover:text-blue-600">
+              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
                 <span>Kemahasiswaan</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
               </button>
@@ -245,7 +245,7 @@ export default function Navbar() {
 
             {/* 5. KERJASAMA Dropdown */}
             <div className="relative group">
-              <button className="cursor-pointer flex items-center gap-1 hover:text-blue-600 py-1.5 transition-colors group-hover:text-blue-600">
+              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
                 <span>Kerjasama</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
               </button>
@@ -274,7 +274,7 @@ export default function Navbar() {
 
             {/* 6. LAYANAN Dropdown */}
             <div className="relative group">
-              <button className="cursor-pointer flex items-center gap-1 hover:text-blue-600 py-1.5 transition-colors group-hover:text-blue-600">
+              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
                 <span>Layanan</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
               </button>
@@ -320,6 +320,15 @@ export default function Navbar() {
               </div>
             </div>
 
+            {/* 7. CTA DAFTAR SEKARANG (Kuning Oranye, Hug Width 150px & Fixed Height 32px) */}
+            <Link
+              href="/pmb"
+              className="h-[32px] px-4 max-w-[150px] inline-flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 via-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-sm shadow-orange-500/20 hover:shadow-orange-500/30 transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <span>Daftar Sekarang</span>
+              <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+            </Link>
+
           </nav>
 
           {/* Mobile Hamburger Button */}
@@ -344,6 +353,18 @@ export default function Navbar() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="xl:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2.5 overflow-hidden shadow-2xl max-h-[85vh] overflow-y-auto"
           >
+            {/* Mobile CTA: Daftar Sekarang */}
+            <div className="pb-1">
+              <Link
+                href="/pmb"
+                onClick={() => setMobileMenuOpen(false)}
+                className="h-[38px] w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 active:scale-95 transition-all"
+              >
+                <span>Daftar Sekarang</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
             {/* Mobile Accordion 1: Profil */}
             <div>
               <button

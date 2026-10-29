@@ -21,7 +21,7 @@ const fakultasData = [
     name: "Fakultas Sains & Teknologi",
     slug: "/fst",
     cover: "/images/ar-vr.jpg",
-    prodiTags: ["Informatika", "Sistem Informasi", "Rekayasa Perangkat Lunak", "Teknologi Informasi"],
+    prodiTags: ["Informatika", "Sistem Informasi", "Rekayasa Perangkat Lunak"],
     desc: "Membekali mahasiswa dengan keahlian kecerdasan buatan, rekayasa perangkat lunak skala industri, analitika data, dan komputasi modern.",
   },
   {
@@ -144,17 +144,17 @@ export default function AkademikOverviewPage() {
             </p>
           </div>
 
-          {/* Kotak Fakultas & Program Studi: 1 Baris Penuh Sesuai Gambar Referensi */}
+          {/* Kotak Fakultas & Program Studi: Fixed Height 392px Sesuai Dimensi 335x392 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {fakultasData.map((fakultas) => {
               return (
                 <div
                   key={fakultas.id}
-                  className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group h-[392px]"
                 >
-                  <div>
+                  <div className="overflow-hidden flex flex-col">
                     {/* 1. Gambar Bagian Atas dengan Sudut Melengkung (rounded-2xl) */}
-                    <div className="relative h-44 sm:h-48 w-full rounded-2xl overflow-hidden mb-4 bg-slate-100">
+                    <div className="relative h-36 sm:h-40 w-full rounded-2xl overflow-hidden mb-3 bg-slate-100 shrink-0">
                       <Image
                         src={fakultas.cover}
                         alt={fakultas.name}
@@ -164,16 +164,16 @@ export default function AkademikOverviewPage() {
                     </div>
 
                     {/* 2. Judul Nama Fakultas */}
-                    <h3 className="text-xl font-black text-slate-900 leading-tight mb-2.5">
+                    <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight mb-2 line-clamp-1">
                       {fakultas.name}
                     </h3>
 
-                    {/* 3. Tag Berwarna Hijau: Daftar Program Studi Tanpa Keterangan S1/D3 */}
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
+                    {/* 3. Tag Berwarna Biru: Daftar Program Studi Tanpa Keterangan S1/D3 */}
+                    <div className="flex flex-wrap gap-1.5 mb-2.5">
                       {fakultas.prodiTags.map((prodi, idx) => (
                         <span
                           key={idx}
-                          className="px-3 py-1 rounded-full bg-[#e6f4ea] text-[#137333] text-xs font-semibold border border-[#ceead6] shadow-2xs"
+                          className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200/80 shadow-2xs"
                         >
                           {prodi}
                         </span>
@@ -181,16 +181,16 @@ export default function AkademikOverviewPage() {
                     </div>
 
                     {/* 4. Deskripsi Singkat Fakultas */}
-                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
+                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
                       {fakultas.desc}
                     </p>
                   </div>
 
-                  {/* 5. Tautan 'Selengkapnya ->' Mengarah ke Rute Fakultas Masing-Masing (/fst, /feb, /fsh, /fkes) */}
-                  <div className="flex justify-end pt-3 border-t border-slate-100">
+                  {/* 5. Tautan 'Selengkapnya ->' Berwarna Biru Mengarah ke Rute Fakultas Masing-Masing (/fst, /feb, /fsh, /fkes) */}
+                  <div className="flex justify-end pt-2.5 border-t border-slate-100 mt-2 shrink-0">
                     <Link
                       href={fakultas.slug}
-                      className="text-[#137333] hover:text-[#0d5926] font-bold text-xs inline-flex items-center gap-1 transition-colors group/link"
+                      className="text-blue-700 hover:text-blue-800 font-bold text-xs inline-flex items-center gap-1 transition-colors group/link"
                     >
                       <span>Selengkapnya</span>
                       <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
