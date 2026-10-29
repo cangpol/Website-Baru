@@ -51,7 +51,7 @@ export default function Navbar() {
     <>
       {/* 1. TOP SUB-HEADER BAR - Compact, Clean & Responsive (Naturally scrolls away without layout shift) */}
       <div className="w-full bg-[#06172e] text-slate-200 border-b border-blue-950 py-1.5 text-[11px] sm:text-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           
           {/* Left: Accreditation & Location */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -90,14 +90,14 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* 2. MAIN NAVBAR - 100% Smooth Sticky without Height Jumps or Layout Blinking */}
+      {/* 2. MAIN NAVBAR - Fixed Width 1440px & Fixed Height 80px */}
       <header 
         className={`sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-300 ${
           isScrolled ? "shadow-md" : "shadow-xs"
         }`}
       >
-        <div className="w-full py-2.5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+        <div className="w-full h-[80px] flex items-center">
+          <div className="w-full max-w-[1440px] mx-auto h-[80px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           
           {/* Brand Mark UPITRA - 3D White Badge & Refined Authoritative Typography */}
           <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0" aria-label="UPITRA Beranda">
