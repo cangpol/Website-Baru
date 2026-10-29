@@ -61,7 +61,13 @@ export default function AkademikOverviewPage() {
     const saved = localStorage.getItem("upitra_banner_akademik");
     if (saved) {
       try {
-        setBanner(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        if (parsed.title === "Akademik & Fakultas") {
+          parsed.title = "Akademik";
+          parsed.description = "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan";
+          localStorage.setItem("upitra_banner_akademik", JSON.stringify(parsed));
+        }
+        setBanner(parsed);
       } catch {}
     }
   }, []);
@@ -105,16 +111,19 @@ export default function AkademikOverviewPage() {
               </ol>
             </nav>
 
-            {/* Bottom Content: Title & Description */}
-            <div className="space-y-3 max-w-3xl">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
-                {banner.title}
+            {/* Center Rata Kiri Content: Title & Description */}
+            <div className="my-auto space-y-2 sm:space-y-3 max-w-3xl text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+                {banner.title || "Akademik"}
               </h1>
 
-              <p className="text-xs sm:text-sm lg:text-base text-slate-200 leading-relaxed drop-shadow-xs max-w-2xl">
-                {banner.description}
+              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-sky-200/95 leading-snug drop-shadow-xs whitespace-pre-line">
+                {banner.description || "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan"}
               </p>
             </div>
+
+            {/* Bottom Optical Balancing Spacer */}
+            <div className="h-4 sm:h-6" aria-hidden="true" />
           </div>
         </div>
       </header>

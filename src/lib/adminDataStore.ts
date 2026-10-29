@@ -894,8 +894,8 @@ export const initialAdminBanners: AdminBannerItem[] = [
 export const initialAdminAkademikBanner: AdminAkademikBanner = {
   imageUrl: "/images/kuliah-1.jpeg",
   badge: "EKOSISTEM AKADEMIK UPITRA",
-  title: "Akademik & Fakultas",
-  description: "Penyelenggaraan pendidikan tinggi berkarakter Triputra DNA dengan kurikulum Outcome-Based Education (OBE) dan program unggulan Immersion 3+1 yang terintegrasi langsung dengan dunia industri.",
+  title: "Akademik",
+  description: "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan",
   updatedAt: "29 Okt 2026",
 };
 

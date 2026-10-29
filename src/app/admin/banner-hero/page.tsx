@@ -65,7 +65,13 @@ export default function AdminBannerHeroPage() {
     const savedAkademik = localStorage.getItem("upitra_banner_akademik");
     if (savedAkademik) {
       try {
-        setAkademikBanner(JSON.parse(savedAkademik));
+        const parsed = JSON.parse(savedAkademik);
+        if (parsed.title === "Akademik & Fakultas") {
+          parsed.title = "Akademik";
+          parsed.description = "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan";
+          localStorage.setItem("upitra_banner_akademik", JSON.stringify(parsed));
+        }
+        setAkademikBanner(parsed);
       } catch {}
     }
   }, []);
@@ -390,7 +396,7 @@ export default function AdminBannerHeroPage() {
                   className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
                 />
                 
-                {/* Overlay Preview */}
+                {/* Overlay Preview (Center Rata Kiri) */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/50 to-[#06172e]/30 flex flex-col justify-between p-6 sm:p-10 text-white">
                   <div className="flex items-center gap-2 text-xs text-slate-300">
                     <span className="flex items-center gap-1 text-sky-400">
@@ -401,14 +407,16 @@ export default function AdminBannerHeroPage() {
                     <span className="text-sky-300 font-semibold">Akademik</span>
                   </div>
 
-                  <div className="space-y-3 max-w-2xl">
+                  <div className="my-auto space-y-2 max-w-2xl text-left">
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-md">
-                      {akademikBanner.title}
+                      {akademikBanner.title || "Akademik"}
                     </h1>
-                    <p className="text-xs sm:text-sm text-slate-200 line-clamp-3 leading-relaxed drop-shadow-xs">
-                      {akademikBanner.description}
+                    <p className="text-sm sm:text-base lg:text-lg font-bold text-sky-200/95 leading-snug drop-shadow-xs whitespace-pre-line">
+                      {akademikBanner.description || "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan"}
                     </p>
                   </div>
+
+                  <div className="h-4" aria-hidden="true" />
                 </div>
               </div>
             </div>
