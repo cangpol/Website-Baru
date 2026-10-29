@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     console.error("AI Assistant API Error:", error);
     return NextResponse.json(
       {
-        reply: "Maaf, terjadi kesalahan koneksi pada sistem AI Assistant UPITRA. Silakan coba beberapa saat lagi atau hubungi WhatsApp Admisi di 0811-290-7500.",
+        reply: "Maaf, terjadi gangguan sesaat pada sistem Veronica. Silakan coba beberapa saat lagi atau hubungi tim Admisi UPITRA via WhatsApp di 0811-290-7500.",
         answered: false,
         confidence: 0
       },
