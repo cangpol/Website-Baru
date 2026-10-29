@@ -1,9 +1,12 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import PageHeader from "@/components/PageHeader";
+import KemahasiswaanSubnav from "@/components/KemahasiswaanSubnav";
+import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { 
   Users, 
   Target, 
@@ -15,11 +18,7 @@ import {
   ShieldCheck, 
   HeartHandshake 
 } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Kemahasiswaan - Portal Mahasiswa UPITRA Surakarta",
-  description: "Direktori lengkap kemahasiswaan Universitas Pignatelli Triputra: Tugas dan fungsi, program pengembangan kepemimpinan, ormawa, prestasi, galeri, dan kalender akademik.",
-};
+import { initialAdminKemahasiswaanBanner, AdminKemahasiswaanBanner } from "@/lib/adminDataStore";
 
 const kemahasiswaanMenuCards = [
   {
@@ -67,19 +66,54 @@ const kemahasiswaanMenuCards = [
 ];
 
 export default function KemahasiswaanIndexPage() {
+  const [banner, setBanner] = useState<AdminKemahasiswaanBanner>(initialAdminKemahasiswaanBanner);
+
+  // Load dynamic banner from localStorage (editable via Admin if configured)
+  useEffect(() => {
+    const saved = localStorage.getItem("upitra_banner_kemahasiswaan");
+    if (saved) {
+      try {
+        setBanner(JSON.parse(saved));
+      } catch {}
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />
 
-      <PageHeader 
-        badge="Portal Kemahasiswaan UPITRA"
-        title="Kemahasiswaan & Dinamika Kampus"
-        description="Membina mahasiswa berkarakter luhur, berjiwa pemimpin berbelarasa, dan berprestasi tinggi di kancah nasional bersama ekosistem Triputra Group."
-        breadcrumbs={[
-          { label: "Kemahasiswaan" }
-        ]}
-      />
+      {/* 1. HEADER BANNER KEMAHASISWAAN (Full Width 1440px x 480px, Identik dengan /riset & /akademik) */}
+      <header className="w-full h-[420px] sm:h-[460px] lg:h-[480px] relative overflow-hidden group bg-[#06172e]">
+        {/* Background Image: Full Cover 1440x480 */}
+        <Image
+          src={banner.imageUrl || "/images/kegiatan.jpg"}
+          alt={banner.title}
+          fill
+          priority
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+        />
 
+        {/* Executive Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/60 to-[#06172e]/30 flex flex-col justify-center text-white">
+          <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-center p-6 sm:p-10 lg:p-12">
+            {/* Center Rata Kiri Content: Title & Description */}
+            <div className="space-y-3 sm:space-y-4 max-w-4xl text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+                {banner.title || "Kemahasiswaan"}
+              </h1>
+
+              <p className="text-base sm:text-lg lg:text-xl font-bold text-sky-200/95 leading-relaxed drop-shadow-xs max-w-3xl">
+                {banner.description || "Membina mahasiswa berkarakter luhur, berjiwa pemimpin berbelarasa, dan berprestasi tinggi di kancah nasional bersama ekosistem Triputra Group."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* 2. SUBNAV BUTTON BAR SESUAI GAMBAR REFERENSI (5 TOMBOL PILL DI BAWAH BANNER) */}
+      <KemahasiswaanSubnav />
+
+      {/* 3. KONTEN UTAMA KEMAHASISWAAN */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
         
         {/* Banner Nilai Kemahasiswaan */}
@@ -151,4 +185,3 @@ export default function KemahasiswaanIndexPage() {
     </div>
   );
 }
-
