@@ -274,36 +274,26 @@ export default function AIChatAssistant() {
               className="absolute inset-0 rounded-full bg-sky-400/35 blur-xl pointer-events-none"
             />
 
-            {/* Ultra-Premium Framer Motion Floating Toggle Button */}
+            {/* 3D Character Floating Assistant Launcher (Tanpa Round) */}
             <motion.button
               onClick={() => {
                 setOpen(true);
                 setShowTooltip(false);
               }}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.1, y: -4 }}
+              whileTap={{ scale: 0.94 }}
               aria-label="Buka UPITRA AI Assistant"
-              className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full p-[3px] bg-gradient-to-tr from-[#06172e] via-[#0284c7] to-[#38bdf8] shadow-[0_12px_36px_rgba(2,132,199,0.45)] cursor-pointer group flex items-center justify-center transition-all"
+              className="relative cursor-pointer group flex items-center justify-center select-none"
             >
-              {/* Inner core circle */}
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center relative overflow-hidden shadow-inner bg-gradient-to-br from-white via-sky-50 to-blue-50">
-                {/* AI Logo Image */}
-                <img
-                  src="/images/ai/upitra-ai-icon.png"
-                  alt="UPITRA AI"
-                  className="w-11 h-11 sm:w-12 sm:h-12 object-contain group-hover:scale-110 transition-transform duration-300"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = "none";
-                  }}
-                />
-                <Bot className="w-7 h-7 text-[#0284c7] absolute pointer-events-none -z-10" />
+              {/* Character Avatar Image (Natural Cutout Tanpa Round) */}
+              <img
+                src="/images/ai/upitra-ai-assistant.png"
+                alt="UPITRA AI Assistant"
+                className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_12px_24px_rgba(2,132,199,0.35)] group-hover:drop-shadow-[0_16px_32px_rgba(2,132,199,0.5)] transition-all duration-300"
+              />
 
-                {/* Shimmering Sparkle */}
-                <Sparkles className="w-3.5 h-3.5 text-sky-500 absolute top-2 right-2 animate-pulse" />
-              </div>
-
-              {/* Active Status Badge (Green dot) */}
-              <span className="absolute -top-1 -right-1 flex h-4 w-4">
+              {/* Active Status Badge (Dekat Headset) */}
+              <span className="absolute top-1 right-2 z-20 flex h-4 w-4">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white shadow-xs"></span>
               </span>
@@ -332,19 +322,13 @@ export default function AIChatAssistant() {
                 
                 {/* Assistant Info */}
                 <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-sky-400 to-white shadow-md shrink-0">
-                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                      <img
-                        src="/images/ai/upitra-ai-icon.png"
-                        alt="UPITRA AI"
-                        className="w-8 h-8 object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = "none";
-                        }}
-                      />
-                      <Bot className="w-5 h-5 text-sky-600 absolute" />
-                    </div>
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+                  <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+                    <img
+                      src="/images/ai/upitra-ai-assistant.png"
+                      alt="UPITRA AI Assistant"
+                      className="w-12 h-12 object-contain drop-shadow-md"
+                    />
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#06172e] rounded-full"></span>
                   </div>
 
                   <div>
@@ -399,16 +383,12 @@ export default function AIChatAssistant() {
                   className={`flex w-full ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {m.role === "ai" && (
-                    <div className="w-8 h-8 rounded-full bg-white border border-slate-200/80 shadow-xs shrink-0 flex items-center justify-center mr-2 mt-0.5 overflow-hidden p-0.5">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center mr-2 mt-0.5">
                       <img
-                        src="/images/ai/upitra-ai-icon.png"
+                        src="/images/ai/upitra-ai-assistant.png"
                         alt="AI"
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = "none";
-                        }}
+                        className="w-full h-full object-contain drop-shadow-xs"
                       />
-                      <Bot className="w-4 h-4 text-sky-600 -z-10" />
                     </div>
                   )}
 
@@ -440,16 +420,12 @@ export default function AIChatAssistant() {
                   animate={{ opacity: 1 }}
                   className="flex items-center gap-2 text-slate-500"
                 >
-                  <div className="w-8 h-8 rounded-full bg-white border border-slate-200/80 shadow-xs shrink-0 flex items-center justify-center mr-1 overflow-hidden p-0.5">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center mr-1">
                     <img
-                      src="/images/ai/upitra-ai-icon.png"
+                      src="/images/ai/upitra-ai-assistant.png"
                       alt="AI"
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLElement).style.display = "none";
-                      }}
+                      className="w-full h-full object-contain drop-shadow-xs"
                     />
-                    <Bot className="w-4 h-4 text-sky-600 animate-spin -z-10" />
                   </div>
                   <div className="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-sky-500 animate-bounce" style={{ animationDelay: "0ms" }}></span>
