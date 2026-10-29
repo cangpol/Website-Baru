@@ -1,38 +1,64 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import PageHeader from "@/components/PageHeader";
+import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { 
   Microscope, 
   BookOpen, 
   Award, 
   Lightbulb, 
-  ShieldCheck, 
-  ArrowRight, 
-  CheckCircle2, 
-  Sparkles 
+  ArrowRight 
 } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Riset & Pengabdian Masyarakat - Universitas Pignatelli Triputra",
-  description: "Portal riset dan inovasi LPPM Universitas Pignatelli Triputra: Pusat Penelitian, Publikasi Ilmiah, Hibah Industri Triputra, dan Sentra Kekayaan Intelektual.",
-};
+import { initialAdminRisetBanner, AdminRisetBanner } from "@/lib/adminDataStore";
 
 export default function RisetPortalPage() {
+  const [banner, setBanner] = useState<AdminRisetBanner>(initialAdminRisetBanner);
+
+  // Load dynamic banner from localStorage (editable via Admin if configured)
+  useEffect(() => {
+    const saved = localStorage.getItem("upitra_banner_riset");
+    if (saved) {
+      try {
+        setBanner(JSON.parse(saved));
+      } catch {}
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />
 
-      <PageHeader 
-        badge="Inovasi & Penemuan"
-        title="Riset & Pengabdian Masyarakat"
-        description="Mendedikasikan keilmuan dan riset terapan multidisiplin untuk menjawab kebutuhan nyata industri modern dan memajukan kesejahteraan masyarakat luas."
-        breadcrumbs={[
-          { label: "Riset" }
-        ]}
-      />
+      {/* 1. HEADER BANNER RISET & PUBLIKASI (Full Width 1440px x 480px, Tanpa Border Melengkung, Full Gambar Edge-to-Edge) */}
+      <header className="w-full h-[420px] sm:h-[460px] lg:h-[480px] relative overflow-hidden group bg-[#06172e]">
+        {/* Background Image: Full Cover 1440x480 */}
+        <Image
+          src={banner.imageUrl || "/images/kegiatan.jpg"}
+          alt={banner.title}
+          fill
+          priority
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+        />
+
+        {/* Executive Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/60 to-[#06172e]/30 flex flex-col justify-center text-white">
+          <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-center p-6 sm:p-10 lg:p-12">
+            {/* Center Rata Kiri Content: Title & Description */}
+            <div className="space-y-3 sm:space-y-4 max-w-4xl text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+                {banner.title || "Riset & Publikasi"}
+              </h1>
+
+              <p className="text-base sm:text-lg lg:text-xl font-bold text-sky-200/95 leading-relaxed drop-shadow-xs max-w-3xl">
+                {banner.description || "LPPM Lembaga Penelitian & Pengabdian Universitas Pignatelli Triputra sebagai tempat keilmuan dan riset terapan untuk menjawab Kebutuhan nyata industri modern dan memajukan kesejahteraan masyarakat luas."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
         
@@ -134,4 +160,3 @@ export default function RisetPortalPage() {
     </div>
   );
 }
-

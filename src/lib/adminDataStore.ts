@@ -148,6 +148,14 @@ export interface AdminAkademikBanner {
   updatedAt: string;
 }
 
+export interface AdminRisetBanner {
+  imageUrl: string;
+  badge?: string;
+  title: string;
+  description: string;
+  updatedAt?: string;
+}
+
 export interface AdminUserItem {
   id: string;
   name: string;
@@ -897,6 +905,14 @@ export const initialAdminAkademikBanner: AdminAkademikBanner = {
   title: "Akademik",
   description: "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan",
   updatedAt: "29 Okt 2026",
+};
+
+export const initialAdminRisetBanner: AdminRisetBanner = {
+  imageUrl: "/images/kegiatan.jpg",
+  badge: "LEMBAGA PENELITIAN & PENGABDIAN",
+  title: "Riset & Publikasi",
+  description: "LPPM Lembaga Penelitian & Pengabdian Universitas Pignatelli Triputra sebagai tempat keilmuan dan riset terapan untuk menjawab Kebutuhan nyata industri modern dan memajukan kesejahteraan masyarakat luas.",
+  updatedAt: "30 Okt 2026",
 };
 
 // ── Initial Profil Sections (Tentang, Visi Misi, Pimpinan, Prestasi, Pengumuman) ──
