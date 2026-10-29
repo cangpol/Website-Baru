@@ -11,8 +11,11 @@ import {
   List, 
   CalendarDays,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Download,
+  FileText
 } from "lucide-react";
+import { generateAcademicCalendarPdf } from "@/lib/generateAcademicCalendarPdf";
 
 export interface CalendarEvent {
   id: number | string;
@@ -424,6 +427,35 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
             )}
           </div>
         )}
+      </div>
+
+      {/* 4. DOWNLOAD KALENDER AKADEMIK BAR (SEPANJANG KALENDER) */}
+      <div className="w-full bg-gradient-to-r from-[#06172e] via-[#0b2545] to-[#0c4a6e] rounded-3xl p-6 sm:p-7 text-white flex flex-col md:flex-row items-center justify-between gap-5 shadow-xl border border-blue-900/50">
+        <div className="flex items-center gap-4 text-center md:text-left">
+          <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-sky-400 shrink-0 border border-white/20">
+            <FileText className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-bold text-sky-300 uppercase tracking-widest block">
+              Pedoman Resmi Kalender Akademik Tahun {year}
+            </span>
+            <h4 className="text-lg sm:text-xl font-black text-white mt-0.5">
+              Download Kalender Akademik Disini
+            </h4>
+            <p className="text-xs text-slate-300 mt-1 max-w-xl">
+              Unduh kalender akademik format PDF lengkap 12 bulan (Januari – Desember {year}) beserta rincian jadwal kegiatan perkuliahan, evaluasi hasil belajar, dan wisuda.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => generateAcademicCalendarPdf(year, events)}
+          className="w-full md:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/40 transition-all shrink-0 hover:scale-[1.02] cursor-pointer"
+        >
+          <Download className="w-4 h-4" />
+          <span>Download Kalender ({year}) PDF</span>
+        </button>
       </div>
 
       {/* 5. EVENT DETAIL MODAL (Matching ModifikasiUpitra) */}
