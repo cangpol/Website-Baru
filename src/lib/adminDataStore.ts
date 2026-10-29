@@ -140,6 +140,14 @@ export interface AdminBannerItem {
   order: number;
 }
 
+export interface AdminAkademikBanner {
+  imageUrl: string;
+  badge: string;
+  title: string;
+  description: string;
+  updatedAt: string;
+}
+
 export interface AdminUserItem {
   id: string;
   name: string;
@@ -882,6 +890,14 @@ export const initialAdminBanners: AdminBannerItem[] = [
     order: 3,
   },
 ];
+
+export const initialAdminAkademikBanner: AdminAkademikBanner = {
+  imageUrl: "/images/kuliah-1.jpeg",
+  badge: "EKOSISTEM AKADEMIK UPITRA",
+  title: "Akademik & Fakultas",
+  description: "Penyelenggaraan pendidikan tinggi berkarakter Triputra DNA dengan kurikulum Outcome-Based Education (OBE) dan program unggulan Immersion 3+1 yang terintegrasi langsung dengan dunia industri.",
+  updatedAt: "29 Okt 2026",
+};
 
 // ── Initial Profil Sections (Tentang, Visi Misi, Pimpinan, Prestasi, Pengumuman) ──
 export const initialAdminProfilList: AdminProfilSection[] = [

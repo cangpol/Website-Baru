@@ -1,10 +1,11 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import PageHeader from "@/components/PageHeader";
 import Link from "next/link";
 import Image from "next/image";
-import type { Metadata } from "next";
 import { 
   GraduationCap, 
   Cpu, 
@@ -20,13 +21,11 @@ import {
   Layers,
   Building2,
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Home,
+  ChevronRight
 } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Akademik & Fakultas - Universitas Pignatelli Triputra",
-  description: "Jelajahi program akademik, 4 fakultas unggulan, dan kurikulum Immersion 3+1 berbasis industri di Universitas Pignatelli Triputra (UPITRA) Surakarta.",
-};
+import { initialAdminAkademikBanner, AdminAkademikBanner } from "@/lib/adminDataStore";
 
 const fakultasData = [
   {
@@ -120,49 +119,73 @@ const academicPillars = [
 ];
 
 export default function AkademikOverviewPage() {
+  const [banner, setBanner] = useState<AdminAkademikBanner>(initialAdminAkademikBanner);
+
+  // Load dynamic banner from localStorage (editable via /admin/banner-hero)
+  useEffect(() => {
+    const saved = localStorage.getItem("upitra_banner_akademik");
+    if (saved) {
+      try {
+        setBanner(JSON.parse(saved));
+      } catch {}
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />
 
-      {/* 1. Page Header */}
-      <PageHeader 
-        badge="Ekosistem Akademik UPITRA"
-        title="Akademik & Fakultas"
-        description="Penyelenggaraan pendidikan tinggi berkarakter Triputra DNA dengan kurikulum Outcome-Based Education (OBE) dan program unggulan Immersion 3+1 yang terintegrasi langsung dengan dunia industri."
-        breadcrumbs={[
-          { label: "Akademik" }
-        ]}
-      />
+      {/* 1. HEADER BANNER AKADEMIK (Ukuran Fixed 1440px x 480px, Background Gambar Dinamis yang Bisa Diedit di Dashboard Admin) */}
+      <header className="w-full bg-[#040e1e] border-b border-blue-900/40 py-4 sm:py-6 flex justify-center overflow-hidden">
+        <div className="w-[1440px] max-w-full h-[360px] sm:h-[420px] lg:h-[480px] relative rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 mx-4 sm:mx-6 group">
+          {/* Background Image (Fixed 1440x480) */}
+          <Image
+            src={banner.imageUrl || "/images/kuliah-1.jpeg"}
+            alt={banner.title}
+            fill
+            priority
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+          />
 
-      {/* 2. FIXED 1440px x 480px IMAGE DISPLAY SHOWCASE */}
-      <section className="py-8 sm:py-10 bg-slate-100/70 border-b border-slate-200">
-        <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6">
-          <div className="relative w-full max-w-[1440px] h-[320px] sm:h-[400px] lg:h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 group mx-auto">
-            <Image
-              src="/images/kuliah-1.jpeg"
-              alt="Suasana Akademik & Pembelajaran Modern UPITRA"
-              width={1440}
-              height={480}
-              priority
-              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-            />
-            
-            {/* Executive Gradient Overlay & Authoritative Typography */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/45 to-transparent flex flex-col justify-end p-6 sm:p-10 lg:p-12 text-white">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-600/90 text-sky-200 text-xs font-bold uppercase tracking-wider w-fit mb-3 backdrop-blur-md border border-white/20">
-                <GraduationCap className="w-4 h-4 text-sky-300" />
-                <span>Pendidikan Tinggi Unggul &amp; Berkarakter</span>
+          {/* Dark Executive Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06172e] via-[#06172e]/70 to-[#06172e]/40 flex flex-col justify-between p-6 sm:p-10 lg:p-12 text-white">
+            {/* Top: Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb">
+              <ol className="flex items-center gap-2 text-xs text-slate-300">
+                <li>
+                  <Link 
+                    href="/" 
+                    className="hover:text-sky-300 transition-colors flex items-center gap-1.5"
+                  >
+                    <Home className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Beranda</span>
+                  </Link>
+                </li>
+                <li className="flex items-center gap-2">
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="text-sky-300 font-semibold" aria-current="page">
+                    Akademik
+                  </span>
+                </li>
+              </ol>
+            </nav>
+
+            {/* Bottom Content: Badge, Title, Description */}
+            <div className="space-y-3 max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-600/90 text-sky-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20">
+                <span className="w-2 h-2 rounded-full bg-sky-300 animate-pulse" />
+                <span>{banner.badge}</span>
               </div>
-              
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black max-w-3xl leading-tight text-white drop-shadow-md">
-                Ekosistem Akademik Holistik Berbasis Karakter &amp; Kebutuhan Industri
+
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+                {banner.title}
               </h1>
-              
-              <p className="text-xs sm:text-sm text-slate-200 mt-2.5 max-w-2xl leading-relaxed drop-shadow-xs">
-                Mempersiapkan lulusan unggul yang tidak hanya cakap secara keilmuan teoritis, namun memiliki kematangan etika, integritas Triputra DNA, dan kesiapan karir sebelum wisuda.
+
+              <p className="text-xs sm:text-sm lg:text-base text-slate-200 leading-relaxed drop-shadow-xs max-w-2xl">
+                {banner.description}
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 mt-5">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <span className="text-[11px] font-semibold px-3 py-1 rounded-lg bg-white/15 backdrop-blur-md border border-white/20">
                   🏛️ 4 Fakultas Unggulan
                 </span>
@@ -176,9 +199,9 @@ export default function AkademikOverviewPage() {
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* 3. FOUR FACULTIES GRID */}
+      {/* 2. FOUR FACULTIES GRID */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -282,7 +305,7 @@ export default function AkademikOverviewPage() {
         </div>
       </section>
 
-      {/* 4. THREE ACADEMIC PILLARS */}
+      {/* 3. THREE ACADEMIC PILLARS */}
       <section className="py-16 sm:py-20 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -355,7 +378,7 @@ export default function AkademikOverviewPage() {
         </div>
       </section>
 
-      {/* 5. PMB ENROLLMENT CALL TO ACTION */}
+      {/* 4. PMB ENROLLMENT CALL TO ACTION */}
       <section className="py-16 bg-white border-t border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
