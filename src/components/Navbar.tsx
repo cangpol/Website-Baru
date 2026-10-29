@@ -80,7 +80,7 @@ export default function Navbar() {
             </a>
             <span className="text-slate-600 hidden sm:inline">|</span>
             <Link 
-              href="/admin/login" 
+              href="/u-gate" 
               className="hidden sm:inline-flex items-center gap-1 text-slate-300 hover:text-sky-300 transition-colors"
             >
               <User className="w-3.5 h-3.5" />

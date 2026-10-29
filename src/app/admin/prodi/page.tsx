@@ -37,13 +37,21 @@ export default function AdminProdiCrudPage() {
   const [formCareer, setFormCareer] = useState("");
   const [formCoverImage, setFormCoverImage] = useState("/images/banners/hero-pmb.jpg");
 
-  // Load from localStorage if present
+  // Load from localStorage if present & sync faculty URL param
   useEffect(() => {
     const saved = localStorage.getItem("upitra_admin_prodis");
     if (saved) {
       try {
         setProdis(JSON.parse(saved));
       } catch {}
+    }
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const fak = params.get("fakultas");
+      if (fak && ["FST", "FEB", "FSH", "FKES"].includes(fak.toUpperCase())) {
+        setFacultyFilter(fak.toUpperCase());
+      }
     }
   }, []);
 

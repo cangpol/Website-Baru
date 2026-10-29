@@ -34,13 +34,25 @@ export default function AdminLayananPage() {
   const [formStatus, setFormStatus] = useState<AdminServiceItem["status"]>("Operasional Normal");
   const [formDescription, setFormDescription] = useState("");
 
-  // Load from localStorage
+  // Load from localStorage & sync unit param
   useEffect(() => {
     const saved = localStorage.getItem("upitra_admin_services");
     if (saved) {
       try {
         setServices(JSON.parse(saved));
       } catch {}
+    }
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const unit = params.get("unit");
+      if (unit) {
+        if (unit === "perpustakaan") setSearch("Perpustakaan");
+        else if (unit === "elearning") setSearch("E-Learning");
+        else if (unit === "career-center") setSearch("Karir");
+        else if (unit === "tracer-study") setSearch("Tracer");
+        else if (unit === "immersion") setSearch("Immersion");
+      }
     }
   }, []);
 

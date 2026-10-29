@@ -36,13 +36,21 @@ export default function AdminBeritaPage() {
   const [formAuthor, setFormAuthor] = useState("Humas UPITRA");
   const [formPublished, setFormPublished] = useState(true);
 
-  // Load from localStorage
+  // Load from localStorage & sync URL tab
   useEffect(() => {
     const saved = localStorage.getItem("upitra_admin_articles");
     if (saved) {
       try {
         setArticles(JSON.parse(saved));
       } catch {}
+    }
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab === "pengumuman") {
+        setCategoryFilter("Pengumuman");
+      }
     }
   }, []);
 

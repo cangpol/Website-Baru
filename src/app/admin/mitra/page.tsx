@@ -197,12 +197,12 @@ export default function AdminMitraPage() {
             aria-label="Filter kategori industri mitra"
             className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-amber-400"
           >
-            <option value="ALL">Semua Kategori Industri</option>
+            <option value="ALL">Semua Kategori Mitra (49 Mitra)</option>
             <option value="Triputra Group">Triputra Group</option>
-            <option value="Korporasi Nasional">Korporasi Nasional</option>
-            <option value="Instansi Kesehatan">Instansi Kesehatan</option>
-            <option value="BUMN">BUMN</option>
-            <option value="Institusi Global">Institusi Global</option>
+            <option value="Industri & Finansial">Industri & Finansial</option>
+            <option value="Kesehatan & RS">Kesehatan & RS</option>
+            <option value="Pemerintah & Pendidikan">Pemerintah & Pendidikan</option>
+            <option value="Mitra Global">Mitra Global</option>
           </select>
 
           <select
@@ -330,10 +330,10 @@ export default function AdminMitraPage() {
                     className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
                   >
                     <option value="Triputra Group">Triputra Group</option>
-                    <option value="Korporasi Nasional">Korporasi Nasional</option>
-                    <option value="Instansi Kesehatan">Instansi Kesehatan</option>
-                    <option value="BUMN">BUMN</option>
-                    <option value="Institusi Global">Institusi Global</option>
+                    <option value="Industri & Finansial">Industri & Finansial</option>
+                    <option value="Kesehatan & RS">Kesehatan & RS</option>
+                    <option value="Pemerintah & Pendidikan">Pemerintah & Pendidikan</option>
+                    <option value="Mitra Global">Mitra Global</option>
                   </select>
                 </div>
                 <div>

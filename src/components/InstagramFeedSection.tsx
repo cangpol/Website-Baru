@@ -116,6 +116,8 @@ const cardVariants: Variants = {
 
 export default function InstagramFeedSection() {
   const [posts, setPosts] = useState<InstagramPost[]>(initialPosts);
+  const [accountHandle, setAccountHandle] = useState<string>("upitra_campus");
+  const [profileLink, setProfileLink] = useState<string>("https://www.instagram.com/upitra_campus/");
   const [isLoading, setIsLoading] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<string>("Baru saja");
 
@@ -130,6 +132,8 @@ export default function InstagramFeedSection() {
             (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           );
           setPosts(sorted);
+          if (data.account) setAccountHandle(data.account.replace("@", ""));
+          if (data.profileUrl) setProfileLink(data.profileUrl);
           setLastRefreshed("Baru saja");
         }
       })
@@ -151,6 +155,8 @@ export default function InstagramFeedSection() {
             (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           );
           setPosts(sorted);
+          if (data.account) setAccountHandle(data.account.replace("@", ""));
+          if (data.profileUrl) setProfileLink(data.profileUrl);
         }
       })
       .catch(() => {});
@@ -181,8 +187,8 @@ export default function InstagramFeedSection() {
               </span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0b2545] tracking-tight">
-              KABAR &amp; CERITA KAMPUS @UPITRA_CAMPUS
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0b2545] tracking-tight uppercase">
+              KABAR &amp; CERITA KAMPUS @{accountHandle}
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
@@ -208,13 +214,13 @@ export default function InstagramFeedSection() {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring" as const, stiffness: 350, damping: 22 }}
-              href="https://www.instagram.com/upitra_campus/"
+              href={profileLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 hover:from-rose-600 hover:via-pink-700 hover:to-purple-700 text-white font-bold text-xs tracking-wide shadow-md shadow-pink-500/25 transition-all"
             >
               <InstagramIcon className="w-4 h-4" />
-              <span>Ikuti @upitra_campus</span>
+              <span>Ikuti @{accountHandle}</span>
               <ExternalLink className="w-3.5 h-3.5 opacity-80" />
             </motion.a>
           </div>
