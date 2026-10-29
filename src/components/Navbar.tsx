@@ -32,7 +32,6 @@ export default function Navbar() {
 
   // Mobile Accordion States
   const [mobileProfilOpen, setMobileProfilOpen] = useState(false);
-  const [mobileAkademikOpen, setMobileAkademikOpen] = useState(false);
   const [mobileRisetOpen, setMobileRisetOpen] = useState(false);
   const [mobileKemahasiswaanOpen, setMobileKemahasiswaanOpen] = useState(false);
   const [mobileKerjasamaOpen, setMobileKerjasamaOpen] = useState(false);
@@ -172,67 +171,13 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* 2. AKADEMIK Dropdown (4 Fakultas Langsung) */}
-            <div className="relative group">
-              <button className="cursor-pointer flex items-center gap-1 hover:text-blue-600 py-1.5 transition-colors group-hover:text-blue-600">
-                <span>Akademik</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-              </button>
-
-              <div className="absolute top-full left-0 hidden group-hover:block w-72 bg-white rounded-2xl shadow-xl border border-slate-100 p-2.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <Link 
-                  href="/fst" 
-                  className="block px-3 py-2 rounded-xl hover:bg-blue-50 transition-colors group/item"
-                >
-                  <div className="text-xs font-bold text-[#0b2545] group-hover/item:text-blue-700 flex items-center justify-between">
-                    <span>Fakultas Sains &amp; Teknologi</span>
-                    <span className="text-[10px] text-blue-600 font-mono">FST</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    Informatika, SI, Rekayasa Perangkat Lunak
-                  </div>
-                </Link>
-
-                <Link 
-                  href="/feb" 
-                  className="block px-3 py-2 rounded-xl hover:bg-blue-50 transition-colors group/item"
-                >
-                  <div className="text-xs font-bold text-[#0b2545] group-hover/item:text-blue-700 flex items-center justify-between">
-                    <span>Fakultas Ekonomi &amp; Bisnis</span>
-                    <span className="text-[10px] text-blue-600 font-mono">FEB</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    Manajemen, Akuntansi
-                  </div>
-                </Link>
-
-                <Link 
-                  href="/fsh" 
-                  className="block px-3 py-2 rounded-xl hover:bg-blue-50 transition-colors group/item"
-                >
-                  <div className="text-xs font-bold text-[#0b2545] group-hover/item:text-blue-700 flex items-center justify-between">
-                    <span>Fakultas Sosial Humaniora</span>
-                    <span className="text-[10px] text-blue-600 font-mono">FSH</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    Pariwisata, Bahasa Inggris
-                  </div>
-                </Link>
-
-                <Link 
-                  href="/fkes" 
-                  className="block px-3 py-2 rounded-xl hover:bg-blue-50 transition-colors group/item"
-                >
-                  <div className="text-xs font-bold text-[#0b2545] group-hover/item:text-blue-700 flex items-center justify-between">
-                    <span>Fakultas Kesehatan</span>
-                    <span className="text-[10px] text-blue-600 font-mono">FKes</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    K3, Fisioterapi, D3 Keperawatan
-                  </div>
-                </Link>
-              </div>
-            </div>
+            {/* 2. AKADEMIK (Tautan Langsung ke /akademik) */}
+            <Link
+              href="/akademik"
+              className="hover:text-blue-600 py-1.5 transition-colors"
+            >
+              Akademik
+            </Link>
 
             {/* 3. RISET Dropdown */}
             <div className="relative group">
@@ -465,56 +410,15 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-            {/* Mobile Accordion 2: Akademik */}
+            {/* Mobile Link: Akademik */}
             <div className="border-t border-slate-100 pt-1.5">
-              <button
-                onClick={() => setMobileAkademikOpen(!mobileAkademikOpen)}
-                className="cursor-pointer w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50"
+              <Link
+                href="/akademik"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50 hover:text-blue-600 transition-colors"
               >
-                <span>Akademik (Fakultas)</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileAkademikOpen ? "rotate-180 text-blue-600" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {mobileAkademikOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="pl-4 pr-2 py-1 space-y-1.5 border-l-2 border-blue-600 ml-3 mt-1 overflow-hidden"
-                  >
-                    <Link
-                      href="/fst"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Fakultas Sains &amp; Teknologi (FST)
-                    </Link>
-                    <Link
-                      href="/feb"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Fakultas Ekonomi &amp; Bisnis (FEB)
-                    </Link>
-                    <Link
-                      href="/fsh"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Fakultas Sosial Humaniora (FSH)
-                    </Link>
-                    <Link
-                      href="/fkes"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Fakultas Kesehatan (FKes)
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                Akademik
+              </Link>
             </div>
 
             {/* Mobile Accordion 3: Riset */}
