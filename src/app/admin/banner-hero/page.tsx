@@ -381,8 +381,8 @@ export default function AdminBannerHeroPage() {
             </div>
 
             {/* PREVIEW CONTAINER */}
-            <div className="w-full bg-[#040e1e] p-3 sm:p-5 rounded-2xl border border-blue-950 flex justify-center overflow-x-auto">
-              <div className="relative w-full max-w-[1440px] h-[340px] sm:h-[400px] lg:h-[480px] rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 group shrink-0">
+            <div className="w-full bg-[#040e1e] p-2 sm:p-4 rounded-xl border border-blue-950 flex justify-center overflow-x-auto">
+              <div className="relative w-full max-w-[1440px] h-[340px] sm:h-[400px] lg:h-[480px] rounded-none overflow-hidden border-0 group shrink-0">
                 <Image
                   src={akademikBanner.imageUrl}
                   alt={akademikBanner.title}
@@ -402,10 +402,6 @@ export default function AdminBannerHeroPage() {
                   </div>
 
                   <div className="space-y-3 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/90 text-sky-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md border border-white/20">
-                      <span className="w-2 h-2 rounded-full bg-sky-300 animate-pulse" />
-                      <span>{akademikBanner.badge}</span>
-                    </div>
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-md">
                       {akademikBanner.title}
                     </h1>

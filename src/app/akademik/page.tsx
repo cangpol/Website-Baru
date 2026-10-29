@@ -106,20 +106,20 @@ export default function AkademikOverviewPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />
 
-      {/* 1. HEADER BANNER AKADEMIK (Ukuran Fixed 1440px x 480px, Background Gambar Dinamis yang Bisa Diedit di Dashboard Admin) */}
-      <header className="w-full bg-[#040e1e] border-b border-blue-900/40 py-4 sm:py-6 flex justify-center overflow-hidden">
-        <div className="w-[1440px] max-w-full h-[360px] sm:h-[420px] lg:h-[480px] relative rounded-3xl overflow-hidden shadow-2xl border border-slate-700/60 mx-4 sm:mx-6 group">
-          {/* Background Image (Fixed 1440x480) */}
-          <Image
-            src={banner.imageUrl || "/images/kuliah-1.jpeg"}
-            alt={banner.title}
-            fill
-            priority
-            className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
-          />
+      {/* 1. HEADER BANNER AKADEMIK (Full Width 1440px x 480px, Tanpa Border Melengkung, Full Gambar Edge-to-Edge) */}
+      <header className="w-full h-[420px] sm:h-[460px] lg:h-[480px] relative overflow-hidden group bg-[#06172e]">
+        {/* Background Image: Full Cover 1440x480 */}
+        <Image
+          src={banner.imageUrl || "/images/kuliah-1.jpeg"}
+          alt={banner.title}
+          fill
+          priority
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+        />
 
-          {/* Dark Executive Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#06172e] via-[#06172e]/70 to-[#06172e]/40 flex flex-col justify-between p-6 sm:p-10 lg:p-12 text-white">
+        {/* Executive Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/60 to-[#06172e]/30 flex flex-col justify-between text-white">
+          <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-between p-6 sm:p-10 lg:p-12">
             {/* Top: Breadcrumb Navigation */}
             <nav aria-label="Breadcrumb">
               <ol className="flex items-center gap-2 text-xs text-slate-300">
@@ -141,7 +141,7 @@ export default function AkademikOverviewPage() {
               </ol>
             </nav>
 
-            {/* Bottom Content: Title & Description (Badge row removed as requested) */}
+            {/* Bottom Content: Title & Description */}
             <div className="space-y-3 max-w-3xl">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
                 {banner.title}
