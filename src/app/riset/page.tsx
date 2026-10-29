@@ -7,16 +7,20 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Image from "next/image";
 import Link from "next/link";
 import { 
-  Microscope, 
-  BookOpen, 
-  Award, 
-  Lightbulb, 
-  ArrowRight 
+  Globe, 
+  ExternalLink, 
+  Calendar, 
+  Clock, 
+  ArrowRight, 
+  Newspaper,
+  BookOpen 
 } from "lucide-react";
 import { initialAdminRisetBanner, AdminRisetBanner } from "@/lib/adminDataStore";
+import { getAllArticles } from "@/lib/newsData";
 
 export default function RisetPortalPage() {
   const [banner, setBanner] = useState<AdminRisetBanner>(initialAdminRisetBanner);
+  const recentArticles = getAllArticles().slice(0, 4);
 
   // Load dynamic banner from localStorage (editable via Admin if configured)
   useEffect(() => {
@@ -27,6 +31,19 @@ export default function RisetPortalPage() {
       } catch {}
     }
   }, []);
+
+  const getCategoryBadgeClass = (category: string) => {
+    switch (category) {
+      case "Achievement":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "Campus Life":
+        return "bg-indigo-50 text-indigo-700 border-indigo-200";
+      case "Academic":
+        return "bg-sky-50 text-sky-700 border-sky-200";
+      default:
+        return "bg-blue-50 text-blue-700 border-blue-200";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -62,10 +79,10 @@ export default function RisetPortalPage() {
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12">
         
-        {/* Banner Riset LPPM */}
+        {/* 2. Banner Riset LPPM dengan 2 Tombol Website Portal */}
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Lembaga Penelitian & Pengabdian (LPPM)</span>
+            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Lembaga Penelitian &amp; Pengabdian (LPPM)</span>
             <h2 className="text-2xl font-black text-[#0b2545]">
               Riset Berdampak Transformatif untuk Bangsa
             </h2>
@@ -74,84 +91,127 @@ export default function RisetPortalPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 shrink-0 text-xs">
-            <div className="flex items-center gap-2 font-semibold text-slate-700">
-              <Award className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>Skema Triputra Research Grant</span>
-            </div>
-            <div className="flex items-center gap-2 font-semibold text-slate-700">
-              <BookOpen className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>4 Jurnal Ilmiah OJS Terakreditasi</span>
-            </div>
+          {/* 2 Tombol Website: lppm.upitra.ac.id & jurnal.upitra.ac.id */}
+          <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0 w-full md:w-auto">
+            <a
+              href="https://lppm.upitra.ac.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-between gap-3 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 transition-all group/btn"
+            >
+              <div className="flex items-center gap-2.5">
+                <Globe className="w-4 h-4 text-sky-200" />
+                <span>Website LPPM UPITRA</span>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-sky-200 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+            </a>
+
+            <a
+              href="https://jurnal.upitra.ac.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-between gap-3 px-5 py-3 rounded-xl bg-white hover:bg-slate-50 text-[#0b2545] border border-slate-200 hover:border-blue-400 font-bold text-xs shadow-xs transition-all group/btn"
+            >
+              <div className="flex items-center gap-2.5">
+                <BookOpen className="w-4 h-4 text-blue-600" />
+                <span>Portal Jurnal (OJS) UPITRA</span>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-blue-600 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+            </a>
           </div>
         </div>
 
-        {/* Feature Cards Riset */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Link
-            href="/riset/pusat-penelitian-dan-publikasi"
-            className="group bg-white rounded-3xl p-8 border border-slate-200/90 shadow-xs hover:border-blue-400 hover:shadow-xl transition-all flex flex-col justify-between space-y-6"
-          >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-xs">
-                <Microscope className="w-6 h-6" />
-              </div>
-
-              <div>
-                <span className="text-xs font-bold text-blue-700 uppercase tracking-wider block">Menu Utama Riset</span>
-                <h3 className="text-xl font-black text-[#0b2545] group-hover:text-blue-700 transition-colors mt-1">
-                  Pusat Penelitian & Publikasi
-                </h3>
-              </div>
-
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Pelajari roadmap riset unggulan UPITRA, direktori jurnal ilmiah OJS, skema pendanaan hibah penelitian internal & eksternal, serta tata cara pendaftaran Hak Kekayaan Intelektual (HKI) dan Paten.
+        {/* 3. RECENT POST: 4 Kotak Berita dalam 1 Baris di Layar Desktop */}
+        <section className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <span className="px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+                <Newspaper className="w-3.5 h-3.5" />
+                <span>Recent Post</span>
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
+                Berita &amp; Publikasi Terkini
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+                Kabar terbaru seputar inovasi riset terapan, hilirisasi industri, publikasi ilmiah, serta prestasi civitas akademika UPITRA.
               </p>
-
-              <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-2 text-xs">
-                <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium">Roadmap Riset</span>
-                <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium">Jurnal Ilmiah SINTA</span>
-                <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium">Sentra HKI & Paten</span>
-              </div>
-            </div>
-
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 group-hover:text-blue-800">
-              <span>Buka Halaman Pusat Penelitian & Publikasi</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-
-          <div className="bg-[#06172e] text-white rounded-3xl p-8 border border-blue-900 shadow-xl flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md">
-                <Lightbulb className="w-6 h-6" />
-              </div>
-
-              <div>
-                <span className="text-xs font-bold text-sky-400 uppercase tracking-wider block">Kolaborasi Industri</span>
-                <h3 className="text-xl font-black text-white mt-1">
-                  Kemitraan Riset Bersama Triputra Group
-                </h3>
-              </div>
-
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Dosen dan mahasiswa UPITRA diberikan akses langsung untuk meneliti studi kasus dan menguji prototipe inovasi di unit-unit bisnis Triputra Group seperti PT Adi Sarana Armada Tbk (ASSA), PT Triputra Agro Persada Tbk, PT Dharma Polimetal Tbk, dan PT Kirana Megatara Tbk.
-              </p>
-
-              <div className="pt-2 border-t border-blue-900/60 text-xs text-sky-300 font-semibold">
-                Hilirisasi Inovasi Berkelanjutan
-              </div>
             </div>
 
             <Link
-              href="/riset/pusat-penelitian-dan-publikasi"
-              className="inline-flex items-center gap-2 text-xs font-bold text-sky-400 hover:text-white transition-colors"
+              href="/berita"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 transition-colors shrink-0 group"
             >
-              <span>Pelajari Mekanisme Riset Industri</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Lihat Semua Berita</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
-        </div>
+
+          {/* Grid 4 Kolom: Dimuat hanya 1 Baris di Layar Desktop (lg:grid-cols-4) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {recentArticles.map((art) => (
+              <Link
+                key={art.id}
+                href={`/berita/${art.slug}`}
+                className="group bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-400 transition-all flex flex-col justify-between"
+              >
+                <div>
+                  {/* Cover Image */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                    <img
+                      src={art.coverImage}
+                      alt={art.title}
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.dataset.triedFallback) {
+                          target.dataset.triedFallback = "true";
+                          target.src = "/images/gedung-upitra.jpg";
+                        }
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <span
+                      className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md ${getCategoryBadgeClass(
+                        art.category
+                      )}`}
+                    >
+                      {art.categoryLabel}
+                    </span>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-4 sm:p-5 space-y-2.5">
+                    <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                      <span className="flex items-center gap-1 font-medium text-slate-600">
+                        <Calendar className="w-3 h-3 text-blue-600" />
+                        {art.publishedAt}
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-sky-600" />
+                        {art.readTime}
+                      </span>
+                    </div>
+
+                    <h3 className="text-sm font-bold text-[#0b2545] leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      {art.title}
+                    </h3>
+
+                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                      {art.summary}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Footer Action */}
+                <div className="px-4 sm:px-5 pb-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 group-hover:text-blue-800">
+                  <span>Baca Selengkapnya</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
 
       </main>
 

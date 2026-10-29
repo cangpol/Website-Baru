@@ -16,9 +16,7 @@ import {
   ArrowRight,
   GraduationCap,
   Save,
-  Layers,
-  ChevronRight,
-  Home
+  Layers
 } from "lucide-react";
 import Image from "next/image";
 import { 
@@ -396,18 +394,9 @@ export default function AdminBannerHeroPage() {
                   className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
                 />
                 
-                {/* Overlay Preview (Center Rata Kiri) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/50 to-[#06172e]/30 flex flex-col justify-between p-6 sm:p-10 text-white">
-                  <div className="flex items-center gap-2 text-xs text-slate-300">
-                    <span className="flex items-center gap-1 text-sky-400">
-                      <Home className="w-3.5 h-3.5" />
-                      <span>Beranda</span>
-                    </span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="text-sky-300 font-semibold">Akademik</span>
-                  </div>
-
-                  <div className="my-auto space-y-2 max-w-2xl text-left">
+                {/* Overlay Preview (Center Rata Kiri, Vertically Centered Without Breadcrumbs) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/50 to-[#06172e]/30 flex flex-col justify-center p-6 sm:p-10 text-white">
+                  <div className="space-y-2 max-w-2xl text-left">
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-md">
                       {akademikBanner.title || "Akademik"}
                     </h1>
@@ -415,8 +404,6 @@ export default function AdminBannerHeroPage() {
                       {akademikBanner.description || "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan"}
                     </p>
                   </div>
-
-                  <div className="h-4" aria-hidden="true" />
                 </div>
               </div>
             </div>
