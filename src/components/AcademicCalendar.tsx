@@ -429,34 +429,32 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
         )}
       </div>
 
-      {/* 4. DOWNLOAD KALENDER AKADEMIK BAR (SEPANJANG KALENDER) */}
-      <div className="w-full bg-gradient-to-r from-[#06172e] via-[#0b2545] to-[#0c4a6e] rounded-3xl p-6 sm:p-7 text-white flex flex-col md:flex-row items-center justify-between gap-5 shadow-xl border border-blue-900/50">
-        <div className="flex items-center gap-4 text-center md:text-left">
-          <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-sky-400 shrink-0 border border-white/20">
-            <FileText className="w-6 h-6" />
+      {/* 4. DOWNLOAD KALENDER AKADEMIK BAR (KOTAK PERSEGI PANJANG SEPANJANG KALENDER) */}
+      <button
+        type="button"
+        onClick={() => generateAcademicCalendarPdf(year, events)}
+        className="w-full bg-[#06172e] hover:bg-[#0b2545] border border-blue-900/60 rounded-2xl p-5 sm:p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl transition-all duration-300 group cursor-pointer hover:shadow-2xl hover:border-blue-700/80 text-left"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-blue-600/20 text-sky-400 border border-blue-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <Download className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-sky-300 uppercase tracking-widest block">
-              Pedoman Resmi Kalender Akademik Tahun {year}
-            </span>
-            <h4 className="text-lg sm:text-xl font-black text-white mt-0.5">
-              Download Kalender Akademik Disini
+            <h4 className="text-lg sm:text-xl font-black text-white group-hover:text-sky-300 transition-colors flex items-center gap-2">
+              <span>Download Kalender Akademik Disini</span>
+              <ArrowRight className="w-5 h-5 text-emerald-400 group-hover:translate-x-1.5 transition-transform" />
             </h4>
-            <p className="text-xs text-slate-300 mt-1 max-w-xl">
-              Unduh kalender akademik format PDF lengkap 12 bulan (Januari – Desember {year}) beserta rincian jadwal kegiatan perkuliahan, evaluasi hasil belajar, dan wisuda.
+            <p className="text-xs text-slate-300 mt-1">
+              Dokumen resmi format PDF dari Januari sampai Desember {year} beserta rincian lengkap daftar seluruh agenda kegiatan akademik.
             </p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => generateAcademicCalendarPdf(year, events)}
-          className="w-full md:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/40 transition-all shrink-0 hover:scale-[1.02] cursor-pointer"
-        >
-          <Download className="w-4 h-4" />
-          <span>Download Kalender ({year}) PDF</span>
-        </button>
-      </div>
+        <div className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 group-hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all shrink-0">
+          <span>Unduh PDF ({year})</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+        </div>
+      </button>
 
       {/* 5. EVENT DETAIL MODAL (Matching ModifikasiUpitra) */}
       {selectedEvent && (
