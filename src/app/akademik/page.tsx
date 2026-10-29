@@ -8,9 +8,7 @@ import AcademicCalendar from "@/components/AcademicCalendar";
 import Link from "next/link";
 import Image from "next/image";
 import { 
-  ArrowRight, 
-  Home,
-  ChevronRight
+  ArrowRight 
 } from "lucide-react";
 import { initialAdminAkademikBanner, AdminAkademikBanner } from "@/lib/adminDataStore";
 
@@ -88,31 +86,10 @@ export default function AkademikOverviewPage() {
         />
 
         {/* Executive Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/60 to-[#06172e]/30 flex flex-col justify-between text-white">
-          <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-between p-6 sm:p-10 lg:p-12">
-            {/* Top: Breadcrumb Navigation */}
-            <nav aria-label="Breadcrumb">
-              <ol className="flex items-center gap-2 text-xs text-slate-300">
-                <li>
-                  <Link 
-                    href="/" 
-                    className="hover:text-sky-300 transition-colors flex items-center gap-1.5"
-                  >
-                    <Home className="w-3.5 h-3.5 text-sky-400" />
-                    <span>Beranda</span>
-                  </Link>
-                </li>
-                <li className="flex items-center gap-2">
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="text-sky-300 font-semibold" aria-current="page">
-                    Akademik
-                  </span>
-                </li>
-              </ol>
-            </nav>
-
+        <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/60 to-[#06172e]/30 flex flex-col justify-center text-white">
+          <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-center p-6 sm:p-10 lg:p-12">
             {/* Center Rata Kiri Content: Title & Description */}
-            <div className="my-auto space-y-2 sm:space-y-3 max-w-3xl text-left">
+            <div className="space-y-2 sm:space-y-3 max-w-3xl text-left">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight drop-shadow-md">
                 {banner.title || "Akademik"}
               </h1>
@@ -121,9 +98,6 @@ export default function AkademikOverviewPage() {
                 {banner.description || "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan"}
               </p>
             </div>
-
-            {/* Bottom Optical Balancing Spacer */}
-            <div className="h-4 sm:h-6" aria-hidden="true" />
           </div>
         </div>
       </header>

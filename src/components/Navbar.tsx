@@ -77,14 +77,6 @@ export default function Navbar() {
               <Phone className="w-3.5 h-3.5 text-sky-400 shrink-0" />
               <span>PMB: <strong>0811-290-7500</strong></span>
             </a>
-            <span className="text-slate-600 hidden sm:inline">|</span>
-            <Link 
-              href="/u-gate" 
-              className="hidden sm:inline-flex items-center gap-1 text-slate-300 hover:text-sky-300 transition-colors"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Portal Admin</span>
-            </Link>
           </div>
 
         </div>
@@ -125,208 +117,59 @@ export default function Navbar() {
           <nav className="hidden xl:flex items-center gap-1.5 2xl:gap-2.5 text-[13px] font-bold text-slate-800 tracking-wide">
             
             {/* 1. PROFIL Dropdown */}
-            <div className="relative group">
-              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
-                <span>Profil</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-              </button>
-              
-              <div className="absolute top-full left-0 hidden group-hover:block w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <Link 
-                  href="/profil/tentang-upitra" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-[#0b2545] hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Tentang UPITRA
-                </Link>
-                <Link 
-                  href="/profil/visi-misi-tujuan" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Visi Misi Tujuan
-                </Link>
-                <Link 
-                  href="/profil/pimpinan-universitas" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Pimpinan Universitas
-                </Link>
-                <Link 
-                  href="/profil/berita-kampus" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Berita Kampus
-                </Link>
-                <Link 
-                  href="/profil/pengumuman" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Pengumuman
-                </Link>
-                <Link 
-                  href="/profil/prestasi-dan-capaian" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Prestasi &amp; Capaian
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/profil"
+              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+            >
+              Profil
+            </Link>
 
             {/* 2. AKADEMIK (Tautan Langsung ke /akademik) */}
             <Link
               href="/akademik"
-              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
             >
               Akademik
             </Link>
 
             {/* 3. RISET Dropdown */}
-            <div className="relative group">
-              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
-                <span>Riset</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-              </button>
-
-              <div className="absolute top-full left-0 hidden group-hover:block w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <Link 
-                  href="/riset/pusat-penelitian-dan-publikasi" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-[#0b2545] hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Pusat Penelitian &amp; Publikasi
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/riset"
+              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+            >
+              Riset
+            </Link>
 
             {/* 4. KEMAHASISWAAN Dropdown */}
-            <div className="relative group">
-              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
-                <span>Kemahasiswaan</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-              </button>
-
-              <div className="absolute top-full left-0 hidden group-hover:block w-72 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <Link 
-                  href="/kemahasiswaan/tugas-dan-fungsi" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-[#0b2545] hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Tugas dan Fungsi Kemahasiswaan
-                </Link>
-                <Link 
-                  href="/kemahasiswaan/program-pengembangan" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Program Pengembangan Mahasiswa
-                </Link>
-                <Link 
-                  href="/kemahasiswaan/organisasi-mahasiswa" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Organisasi Mahasiswa (Ormawa)
-                </Link>
-                <Link 
-                  href="/kemahasiswaan/prestasi-mahasiswa" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Prestasi Mahasiswa
-                </Link>
-                <Link 
-                  href="/kemahasiswaan/galeri-kegiatan" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Galeri Kegiatan Mahasiswa
-                </Link>
-                <Link 
-                  href="/kemahasiswaan/kalender-akademik" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Kalender Akademik
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/kemahasiswaan"
+              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+            >
+              Kemahasiswaan
+            </Link>
 
             {/* 5. KERJASAMA Dropdown */}
-            <div className="relative group">
-              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
-                <span>Kerjasama</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-              </button>
-
-              <div className="absolute top-full left-0 hidden group-hover:block w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <Link 
-                  href="/kerjasama/mitra-kerjasama" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-[#0b2545] hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Mitra Kerjasama
-                </Link>
-                <Link 
-                  href="/kerjasama/daftar-kerjasama" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Daftar Kerjasama (MoU/MoA)
-                </Link>
-                <Link 
-                  href="/kerjasama/kegiatan-kerjasama" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Kegiatan Kerjasama
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/kerjasama"
+              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+            >
+              Kerjasama
+            </Link>
 
             {/* 6. LAYANAN Dropdown */}
-            <div className="relative group">
-              <button className="cursor-pointer h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors group-hover:text-blue-700 group-hover:bg-slate-100/70">
-                <span>Layanan</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-              </button>
-
-              <div className="absolute top-full right-0 hidden group-hover:block w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <Link 
-                  href="/layanan/perpustakaan" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-[#0b2545] hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Perpustakaan
-                </Link>
-                <Link 
-                  href="/layanan/e-learning" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  E-Learning (LMS)
-                </Link>
-                <Link 
-                  href="/layanan/career-center" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Career Center (CDC)
-                </Link>
-                <Link 
-                  href="/layanan/tracer-study" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Tracer Studi
-                </Link>
-                <Link 
-                  href="/layanan/immersion-program" 
-                  className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                >
-                  Immersion Program
-                </Link>
-                <Link 
-                  href="/layanan/download-center" 
-                  className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-blue-700 bg-blue-50/70 hover:bg-blue-100/80 transition-colors mt-0.5"
-                >
-                  <span>Download Center</span>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-600 text-white">Brosur</span>
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/layanan"
+              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+            >
+              Layanan
+            </Link>
 
             {/* 7. CTA DAFTAR SEKARANG (Kuning Oranye, Hug Width 150px & Fixed Height 32px) */}
             <Link
-              href="/pmb"
+              href="https://pmb.upitra.ac.id"
               className="h-[32px] px-4 max-w-[150px] inline-flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 via-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-sm shadow-orange-500/20 hover:shadow-orange-500/30 transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Daftar Sekarang</span>
-              <ArrowRight className="w-3.5 h-3.5 shrink-0" />
             </Link>
 
           </nav>
@@ -356,7 +199,7 @@ export default function Navbar() {
             {/* Mobile CTA: Daftar Sekarang */}
             <div className="pb-1">
               <Link
-                href="/pmb"
+                href="https://pmb.upitra.ac.id"
                 onClick={() => setMobileMenuOpen(false)}
                 className="h-[38px] w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 active:scale-95 transition-all"
               >
@@ -366,69 +209,14 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Accordion 1: Profil */}
-            <div>
-              <button
-                onClick={() => setMobileProfilOpen(!mobileProfilOpen)}
-                className="cursor-pointer w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50"
+            <div className="border-t border-slate-100 pt-1.5">
+              <Link
+                href="/profil"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50 hover:text-blue-600 transition-colors"
               >
-                <span>Profil</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileProfilOpen ? "rotate-180 text-blue-600" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {mobileProfilOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="pl-4 pr-2 py-1 space-y-1.5 border-l-2 border-blue-600 ml-3 mt-1 overflow-hidden"
-                  >
-                    <Link
-                      href="/profil/tentang-upitra"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Tentang UPITRA
-                    </Link>
-                    <Link
-                      href="/profil/visi-misi-tujuan"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Visi Misi Tujuan
-                    </Link>
-                    <Link
-                      href="/profil/pimpinan-universitas"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Pimpinan Universitas
-                    </Link>
-                    <Link
-                      href="/profil/berita-kampus"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Berita Kampus
-                    </Link>
-                    <Link
-                      href="/profil/pengumuman"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Pengumuman
-                    </Link>
-                    <Link
-                      href="/profil/prestasi-dan-capaian"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Prestasi &amp; Capaian
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                Profil
+              </Link>
             </div>
 
             {/* Mobile Link: Akademik */}
@@ -444,211 +232,46 @@ export default function Navbar() {
 
             {/* Mobile Accordion 3: Riset */}
             <div className="border-t border-slate-100 pt-1.5">
-              <button
-                onClick={() => setMobileRisetOpen(!mobileRisetOpen)}
-                className="cursor-pointer w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50"
+              <Link
+                href="/riset"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50 hover:text-blue-600 transition-colors"
               >
-                <span>Riset</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileRisetOpen ? "rotate-180 text-blue-600" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {mobileRisetOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="pl-4 pr-2 py-1 space-y-1.5 border-l-2 border-blue-600 ml-3 mt-1 overflow-hidden"
-                  >
-                    <Link
-                      href="/riset/pusat-penelitian-dan-publikasi"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Pusat Penelitian &amp; Publikasi
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                Riset
+              </Link>
             </div>
 
             {/* Mobile Accordion 4: Kemahasiswaan */}
             <div className="border-t border-slate-100 pt-1.5">
-              <button
-                onClick={() => setMobileKemahasiswaanOpen(!mobileKemahasiswaanOpen)}
-                className="cursor-pointer w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50"
+              <Link
+                href="/kemahasiswaan"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50 hover:text-blue-600 transition-colors"
               >
-                <span>Kemahasiswaan</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileKemahasiswaanOpen ? "rotate-180 text-blue-600" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {mobileKemahasiswaanOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="pl-4 pr-2 py-1 space-y-1.5 border-l-2 border-blue-600 ml-3 mt-1 overflow-hidden"
-                  >
-                    <Link
-                      href="/kemahasiswaan/tugas-dan-fungsi"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Tugas dan Fungsi Kemahasiswaan
-                    </Link>
-                    <Link
-                      href="/kemahasiswaan/program-pengembangan"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Program Pengembangan Mahasiswa
-                    </Link>
-                    <Link
-                      href="/kemahasiswaan/organisasi-mahasiswa"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Organisasi Mahasiswa (Ormawa)
-                    </Link>
-                    <Link
-                      href="/kemahasiswaan/prestasi-mahasiswa"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Prestasi Mahasiswa
-                    </Link>
-                    <Link
-                      href="/kemahasiswaan/galeri-kegiatan"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Galeri Kegiatan Mahasiswa
-                    </Link>
-                    <Link
-                      href="/kemahasiswaan/kalender-akademik"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Kalender Akademik
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                Kemahasiswaan
+              </Link>
             </div>
 
             {/* Mobile Accordion 5: Kerjasama */}
             <div className="border-t border-slate-100 pt-1.5">
-              <button
-                onClick={() => setMobileKerjasamaOpen(!mobileKerjasamaOpen)}
-                className="cursor-pointer w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50"
+              <Link
+                href="/kerjasama"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50 hover:text-blue-600 transition-colors"
               >
-                <span>Kerjasama</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileKerjasamaOpen ? "rotate-180 text-blue-600" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {mobileKerjasamaOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="pl-4 pr-2 py-1 space-y-1.5 border-l-2 border-blue-600 ml-3 mt-1 overflow-hidden"
-                  >
-                    <Link
-                      href="/kerjasama/mitra-kerjasama"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Mitra Kerjasama
-                    </Link>
-                    <Link
-                      href="/kerjasama/daftar-kerjasama"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Daftar Kerjasama (MoU/MoA)
-                    </Link>
-                    <Link
-                      href="/kerjasama/kegiatan-kerjasama"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Kegiatan Kerjasama
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                Kerjasama
+              </Link>
             </div>
 
             {/* Mobile Accordion 6: Layanan */}
             <div className="border-t border-slate-100 pt-1.5">
-              <button
-                onClick={() => setMobileLayananOpen(!mobileLayananOpen)}
-                className="cursor-pointer w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50"
+              <Link
+                href="/layanan"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-xl font-bold text-sm text-[#0b2545] hover:bg-blue-50 hover:text-blue-600 transition-colors"
               >
-                <span>Layanan</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileLayananOpen ? "rotate-180 text-blue-600" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {mobileLayananOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="pl-4 pr-2 py-1 space-y-1.5 border-l-2 border-blue-600 ml-3 mt-1 overflow-hidden"
-                  >
-                    <Link
-                      href="/layanan/perpustakaan"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Perpustakaan
-                    </Link>
-                    <Link
-                      href="/layanan/e-learning"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      E-Learning (LMS)
-                    </Link>
-                    <Link
-                      href="/layanan/career-center"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Career Center (CDC)
-                    </Link>
-                    <Link
-                      href="/layanan/tracer-study"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Tracer Studi
-                    </Link>
-                    <Link
-                      href="/layanan/immersion-program"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-xs font-medium text-slate-700 hover:text-blue-600 py-1"
-                    >
-                      Immersion Program
-                    </Link>
-                    <Link
-                      href="/layanan/download-center"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between text-xs font-bold text-blue-700 hover:text-blue-800 py-1"
-                    >
-                      <span>Download Center</span>
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white">Brosur</span>
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                Layanan
+              </Link>
             </div>
 
             {/* Mobile Contact & Hotline */}
