@@ -164,6 +164,14 @@ export interface AdminKemahasiswaanBanner {
   updatedAt?: string;
 }
 
+export interface AdminLayananBanner {
+  imageUrl: string;
+  badge?: string;
+  title: string;
+  description: string;
+  updatedAt?: string;
+}
+
 export interface AdminUserItem {
   id: string;
   name: string;
@@ -928,6 +936,14 @@ export const initialAdminKemahasiswaanBanner: AdminKemahasiswaanBanner = {
   badge: "PORTAL KEMAHASISWAAN",
   title: "Kemahasiswaan",
   description: "Membina mahasiswa berkarakter luhur, berjiwa pemimpin berbelarasa, dan berprestasi tinggi di kancah nasional bersama ekosistem Triputra Group.",
+  updatedAt: "30 Okt 2026",
+};
+
+export const initialAdminLayananBanner: AdminLayananBanner = {
+  imageUrl: "/images/perpustakaan.jpg",
+  badge: "PORTAL LAYANAN TERPADU",
+  title: "Layanan",
+  description: "Ekosistem layanan digital, perpustakaan, karir, dan pembelajaran terpadu untuk mendukung kesuksesan akademik dan profesional seluruh sivitas akademika UPITRA.",
   updatedAt: "30 Okt 2026",
 };
 
