@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { 
   ArrowRight, 
-  GraduationCap, 
-  Award, 
-  MessageCircle, 
-  ShieldCheck,
-  FileCheck2
+  ShieldCheck
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { PromoBanner, defaultBanners, normalizeBannerPath } from "@/lib/bannerData";
@@ -113,93 +109,8 @@ export default function HeroSlider({ banners = defaultBanners }: HeroSliderProps
 
       </div>
 
-      {/* 3. INTEGRATED FAST-TRACK ACTION DOCK (Clean White & Navy Accents) */}
-      <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-8 -mt-10 sm:-mt-12">
-        <div className="bg-white rounded-2xl shadow-xl border border-blue-100 p-3 sm:p-4 text-slate-800">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-            
-            {/* Dock 1: Program Studi */}
-            <a
-              href="#akademik"
-              className="group p-3 sm:p-4 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 transition-all flex items-center gap-3"
-            >
-              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-extrabold text-[#0b2545] group-hover:text-blue-700 truncate">
-                  10 Program Studi
-                </div>
-                <div className="text-[11px] text-slate-500 truncate">
-                  Sarjana S1 &amp; Diploma D3
-                </div>
-              </div>
-            </a>
-
-            {/* Dock 2: Beasiswa PMB */}
-            <a
-              href="#jalur-pendaftaran"
-              className="group p-3 sm:p-4 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 transition-all flex items-center gap-3"
-            >
-              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <Award className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-extrabold text-[#0b2545] group-hover:text-blue-700 truncate">
-                  Beasiswa s/d 100%
-                </div>
-                <div className="text-[11px] text-slate-500 truncate">
-                  Program Triputra Peduli
-                </div>
-              </div>
-            </a>
-
-            {/* Dock 3: Pendaftaran Online */}
-            <a
-              href="https://pmb.upitra.ac.id"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group p-3 sm:p-4 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 transition-all flex items-center gap-3"
-            >
-              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <FileCheck2 className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-extrabold text-[#0b2545] group-hover:text-blue-700 truncate">
-                  Daftar PMB Online
-                </div>
-                <div className="text-[11px] text-slate-500 truncate">
-                  Portal Seleksi Resmi
-                </div>
-              </div>
-            </a>
-
-            {/* Dock 4: Konsultasi WhatsApp */}
-            <a
-              href="https://wa.me/628112907500?text=Halo%20Admisi%20UPITRA%2C%20saya%20ingin%20konsultasi%20pendaftaran%20mahasiswa%20baru"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group p-3 sm:p-4 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 transition-all flex items-center gap-3"
-            >
-              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <MessageCircle className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-extrabold text-[#0b2545] group-hover:text-blue-700 truncate">
-                  WhatsApp Admisi
-                </div>
-                <div className="text-[11px] text-slate-500 truncate">
-                  0811-290-7500
-                </div>
-              </div>
-            </a>
-
-          </div>
-        </div>
-      </div>
-
       {/* 4. PRESTIGE METRICS BASELINE (Strict Blue & White Institutional Bar) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
+      <div className="border-t border-white/10 max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-blue-900/60 text-center">
           
           <div className="pt-4 sm:pt-0 sm:px-4 space-y-1">
