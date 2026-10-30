@@ -5,21 +5,12 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { 
   BarChart3, 
-  GraduationCap, 
-  Building2, 
-  Sliders, 
   ShieldCheck, 
   LogOut, 
   ExternalLink, 
   Menu, 
   X, 
   Clock, 
-  Camera, 
-  ChevronDown,
-  Info,
-  Microscope,
-  Award,
-  Handshake,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -30,19 +21,6 @@ interface AdminUserSession {
   loginAt: string;
 }
 
-interface NavSubItem {
-  label: string;
-  href: string;
-  badge?: string;
-}
-
-interface NavSection {
-  title: string;
-  icon: any;
-  defaultOpen?: boolean;
-  items: NavSubItem[];
-}
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -50,19 +28,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    "Profil Kampus": true,
-    "Akademik & Fakultas": true,
-    "Kerjasama": true,
-  });
-
-  // Toggle accordion group
-  const toggleSection = (title: string) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
-  };
 
   // Cek otorisasi sesi admin
   useEffect(() => {
@@ -102,88 +67,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     router.push("/u-gate");
   };
-
-  // Navigasi Terstruktur Sesuai Navbar Depan 1:1 + Fitur Admin
-  const navSections: NavSection[] = [
-    {
-      title: "Profil Kampus",
-      icon: Info,
-      items: [
-        { label: "Tentang UPITRA", href: "/admin/profil?tab=tentang" },
-        { label: "Visi Misi Tujuan", href: "/admin/profil?tab=visi-misi" },
-        { label: "Pimpinan Universitas", href: "/admin/profil?tab=pimpinan" },
-        { label: "Berita Kampus", href: "/admin/berita?tab=berita" },
-        { label: "Pengumuman", href: "/admin/berita?tab=pengumuman" },
-        { label: "Prestasi & Capaian", href: "/admin/profil?tab=prestasi" },
-      ],
-    },
-    {
-      title: "Akademik & Fakultas",
-      icon: GraduationCap,
-      items: [
-        { label: "Fakultas Sains & Teknologi (FST)", href: "/admin/prodi?fakultas=FST" },
-        { label: "Fakultas Ekonomi & Bisnis (FEB)", href: "/admin/prodi?fakultas=FEB" },
-        { label: "Fakultas Sosial Humaniora (FSH)", href: "/admin/prodi?fakultas=FSH" },
-        { label: "Fakultas Kesehatan (FKes)", href: "/admin/prodi?fakultas=FKES" },
-        { label: "Semua 10 Program Studi", href: "/admin/prodi", badge: "10 Prodi" },
-      ],
-    },
-    {
-      title: "Riset & Inovasi",
-      icon: Microscope,
-      items: [
-        { label: "Pusat Penelitian & Publikasi", href: "/admin/riset" },
-      ],
-    },
-    {
-      title: "Kemahasiswaan",
-      icon: Award,
-      items: [
-        { label: "Tugas & Fungsi", href: "/admin/kemahasiswaan?tab=tugas-fungsi" },
-        { label: "Program Pengembangan", href: "/admin/kemahasiswaan?tab=pengembangan" },
-        { label: "Organisasi Mahasiswa (Ormawa)", href: "/admin/kemahasiswaan?tab=ormawa" },
-        { label: "Prestasi Mahasiswa", href: "/admin/kemahasiswaan?tab=prestasi" },
-        { label: "Galeri Kegiatan", href: "/admin/kemahasiswaan?tab=galeri" },
-        { label: "Kalender Akademik", href: "/admin/kemahasiswaan?tab=kalender" },
-      ],
-    },
-    {
-      title: "Kerjasama",
-      icon: Handshake,
-      items: [
-        { label: "Mitra Kerjasama", href: "/admin/mitra", badge: "49 Mitra" },
-        { label: "Daftar Kerjasama (MoU/MoA)", href: "/admin/kerjasama?tab=mou" },
-        { label: "Kegiatan Kerjasama", href: "/admin/kerjasama?tab=kegiatan" },
-      ],
-    },
-    {
-      title: "Layanan Kampus",
-      icon: Building2,
-      items: [
-        { label: "Perpustakaan", href: "/admin/layanan?unit=perpustakaan" },
-        { label: "E-Learning (LMS)", href: "/admin/layanan?unit=elearning" },
-        { label: "Career Center (CDC)", href: "/admin/layanan?unit=career-center" },
-        { label: "Tracer Study", href: "/admin/layanan?unit=tracer-study" },
-        { label: "Immersion Program", href: "/admin/layanan?unit=immersion" },
-      ],
-    },
-    {
-      title: "Admisi & Beranda",
-      icon: Sliders,
-      items: [
-        { label: "Pendaftaran PMB & Leads", href: "/admin/pmb-leads", badge: "PMB" },
-        { label: "Banner Hero Beranda", href: "/admin/banner-hero" },
-      ],
-    },
-    {
-      title: "Integrasi & Sistem",
-      icon: Camera,
-      items: [
-        { label: "Sinkronisasi Instagram", href: "/admin/instagram-sync", badge: "Login IG" },
-        { label: "Pengguna & Hak Akses", href: "/admin/users" },
-      ],
-    },
-  ];
 
   if (!mounted || !session) {
     return (
@@ -230,7 +113,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </div>
 
-        {/* Navigation Groups */}
+        {/* Navigation Groups - Clean & Focused Dashboard */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 custom-scrollbar">
           
           {/* Top Link: Overview Pengunjung */}
@@ -254,73 +137,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 Live
               </span>
             </Link>
-          </div>
-
-          {/* Collapsible Sections matching Navbar & Dropdowns */}
-          <div>
-            <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-2">
-              MENU UTAMA & DROPDOWN CRUD
-            </div>
-
-            <div className="space-y-1.5">
-              {navSections.map((section, sIdx) => {
-                const Icon = section.icon;
-                const isOpen = openSections[section.title] ?? false;
-                const isSectionActive = section.items.some((it) => pathname === it.href.split("?")[0]);
-
-                return (
-                  <div key={sIdx} className="rounded-xl border border-blue-900/40 overflow-hidden bg-blue-950/30">
-                    {/* Accordion Header */}
-                    <button
-                      type="button"
-                      onClick={() => toggleSection(section.title)}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
-                        isSectionActive
-                          ? "text-sky-300 bg-blue-900/50"
-                          : "text-slate-300 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <Icon className="w-4 h-4 text-sky-400 shrink-0" />
-                        <span className="truncate">{section.title}</span>
-                      </div>
-                      <ChevronDown
-                        className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 shrink-0 ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    {/* Accordion Body (Submenus) */}
-                    {isOpen && (
-                      <div className="px-2 py-1.5 space-y-0.5 border-t border-blue-900/30 bg-[#040e1e]/60">
-                        {section.items.map((sub, subIdx) => {
-                          const isSubActive = pathname === sub.href.split("?")[0];
-                          return (
-                            <Link
-                              key={subIdx}
-                              href={sub.href}
-                              className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all group ${
-                                isSubActive
-                                  ? "bg-blue-600 text-white font-semibold shadow-xs"
-                                  : "text-slate-300 hover:text-white hover:bg-white/10"
-                              }`}
-                            >
-                              <span className="truncate">• {sub.label}</span>
-                              {sub.badge && (
-                                <span className="text-[8.5px] px-1.5 py-0.2 rounded font-bold uppercase bg-blue-500/20 text-sky-200 border border-blue-400/30 shrink-0">
-                                  {sub.badge}
-                                </span>
-                              )}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
           </div>
 
         </div>
@@ -439,29 +255,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <span>Overview Pengunjung</span>
                     <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold">Live</span>
                   </Link>
-
-                  {navSections.map((section, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="text-[10px] font-bold text-sky-300/60 uppercase tracking-widest px-2">
-                        {section.title}
-                      </div>
-                      {section.items.map((sub, sIdx) => (
-                        <Link
-                          key={sIdx}
-                          href={sub.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs text-slate-300 hover:bg-white/10"
-                        >
-                          <span className="truncate">{sub.label}</span>
-                          {sub.badge && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-900 text-sky-200">
-                              {sub.badge}
-                            </span>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-                  ))}
                 </div>
               </div>
 
