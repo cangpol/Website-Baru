@@ -11,7 +11,6 @@ import {
   Laptop, 
   Briefcase, 
   Sparkles, 
-  ArrowRight, 
   ExternalLink,
   Share2,
   FileText,
@@ -434,14 +433,6 @@ export default function LayananIndexPage() {
                           >
                             <Download className="w-4 h-4" />
                             <span>Unduh Dokumen Lengkap (PDF)</span>
-                          </a>
-
-                          <a
-                            href="/layanan/download-center"
-                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-xs sm:text-sm font-bold transition-all"
-                          >
-                            <span>Lihat Semua Brosur Fakultas</span>
-                            <ArrowRight className="w-3.5 h-3.5" />
                           </a>
                         </div>
 

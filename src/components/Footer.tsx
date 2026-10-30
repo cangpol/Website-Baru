@@ -240,8 +240,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/layanan/download-center" className="hover:text-sky-300 transition-colors block">
-                  Download Center (E-Brosur)
+                <Link href="/ebrochure" className="hover:text-sky-300 transition-colors block">
+                  E-Brosur Digital
                 </Link>
               </li>
             </ul>
