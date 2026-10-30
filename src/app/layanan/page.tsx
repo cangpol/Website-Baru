@@ -18,7 +18,9 @@ import {
   ChevronDown,
   Download,
   CheckCircle2,
-  HelpCircle
+  HelpCircle,
+  Play,
+  Clock
 } from "lucide-react";
 import { initialAdminLayananBanner, AdminLayananBanner } from "@/lib/adminDataStore";
 
@@ -534,65 +536,139 @@ export default function LayananIndexPage() {
 
         </section>
 
-        {/* SECTION 4: MEDIA SOSIAL RESMI UPITRA CAMPUS */}
+        {/* SECTION 4: MEDIA SOSIAL RESMI & MINI PREVIEW VIDEO PROFIL KAMPUS (2 KOLOM) */}
         <section className="pt-10 border-t border-slate-200/80 space-y-8">
           
-          {/* Header Section Media Sosial */}
-          <div className="space-y-2 text-center sm:text-left">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Kanal Resmi Mahasiswa</span>
-            <h3 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight flex items-center justify-center sm:justify-start gap-2">
-              <span>Media Sosial UPITRA Campus</span>
-              <Share2 className="w-5 h-5 text-blue-600" />
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-              Tetap terhubung dan dapatkan informasi beasiswa, agenda kampus, prestasi mahasiswa, serta ragam event seru melalui media sosial resmi kami:
-            </p>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+            
+            {/* KOLOM KIRI: LIST TOMBOL MEDIA SOSIAL (lg:col-span-5) */}
+            <div className="lg:col-span-5 space-y-5">
+              
+              {/* Header Kolom Media Sosial */}
+              <div className="space-y-1.5 text-left">
+                <span className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Kanal Resmi Mahasiswa</span>
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
+                  Media Sosial UPITRA
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Ikuti ragam update kegiatan akademik, pengumuman beasiswa, dan dinamika kampus melalui akun resmi berikut:
+                </p>
+              </div>
 
-          {/* Grid 6 Akun Media Sosial */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {socialMediaList.map((sosmed, idx) => {
-              const Icon = sosmed.icon;
-              return (
+              {/* List Tombol Media Sosial Vertikal */}
+              <div className="space-y-2.5">
+                {socialMediaList.map((sosmed, idx) => {
+                  const Icon = sosmed.icon;
+                  return (
+                    <a
+                      key={idx}
+                      href={sosmed.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/90 shadow-2xs hover:border-blue-400 hover:shadow-md hover:bg-blue-50/40 transition-all flex items-center justify-between gap-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Brand Icon */}
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform ${sosmed.accent}`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        {/* Name & Handle */}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-bold text-[#0b2545] group-hover:text-blue-700 transition-colors truncate">
+                              {sosmed.name}
+                            </h4>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-blue-100 group-hover:text-blue-800 transition-colors shrink-0">
+                              {sosmed.badge}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
+                            {sosmed.handle}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* External Arrow */}
+                      <div className="w-8 h-8 rounded-lg bg-slate-50 group-hover:bg-blue-600 text-slate-400 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+                        <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+
+            </div>
+
+            {/* KOLOM KANAN: MINI PREVIEW VIDEO PROFIL 1.5 MENIT DENGAN BORDER CANTIK (lg:col-span-7) */}
+            <div className="lg:col-span-7 space-y-4">
+              
+              {/* Header Video */}
+              <div className="space-y-1.5 text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-bold shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <Play className="w-3.5 h-3.5 fill-red-600 text-red-600" />
+                  <span>Video Profil Resmi • Mini Preview 1.5 Menit</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
+                  Mengenal Kampus UPITRA
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Saksikan cuplikan video profil Universitas Pignatelli Triputra Surakarta, fasilitas pembelajaran modern, serta integrasi ekosistem industri Triputra Group:
+                </p>
+              </div>
+
+              {/* Pemutar Video dengan Border Mewah & Cantik */}
+              <div className="relative group pt-1">
+                {/* 1. Ambient Glow Backlight Effect */}
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-all duration-700 pointer-events-none" />
+
+                {/* 2. Multi-Layer Gradient Frame */}
+                <div className="relative p-2 sm:p-2.5 rounded-3xl bg-gradient-to-tr from-[#06172e] via-[#0b2545] to-blue-600 shadow-2xl shadow-blue-950/25 border border-white/20">
+                  
+                  {/* Decorative Corner Lights */}
+                  <div className="absolute top-2 right-2 w-20 h-20 bg-sky-400/20 rounded-full blur-xl pointer-events-none" />
+                  <div className="absolute bottom-2 left-2 w-20 h-20 bg-blue-500/20 rounded-full blur-xl pointer-events-none" />
+
+                  {/* 3. Inner Screen Wrapper */}
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner border border-white/10">
+                    <iframe
+                      src="https://www.youtube-nocookie.com/embed/rVDHh02bbA4?start=1&end=91&rel=0&modestbranding=1"
+                      title="Video Profil Universitas Pignatelli Triputra (Mini Preview 1.5 Menit)"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="w-full h-full border-0"
+                    />
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Keterangan Durasi & CTA Tonton Penuh */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs text-slate-500">
+                <div className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Cuplikan otomatis diputar selama <strong>1:30 menit</strong> (detik 1 - 90).</span>
+                </div>
+
                 <a
-                  key={idx}
-                  href={sosmed.url}
+                  href="https://www.youtube.com/watch?v=rVDHh02bbA4"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group bg-white rounded-3xl p-6 border border-slate-200/90 shadow-xs hover:border-blue-400 hover:shadow-xl transition-all flex flex-col justify-between space-y-5"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-600 font-bold text-xs transition-colors shrink-0"
                 >
-                  <div className="space-y-3.5">
-                    <div className="flex items-center justify-between">
-                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 ${sosmed.accent}`}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-700 transition-colors">
-                        {sosmed.badge}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h4 className="text-base font-black text-[#0b2545] group-hover:text-blue-700 transition-colors">
-                        {sosmed.name}
-                      </h4>
-                      <span className="text-xs font-semibold text-blue-600">
-                        {sosmed.handle}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {sosmed.desc}
-                    </p>
-                  </div>
-
-                  <div className="pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 group-hover:text-blue-800">
-                    <span>Kunjungi Profil</span>
-                    <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </div>
+                  <YoutubeIcon className="w-4 h-4 text-red-600" />
+                  <span>Tonton Video Lengkap di YouTube</span>
+                  <ExternalLink className="w-3 h-3 ml-0.5" />
                 </a>
-              );
-            })}
+              </div>
+
+            </div>
+
           </div>
+
         </section>
 
       </main>
