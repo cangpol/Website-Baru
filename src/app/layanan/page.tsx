@@ -401,10 +401,6 @@ export default function LayananIndexPage() {
                       <div className="md:col-span-7 lg:col-span-8 space-y-5">
                         
                         <div className="space-y-1.5">
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
-                            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                            <span>{pmbBrochureData.degree} • {pmbBrochureData.facultyName}</span>
-                          </div>
                           <h4 className="text-xl sm:text-2xl font-black text-[#0b2545] tracking-tight">
                             {pmbBrochureData.fileName}
                           </h4>
@@ -438,16 +434,6 @@ export default function LayananIndexPage() {
                           >
                             <Download className="w-4 h-4" />
                             <span>Unduh Dokumen Lengkap (PDF)</span>
-                          </a>
-
-                          <a
-                            href="https://pmb.upitra.ac.id"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-[#0b2545] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all"
-                          >
-                            <span>Daftar PMB Online</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
                           </a>
 
                           <a
