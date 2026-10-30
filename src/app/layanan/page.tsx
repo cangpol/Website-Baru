@@ -20,7 +20,6 @@ import {
   CheckCircle2,
   HelpCircle,
   Play,
-  Clock
 } from "lucide-react";
 import { initialAdminLayananBanner, AdminLayananBanner } from "@/lib/adminDataStore";
 
@@ -602,21 +601,20 @@ export default function LayananIndexPage() {
 
             </div>
 
-            {/* KOLOM KANAN: MINI PREVIEW VIDEO PROFIL 1.5 MENIT DENGAN BORDER CANTIK (lg:col-span-7) */}
+            {/* KOLOM KANAN: VIDEO PROFIL KAMPUS DENGAN BORDER CANTIK (lg:col-span-7) */}
             <div className="lg:col-span-7 space-y-4">
               
               {/* Header Video */}
               <div className="space-y-1.5 text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-bold shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <Play className="w-3.5 h-3.5 fill-red-600 text-red-600" />
-                  <span>Video Profil Resmi • Mini Preview 1.5 Menit</span>
-                </div>
+                <span className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <Play className="w-3.5 h-3.5 text-blue-600 fill-blue-600" />
+                  <span>Video Profil Resmi</span>
+                </span>
                 <h3 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
                   Mengenal Kampus UPITRA
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Saksikan cuplikan video profil Universitas Pignatelli Triputra Surakarta, fasilitas pembelajaran modern, serta integrasi ekosistem industri Triputra Group:
+                  Saksikan video profil Universitas Pignatelli Triputra Surakarta, fasilitas pembelajaran modern, serta integrasi ekosistem industri Triputra Group:
                 </p>
               </div>
 
@@ -635,8 +633,8 @@ export default function LayananIndexPage() {
                   {/* 3. Inner Screen Wrapper */}
                   <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner border border-white/10">
                     <iframe
-                      src="https://www.youtube-nocookie.com/embed/rVDHh02bbA4?start=1&end=91&rel=0&modestbranding=1"
-                      title="Video Profil Universitas Pignatelli Triputra (Mini Preview 1.5 Menit)"
+                      src="https://www.youtube-nocookie.com/embed/rVDHh02bbA4?autoplay=1&mute=1&start=1&end=91&rel=0&modestbranding=1&playsinline=1"
+                      title="Video Profil Universitas Pignatelli Triputra"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       className="w-full h-full border-0"
@@ -646,13 +644,8 @@ export default function LayananIndexPage() {
                 </div>
               </div>
 
-              {/* Keterangan Durasi & CTA Tonton Penuh */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs text-slate-500">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Cuplikan otomatis diputar selama <strong>1:30 menit</strong> (detik 1 - 90).</span>
-                </div>
-
+              {/* CTA Tonton Penuh di YouTube */}
+              <div className="flex justify-end pt-1">
                 <a
                   href="https://www.youtube.com/watch?v=rVDHh02bbA4"
                   target="_blank"
