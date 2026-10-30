@@ -266,6 +266,25 @@ export interface AdminKerjasamaMouItem {
   fileUrl?: string;
 }
 
+export interface AdminCalendarEvent {
+  id: number | string;
+  name: string;
+  title?: string;
+  category: "Akademik" | "Seminar" | "Workshop" | "Ujian" | "Libur" | "Wisuda" | "Kompetisi" | "Festival" | "Expo" | "Kemahasiswaan" | "PMB" | "Umum";
+  start_date: string;
+  end_date?: string;
+  event_time?: string;
+  location?: string;
+  organizer?: string;
+  registration_link?: string;
+  status: "Mendatang" | "Berlangsung" | "Selesai";
+  description?: string;
+  color?: string;
+  all_day?: boolean;
+  is_featured?: boolean;
+  sort_order?: number;
+}
+
 // ── Initial Mock Seed Data ──────────────────────────────────────────────────
 
 export const initialVisitorMetric: VisitorMetric = {
@@ -1119,3 +1138,116 @@ export const initialAdminMouList: AdminKerjasamaMouItem[] = [
     fileUrl: "/images/logo.png",
   },
 ];
+
+// ── Initial Admin Calendar & Campus Events (CRUD Calender Academic) ──
+export const initialAdminCalendarEvents: AdminCalendarEvent[] = [
+  {
+    id: 101,
+    name: "Seminar Nasional Transformasi Digital & AI 2026",
+    title: "Seminar Nasional Transformasi Digital & AI 2026",
+    category: "Seminar",
+    start_date: "2026-03-20",
+    end_date: "2026-03-20",
+    event_time: "09:00 - 12:30 WIB",
+    location: "Auditorium Lantai 3 Gedung Rektorat UPITRA",
+    organizer: "Fakultas Sains & Teknologi UPITRA",
+    registration_link: "https://bit.ly/seminar-ai-upitra-2026",
+    status: "Mendatang",
+    description: "Seminar praktis akselerasi industri 4.0 dan implementasi generatif AI bersama pakar praktisi industri teknologi.",
+    color: "blue",
+    all_day: false,
+    is_featured: true,
+    sort_order: 1,
+  },
+  {
+    id: 102,
+    name: "Workshop Sertifikasi Profesi BNSP K3 & Manajemen",
+    title: "Workshop Sertifikasi Profesi BNSP K3 & Manajemen",
+    category: "Workshop",
+    start_date: "2026-03-25",
+    end_date: "2026-03-27",
+    event_time: "08:30 - 16:00 WIB",
+    location: "Lab Komputasi & Laboratorium K3 UPITRA",
+    organizer: "Fakultas Kesehatan & FEB UPITRA",
+    registration_link: "https://bit.ly/sertifikasi-bnsp-upitra",
+    status: "Mendatang",
+    description: "Pelatihan intensif uji kompetensi keselamatan industri dan manajemen risiko operasional bagi mahasiswa tingkat akhir.",
+    color: "purple",
+    all_day: false,
+    is_featured: true,
+    sort_order: 2,
+  },
+  {
+    id: 103,
+    name: "UTS Semester Genap TA 2025/2026",
+    title: "UTS Semester Genap TA 2025/2026",
+    category: "Ujian",
+    start_date: "2026-03-16",
+    end_date: "2026-03-27",
+    event_time: "Sesuai Jadwal Kuliah",
+    location: "Kampus Terpadu UPITRA Solo",
+    organizer: "Biro Administrasi Akademik",
+    registration_link: "",
+    status: "Berlangsung",
+    description: "Pelaksanaan Ujian Tengah Semester Genap untuk seluruh program studi dan mata kuliah teori/praktikum.",
+    color: "red",
+    all_day: true,
+    is_featured: false,
+    sort_order: 3,
+  },
+  {
+    id: 104,
+    name: "Pendaftaran Program Immersion Magang Industri 3+1 Triputra Group",
+    title: "Pendaftaran Program Immersion Magang Industri 3+1 Triputra Group",
+    category: "Kemahasiswaan",
+    start_date: "2026-04-05",
+    end_date: "2026-04-15",
+    event_time: "08:00 - 17:00 WIB",
+    location: "Pusat Karir & Kemitraan Gedung A",
+    organizer: "Biro Kemahasiswaan & Kerjasama UPITRA",
+    registration_link: "https://bit.ly/immersion-upitra-triputra",
+    status: "Mendatang",
+    description: "Seleksi rekrutmen magang 1 tahun penuh di unit bisnis Triputra Group dengan tunjangan industri dan mentoring karir.",
+    color: "green",
+    all_day: true,
+    is_featured: true,
+    sort_order: 4,
+  },
+  {
+    id: 105,
+    name: "Festival Inovasi Mahasiswa & Gelar Karya Kewirausahaan",
+    title: "Festival Inovasi Mahasiswa & Gelar Karya Kewirausahaan",
+    category: "Festival",
+    start_date: "2026-05-10",
+    end_date: "2026-05-12",
+    event_time: "09:00 - 21:00 WIB",
+    location: "Plaza Kampus & Selasar Utama UPITRA",
+    organizer: "BEM & Unit Kegiatan Mahasiswa",
+    registration_link: "",
+    status: "Mendatang",
+    description: "Pameran prototipe start-up digital, produk kuliner kreatif, kompetisi pitch deck bisnis, dan panggung hiburan musik.",
+    color: "yellow",
+    all_day: false,
+    is_featured: false,
+    sort_order: 5,
+  },
+  {
+    id: 106,
+    name: "Wisuda Sarjana & Ahli Madya Periode I TA 2025/2026",
+    title: "Wisuda Sarjana & Ahli Madya Periode I TA 2025/2026",
+    category: "Wisuda",
+    start_date: "2026-06-20",
+    end_date: "2026-06-20",
+    event_time: "07:30 - 12:30 WIB",
+    location: "Grand Ballroom Solo Convention Hall",
+    organizer: "Panitia Wisuda Institusi",
+    registration_link: "",
+    status: "Mendatang",
+    description: "Rapat Senat Terbuka Wisuda Sarjana S1 dan Ahli Madya D3 Keperawatan Universitas Pignatelli Triputra.",
+    color: "blue",
+    all_day: false,
+    is_featured: true,
+    sort_order: 6,
+  },
+];
+

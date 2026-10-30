@@ -588,6 +588,8 @@ interface AcademicCalendarProps {
 }
 
 export default function AcademicCalendar({ events = initialAcademicEvents }: AcademicCalendarProps) {
+  const [calendarData, setCalendarData] = useState<CalendarEvent[]>(events);
+
   // Set default view to current month or real current date dynamically
   const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
   const [todayStr, setTodayStr] = useState<string>(() => {
@@ -598,11 +600,32 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [listFilter, setListFilter] = useState<"all" | "upcoming" | "past">("all");
 
-  // Client-side hydration sync to guarantee matching local browser time
+  // Client-side hydration sync to guarantee matching local browser time & dynamic admin events
   useEffect(() => {
     const now = new Date();
     setCurrentDate(now);
     setTodayStr(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`);
+
+    const saved = localStorage.getItem("upitra_academic_events");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mapped: CalendarEvent[] = parsed.map((item: any) => ({
+            id: item.id,
+            name: item.title || item.name || "Event Kampus",
+            start_date: item.start_date || item.event_date || "",
+            end_date: item.end_date || item.start_date || item.event_date || "",
+            category: (["Akademik", "Ujian", "Libur", "Wisuda", "PMB", "Kemahasiswaan"].includes(item.category)
+              ? item.category
+              : "Akademik") as CalendarEvent["category"],
+            description: item.description || "",
+            all_day: item.all_day ?? true,
+          }));
+          setCalendarData(mapped);
+        }
+      } catch {}
+    }
   }, []);
 
   const year = currentDate.getFullYear();
@@ -680,13 +703,13 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
 
   // Find events for a given date
   const getEventsForDate = (dateStr: string) => {
-    return events.filter(e => {
+    return calendarData.filter(e => {
       return dateStr >= e.start_date && dateStr <= e.end_date;
     });
   };
 
   // Sort events chronologically for agenda list
-  const sortedEvents = [...events].sort((a, b) => a.start_date.localeCompare(b.start_date));
+  const sortedEvents = [...calendarData].sort((a, b) => a.start_date.localeCompare(b.start_date));
   const upcomingEvents = sortedEvents.filter(ev => ev.end_date >= todayStr);
   const pastEvents = sortedEvents.filter(ev => ev.end_date < todayStr);
 
