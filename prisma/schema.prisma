@@ -133,3 +133,11 @@ model CampusTourBooking {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+// Persistensi terpusat untuk modul CRUD Dashboard Admin (JSON per koleksi).
+model AdminResource {
+  key       String   @id // nama koleksi, mis. "articles", "prodis"
+  value     String   @db.Text // payload JSON hasil CRUD admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

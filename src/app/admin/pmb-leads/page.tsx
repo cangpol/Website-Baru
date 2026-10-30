@@ -20,6 +20,7 @@ import {
   GraduationCap
 } from "lucide-react";
 import { initialAdminLeads, AdminLeadItem } from "@/lib/adminDataStore";
+import { loadCrudCollection, saveCrudCollection, newCrudId } from "@/lib/adminCrudStore";
 
 export default function AdminPmbLeadsPage() {
   const [leads, setLeads] = useState<AdminLeadItem[]>(initialAdminLeads);
@@ -43,19 +44,20 @@ export default function AdminPmbLeadsPage() {
 
   // Load from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_leads");
-    if (saved) {
+    let cancelled = false;
+    (async () => {
       try {
-        setLeads(JSON.parse(saved));
-      } catch {}
-    }
+        const res = await loadCrudCollection<AdminLeadItem[]>("leads", initialAdminLeads);
+        if (!cancelled) setLeads(Array.isArray(res.data) ? res.data : initialAdminLeads);
+      } catch {
+        if (!cancelled) setLeads(initialAdminLeads);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   const saveToStorage = (updated: AdminLeadItem[]) => {
-    setLeads(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_leads", JSON.stringify(updated));
-    }
+    saveCrudCollection<AdminLeadItem[]>("leads", updated, setLeads);
   };
 
   const handleOpenCreate = () => {
@@ -110,7 +112,7 @@ export default function AdminPmbLeadsPage() {
       saveToStorage(updated);
     } else {
       const newLead: AdminLeadItem = {
-        id: `lead-${Date.now().toString().slice(-4)}`,
+        id: newCrudId("lead"),
         fullName: formName,
         phoneWhatsapp: formPhone,
         email: formEmail,

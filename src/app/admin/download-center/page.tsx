@@ -16,6 +16,7 @@ import {
   Calendar
 } from "lucide-react";
 import { initialAdminDownloads, AdminDownloadItem } from "@/lib/adminDataStore";
+import { loadCrudCollection, saveCrudCollection, formatIdDate, newCrudId } from "@/lib/adminCrudStore";
 
 export default function AdminDownloadCenterPage() {
   const [downloads, setDownloads] = useState<AdminDownloadItem[]>(initialAdminDownloads);
@@ -35,19 +36,20 @@ export default function AdminDownloadCenterPage() {
 
   // Load from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_downloads");
-    if (saved) {
+    let cancelled = false;
+    (async () => {
       try {
-        setDownloads(JSON.parse(saved));
-      } catch {}
-    }
+        const res = await loadCrudCollection<AdminDownloadItem[]>("downloads", initialAdminDownloads);
+        if (!cancelled) setDownloads(Array.isArray(res.data) ? res.data : initialAdminDownloads);
+      } catch {
+        if (!cancelled) setDownloads(initialAdminDownloads);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   const saveToStorage = (updated: AdminDownloadItem[]) => {
-    setDownloads(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_downloads", JSON.stringify(updated));
-    }
+    saveCrudCollection<AdminDownloadItem[]>("downloads", updated, setDownloads);
   };
 
   const handleOpenCreate = () => {
@@ -94,7 +96,7 @@ export default function AdminDownloadCenterPage() {
       saveToStorage(updated);
     } else {
       const newItem: AdminDownloadItem = {
-        id: `dl-${Date.now().toString().slice(-4)}`,
+        id: newCrudId("dl"),
         title: formTitle,
         category: formCategory,
         fileName: formFileName,

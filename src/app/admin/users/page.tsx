@@ -18,6 +18,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { initialAdminUsers, AdminUserItem } from "@/lib/adminDataStore";
+import { loadCrudCollection, saveCrudCollection, newCrudId } from "@/lib/adminCrudStore";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUserItem[]>(initialAdminUsers);
@@ -35,19 +36,20 @@ export default function AdminUsersPage() {
 
   // Load from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_users");
-    if (saved) {
+    let cancelled = false;
+    (async () => {
       try {
-        setUsers(JSON.parse(saved));
-      } catch {}
-    }
+        const res = await loadCrudCollection<AdminUserItem[]>("users", initialAdminUsers);
+        if (!cancelled) setUsers(Array.isArray(res.data) ? res.data : initialAdminUsers);
+      } catch {
+        if (!cancelled) setUsers(initialAdminUsers);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   const saveToStorage = (updated: AdminUserItem[]) => {
-    setUsers(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_users", JSON.stringify(updated));
-    }
+    saveCrudCollection<AdminUserItem[]>("users", updated, setUsers);
   };
 
   const handleOpenCreate = () => {
@@ -87,7 +89,7 @@ export default function AdminUsersPage() {
       saveToStorage(updated);
     } else {
       const newUser: AdminUserItem = {
-        id: `usr-${Date.now().toString().slice(-4)}`,
+        id: newCrudId("usr"),
         name: formName,
         email: formEmail,
         role: formRole,

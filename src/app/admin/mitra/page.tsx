@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { initialAdminMitra, AdminMitraItem } from "@/lib/adminDataStore";
+import { loadCrudCollection, saveCrudCollection, newCrudId } from "@/lib/adminCrudStore";
 
 export default function AdminMitraPage() {
   const [mitras, setMitras] = useState<AdminMitraItem[]>(initialAdminMitra);
@@ -37,19 +38,20 @@ export default function AdminMitraPage() {
 
   // Load from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_mitra");
-    if (saved) {
+    let cancelled = false;
+    (async () => {
       try {
-        setMitras(JSON.parse(saved));
-      } catch {}
-    }
+        const res = await loadCrudCollection<AdminMitraItem[]>("mitra", initialAdminMitra);
+        if (!cancelled) setMitras(Array.isArray(res.data) ? res.data : initialAdminMitra);
+      } catch {
+        if (!cancelled) setMitras(initialAdminMitra);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   const saveToStorage = (updated: AdminMitraItem[]) => {
-    setMitras(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_mitra", JSON.stringify(updated));
-    }
+    saveCrudCollection<AdminMitraItem[]>("mitra", updated, setMitras);
   };
 
   const handleOpenCreate = () => {
@@ -95,7 +97,7 @@ export default function AdminMitraPage() {
       saveToStorage(updated);
     } else {
       const newItem: AdminMitraItem = {
-        id: `mitra-${Date.now().toString().slice(-4)}`,
+        id: newCrudId("mitra"),
         name: formName,
         category: formCategory,
         partnershipType: formPartnershipType,

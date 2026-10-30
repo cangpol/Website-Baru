@@ -15,6 +15,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { initialAdminProdiList, AdminProdiItem } from "@/lib/adminDataStore";
+import { loadCrudCollection, saveCrudCollection, newCrudId } from "@/lib/adminCrudStore";
 
 export default function AdminProdiCrudPage() {
   const [prodis, setProdis] = useState<AdminProdiItem[]>(initialAdminProdiList);
@@ -39,12 +40,16 @@ export default function AdminProdiCrudPage() {
 
   // Load from localStorage if present & sync faculty URL param
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_prodis");
-    if (saved) {
+    let cancelled = false;
+    (async () => {
       try {
-        setProdis(JSON.parse(saved));
-      } catch {}
-    }
+        const res = await loadCrudCollection<AdminProdiItem[]>("prodis", initialAdminProdiList);
+        if (!cancelled) setProdis(Array.isArray(res.data) ? res.data : initialAdminProdiList);
+      } catch {
+        if (!cancelled) setProdis(initialAdminProdiList);
+      }
+    })();
+    return () => { cancelled = true; };
 
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -56,10 +61,7 @@ export default function AdminProdiCrudPage() {
   }, []);
 
   const saveToStorage = (updated: AdminProdiItem[]) => {
-    setProdis(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_prodis", JSON.stringify(updated));
-    }
+    saveCrudCollection<AdminProdiItem[]>("prodis", updated, setProdis);
   };
 
   const handleOpenCreate = () => {
@@ -127,7 +129,7 @@ export default function AdminProdiCrudPage() {
     } else {
       // Create
       const newItem: AdminProdiItem = {
-        id: "prodi_" + Date.now(),
+        id: newCrudId("prodi"),
         faculty: formFaculty,
         facultyName: facultyMap[formFaculty],
         name: formName.trim(),

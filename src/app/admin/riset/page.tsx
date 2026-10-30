@@ -33,6 +33,14 @@ import {
   initialAdminRisetList, 
   AdminRisetSection 
 } from "@/lib/adminDataStore";
+import {
+  loadCrudCollection,
+  saveCrudCollection,
+  formatIdDate,
+  slugify,
+  newCrudId,
+  isSlugTaken,
+} from "@/lib/adminCrudStore";
 
 const newsCategories = [
   "Semua",
@@ -56,7 +64,7 @@ const emptyNewsForm: AdminArticleItem = {
   coverImage: "/images/ar-vr.jpg",
   author: "Humas UPITRA",
   published: true,
-  publishedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+  publishedAt: formatIdDate(),
   viewCount: 1,
 };
 
@@ -115,7 +123,7 @@ export default function AdminRisetPage() {
   });
   const [deleteRisetId, setDeleteRisetId] = useState<string | null>(null);
 
-  // ── Load from LocalStorage ────────────────────────────────────────────────
+  // ── Load: Server persisten (fallback cache lokal / seed) ─────────────────
   useEffect(() => {
     // Check URL query tab parameter if exists
     if (typeof window !== "undefined") {
@@ -126,41 +134,28 @@ export default function AdminRisetPage() {
       }
     }
 
-    // Load Berita
-    const savedNews = localStorage.getItem("upitra_admin_articles");
-    if (savedNews) {
-      try {
-        const parsed = JSON.parse(savedNews);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setArticles(parsed);
-        } else {
-          setArticles(initialAdminArticles);
-        }
-      } catch {
-        setArticles(initialAdminArticles);
-      }
-    } else {
-      setArticles(initialAdminArticles);
-      localStorage.setItem("upitra_admin_articles", JSON.stringify(initialAdminArticles));
-    }
+    let cancelled = false;
 
-    // Load Riset
-    const savedRiset = localStorage.getItem("upitra_admin_riset");
-    if (savedRiset) {
+    // Load Berita & Riset secara paralel dari penyimpanan terpusat.
+    (async () => {
       try {
-        const parsed = JSON.parse(savedRiset);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setRisetItems(parsed);
-        } else {
-          setRisetItems(initialAdminRisetList);
-        }
+        const [news, riset] = await Promise.all([
+          loadCrudCollection<AdminArticleItem[]>("articles", initialAdminArticles),
+          loadCrudCollection<AdminRisetSection[]>("riset", initialAdminRisetList),
+        ]);
+        if (cancelled) return;
+        setArticles(Array.isArray(news.data) ? news.data : initialAdminArticles);
+        setRisetItems(Array.isArray(riset.data) ? riset.data : initialAdminRisetList);
       } catch {
+        if (cancelled) return;
+        setArticles(initialAdminArticles);
         setRisetItems(initialAdminRisetList);
       }
-    } else {
-      setRisetItems(initialAdminRisetList);
-      localStorage.setItem("upitra_admin_riset", JSON.stringify(initialAdminRisetList));
-    }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const showToast = (msg: string) => {
@@ -169,20 +164,11 @@ export default function AdminRisetPage() {
   };
 
   const saveNewsToStorage = (updated: AdminArticleItem[]) => {
-    setArticles(updated);
-    localStorage.setItem("upitra_admin_articles", JSON.stringify(updated));
+    saveCrudCollection<AdminArticleItem[]>("articles", updated, setArticles);
   };
 
   const saveRisetToStorage = (updated: AdminRisetSection[]) => {
-    setRisetItems(updated);
-    localStorage.setItem("upitra_admin_riset", JSON.stringify(updated));
-  };
-
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
+    saveCrudCollection<AdminRisetSection[]>("riset", updated, setRisetItems);
   };
 
   // ── BERITA HANDLERS ────────────────────────────────────────────────────────
@@ -192,7 +178,7 @@ export default function AdminRisetPage() {
     setShowManualCoverUrl(false);
     setNewsForm({
       ...emptyNewsForm,
-      publishedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+      publishedAt: formatIdDate(),
     });
     setNewsModalOpen(true);
   };
@@ -212,7 +198,17 @@ export default function AdminRisetPage() {
       return;
     }
 
-    const slug = newsForm.slug.trim() || generateSlug(newsForm.title);
+    const slug = newsForm.slug.trim() || slugify(newsForm.title);
+
+    if (!slug) {
+      alert("Slug berita tidak valid. Gunakan judul dengan minimal satu huruf/angka.");
+      return;
+    }
+
+    if (isSlugTaken(articles, slug, editingArticle?.id)) {
+      alert(`Slug "${slug}" sudah dipakai artikel lain. Ubah slug atau judul berita.`);
+      return;
+    }
 
     if (editingArticle) {
       const updated = articles.map((a) =>
@@ -223,7 +219,7 @@ export default function AdminRisetPage() {
     } else {
       const newArticle: AdminArticleItem = {
         ...newsForm,
-        id: `art-${Date.now().toString().slice(-5)}`,
+        id: newCrudId("art"),
         slug,
       };
       saveNewsToStorage([newArticle, ...articles]);
@@ -293,7 +289,7 @@ export default function AdminRisetPage() {
       showToast("Publikasi riset berhasil diperbarui!");
     } else {
       const newItem: AdminRisetSection = {
-        id: `rst-${Date.now()}`,
+        id: newCrudId("rst"),
         ...risetFormData,
       };
       saveRisetToStorage([newItem, ...risetItems]);
@@ -751,7 +747,7 @@ export default function AdminRisetPage() {
                     setNewsForm({
                       ...newsForm,
                       title,
-                      slug: editingArticle ? newsForm.slug : generateSlug(title),
+                      slug: editingArticle ? newsForm.slug : slugify(title),
                     });
                   }}
                   className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white"
@@ -766,7 +762,7 @@ export default function AdminRisetPage() {
                     required
                     placeholder="lulusan-upitra-sukses-raih-karir"
                     value={newsForm.slug}
-                    onChange={(e) => setNewsForm({ ...newsForm, slug: generateSlug(e.target.value) })}
+                    onChange={(e) => setNewsForm({ ...newsForm, slug: slugify(e.target.value) })}
                     className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 font-mono text-xs focus:outline-none focus:border-blue-500 focus:bg-white"
                   />
                 </div>

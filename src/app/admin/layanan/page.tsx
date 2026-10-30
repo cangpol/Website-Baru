@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { initialAdminServices, AdminServiceItem } from "@/lib/adminDataStore";
+import { loadCrudCollection, saveCrudCollection, newCrudId } from "@/lib/adminCrudStore";
 
 export default function AdminLayananPage() {
   const [services, setServices] = useState<AdminServiceItem[]>(initialAdminServices);
@@ -36,12 +37,16 @@ export default function AdminLayananPage() {
 
   // Load from localStorage & sync unit param
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_services");
-    if (saved) {
+    let cancelled = false;
+    (async () => {
       try {
-        setServices(JSON.parse(saved));
-      } catch {}
-    }
+        const res = await loadCrudCollection<AdminServiceItem[]>("services", initialAdminServices);
+        if (!cancelled) setServices(Array.isArray(res.data) ? res.data : initialAdminServices);
+      } catch {
+        if (!cancelled) setServices(initialAdminServices);
+      }
+    })();
+    return () => { cancelled = true; };
 
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -57,10 +62,7 @@ export default function AdminLayananPage() {
   }, []);
 
   const saveToStorage = (updated: AdminServiceItem[]) => {
-    setServices(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_services", JSON.stringify(updated));
-    }
+    saveCrudCollection<AdminServiceItem[]>("services", updated, setServices);
   };
 
   const handleOpenCreate = () => {
