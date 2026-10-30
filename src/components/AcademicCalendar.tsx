@@ -22,7 +22,7 @@ export interface CalendarEvent {
   name: string;
   start_date: string; // YYYY-MM-DD
   end_date: string;   // YYYY-MM-DD
-  category: "Akademik" | "Ujian" | "Libur" | "Wisuda" | "PMB" | "Kemahasiswaan";
+  category: "Akademik" | "Ujian" | "Libur" | "Wisuda" | "PMB" | "Kemahasiswaan" | "Seminar" | "Workshop" | "Kompetisi" | "Festival" | "Expo" | "Umum" | string;
   description?: string;
   all_day?: boolean;
 }
@@ -35,6 +35,12 @@ export const categoryColors: Record<string, { bg: string; text: string; hex: str
   wisuda: { bg: "bg-[#0369a1]", text: "text-white", hex: "#0369a1", badge: "bg-blue-50 text-[#0369a1] border-blue-200" },
   pmb: { bg: "bg-[#38bdf8]", text: "text-slate-900", hex: "#38bdf8", badge: "bg-sky-50 text-sky-800 border-sky-300" },
   kemahasiswaan: { bg: "bg-[#2563eb]", text: "text-white", hex: "#2563eb", badge: "bg-blue-50 text-[#2563eb] border-blue-200" },
+  seminar: { bg: "bg-[#0284c7]", text: "text-white", hex: "#0284c7", badge: "bg-sky-50 text-[#0284c7] border-sky-200" },
+  workshop: { bg: "bg-[#2563eb]", text: "text-white", hex: "#2563eb", badge: "bg-blue-50 text-[#2563eb] border-blue-200" },
+  kompetisi: { bg: "bg-[#0369a1]", text: "text-white", hex: "#0369a1", badge: "bg-blue-50 text-[#0369a1] border-blue-200" },
+  festival: { bg: "bg-[#38bdf8]", text: "text-slate-900", hex: "#38bdf8", badge: "bg-sky-50 text-sky-800 border-sky-300" },
+  expo: { bg: "bg-[#0284c7]", text: "text-white", hex: "#0284c7", badge: "bg-sky-50 text-[#0284c7] border-sky-200" },
+  umum: { bg: "bg-slate-500", text: "text-white", hex: "#64748b", badge: "bg-slate-50 text-slate-700 border-slate-200" },
 };
 
 export const initialAcademicEvents: CalendarEvent[] = [
@@ -616,9 +622,7 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
             name: item.title || item.name || "Event Kampus",
             start_date: item.start_date || item.event_date || "",
             end_date: item.end_date || item.start_date || item.event_date || "",
-            category: (["Akademik", "Ujian", "Libur", "Wisuda", "PMB", "Kemahasiswaan"].includes(item.category)
-              ? item.category
-              : "Akademik") as CalendarEvent["category"],
+            category: (item.category || "Akademik") as CalendarEvent["category"],
             description: item.description || "",
             all_day: item.all_day ?? true,
           }));

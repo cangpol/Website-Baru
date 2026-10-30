@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { NewsArticle } from "@/lib/newsData";
+import { getMergedArticles } from "@/lib/syncArticles";
 import { BookOpen, Calendar, Clock, ArrowRight, Search, Filter, ArrowUpDown, Eye } from "lucide-react";
 
 interface NewsFilterGridProps {
@@ -10,9 +11,14 @@ interface NewsFilterGridProps {
 }
 
 export default function NewsFilterGrid({ articles }: NewsFilterGridProps) {
+  const [syncedArticles, setSyncedArticles] = useState<NewsArticle[]>(articles);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<"latest" | "popular" | "oldest">("latest");
+
+  useEffect(() => {
+    setSyncedArticles(getMergedArticles(articles));
+  }, [articles]);
 
   const categories = [
     { key: "all", label: "Semua" },
@@ -22,7 +28,7 @@ export default function NewsFilterGrid({ articles }: NewsFilterGridProps) {
     { key: "News", label: "Kerjasama Industri" },
   ];
 
-  const filteredArticles = articles.filter((art) => {
+  const filteredArticles = syncedArticles.filter((art) => {
     const matchesCategory =
       selectedCategory === "all" || art.category === selectedCategory;
     const matchesSearch =

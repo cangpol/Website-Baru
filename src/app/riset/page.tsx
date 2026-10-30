@@ -16,13 +16,14 @@ import {
   BookOpen 
 } from "lucide-react";
 import { initialAdminRisetBanner, AdminRisetBanner } from "@/lib/adminDataStore";
-import { getAllArticles } from "@/lib/newsData";
+import { getAllArticles, NewsArticle } from "@/lib/newsData";
+import { getMergedArticles } from "@/lib/syncArticles";
 
 export default function RisetPortalPage() {
   const [banner, setBanner] = useState<AdminRisetBanner>(initialAdminRisetBanner);
-  const recentArticles = getAllArticles().slice(0, 4);
+  const [recentArticles, setRecentArticles] = useState<NewsArticle[]>(() => getAllArticles().slice(0, 4));
 
-  // Load dynamic banner from localStorage (editable via Admin if configured)
+  // Load dynamic banner and merged articles from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("upitra_banner_riset");
     if (saved) {
@@ -30,6 +31,9 @@ export default function RisetPortalPage() {
         setBanner(JSON.parse(saved));
       } catch {}
     }
+
+    const merged = getMergedArticles(getAllArticles());
+    setRecentArticles(merged.slice(0, 4));
   }, []);
 
   const getCategoryBadgeClass = (category: string) => {

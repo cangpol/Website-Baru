@@ -1,450 +1,522 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
-  Users, 
-  Eye, 
+  CalendarDays, 
+  Newspaper, 
+  Microscope, 
+  ShieldCheck, 
+  Plus, 
+  ArrowRight, 
+  ExternalLink, 
   Clock, 
-  TrendingUp, 
-  Smartphone, 
-  Laptop, 
-  Tablet, 
-  Compass, 
-  Activity, 
-  MapPin, 
-  Radio, 
+  CheckCircle2, 
+  FileText, 
+  Layers,
+  Sparkles,
   RefreshCw,
-  Sparkles
+  Eye,
+  Tag
 } from "lucide-react";
 import { 
-  initialVisitorMetric, 
-  initialTrafficByLine, 
-  initialGeoTraffic, 
-  initialDeviceTraffic, 
-  initialReferrerTraffic, 
-  initialHourlyTraffic, 
-  initialLiveVisitorLogs 
+  initialAdminCalendarEvents, 
+  AdminCalendarEvent, 
+  initialAdminArticles, 
+  AdminArticleItem, 
+  initialAdminRisetList, 
+  AdminRisetSection 
 } from "@/lib/adminDataStore";
 
-export default function AdminOverviewAnalyticsPage() {
-  const [metrics, setMetrics] = useState(initialVisitorMetric);
-  const [selectedRange, setSelectedRange] = useState<"hari_ini" | "7_hari" | "30_hari" | "tahun_ini">("30_hari");
+export default function AdminDashboardPage() {
+  const [events, setEvents] = useState<AdminCalendarEvent[]>([]);
+  const [articles, setArticles] = useState<AdminArticleItem[]>([]);
+  const [risetItems, setRisetItems] = useState<AdminRisetSection[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastSynced, setLastSynced] = useState<string>("");
+
+  // Load actual institutional data from local storage
+  const loadData = () => {
+    // 1. Academic Events
+    const savedEvents = localStorage.getItem("upitra_academic_events");
+    if (savedEvents) {
+      try {
+        const parsed = JSON.parse(savedEvents);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setEvents(parsed);
+        } else {
+          setEvents(initialAdminCalendarEvents);
+        }
+      } catch {
+        setEvents(initialAdminCalendarEvents);
+      }
+    } else {
+      setEvents(initialAdminCalendarEvents);
+    }
+
+    // 2. Berita & Artikel
+    const savedNews = localStorage.getItem("upitra_admin_articles");
+    if (savedNews) {
+      try {
+        const parsed = JSON.parse(savedNews);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setArticles(parsed);
+        } else {
+          setArticles(initialAdminArticles);
+        }
+      } catch {
+        setArticles(initialAdminArticles);
+      }
+    } else {
+      setArticles(initialAdminArticles);
+    }
+
+    // 3. Riset Dosen
+    const savedRiset = localStorage.getItem("upitra_admin_riset");
+    if (savedRiset) {
+      try {
+        const parsed = JSON.parse(savedRiset);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setRisetItems(parsed);
+        } else {
+          setRisetItems(initialAdminRisetList);
+        }
+      } catch {
+        setRisetItems(initialAdminRisetList);
+      }
+    } else {
+      setRisetItems(initialAdminRisetList);
+    }
+
+    const now = new Date();
+    setLastSynced(now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB");
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
     setTimeout(() => {
-      setMetrics((prev) => ({
-        ...prev,
-        activeOnline: Math.floor(Math.random() * 15) + 20,
-        totalPageviews: prev.totalPageviews + Math.floor(Math.random() * 50),
-      }));
+      loadData();
       setIsRefreshing(false);
-    }, 600);
+    }, 400);
   };
 
+  // Metrics Calculations
+  const upcomingEventsCount = events.filter((e) => e.status === "Mendatang").length;
+  const ongoingEventsCount = events.filter((e) => e.status === "Berlangsung").length;
+  const publishedArticlesCount = articles.filter((a) => a.published !== false).length;
+  const draftArticlesCount = articles.filter((a) => a.published === false).length;
+  const scopusCount = risetItems.filter((r) => r.indexedIn === "Scopus").length;
+
+  // Unified Recent Activities (Combined newest events & articles)
+  const recentActivities = [
+    ...articles.slice(0, 4).map((art) => ({
+      id: `art-${art.id}`,
+      type: "Berita",
+      title: art.title,
+      category: art.category,
+      date: art.publishedAt || "Baru saja",
+      status: art.published !== false ? "Terbit" : "Draf",
+      link: "/admin/riset",
+      badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+      statusColor: art.published !== false ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"
+    })),
+    ...events.slice(0, 4).map((ev) => ({
+      id: `ev-${ev.id}`,
+      type: "Event Akademik",
+      title: ev.name || ev.title || "Event Kampus",
+      category: ev.category,
+      date: ev.start_date,
+      status: ev.status || "Mendatang",
+      link: "/admin/akademik",
+      badgeColor: "bg-sky-50 text-sky-700 border-sky-200",
+      statusColor: ev.status === "Berlangsung" 
+        ? "bg-blue-50 text-blue-700 border-blue-200" 
+        : ev.status === "Selesai" 
+        ? "bg-slate-100 text-slate-700 border-slate-200"
+        : "bg-emerald-50 text-emerald-700 border-emerald-200"
+    }))
+  ].slice(0, 6);
+
   return (
-    <div className="space-y-8 select-none font-sans">
+    <div className="space-y-8 select-none font-sans text-slate-800">
       
-      {/* 1. HEADER OVERVIEW: Intelijen Pengunjung Setiap Lini */}
+      {/* 1. HEADER UTAMA: Pusat Kendali Institusi UPITRA */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider">
-              <Radio className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-              <span>Real-Time Visitor Intelligence</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+              <span>Pusat Kendali Institusi</span>
             </span>
             <span className="text-xs text-slate-500 font-medium">Portal UPITRA</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
-            Analitik &amp; Trafik Pengunjung Setiap Lini
+            Dashboard Eksekutif Administrator
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Data pemantauan lengkap calon mahasiswa dan publik di seluruh halaman, lini prodi, geografi, dan kanal masuk.
+            Kelola agenda Kalender Akademik, publikasi Berita &amp; Riset institusi secara terintegrasi langsung dengan portal publik.
           </p>
         </div>
 
-        {/* Filter Rentang Tanggal & Refresh */}
+        {/* Action Controls & Sync Status */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 shadow-2xs text-xs">
-            {(["hari_ini", "7_hari", "30_hari", "tahun_ini"] as const).map((rng) => (
-              <button
-                key={rng}
-                onClick={() => setSelectedRange(rng)}
-                className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                  selectedRange === rng ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-blue-700 hover:bg-slate-50"
-                }`}
-              >
-                {rng === "hari_ini" ? "Hari Ini" : rng === "7_hari" ? "7 Hari" : rng === "30_hari" ? "30 Hari" : "2026"}
-              </button>
-            ))}
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs text-xs text-slate-600">
+            <Clock className="w-3.5 h-3.5 text-blue-600" />
+            <span>Sinkron: {lastSynced || "Baru saja"}</span>
           </div>
 
           <button
             onClick={handleRefresh}
-            title="Segarkan Data Analitik"
+            title="Segarkan Data Institusi"
             className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 shadow-2xs transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-blue-600" : ""}`} />
           </button>
+
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-colors"
+          >
+            <span>Buka Website</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
         </div>
       </div>
 
-      {/* 2. KARTU METRIK KPI UTAMA PENGUNJUNG (Biru & Putih) */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-5">
+      {/* 2. KARTU RINGKASAN MODUL INSTITUSI (Palet Biru & Putih) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         
-        {/* KPI 1: Total Kunjungan */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
+        {/* Modul 1: Kalender Akademik */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 to-sky-400" />
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Pageviews</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+          <div>
+            <div className="flex items-center justify-between text-slate-500 mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Kalender Akademik
+              </span>
+              <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <CalendarDays className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-[#06172e] tracking-tight">
+              {events.length}
+            </div>
+            <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
+              <span className="text-blue-600 font-bold">{upcomingEventsCount} Mendatang</span>
+              <span>•</span>
+              <span className="text-emerald-600 font-bold">{ongoingEventsCount} Berlangsung</span>
+            </div>
+          </div>
+
+          <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link
+              href="/admin/akademik"
+              className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 group-hover:underline"
+            >
+              <span>Kelola Event</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              Aktif
+            </span>
+          </div>
+        </div>
+
+        {/* Modul 2: Berita & Publikasi */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600" />
+          <div>
+            <div className="flex items-center justify-between text-slate-500 mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Berita &amp; Artikel
+              </span>
+              <div className="p-2.5 rounded-xl bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                <Newspaper className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-[#06172e] tracking-tight">
+              {articles.length}
+            </div>
+            <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
+              <span className="text-emerald-600 font-bold">{publishedArticlesCount} Diterbitkan</span>
+              <span>•</span>
+              <span className="text-amber-600 font-bold">{draftArticlesCount} Draf</span>
+            </div>
+          </div>
+
+          <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link
+              href="/admin/riset"
+              className="text-xs font-bold text-sky-600 hover:text-sky-800 flex items-center gap-1 group-hover:underline"
+            >
+              <span>Kelola Berita</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+              Live Sync
+            </span>
+          </div>
+        </div>
+
+        {/* Modul 3: Publikasi Riset */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-blue-600" />
+          <div>
+            <div className="flex items-center justify-between text-slate-500 mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Riset &amp; Jurnal Dosen
+              </span>
+              <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <Microscope className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-[#06172e] tracking-tight">
+              {risetItems.length}
+            </div>
+            <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
+              <span className="text-indigo-600 font-bold">{scopusCount} Scopus</span>
+              <span>•</span>
+              <span className="text-slate-600 font-medium">Terakreditasi</span>
+            </div>
+          </div>
+
+          <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+            <Link
+              href="/admin/riset?tab=publikasi"
+              className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 group-hover:underline"
+            >
+              <span>Daftar Riset</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+              Repository
+            </span>
+          </div>
+        </div>
+
+        {/* Modul 4: Gateway Keamanan */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400" />
+          <div>
+            <div className="flex items-center justify-between text-slate-500 mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Gateway &amp; Sesi
+              </span>
+              <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-xl font-black text-[#06172e] tracking-tight flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Terproteksi</span>
+            </div>
+            <div className="text-xs text-slate-500 mt-1 font-medium truncate">
+              Otoritas Administrator Utama
+            </div>
+          </div>
+
+          <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs font-bold text-emerald-700">
+              Aktif WIB
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              Aman
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* 3. PINTASAN CEPAT OPERASIONAL (Quick Access Operations) */}
+      <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-blue-600" />
+            <h2 className="text-sm font-bold text-[#06172e] uppercase tracking-wide">
+              Pintasan Cepat Operasional
+            </h2>
+          </div>
+          <span className="text-xs text-slate-400 font-medium">Akses langsung fitur utama</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          
+          <Link
+            href="/admin/akademik"
+            className="flex items-center gap-3 p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200/80 hover:bg-blue-100/60 hover:border-blue-300 transition-all group"
+          >
+            <div className="p-2 rounded-xl bg-blue-600 text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <Plus className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#06172e] truncate">
+                Tambah Event Akademik
+              </div>
+              <div className="text-[11px] text-slate-500 truncate">
+                Kalender &amp; agenda kampus
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/riset"
+            className="flex items-center gap-3 p-3.5 rounded-2xl bg-sky-50/60 border border-sky-200/80 hover:bg-sky-100/60 hover:border-sky-300 transition-all group"
+          >
+            <div className="p-2 rounded-xl bg-sky-600 text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#06172e] truncate">
+                Tulis Berita Baru
+              </div>
+              <div className="text-[11px] text-slate-500 truncate">
+                Upload foto &amp; editor TipTap
+              </div>
+            </div>
+          </Link>
+
+          <a
+            href="/kemahasiswaan/kalender-akademik"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all group"
+          >
+            <div className="p-2 rounded-xl bg-slate-700 text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <CalendarDays className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#06172e] truncate flex items-center gap-1">
+                <span>Kalender Publik</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </div>
+              <div className="text-[11px] text-slate-500 truncate">
+                Tampilan agenda mahasiswa
+              </div>
+            </div>
+          </a>
+
+          <a
+            href="/berita"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all group"
+          >
+            <div className="p-2 rounded-xl bg-slate-700 text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
               <Eye className="w-4 h-4" />
             </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
-            {metrics.totalPageviews.toLocaleString("id-ID")}
-          </div>
-          <div className="text-[11px] text-blue-700 font-semibold flex items-center gap-1 mt-1.5">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>+14.2% dari bulan lalu</span>
-          </div>
-        </div>
-
-        {/* KPI 2: Pengunjung Unik */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 to-sky-400" />
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Pengunjung Unik</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <Users className="w-4 h-4" />
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#06172e] truncate flex items-center gap-1">
+                <span>Newsroom Publik</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </div>
+              <div className="text-[11px] text-slate-500 truncate">
+                Portal kabar terkini UPITRA
+              </div>
             </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
-            {metrics.uniqueVisitors.toLocaleString("id-ID")}
-          </div>
-          <div className="text-[11px] text-blue-700 font-semibold flex items-center gap-1 mt-1.5">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>+11.8% calon mahasiswa</span>
-          </div>
-        </div>
+          </a>
 
-        {/* KPI 3: Durasi Kunjungan */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 to-sky-400" />
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Rata-rata Durasi</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
-            {metrics.avgDuration}
-          </div>
-          <div className="text-[11px] text-slate-500 font-medium flex items-center gap-1 mt-1.5">
-            <span>Interaksi membaca aktif</span>
-          </div>
         </div>
-
-        {/* KPI 4: Konversi PMB */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 to-sky-400" />
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Konversi PMB</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <Sparkles className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
-            {metrics.conversionRate}
-          </div>
-          <div className="text-[11px] text-blue-700 font-semibold flex items-center gap-1 mt-1.5">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>Klik Form &amp; Brosur</span>
-          </div>
-        </div>
-
-        {/* KPI 5: Pengunjung Online Live */}
-        <div className="col-span-2 lg:col-span-1 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white via-white to-blue-50/50 border border-blue-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden relative group">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-blue-600" />
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-900">Live Saat Ini</span>
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
-            </span>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-blue-700 tracking-tight">
-            {metrics.activeOnline}
-          </div>
-          <div className="text-[11px] text-slate-500 font-medium mt-1.5">
-            Pengguna sedang online
-          </div>
-        </div>
-
       </div>
 
-      {/* 3. LINI UTAMA: TRAFIK DARI SETIAP LINI HALAMAN & MODUL */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Lini Halaman & Modul (8 Kolom di Desktop) */}
-        <div className="lg:col-span-8 p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div>
-              <h2 className="text-base font-black text-[#06172e] flex items-center gap-2">
-                <span>Lini Trafik per Halaman &amp; Modul Kampus</span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Sebaran intensitas kunjungan calon mahasiswa di setiap lini konten
-              </p>
-            </div>
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-              Total 48.720
-            </span>
-          </div>
-
-          <div className="space-y-4">
-            {initialTrafficByLine.map((line, idx) => (
-              <div key={idx} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="w-5 h-5 rounded-md bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center font-mono text-[10px] font-bold shrink-0">
-                      {idx + 1}
-                    </span>
-                    <span className="font-bold text-[#06172e] truncate">{line.name}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 hidden sm:inline font-medium">
-                      {line.category}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="font-bold text-[#06172e]">{line.pageviews.toLocaleString("id-ID")}</span>
-                    <span className="text-slate-500 w-10 text-right font-mono text-[11px]">{line.percentage}%</span>
-                    <span className="text-blue-700 text-[11px] font-bold w-12 text-right hidden sm:inline">{line.trend}</span>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-600 via-sky-500 to-blue-500 rounded-full transition-all duration-700"
-                    style={{ width: `${line.percentage * 3.5}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Lini Geografis & Asal Kota (4 Kolom di Desktop) */}
-        <div className="lg:col-span-4 p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-5">
-          <div className="pb-3 border-b border-slate-100">
-            <h2 className="text-base font-black text-[#06172e] flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-blue-600" />
-              <span>Lini Geografis &amp; Kota</span>
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Distribusi domisili calon pendaftar
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {initialGeoTraffic.map((geo, idx) => (
-              <div key={idx} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700 truncate pr-2">{geo.city}</span>
-                  <span className="font-bold text-[#06172e] shrink-0 font-mono">{geo.percentage}%</span>
-                </div>
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-blue-600 rounded-full"
-                    style={{ width: `${geo.percentage}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 text-xs text-blue-950 space-y-1">
-            <span className="font-bold text-blue-800">Dominasi Solo Raya:</span>
-            <p className="text-[11px] text-slate-600 leading-relaxed">
-              54% calon mahasiswa berasal dari radius Surakarta, Sukoharjo, Klaten, dan Karanganyar.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      {/* 4. LINI PERANGKAT, KANAL RUJUKAN & WAKTU PUNCAK */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Lini Perangkat & Platform */}
-        <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-4">
-          <div className="pb-2 border-b border-slate-100">
-            <h3 className="text-sm font-black text-[#06172e] flex items-center gap-2">
-              <Smartphone className="w-4 h-4 text-blue-600" />
-              <span>Lini Perangkat (Device)</span>
-            </h3>
-            <p className="text-[11px] text-slate-500">Media yang digunakan pengunjung</p>
-          </div>
-
-          <div className="space-y-3.5">
-            {initialDeviceTraffic.map((dev, idx) => (
-              <div key={idx} className="p-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 flex items-center justify-between hover:border-blue-300 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
-                    {dev.device.includes("Mobile") ? (
-                      <Smartphone className="w-4 h-4" />
-                    ) : dev.device.includes("Desktop") ? (
-                      <Laptop className="w-4 h-4" />
-                    ) : (
-                      <Tablet className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-[#06172e]">{dev.device}</div>
-                    <div className="text-[10px] text-slate-500">{dev.count.toLocaleString("id-ID")} pengguna</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-sm font-black text-blue-700 font-mono">{dev.percentage}%</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Lini Sumber Rujukan (Traffic Acquisition) */}
-        <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-4">
-          <div className="pb-2 border-b border-slate-100">
-            <h3 className="text-sm font-black text-[#06172e] flex items-center gap-2">
-              <Compass className="w-4 h-4 text-blue-600" />
-              <span>Lini Saluran Rujukan</span>
-            </h3>
-            <p className="text-[11px] text-slate-500">Asal kanal kedatangan pengunjung</p>
-          </div>
-
-          <div className="space-y-3.5">
-            {initialReferrerTraffic.map((ref, idx) => (
-              <div key={idx} className="p-3 rounded-2xl bg-slate-50/80 border border-slate-200/80 flex items-center justify-between hover:border-blue-300 transition-colors">
-                <div className="min-w-0 pr-2">
-                  <div className="text-xs font-bold text-[#06172e] truncate">{ref.source}</div>
-                  <div className="text-[10px] text-blue-600 font-medium">{ref.channel}</div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-sm font-black text-[#06172e] font-mono">{ref.percentage}%</div>
-                  <div className="text-[10px] text-slate-500">{ref.visitors.toLocaleString("id-ID")}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Lini Waktu Puncak (Hourly Heatmap) */}
-        <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-4">
-          <div className="pb-2 border-b border-slate-100 flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-black text-[#06172e] flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-600" />
-                <span>Lini Jam Puncak Trafik</span>
-              </h3>
-              <p className="text-[11px] text-slate-500">Waktu paling aktif calon mahasiswa</p>
-            </div>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-bold">
-              Peak: 12:00 &amp; 20:00
-            </span>
-          </div>
-
-          {/* Bar Chart */}
-          <div className="h-44 flex items-end justify-between gap-1.5 pt-4">
-            {initialHourlyTraffic.map((hr, idx) => {
-              const heightPercent = Math.round((hr.visitors / 1800) * 100);
-
-              return (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                  <span className="text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
-                    {hr.visitors}
-                  </span>
-                  <div
-                    className={`w-full rounded-t-md transition-all duration-500 ${
-                      hr.visitors >= 1500
-                        ? "bg-blue-700 shadow-xs shadow-blue-500/30"
-                        : hr.visitors >= 1000
-                        ? "bg-blue-600"
-                        : "bg-blue-300"
-                    }`}
-                    style={{ height: `${heightPercent}%` }}
-                  />
-                  <span className="text-[9px] text-slate-500 font-mono">{hr.hour}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-      </div>
-
-      {/* 5. LINI AKTIVITAS LANGSUNG: LIVE STREAM LOG PENGUNJUNG */}
-      <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-4">
+      {/* 4. FEED AKTIVITAS TERKINI (Unified Institutional Activity Feed) */}
+      <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div>
-            <h2 className="text-base font-black text-[#06172e] flex items-center gap-2">
-              <Activity className="w-4 h-4 text-emerald-600" />
-              <span>Lini Aktivitas Langsung (Live Activity Stream)</span>
+            <h2 className="text-sm font-bold text-[#06172e] uppercase tracking-wide flex items-center gap-2">
+              <Layers className="w-4 h-4 text-blue-600" />
+              <span>Aktivitas &amp; Agenda Terkini Institusi</span>
             </h2>
-            <p className="text-xs text-slate-500">
-              Log akses kunjungan terbaru calon mahasiswa dan publik secara real-time
+            <p className="text-xs text-slate-500 mt-0.5">
+              Daftar pembaruan agenda kalender akademik dan penerbitan berita terkini.
             </p>
           </div>
-          <span className="text-xs font-semibold text-slate-400">
-            Diperbarui otomatis tiap 15 detik
-          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/akademik"
+              className="text-xs font-bold text-blue-600 hover:underline px-2.5 py-1 rounded-lg hover:bg-blue-50 transition-colors"
+            >
+              Semua Event
+            </Link>
+            <span className="text-slate-300">•</span>
+            <Link
+              href="/admin/riset"
+              className="text-xs font-bold text-sky-600 hover:underline px-2.5 py-1 rounded-lg hover:bg-sky-50 transition-colors"
+            >
+              Semua Berita
+            </Link>
+          </div>
         </div>
 
+        {/* List Table Feed */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 text-[10px] uppercase font-bold tracking-wider">
-                <th className="py-2.5 px-3">Waktu</th>
-                <th className="py-2.5 px-3">IP Anonim</th>
-                <th className="py-2.5 px-3">Kota Asal</th>
-                <th className="py-2.5 px-3">Halaman yang Diakses</th>
-                <th className="py-2.5 px-3">Perangkat</th>
-                <th className="py-2.5 px-3">Sumber Rujukan</th>
-                <th className="py-2.5 px-3 text-right">Durasi</th>
+              <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-600 font-bold">
+                <th className="py-3 px-4 rounded-l-xl">Modul / Tipe</th>
+                <th className="py-3 px-4">Judul &amp; Informasi</th>
+                <th className="py-3 px-4">Kategori</th>
+                <th className="py-3 px-4">Tanggal</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-right rounded-r-xl">Tindakan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {initialLiveVisitorLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-blue-50/40 transition-colors">
-                  <td className="py-3 px-3 font-mono text-[11px] text-blue-700 font-semibold whitespace-nowrap">
-                    {log.timestamp}
-                  </td>
-                  <td className="py-3 px-3 font-mono text-slate-500 whitespace-nowrap">
-                    {log.ipMasked}
-                  </td>
-                  <td className="py-3 px-3 font-bold text-[#06172e] whitespace-nowrap">
-                    {log.city}
-                  </td>
-                  <td className="py-3 px-3">
-                    <span className="inline-block px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono text-[11px] font-semibold">
-                      {log.pageVisited}
-                    </span>
-                  </td>
-                  <td className="py-3 px-3 text-slate-600 whitespace-nowrap">
-                    {log.device}
-                  </td>
-                  <td className="py-3 px-3 text-slate-500 whitespace-nowrap">
-                    {log.referrer}
-                  </td>
-                  <td className="py-3 px-3 text-right font-mono text-blue-700 font-bold whitespace-nowrap">
-                    {log.durationSeconds}s
+              {recentActivities.length > 0 ? (
+                recentActivities.map((item) => (
+                  <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="py-3 px-4 font-semibold text-slate-700 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${item.badgeColor}`}>
+                        {item.type === "Berita" ? <Newspaper className="w-3 h-3" /> : <CalendarDays className="w-3 h-3" />}
+                        <span>{item.type}</span>
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 min-w-[240px]">
+                      <div className="font-bold text-[#06172e] hover:text-blue-600 transition-colors line-clamp-1">
+                        {item.title}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap text-slate-600">
+                      <span className="inline-flex items-center gap-1 font-medium">
+                        <Tag className="w-3 h-3 text-slate-400" />
+                        <span>{item.category}</span>
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap text-slate-500 font-medium">
+                      {item.date}
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${item.statusColor}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap">
+                      <Link
+                        href={item.link}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold text-[11px] transition-colors"
+                      >
+                        <span>Kelola</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-slate-400">
+                    Belum ada data aktivitas institusi yang tersimpan.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
+
       </div>
 
     </div>

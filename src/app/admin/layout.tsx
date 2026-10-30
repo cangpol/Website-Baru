@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { 
   BarChart3, 
+  LayoutDashboard,
   ShieldCheck, 
   LogOut, 
   ExternalLink, 
@@ -120,10 +121,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Navigation Groups - Clean & Focused Dashboard */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 custom-scrollbar">
           
-          {/* Group 1: Intelijen Analitik */}
+          {/* Group 1: Pusat Kendali */}
           <div>
             <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1.5">
-              INTELIJEN ANALITIK
+              PUSAT KENDALI
             </div>
             <Link
               href="/admin"
@@ -134,11 +135,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               }`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <BarChart3 className={`w-4 h-4 shrink-0 ${pathname === "/admin" ? "text-white" : "text-sky-400"}`} />
-                <span className="truncate">Overview Pengunjung</span>
+                <LayoutDashboard className={`w-4 h-4 shrink-0 ${pathname === "/admin" ? "text-white" : "text-sky-400"}`} />
+                <span className="truncate">Dashboard Utama</span>
               </div>
-              <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Live
+              <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-blue-500/20 text-sky-200 border border-blue-400/30">
+                Sistem
               </span>
             </Link>
           </div>
@@ -246,10 +247,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Right: Live Status, Quick Links & Logout */}
           <div className="flex items-center gap-3">
-            {/* Live Indicator */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+            {/* Gateway Status Indicator */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>26 Pengunjung Online</span>
+              <span>Gateway UPITRA Terhubung</span>
             </div>
 
             {/* Direct Link to Live Site */}
@@ -298,7 +299,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 <div className="py-3 space-y-2 overflow-y-auto max-h-[75vh] custom-scrollbar">
                   <div className="text-[10px] font-bold text-sky-400/60 uppercase tracking-wider px-3 pt-1">
-                    INTELIJEN ANALITIK
+                    PUSAT KENDALI
                   </div>
                   <Link
                     href="/admin"
@@ -308,10 +309,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4 text-sky-400" />
-                      <span>Overview Pengunjung</span>
+                      <LayoutDashboard className="w-4 h-4 text-sky-400" />
+                      <span>Dashboard Utama</span>
                     </div>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold">Live</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-sky-200 font-bold">Sistem</span>
                   </Link>
 
                   <div className="text-[10px] font-bold text-sky-400/60 uppercase tracking-wider px-3 pt-2">
