@@ -62,7 +62,7 @@ export default function BeritaFeaturedHero({ initialFeatured, allStaticArticles 
             </div>
 
             <h2 className="text-xl sm:text-2xl font-black text-[#0b2545] hover:text-blue-600 transition-colors leading-snug">
-              <Link href={`/berita/${featured.slug}`}>
+              <Link href={`/riset/${featured.slug}`}>
                 {featured.title}
               </Link>
             </h2>
@@ -73,7 +73,7 @@ export default function BeritaFeaturedHero({ initialFeatured, allStaticArticles 
           </div>
 
           <Link
-            href={`/berita/${featured.slug}`}
+            href={`/riset/${featured.slug}`}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs tracking-wide shadow-md shadow-blue-500/20 transition-all hover:scale-105 w-fit"
           >
             <span>Baca Selengkapnya</span>

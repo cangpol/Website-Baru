@@ -177,7 +177,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               href="/admin/riset"
               className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                pathname.startsWith("/admin/riset") || pathname.startsWith("/admin/berita")
+                pathname.startsWith("/admin/riset")
                   ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                   : "text-slate-300 hover:bg-white/10 hover:text-white"
               }`}
@@ -339,7 +339,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href="/admin/riset"
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
-                      pathname.startsWith("/admin/riset") || pathname.startsWith("/admin/berita") ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-white/10"
+                      pathname.startsWith("/admin/riset") ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-white/10"
                     }`}
                   >
                     <div className="flex items-center gap-2">

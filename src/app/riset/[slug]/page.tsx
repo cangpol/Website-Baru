@@ -7,7 +7,6 @@ import {
   getAllArticles, 
   staticArticles,
   getUpcomingEvents,
-  NewsArticle 
 } from "@/lib/newsData";
 
 interface PageProps {
@@ -17,12 +16,14 @@ interface PageProps {
 }
 
 export function generateStaticParams() {
-  return staticArticles.map((art) => ({
-    slug: art.slug,
-  }));
+  return staticArticles
+    .filter((art) => art.slug !== "pusat-penelitian-dan-publikasi")
+    .map((art) => ({
+      slug: art.slug,
+    }));
 }
 
-export default async function BeritaDetailPage({ params }: PageProps) {
+export default async function RisetBeritaDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
 
@@ -48,3 +49,4 @@ export default async function BeritaDetailPage({ params }: PageProps) {
     </div>
   );
 }
+

@@ -402,7 +402,7 @@ export default function AdminDashboardPage() {
           </a>
 
           <a
-            href="/berita"
+            href="/riset"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all group"
@@ -412,11 +412,11 @@ export default function AdminDashboardPage() {
             </div>
             <div className="min-w-0">
               <div className="text-xs font-bold text-[#06172e] truncate flex items-center gap-1">
-                <span>Newsroom Publik</span>
+                <span>Portal Riset &amp; Publikasi</span>
                 <ExternalLink className="w-3 h-3 text-slate-400" />
               </div>
               <div className="text-[11px] text-slate-500 truncate">
-                Portal kabar terkini UPITRA
+                Laman riset &amp; warta terkini
               </div>
             </div>
           </a>

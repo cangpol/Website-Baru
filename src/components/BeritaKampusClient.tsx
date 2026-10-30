@@ -51,7 +51,7 @@ export default function BeritaKampusClient({ initialArticles }: BeritaKampusClie
               </div>
 
               <h2 className="text-xl sm:text-2xl font-black text-[#0b2545] leading-tight hover:text-blue-700 transition-colors">
-                <Link href={`/berita/${featuredArticle.slug}`}>
+                <Link href={`/riset/${featuredArticle.slug}`}>
                   {featuredArticle.title}
                 </Link>
               </h2>
@@ -67,7 +67,7 @@ export default function BeritaKampusClient({ initialArticles }: BeritaKampusClie
               </span>
 
               <Link
-                href={`/berita/${featuredArticle.slug}`}
+                href={`/riset/${featuredArticle.slug}`}
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800"
               >
                 <span>Baca Selengkapnya</span>
@@ -114,7 +114,7 @@ export default function BeritaKampusClient({ initialArticles }: BeritaKampusClie
                   </div>
 
                   <h4 className="text-sm font-bold text-[#0b2545] leading-snug line-clamp-2 hover:text-blue-600 transition-colors">
-                    <Link href={`/berita/${art.slug}`}>
+                    <Link href={`/riset/${art.slug}`}>
                       {art.title}
                     </Link>
                   </h4>
@@ -127,7 +127,7 @@ export default function BeritaKampusClient({ initialArticles }: BeritaKampusClie
 
               <div className="p-5 pt-0">
                 <Link
-                  href={`/berita/${art.slug}`}
+                  href={`/riset/${art.slug}`}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 pt-3 border-t border-slate-100 w-full justify-between"
                 >
                   <span>Baca Artikel</span>

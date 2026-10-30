@@ -85,11 +85,11 @@ export default function BeritaDetailClientView({
           </p>
         </div>
         <Link
-          href="/berita"
+          href="/riset"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Kembali ke Berita &amp; Informasi</span>
+          <span>Kembali ke Riset &amp; Publikasi</span>
         </Link>
       </main>
     );
@@ -108,7 +108,7 @@ export default function BeritaDetailClientView({
   }
 
   const shareText = encodeURIComponent(`${article.title} - Baca selengkapnya di UPITRA Official`);
-  const shareUrl = encodeURIComponent(`https://www.upitra.ac.id/berita/${article.slug}`);
+  const shareUrl = encodeURIComponent(`https://www.upitra.ac.id/riset/${article.slug}`);
 
   return (
     <main className="flex-1">
@@ -119,8 +119,8 @@ export default function BeritaDetailClientView({
             Beranda
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <Link href="/berita" className="hover:text-blue-600 transition-colors">
-            Seputar Berita &amp; Informasi
+          <Link href="/riset" className="hover:text-blue-600 transition-colors">
+            Riset &amp; Publikasi
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           <span className="text-slate-800 font-semibold truncate max-w-md">
@@ -281,11 +281,11 @@ export default function BeritaDetailClientView({
             {/* Article Bottom Actions */}
             <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               <Link
-                href="/berita"
+                href="/riset"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Kembali ke Seluruh Berita</span>
+                <span>Kembali ke Riset &amp; Publikasi</span>
               </Link>
 
               <a
@@ -344,7 +344,7 @@ export default function BeritaDetailClientView({
                   <Calendar className="w-4 h-4 text-blue-600" />
                   <span>Agenda Kampus</span>
                 </div>
-                <Link href="/berita" className="text-[11px] font-bold text-blue-600 hover:underline">
+                <Link href="/kemahasiswaan/kalender-akademik" className="text-[11px] font-bold text-blue-600 hover:underline">
                   Semua &rarr;
                 </Link>
               </div>
@@ -386,7 +386,7 @@ export default function BeritaDetailClientView({
                 {relatedArticles.map((rel) => (
                   <Link
                     key={rel.id}
-                    href={`/berita/${rel.slug}`}
+                    href={`/riset/${rel.slug}`}
                     className="group flex items-start gap-3 p-2 rounded-xl hover:bg-blue-50/60 transition-colors cursor-pointer"
                   >
                     <img

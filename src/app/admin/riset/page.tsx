@@ -543,7 +543,7 @@ export default function AdminRisetPage() {
                               /{art.slug}
                             </span>
                             <a
-                              href={`/berita/${art.slug}`}
+                              href={`/riset/${art.slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-[10px] text-blue-600 hover:underline inline-flex items-center gap-0.5 font-semibold"

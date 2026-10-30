@@ -191,7 +191,7 @@ export default function NewsFilterGrid({ articles }: NewsFilterGridProps) {
                     ) : null}
                   </div>
                   <h3 className="text-sm font-bold text-[#0b2545] group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
-                    <Link href={`/berita/${art.slug}`}>
+                    <Link href={`/riset/${art.slug}`}>
                       {art.title}
                     </Link>
                   </h3>
@@ -201,7 +201,7 @@ export default function NewsFilterGrid({ articles }: NewsFilterGridProps) {
                 </div>
 
                 <Link
-                  href={`/berita/${art.slug}`}
+                  href={`/riset/${art.slug}`}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 group-hover:text-blue-700 transition-colors pt-2"
                 >
                   <span>Baca Selengkapnya</span>

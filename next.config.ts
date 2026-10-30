@@ -10,6 +10,20 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    return [
+      {
+        source: "/berita",
+        destination: "/riset",
+        permanent: true,
+      },
+      {
+        source: "/berita/:slug*",
+        destination: "/riset/:slug*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

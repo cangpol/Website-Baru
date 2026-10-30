@@ -142,7 +142,7 @@ export default function RisetPortalPage() {
             </div>
 
             <Link
-              href="/berita"
+              href="/profil/berita-kampus"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 transition-colors shrink-0 group"
             >
               <span>Lihat Semua Berita</span>
@@ -155,7 +155,7 @@ export default function RisetPortalPage() {
             {recentArticles.map((art) => (
               <Link
                 key={art.id}
-                href={`/berita/${art.slug}`}
+                href={`/riset/${art.slug}`}
                 className="group bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-400 transition-all flex flex-col justify-between"
               >
                 <div>
