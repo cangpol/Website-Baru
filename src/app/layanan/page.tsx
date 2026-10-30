@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   BookOpen, 
   Laptop, 
@@ -12,7 +13,12 @@ import {
   Sparkles, 
   ArrowRight, 
   ExternalLink,
-  Share2
+  Share2,
+  FileText,
+  ChevronDown,
+  Download,
+  CheckCircle2,
+  HelpCircle
 } from "lucide-react";
 import { initialAdminLayananBanner, AdminLayananBanner } from "@/lib/adminDataStore";
 
@@ -99,6 +105,53 @@ const empatKotakLayanan = [
   },
 ];
 
+// ── Data Brosur PMB (Diambil dari /layanan/download-center dengan Aksen Biru UPITRA) ──
+const pmbBrochureData = {
+  title: "Penerimaan Mahasiswa Baru",
+  subTitle: "Brosur PMB & Panduan Akademik TA 2026/2027 • PDF (6.2 MB)",
+  fileName: "Brosur PMB & Panduan Akademik 2026/2027",
+  facultyName: "Universitas Pignatelli Triputra",
+  degree: "Sarjana S1 & Diploma D3",
+  fileSize: "6.2 MB",
+  coverImage: "/images/brochures/1788939036_6aa10b1c44527.jpg",
+  pdfUrl: "https://www.upitra.ac.id/files/brochures/1791794242_6acc9c42b5951.pdf",
+  description: "Panduan resmi penerimaan mahasiswa baru UPITRA, skema beasiswa Triputra Peduli (potongan SPP s/d 100%), jadwal pendaftaran jalur tanpa tes, dan profil ekosistem kampus.",
+  highlights: [
+    "Jalur Rapor Bebas Tes",
+    "Beasiswa Prestasi Triputra (s/d 100%)",
+    "Estimasi Biaya Kuliah & Asrama",
+    "Fasilitas Kampus Surakarta"
+  ]
+};
+
+// ── Data FAQ (Frequently Asked Questions) Layanan & PMB ──
+const layananFaqs = [
+  {
+    q: "Bagaimana cara mendaftar sebagai mahasiswa baru di UPITRA?",
+    a: "Pendaftaran dapat dilakukan secara mandiri melalui portal resmi https://pmb.upitra.ac.id atau langsung hadir ke Kantor Admisi Kampus UPITRA di Surakarta. Tersedia Jalur Bebas Tes (Jalur Rapor) serta berbagai skema beasiswa prestasi."
+  },
+  {
+    q: "Bagaimana cara mengakses Perpustakaan Daring (SIPER UPITRA)?",
+    a: "Sivitas akademika dapat mengakses sistem perpustakaan melalui https://siper.upitra.ac.id menggunakan akun SSO (Single Sign-On) kampus untuk menelusuri katalog buku fisik, repositori karya ilmiah, dan koleksi e-journal internasional."
+  },
+  {
+    q: "Apa itu platform Unity E-Learning (LMS) dan bagaimana cara login?",
+    a: "Unity LMS (https://unity.upitra.ac.id) adalah platform manajemen perkuliahan daring resmi UPITRA. Mahasiswa dan dosen menggunakan kredensial email kampus (@upitra.ac.id) untuk mengakses materi kuliah, kuis interaktif, pengumpulan tugas, dan presensi."
+  },
+  {
+    q: "Apakah ada program beasiswa untuk mahasiswa baru?",
+    a: "Ya, UPITRA menyediakan program Beasiswa Triputra Peduli dengan potongan biaya SPP hingga 100%, Beasiswa Prestasi Akademik/Non-Akademik, serta program KIP-Kuliah Kemendikbudristek."
+  },
+  {
+    q: "Bagaimana mekanisme Immersion Program 3+1 di Triputra Group?",
+    a: "Melalui kurikulum 3+1, mahasiswa menempuh 3 tahun perkuliahan intensif di kampus dan 1 tahun program immersion (magang profesional bersertifikat dan berbayar) di unit bisnis Triputra Group dengan bimbingan mentor industri eksekutif."
+  },
+  {
+    q: "Ke mana saya dapat menghubungi jika membutuhkan bantuan layanan kampus?",
+    a: "Anda dapat menghubungi Pusat Layanan Terpadu & WhatsApp Admisi di 0811-290-7500 atau melalui asisten virtual Veronica yang selalu siap 24 jam di pojok kanan bawah layar website."
+  }
+];
+
 // ── Daftar Media Sosial Resmi UPITRA Campus ──
 const socialMediaList = [
   {
@@ -159,6 +212,8 @@ const socialMediaList = [
 
 export default function LayananIndexPage() {
   const [banner, setBanner] = useState<AdminLayananBanner>(initialAdminLayananBanner);
+  const [isPmbExpanded, setIsPmbExpanded] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   // Load dynamic banner from localStorage (editable via Admin if configured)
   useEffect(() => {
@@ -205,10 +260,10 @@ export default function LayananIndexPage() {
       {/* 2. KONTEN UTAMA HALAMAN LAYANAN */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16">
         
-        {/* SECTION: TERHUBUNG DENGAN KAMI & 4 KOTAK LAYANAN DALAM 1 BARIS */}
+        {/* SECTION 1: TERHUBUNG DENGAN KAMI & 4 KOTAK LAYANAN DALAM 1 BARIS */}
         <section className="space-y-8">
           
-          {/* Header Section: Terhubung dengan Kami (Menggantikan Kartu Putih Lama) */}
+          {/* Header Section: Terhubung dengan Kami */}
           <div className="space-y-2 text-center sm:text-left">
             <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Ekosistem Layanan Terpadu</span>
             <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
@@ -262,7 +317,238 @@ export default function LayananIndexPage() {
           </div>
         </section>
 
-        {/* SECTION: MEDIA SOSIAL RESMI UPITRA CAMPUS */}
+        {/* SECTION 2: PUSAT UNDUHAN RESMI (BROSUR PMB DENGAN PREVIEW INTERAKTIF DALAM TEMA BIRU UPITRA) */}
+        <section className="space-y-6 pt-6 border-t border-slate-200/80">
+          
+          {/* Header Section: Pusat Unduhan (Sesuai Desain Referensi dengan Warna Teks Biru Navy) */}
+          <div className="space-y-1.5 text-center sm:text-left">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
+              Pusat Unduhan
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+              Daftar dokumen dan brosur program studi digital yang dapat di akses secara online.
+            </p>
+          </div>
+
+          {/* Baris Tombol Unduhan Brosur: 1 Item Saja (Penerimaan Mahasiswa Baru) */}
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:border-blue-400 hover:shadow-md transition-all overflow-hidden">
+            
+            {/* Header Baris Dokumen */}
+            <div 
+              onClick={() => setIsPmbExpanded(!isPmbExpanded)}
+              className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none bg-white hover:bg-slate-50/70 transition-colors"
+            >
+              {/* Kiri: Icon Dokumen Biru + Judul & Tanggal Update */}
+              <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+                <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-black text-[#0b2545] truncate">
+                    {pmbBrochureData.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
+                    {pmbBrochureData.subTitle}
+                  </p>
+                </div>
+              </div>
+
+              {/* Kanan: Tombol Unduh (Warna Biru) + Panah Bawah Interaktif */}
+              <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                {/* Tombol Unduh Langsung */}
+                <a
+                  href={pmbBrochureData.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Unduh</span>
+                </a>
+
+                {/* Tombol Panah Bawah (Chevron Toggle) */}
+                <button
+                  type="button"
+                  aria-label="Tampilkan pratinjau brosur"
+                  className="p-2 rounded-full hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
+                >
+                  <ChevronDown 
+                    className={`w-5 h-5 transition-transform duration-300 ${isPmbExpanded ? "rotate-180 text-blue-600" : ""}`} 
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Expandable Preview Accordion (Framer Motion) */}
+            <AnimatePresence initial={false}>
+              {isPmbExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className="overflow-hidden border-t border-slate-100 bg-slate-50/70"
+                >
+                  <div className="p-5 sm:p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-center">
+                      
+                      {/* Kolom Kiri: Visual Pratinjau Cover Brosur */}
+                      <div className="md:col-span-5 lg:col-span-4 flex justify-center">
+                        <div className="relative w-full max-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900 group">
+                          <Image
+                            src={pmbBrochureData.coverImage}
+                            alt={pmbBrochureData.fileName}
+                            fill
+                            className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                          <div className="absolute bottom-3 left-3 right-3 text-white text-[11px] font-bold flex items-center justify-between">
+                            <span className="px-2 py-0.5 rounded-md bg-blue-600/90 backdrop-blur-xs">Pratinjau Brosur</span>
+                            <span className="text-slate-200">{pmbBrochureData.fileSize}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Kolom Kanan: Rincian Brosur, Poin Keunggulan & Aksi */}
+                      <div className="md:col-span-7 lg:col-span-8 space-y-5">
+                        
+                        <div className="space-y-1.5">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
+                            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                            <span>{pmbBrochureData.degree} • {pmbBrochureData.facultyName}</span>
+                          </div>
+                          <h4 className="text-xl sm:text-2xl font-black text-[#0b2545] tracking-tight">
+                            {pmbBrochureData.fileName}
+                          </h4>
+                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pt-1">
+                            {pmbBrochureData.description}
+                          </p>
+                        </div>
+
+                        {/* Poin Unggulan */}
+                        <div className="space-y-2 pt-2 border-t border-slate-200/80">
+                          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                            Fokus &amp; Informasi Utama:
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {pmbBrochureData.highlights.map((item, idx) => (
+                              <div key={idx} className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-blue-100 text-xs text-slate-700 font-medium shadow-2xs">
+                                <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                                <span className="truncate">{item}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Tombol Aksi Lanjutan (Seluruhnya Palet Biru) */}
+                        <div className="pt-2 flex flex-wrap items-center gap-3">
+                          <a
+                            href={pmbBrochureData.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all"
+                          >
+                            <Download className="w-4 h-4" />
+                            <span>Unduh Dokumen Lengkap (PDF)</span>
+                          </a>
+
+                          <a
+                            href="https://pmb.upitra.ac.id"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-[#0b2545] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all"
+                          >
+                            <span>Daftar PMB Online</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+
+                          <a
+                            href="/layanan/download-center"
+                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-xs sm:text-sm font-bold transition-all"
+                          >
+                            <span>Lihat Semua Brosur Fakultas</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+          </div>
+
+        </section>
+
+        {/* SECTION 3: FREQUENTLY ASKED QUESTIONS (FAQ) */}
+        <section className="space-y-8 pt-6 border-t border-slate-200/80">
+          
+          {/* Header Section FAQ */}
+          <div className="space-y-2 text-center sm:text-left">
+            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center justify-center sm:justify-start gap-1.5">
+              <HelpCircle className="w-4 h-4 text-blue-600" />
+              <span>Pertanyaan Umum Seputar Layanan &amp; PMB</span>
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
+              Frequently Asked Questions (FAQ)
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+              Jawaban atas pertanyaan yang paling sering diajukan mengenai ekosistem layanan kampus, pembelajaran daring, pendaftaran mahasiswa baru, dan beasiswa UPITRA:
+            </p>
+          </div>
+
+          {/* Accordion List FAQ */}
+          <div className="space-y-3">
+            {layananFaqs.map((faq, idx) => {
+              const isOpen = openFaqIndex === idx;
+              return (
+                <div
+                  key={idx}
+                  className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs hover:border-blue-300 transition-colors"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                    className="cursor-pointer w-full flex items-center justify-between p-4 sm:p-5 text-left font-bold text-xs sm:text-sm text-slate-800 hover:text-blue-600 transition-colors gap-3"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-black shrink-0">
+                        {idx + 1}
+                      </span>
+                      <span>{faq.q}</span>
+                    </span>
+                    <ChevronDown 
+                      className={`w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180 text-blue-600" : ""}`} 
+                    />
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.28, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pl-12.5">
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+
+        </section>
+
+        {/* SECTION 4: MEDIA SOSIAL RESMI UPITRA CAMPUS */}
         <section className="pt-10 border-t border-slate-200/80 space-y-8">
           
           {/* Header Section Media Sosial */}
