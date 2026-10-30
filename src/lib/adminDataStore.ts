@@ -172,6 +172,15 @@ export interface AdminLayananBanner {
   updatedAt?: string;
 }
 
+export interface AdminKerjasamaBanner {
+  imageUrl: string;
+  badge?: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  updatedAt?: string;
+}
+
 export interface AdminUserItem {
   id: string;
   name: string;
@@ -944,6 +953,15 @@ export const initialAdminLayananBanner: AdminLayananBanner = {
   badge: "PORTAL LAYANAN TERPADU",
   title: "Layanan",
   description: "Ekosistem layanan digital, perpustakaan, karir, dan pembelajaran terpadu untuk mendukung kesuksesan akademik dan profesional seluruh sivitas akademika UPITRA.",
+  updatedAt: "30 Okt 2026",
+};
+
+export const initialAdminKerjasamaBanner: AdminKerjasamaBanner = {
+  imageUrl: "/images/banners/hero-karir.jpg",
+  badge: "PORTAL KERJASAMA STRATEGIS",
+  title: "Kerjasama",
+  subtitle: "Sinergi Strategis Kampus & Ekosistem Industri",
+  description: "Membangun sinergi kokoh antara perguruan tinggi dan dunia usaha/dunia industri (DUDI) untuk menghadirkan pendidikan yang relevan dan siap kerja.",
   updatedAt: "30 Okt 2026",
 };
 
