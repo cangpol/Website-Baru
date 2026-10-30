@@ -212,7 +212,7 @@ export default async function BeritaDetailPage({ params }: PageProps) {
                   className="prose prose-slate max-w-none text-sm sm:text-base text-slate-700 leading-relaxed [&>p]:mb-4 [&>p]:leading-relaxed [&>p]:text-justify [&>p:first-child]:font-medium [&>p:first-child]:text-slate-900 [&>p:first-child]:text-base sm:[&>p:first-child]:text-lg [&_img]:rounded-2xl [&_img]:shadow-md [&_img]:my-6 [&_img]:mx-auto [&_img]:w-full [&_img]:max-w-2xl [&_img]:object-cover [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-2xl [&_iframe]:my-6 [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse [&_td]:p-2"
                   dangerouslySetInnerHTML={{ __html: article.htmlContent }}
                 />
-              ) : (
+              ) : Array.isArray(article.content) ? (
                 <div className="space-y-5 text-sm sm:text-base text-slate-700 leading-relaxed">
                   {article.content.map((paragraph, idx) => (
                     <p key={idx} className={idx === 0 ? "font-medium text-slate-900 text-base sm:text-lg leading-relaxed" : ""}>
@@ -220,6 +220,11 @@ export default async function BeritaDetailPage({ params }: PageProps) {
                     </p>
                   ))}
                 </div>
+              ) : (
+                <div
+                  className="prose prose-slate max-w-none text-sm sm:text-base text-slate-700 leading-relaxed [&>p]:mb-4 [&>p]:leading-relaxed [&>p]:text-justify [&>p:first-child]:font-medium [&>p:first-child]:text-slate-900 [&>p:first-child]:text-base sm:[&>p:first-child]:text-lg [&_img]:rounded-2xl [&_img]:shadow-md [&_img]:my-6 [&_img]:mx-auto [&_img]:w-full [&_img]:max-w-2xl [&_img]:object-cover [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-2xl [&_iframe]:my-6 [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse [&_td]:p-2"
+                  dangerouslySetInnerHTML={{ __html: String(article.content || "") }}
+                />
               )}
 
               {/* Pull Quote */}

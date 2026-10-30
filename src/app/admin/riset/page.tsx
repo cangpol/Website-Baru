@@ -18,9 +18,15 @@ import {
   AlertCircle,
   FileText,
   Award,
-  BookOpen
+  BookOpen,
+  ImagePlus,
+  UploadCloud,
+  ImageIcon,
+  Upload,
+  Globe
 } from "lucide-react";
 import Image from "next/image";
+import RichEditor from "@/components/admin/RichEditor";
 import { 
   initialAdminArticles, 
   AdminArticleItem, 
@@ -67,6 +73,29 @@ export default function AdminRisetPage() {
   const [editingArticle, setEditingArticle] = useState<AdminArticleItem | null>(null);
   const [newsForm, setNewsForm] = useState<AdminArticleItem>(emptyNewsForm);
   const [deleteNewsId, setDeleteNewsId] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [showManualCoverUrl, setShowManualCoverUrl] = useState(false);
+
+  const handleCoverFileUpload = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Berkas yang dipilih harus berupa foto/gambar (JPG, PNG, WebP).");
+      return;
+    }
+    setCoverFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (result) {
+        setNewsForm((prev) => ({ ...prev, coverImage: result }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveCover = () => {
+    setCoverFile(null);
+    setNewsForm((prev) => ({ ...prev, coverImage: "" }));
+  };
 
   // ── 2. PUBLIKASI RISET STATE & LOGIC ──────────────────────────────────────
   const [risetItems, setRisetItems] = useState<AdminRisetSection[]>([]);
@@ -159,6 +188,8 @@ export default function AdminRisetPage() {
   // ── BERITA HANDLERS ────────────────────────────────────────────────────────
   const handleOpenCreateNews = () => {
     setEditingArticle(null);
+    setCoverFile(null);
+    setShowManualCoverUrl(false);
     setNewsForm({
       ...emptyNewsForm,
       publishedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
@@ -168,6 +199,8 @@ export default function AdminRisetPage() {
 
   const handleOpenEditNews = (art: AdminArticleItem) => {
     setEditingArticle(art);
+    setCoverFile(null);
+    setShowManualCoverUrl(false);
     setNewsForm({ ...art });
     setNewsModalOpen(true);
   };
@@ -686,10 +719,10 @@ export default function AdminRisetPage() {
       {/* ──────────────── MODAL FORM TAMBAH / EDIT BERITA ──────────────── */}
       {newsModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl p-6 sm:p-7">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
-                <h3 className="text-lg font-bold text-[#06172e] flex items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-bold text-[#06172e] flex items-center gap-2">
                   <Newspaper className="w-5 h-5 text-blue-600" />
                   <span>{editingArticle ? "Edit Berita Kampus" : "Tulis Berita Baru"}</span>
                 </h3>
@@ -699,7 +732,7 @@ export default function AdminRisetPage() {
               </div>
               <button
                 onClick={() => setNewsModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -788,15 +821,120 @@ export default function AdminRisetPage() {
                 </div>
               </div>
 
+              {/* ── COVER IMAGE DIRECT PHOTO UPLOAD WITH INSTANT PREVIEW ── */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">URL Cover Image / Thumbnail</label>
-                <input
-                  type="text"
-                  placeholder="/images/ar-vr.jpg"
-                  value={newsForm.coverImage}
-                  onChange={(e) => setNewsForm({ ...newsForm, coverImage: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white"
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-bold text-slate-700">
+                    Foto Cover / Gambar Thumbnail *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowManualCoverUrl(!showManualCoverUrl)}
+                    className="text-xs text-blue-600 hover:underline font-semibold cursor-pointer"
+                  >
+                    {showManualCoverUrl ? "← Upload Berkas Foto" : "Atau masukkan URL gambar"}
+                  </button>
+                </div>
+
+                {showManualCoverUrl ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder="https://... atau /images/ar-vr.jpg"
+                      value={newsForm.coverImage}
+                      onChange={(e) => setNewsForm({ ...newsForm, coverImage: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white text-xs sm:text-sm"
+                    />
+                    {newsForm.coverImage && (
+                      <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-blue-50/60 border border-blue-200/80">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={newsForm.coverImage}
+                          alt="Pratinjau Cover"
+                          className="h-16 w-24 rounded-xl object-cover border border-blue-300 shadow-2xs"
+                          onError={(e) => { (e.target as HTMLImageElement).src = "/images/ar-vr.jpg"; }}
+                        />
+                        <div className="text-xs">
+                          <span className="font-bold text-[#06172e] block">Pratinjau Foto URL:</span>
+                          <span className="text-slate-500 text-[11px] truncate block max-w-md">{newsForm.coverImage}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {newsForm.coverImage ? (
+                      <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-blue-50/50 border border-blue-200/80 shadow-2xs">
+                        <div className="flex items-center gap-3 min-w-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={newsForm.coverImage}
+                            alt="Pratinjau Cover"
+                            className="h-16 w-24 rounded-xl object-cover border border-blue-300 shrink-0 shadow-2xs"
+                            onError={(e) => { (e.target as HTMLImageElement).src = "/images/ar-vr.jpg"; }}
+                          />
+                          <div className="text-xs min-w-0">
+                            <span className="font-bold text-[#06172e] block truncate">
+                              {coverFile ? coverFile.name : "Foto Cover Aktif"}
+                            </span>
+                            <span className="text-slate-500 text-[11px]">
+                              {coverFile
+                                ? `${(coverFile.size / 1024 / 1024).toFixed(2)} MB • Siap disimpan`
+                                : "Gambar sampul yang akan ditampilkan di artikel dan beranda"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <label className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-blue-600 border border-slate-200 hover:bg-blue-50 transition-colors cursor-pointer shadow-2xs">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Ganti</span>
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/jpg,image/webp"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleCoverFileUpload(file);
+                                e.target.value = "";
+                              }}
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={handleRemoveCover}
+                            className="p-1.5 rounded-xl text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors cursor-pointer"
+                            title="Hapus Foto"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-blue-200 hover:border-blue-400 bg-blue-50/30 hover:bg-blue-50/60 rounded-2xl cursor-pointer transition-all group">
+                        <div className="w-10 h-10 rounded-xl bg-blue-100/80 text-blue-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                        <span className="text-xs font-bold text-[#06172e] mt-2">
+                          Klik untuk upload foto cover berita
+                        </span>
+                        <span className="text-[11px] text-slate-500 mt-0.5">
+                          Format PNG, JPG, JPEG, atau WebP (Maksimal 10MB)
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/jpg,image/webp"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleCoverFileUpload(file);
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -811,14 +949,22 @@ export default function AdminRisetPage() {
                 />
               </div>
 
+              {/* ── KONTEN LENGKAP BERITA DENGAN RICH TEXT EDITOR (FOTO UTUH) ── */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Konten Lengkap Berita</label>
-                <textarea
-                  rows={6}
-                  placeholder="Tuliskan isi berita selengkapnya di sini..."
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block font-bold text-slate-700">
+                    Konten Lengkap Berita
+                  </label>
+                  <span className="text-[11px] text-blue-600 font-semibold flex items-center gap-1">
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    <span>Dapat menyisipkan foto utuh via tombol &quot;Upload Foto&quot;</span>
+                  </span>
+                </div>
+                <RichEditor
                   value={newsForm.content}
-                  onChange={(e) => setNewsForm({ ...newsForm, content: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-sans"
+                  onChange={(content) => setNewsForm({ ...newsForm, content })}
+                  height={380}
+                  placeholder="Tuliskan isi berita selengkapnya di sini. Gunakan tombol 'Upload Foto' di toolbar atas untuk menambahkan foto utuh ke dalam artikel..."
                 />
               </div>
 
