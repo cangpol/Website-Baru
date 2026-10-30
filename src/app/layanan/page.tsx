@@ -315,22 +315,8 @@ export default function LayananIndexPage() {
               );
             })}
           </div>
-        </section>
 
-        {/* SECTION 2: PUSAT UNDUHAN RESMI (BROSUR PMB DENGAN PREVIEW INTERAKTIF DALAM TEMA BIRU UPITRA) */}
-        <section className="space-y-6 pt-6 border-t border-slate-200/80">
-          
-          {/* Header Section: Pusat Unduhan (Sesuai Desain Referensi dengan Warna Teks Biru Navy) */}
-          <div className="space-y-1.5 text-center sm:text-left">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
-              Pusat Unduhan
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-              Daftar dokumen dan brosur program studi digital yang dapat di akses secara online.
-            </p>
-          </div>
-
-          {/* Baris Tombol Unduhan Brosur: 1 Item Saja (Penerimaan Mahasiswa Baru) */}
+          {/* Tombol Unduh Brosur PMB (Dengan Pratinjau Interaktif, Tepat di Bawah 4 Kotak Layanan) */}
           <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:border-blue-400 hover:shadow-md transition-all overflow-hidden">
             
             {/* Header Baris Dokumen */}
