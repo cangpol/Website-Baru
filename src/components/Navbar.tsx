@@ -9,9 +9,7 @@ import {
   ChevronDown, 
   ChevronRight,
   Phone, 
-  MapPin, 
   ArrowRight,
-  ShieldCheck,
   User,
   ExternalLink,
   Building2,
@@ -49,40 +47,7 @@ export default function Navbar() {
 
   return (
     <>
-      {/* 1. TOP SUB-HEADER BAR - Compact, Clean & Responsive (Naturally scrolls away without layout shift) */}
-      <div className="w-full bg-[#06172e] text-slate-200 border-b border-blue-950 py-1.5 text-[11px] sm:text-xs">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          
-          {/* Left: Accreditation & Location */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 text-sky-300 font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-              <span>Akreditasi Institusi BAIK SEKALI BAN-PT</span>
-            </span>
-            <span className="hidden md:inline text-slate-600">|</span>
-            <span className="hidden md:inline-flex items-center gap-1 text-slate-300">
-              <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-              <span>Surakarta (Solo), Jawa Tengah</span>
-            </span>
-          </div>
-
-          {/* Right: PMB Hotline & Admin Portal */}
-          <div className="flex items-center gap-3">
-            <a 
-              href="https://wa.me/628112907500" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-slate-200 hover:text-sky-300 transition-colors font-medium"
-            >
-              <Phone className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-              <span>PMB: <strong>0811-290-7500</strong></span>
-            </a>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 2. MAIN NAVBAR - Fixed Width 1440px & Fixed Height 80px */}
+      {/* MAIN NAVBAR - Fixed Width 1440px & Fixed Height 80px */}
       <header 
         className={`sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-300 ${
           isScrolled ? "shadow-md" : "shadow-xs"
