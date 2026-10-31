@@ -16,6 +16,7 @@ import {
   Newspaper,
   GraduationCap,
   Microscope,
+  Bot,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -183,11 +184,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               }`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <Newspaper className={`w-4 h-4 shrink-0 ${pathname.startsWith("/admin/riset") || pathname.startsWith("/admin/berita") ? "text-white" : "text-sky-400"}`} />
+                <Newspaper className={`w-4 h-4 shrink-0 ${pathname.startsWith("/admin/riset") ? "text-white" : "text-sky-400"}`} />
                 <span className="truncate">Berita</span>
               </div>
               <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
                 Media
+              </span>
+            </Link>
+          </div>
+
+          {/* Group 4: AI Assistant */}
+          <div>
+            <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1.5 flex items-center justify-between">
+              <span>AI ASSISTANT</span>
+              <Bot className="w-3.5 h-3.5 text-sky-400/50" />
+            </div>
+            <Link
+              href="/admin/ai-dataset"
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                pathname.startsWith("/admin/ai-dataset")
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Bot className={`w-4 h-4 shrink-0 ${pathname.startsWith("/admin/ai-dataset") ? "text-white" : "text-sky-400"}`} />
+                <span className="truncate">AI Dataset</span>
+              </div>
+              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-sky-500/20 text-sky-200 border border-sky-400/30">
+                Q&amp;A
               </span>
             </Link>
           </div>
@@ -347,6 +372,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <span>Berita</span>
                     </div>
                     <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-200 font-bold">Media</span>
+                  </Link>
+
+                  <div className="text-[10px] font-bold text-sky-400/60 uppercase tracking-wider px-3 pt-2">
+                    AI ASSISTANT
+                  </div>
+                  <Link
+                    href="/admin/ai-dataset"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
+                      pathname.startsWith("/admin/ai-dataset") ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Bot className="w-4 h-4 text-sky-400" />
+                      <span>AI Dataset</span>
+                    </div>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-200 font-bold">Q&amp;A</span>
                   </Link>
                 </div>
               </div>

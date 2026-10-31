@@ -148,7 +148,7 @@ const layananFaqs = [
   },
   {
     q: "Ke mana saya dapat menghubungi jika membutuhkan bantuan layanan kampus?",
-    a: "Anda dapat menghubungi Pusat Layanan Terpadu & WhatsApp Admisi di 0811-290-7500 atau melalui asisten virtual Veronica yang selalu siap 24 jam di pojok kanan bawah layar website."
+    a: "Anda dapat menghubungi Pusat Layanan Terpadu & WhatsApp Admisi di 0811-290-7500 atau melalui fitur AI Chat Assistant UPITRA yang selalu siap 24 jam di pojok kanan bawah layar website."
   }
 ];
 

@@ -262,7 +262,7 @@ function fallbackAnswer(): string {
   );
 }
 
-export function searchAiKnowledge(query: string): { reply: string; answered: boolean; confidence: number } {
+export function searchAiKnowledge(query: string, customDataset?: KnowledgeItem[]): { reply: string; answered: boolean; confidence: number; matchedQuestion?: string } {
   const cleanQuery = query.trim();
   if (cleanQuery.length < 2) {
     return {
@@ -282,15 +282,16 @@ export function searchAiKnowledge(query: string): { reply: string; answered: boo
     };
   }
 
-  // 2. Tokenized & Keyword Match Across Knowledge Base
+  // 2. Tokenized & Keyword Match Across Knowledge Base (Support custom dataset from Admin)
+  const activeDataset = (Array.isArray(customDataset) && customDataset.length > 0) ? customDataset : dataset;
   const queryTokens = expandQuery(cleanQuery);
-  const scoredItems: KnowledgeItem[] = [];
+  const scoredItems: (KnowledgeItem & { score: number })[] = [];
 
-  for (const item of dataset) {
-    const qScore = wordScore(queryTokens, item.question) * 2.0;
-    const aScore = wordScore(queryTokens, item.answer) * 0.6;
-    const kScore = keywordScore(cleanQuery, item.keywords) * 1.8;
-    const cBoost = categoryBoost(cleanQuery, item.category);
+  for (const item of activeDataset) {
+    const qScore = wordScore(queryTokens, item.question || "") * 2.0;
+    const aScore = wordScore(queryTokens, item.answer || "") * 0.6;
+    const kScore = keywordScore(cleanQuery, Array.isArray(item.keywords) ? item.keywords : []) * 1.8;
+    const cBoost = categoryBoost(cleanQuery, item.category || "");
 
     const totalScore = qScore + aScore + kScore + cBoost;
 
@@ -315,7 +316,8 @@ export function searchAiKnowledge(query: string): { reply: string; answered: boo
   return {
     reply: topMatch.answer,
     answered: true,
-    confidence: Number(topScore.toFixed(2))
+    confidence: Number(topScore.toFixed(2)),
+    matchedQuestion: topMatch.question
   };
 }
 

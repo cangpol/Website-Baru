@@ -13,13 +13,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = searchAiKnowledge(message);
+    const customDataset = Array.isArray(body?.customDataset) ? body.customDataset : undefined;
+    const result = searchAiKnowledge(message, customDataset);
     return NextResponse.json(result);
   } catch (error) {
     console.error("AI Assistant API Error:", error);
     return NextResponse.json(
       {
-        reply: "Maaf, terjadi gangguan sesaat pada sistem Veronica. Silakan coba beberapa saat lagi atau hubungi tim Admisi UPITRA via WhatsApp di 0811-290-7500.",
+        reply: "Maaf, terjadi gangguan sesaat pada sistem AI Chat Assistant UPITRA. Silakan coba beberapa saat lagi atau hubungi tim Admisi UPITRA via WhatsApp di 0811-290-7500.",
         answered: false,
         confidence: 0
       },

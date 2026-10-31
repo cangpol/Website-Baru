@@ -17,7 +17,8 @@ import {
   Sparkles,
   RefreshCw,
   Eye,
-  Tag
+  Tag,
+  Bot
 } from "lucide-react";
 import { 
   initialAdminCalendarEvents, 
@@ -32,6 +33,7 @@ export default function AdminDashboardPage() {
   const [events, setEvents] = useState<AdminCalendarEvent[]>([]);
   const [articles, setArticles] = useState<AdminArticleItem[]>([]);
   const [risetItems, setRisetItems] = useState<AdminRisetSection[]>([]);
+  const [aiDatasetCount, setAiDatasetCount] = useState<number>(105);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastSynced, setLastSynced] = useState<string>("");
 
@@ -86,6 +88,17 @@ export default function AdminDashboardPage() {
       }
     } else {
       setRisetItems(initialAdminRisetList);
+    }
+
+    // 4. AI Dataset
+    const savedDataset = localStorage.getItem("upitra_ai_dataset");
+    if (savedDataset) {
+      try {
+        const parsed = JSON.parse(savedDataset);
+        if (Array.isArray(parsed)) {
+          setAiDatasetCount(parsed.length);
+        }
+      } catch {}
     }
 
     const now = new Date();
@@ -345,7 +358,7 @@ export default function AdminDashboardPage() {
           <span className="text-xs text-slate-400 font-medium">Akses langsung fitur utama</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           
           <Link
             href="/admin/akademik"
@@ -377,6 +390,23 @@ export default function AdminDashboardPage() {
               </div>
               <div className="text-[11px] text-slate-500 truncate">
                 Upload foto &amp; editor TipTap
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/ai-dataset"
+            className="flex items-center gap-3 p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 hover:bg-indigo-100/60 hover:border-indigo-300 transition-all group"
+          >
+            <div className="p-2 rounded-xl bg-indigo-600 text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <Bot className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#06172e] truncate">
+                Kelola AI Dataset
+              </div>
+              <div className="text-[11px] text-slate-500 truncate">
+                {aiDatasetCount} Tanya-Jawab AI
               </div>
             </div>
           </Link>
