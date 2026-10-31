@@ -17,6 +17,7 @@ import {
   GraduationCap,
   Microscope,
   Bot,
+  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -65,6 +66,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const timer = setInterval(updateClock, 1000);
     return () => clearInterval(timer);
   }, [router]);
+
+  // Breadcrumb Contextual Resolver
+  const getBreadcrumb = () => {
+    if (pathname === "/admin") {
+      return { group: "Pusat Kendali", page: "Dashboard Utama" };
+    }
+    if (pathname.startsWith("/admin/akademik")) {
+      return { group: "Akademik", page: "Calender Academic" };
+    }
+    if (pathname.startsWith("/admin/riset")) {
+      return { group: "Riset", page: "Berita & Publikasi" };
+    }
+    if (pathname.startsWith("/admin/ai-dataset")) {
+      return { group: "AI Assistant", page: "AI Dataset" };
+    }
+    return { group: "Administrator", page: "Portal UPITRA" };
+  };
+  const breadcrumb = getBreadcrumb();
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
@@ -255,27 +274,38 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Top Header Bar - Crisp Pure White */}
         <header className="h-16 shrink-0 bg-white border-b border-slate-200/90 shadow-2xs px-4 sm:px-6 flex items-center justify-between z-20">
           
-          {/* Left: Mobile Drawer Trigger & Clock */}
+          {/* Left: Mobile Drawer Trigger & Breadcrumb */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 transition-colors"
+              className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
+              aria-label="Buka Menu Navigasi"
             >
               <Menu className="w-5 h-5" />
             </button>
 
-            <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-[#06172e] bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200/80">
-              <Clock className="w-3.5 h-3.5 text-blue-600" />
-              <span>{currentTime || "Sinkronisasi waktu..."}</span>
-            </div>
+            {/* Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-2 text-xs">
+              <span className="text-slate-400 font-medium">{breadcrumb.group}</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              <span className="font-bold text-[#06172e] bg-blue-50/80 text-blue-900 px-2.5 py-1 rounded-lg border border-blue-200/60 shadow-2xs">
+                {breadcrumb.page}
+              </span>
+            </nav>
           </div>
 
           {/* Right: Live Status, Quick Links & Logout */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Clock Widget */}
+            <div className="hidden xl:flex items-center gap-2 text-xs font-semibold text-[#06172e] bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80">
+              <Clock className="w-3.5 h-3.5 text-blue-600" />
+              <span>{currentTime || "Sinkronisasi waktu..."}</span>
+            </div>
+
             {/* Gateway Status Indicator */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Gateway UPITRA Terhubung</span>
+              <span>Gateway Terhubung</span>
             </div>
 
             {/* Direct Link to Live Site */}
@@ -292,7 +322,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Logout Mobile/Tablet */}
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors lg:hidden"
+              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors lg:hidden cursor-pointer"
               title="Logout ke /u-gate"
             >
               <LogOut className="w-4 h-4" />
@@ -406,7 +436,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Scrollable Main Content Area */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          {children}
+          <div className="max-w-7xl mx-auto w-full">
+            {children}
+          </div>
         </main>
 
       </div>
