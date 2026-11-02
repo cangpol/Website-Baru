@@ -42,7 +42,7 @@ let connectedAccount: ConnectedInstagramAccountData = {
     {
       id: "ig_post_01",
       caption: "✨ Selamat & Sukses atas capaian gemilang mahasiswa prodi Rekayasa Perangkat Lunak UPITRA dalam Hackathon Nasional 2026! Terus berinovasi dan harumkan nama almamater.",
-      mediaUrl: "/images/upitra-1.jpeg",
+      mediaUrl: "/images/instagram/ig-1.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timestamp: "2026-10-28T10:30:00Z",
       timeAgo: "1 hari yang lalu",
@@ -53,7 +53,7 @@ let connectedAccount: ConnectedInstagramAccountData = {
     {
       id: "ig_post_02",
       caption: "🎓 Kuliah Tamu Spesial bersama CEO Triputra Group membahas 'Inovasi Digital & Kepemimpinan Berkarakter di Era AI'. Mahasiswa antusias menyimak sharing praktis dunia industri.",
-      mediaUrl: "/images/prestasi.jpeg",
+      mediaUrl: "/images/instagram/ig-2.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timestamp: "2026-10-25T14:15:00Z",
       timeAgo: "4 hari yang lalu",
@@ -64,7 +64,7 @@ let connectedAccount: ConnectedInstagramAccountData = {
     {
       id: "ig_post_03",
       caption: "🔥 Jalur Beasiswa Triputra Unggul 2026/2027 telah dibuka! Dapatkan potongan UKT hingga 100% dan jaminan program magang prioritas di ekosistem Triputra Group.",
-      mediaUrl: "/images/slide-1.jpg",
+      mediaUrl: "/images/instagram/ig-3.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timestamp: "2026-10-22T09:00:00Z",
       timeAgo: "6 hari yang lalu",
@@ -75,7 +75,7 @@ let connectedAccount: ConnectedInstagramAccountData = {
     {
       id: "ig_post_04",
       caption: "📚 Suasana belajar modern, interaktif, dan kolaboratif di kampus UPITRA Solo. Fasilitas laboratorium mutakhir dan perpustakaan digital siap mendampingi riset kreatifmu.",
-      mediaUrl: "/images/kuliah-1.jpeg",
+      mediaUrl: "/images/instagram/ig-4.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timestamp: "2026-10-20T08:20:00Z",
       timeAgo: "1 minggu yang lalu",
@@ -86,7 +86,7 @@ let connectedAccount: ConnectedInstagramAccountData = {
     {
       id: "ig_post_05",
       caption: "🤝 Kunjungan industri dan penandatanganan sinergi strategis antara UPITRA dengan mitra korporasi nasional. Menghubungkan kurikulum kampus dengan kebutuhan industri masa depan.",
-      mediaUrl: "/images/feb-full.jpg",
+      mediaUrl: "/images/instagram/ig-5.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timestamp: "2026-10-15T13:45:00Z",
       timeAgo: "2 minggu yang lalu",

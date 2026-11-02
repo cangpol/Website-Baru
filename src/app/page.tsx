@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
 import WelcomeAdmissionWaves from "@/components/WelcomeAdmissionWaves";
 import UpitraDalamAngka from "@/components/UpitraDalamAngka";
-import HomepageNewsEvents from "@/components/HomepageNewsEvents";
+import KabarCeritaKampus from "@/components/KabarCeritaKampus";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 
@@ -22,8 +22,8 @@ export default function HomePage() {
         {/* 4. UPITRA Dalam Angka (6 Metrik Prestasi & Capaian 1440x642) */}
         <UpitraDalamAngka />
 
-        {/* 5. Berita & Riset Terbaru serta Event Mendatang */}
-        <HomepageNewsEvents />
+        {/* 5. Kabar & Cerita Kampus (Feed Terhubung Instagram Basic Display API 1440x662) */}
+        <KabarCeritaKampus />
       </main>
 
       {/* 6. Signature Directory Footer */}
