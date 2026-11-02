@@ -3,6 +3,7 @@ import HeroSlider from "@/components/HeroSlider";
 import WelcomeAdmissionWaves from "@/components/WelcomeAdmissionWaves";
 import UpitraDalamAngka from "@/components/UpitraDalamAngka";
 import KabarCeritaKampus from "@/components/KabarCeritaKampus";
+import CtaReadyFamily from "@/components/CtaReadyFamily";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 
@@ -24,12 +25,15 @@ export default function HomePage() {
 
         {/* 5. Kabar & Cerita Kampus (Feed Terhubung Instagram Basic Display API 1440x662) */}
         <KabarCeritaKampus />
+
+        {/* 6. Siap Jadi Keluarga UPITRA? (CTA Banner Bersama UPITRA) */}
+        <CtaReadyFamily />
       </main>
 
-      {/* 6. Signature Directory Footer */}
+      {/* 7. Signature Directory Footer */}
       <Footer />
 
-      {/* 7. Floating WhatsApp Direct Hotline */}
+      {/* 8. Floating WhatsApp Direct Hotline */}
       <FloatingWhatsApp />
     </div>
   );
