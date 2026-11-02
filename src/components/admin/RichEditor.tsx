@@ -107,7 +107,7 @@ export default function RichEditor({
       }),
       TiptapImage.configure({
         inline: false,
-        allowBase64: true,
+        allowBase64: false,
         HTMLAttributes: {
           class: "max-w-full rounded-2xl my-4 mx-auto object-cover shadow-md border border-slate-200",
         },
@@ -154,25 +154,47 @@ export default function RichEditor({
     }
   };
 
-  // ── 2. Insert Image via Local File Upload (Foto Utuh) ───────────────────────
-  const handleImageUpload = (file: File) => {
+  // ── 2. Insert Image via Server Upload API ─────────────────────────────────
+  const handleImageUpload = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       alert("Berkas yang dipilih harus berupa gambar (JPG, JPEG, PNG, atau WebP).");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const src = e.target?.result as string;
-      if (src && editor) {
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran berkas melebihi batas 5 MB.");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("altText", file.name);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+      if (!res.ok || !result.ok) {
+        throw new Error(result.message || "Gagal mengunggah gambar ke server.");
+      }
+
+      if (editor) {
         editor
           .chain()
           .focus()
-          .setImage({ src, alt: file.name, title: file.name })
+          .setImage({
+            src: result.data.url,
+            alt: result.data.altText || file.name,
+            title: result.data.filename,
+          })
           .run();
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Terjadi kesalahan saat mengunggah gambar.");
+    }
   };
 
   const handleImageBtn = () => {

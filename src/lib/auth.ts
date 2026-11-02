@@ -14,11 +14,14 @@ const SESSION_COOKIE_NAME = "upitra_session";
 const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 hari
 
 function getSecretKey(): string {
-  return (
-    process.env.ADMIN_SESSION_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    "upitra_development_fallback_secret_32_characters_minimum"
-  );
+  const secret = process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("ADMIN_SESSION_SECRET wajib diatur di lingkungan produksi.");
+    }
+    return "dev-signing-key-minimum-32-characters-upitra";
+  }
+  return secret;
 }
 
 // Menandatangani payload dengan HMAC-SHA256

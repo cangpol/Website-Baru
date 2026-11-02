@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Search, ArrowUpDown, Filter, BookOpen, Calendar, Clock, Eye, ArrowRight } from "lucide-react";
 import { NewsArticle } from "@/lib/newsData";
-import { getMergedArticles } from "@/lib/syncArticles";
-import { BookOpen, Calendar, Clock, ArrowRight, Search, Filter, ArrowUpDown, Eye } from "lucide-react";
 
-interface NewsFilterGridProps {
+export interface NewsFilterGridProps {
   articles: NewsArticle[];
 }
 
@@ -17,7 +16,7 @@ export default function NewsFilterGrid({ articles }: NewsFilterGridProps) {
   const [sortBy, setSortBy] = useState<"latest" | "popular" | "oldest">("latest");
 
   useEffect(() => {
-    setSyncedArticles(getMergedArticles(articles));
+    setSyncedArticles(articles);
   }, [articles]);
 
   const categories = [
@@ -107,7 +106,7 @@ export default function NewsFilterGrid({ articles }: NewsFilterGridProps) {
             const count =
               cat.key === "all"
                 ? articles.length
-                : articles.filter((a) => a.category === cat.key).length;
+                : articles.filter((a: NewsArticle) => a.category === cat.key).length;
             return (
               <button
                 key={cat.key}

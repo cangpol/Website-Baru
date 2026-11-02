@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { 
   Sliders, 
   Plus, 
@@ -16,179 +16,203 @@ import {
   ArrowRight,
   GraduationCap,
   Save,
-  Layers
+  Layers,
+  Loader2,
+  AlertCircle
 } from "lucide-react";
 import Image from "next/image";
 import { 
-  initialAdminBanners, 
-  AdminBannerItem, 
-  initialAdminAkademikBanner, 
-  AdminAkademikBanner 
-} from "@/lib/adminDataStore";
+  getHeroSlides, 
+  saveHeroSlideAction, 
+  deleteHeroSlideAction, 
+  toggleHeroSlideActiveAction,
+  getPageHeaderBanner,
+  savePageHeaderBannerAction
+} from "@/server/hero";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
+
+interface HeroSlideData {
+  id: string;
+  title: string;
+  subtitle: string;
+  ctaLabel: string;
+  ctaHref: string;
+  imageUrl: string;
+  order: number;
+  isActive: boolean;
+  version: number;
+}
+
+interface AkademikBannerData {
+  title: string;
+  description: string;
+  badge: string;
+  bgImage: string;
+  updatedAt?: string;
+}
 
 export default function AdminBannerHeroPage() {
   const [activeTab, setActiveTab] = useState<"HERO" | "AKADEMIK">("HERO");
 
   // Hero Banners State
-  const [banners, setBanners] = useState<AdminBannerItem[]>(initialAdminBanners);
+  const [banners, setBanners] = useState<HeroSlideData[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<AdminBannerItem | null>(null);
+  const [editingItem, setEditingItem] = useState<HeroSlideData | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   // Hero Form states
   const [formTitle, setFormTitle] = useState("");
   const [formSubtitle, setFormSubtitle] = useState("");
-  const [formBadge, setFormBadge] = useState("PMB 2026 DIBUKA");
-  const [formImage, setFormImage] = useState("/images/hero-1.jpg");
+  const [formImage, setFormImage] = useState("/images/banners/hero-campus-students-optimized.jpg");
   const [formCtaText, setFormCtaText] = useState("Daftar Sekarang");
-  const [formCtaLink, setFormCtaLink] = useState("/admisi-pmb");
+  const [formCtaLink, setFormCtaLink] = useState("/#daftar");
   const [formActive, setFormActive] = useState(true);
   const [formOrder, setFormOrder] = useState(1);
+  const [formVersion, setFormVersion] = useState(1);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  // Akademik Banner State (Fixed 1440x480)
-  const [akademikBanner, setAkademikBanner] = useState<AdminAkademikBanner>(initialAdminAkademikBanner);
-  const [akademikToast, setAkademikToast] = useState<string | null>(null);
+  // Akademik Banner State
+  const [akademikBanner, setAkademikBanner] = useState<AkademikBannerData>({
+    title: "Akademik",
+    description: "4 Fakultas, 10 Program Studi S1 & D3 Keperawatan",
+    badge: "PENDIDIKAN BERKUALITAS",
+    bgImage: "/images/hero-campus.jpg",
+  });
 
-  // Load from localStorage
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const loadData = async () => {
+    try {
+      const slides = await getHeroSlides();
+      setBanners(slides);
+
+      const akd = await getPageHeaderBanner("akademik");
+      if (akd) {
+        setAkademikBanner({
+          title: akd.title || "Akademik",
+          description: akd.description || "",
+          badge: "PENDIDIKAN BERKUALITAS",
+          bgImage: akd.imageUrl || "/images/hero-campus.jpg",
+          updatedAt: akd.updatedAt,
+        });
+      }
+    } catch (err) {
+      console.error("Error loading banners:", err);
+    }
+  };
+
   useEffect(() => {
-    // Hero Banners
-    const savedHero = localStorage.getItem("upitra_admin_banners");
-    if (savedHero) {
-      try {
-        setBanners(JSON.parse(savedHero));
-      } catch {}
-    }
-
-    // Akademik Banner
-    const savedAkademik = localStorage.getItem("upitra_banner_akademik");
-    if (savedAkademik) {
-      try {
-        const parsed = JSON.parse(savedAkademik);
-        if (parsed.title === "Akademik & Fakultas") {
-          parsed.title = "Akademik";
-          parsed.description = "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan";
-          localStorage.setItem("upitra_banner_akademik", JSON.stringify(parsed));
-        }
-        setAkademikBanner(parsed);
-      } catch {}
-    }
+    loadData();
   }, []);
-
-  const saveHeroToStorage = (updated: AdminBannerItem[]) => {
-    setBanners(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_banners", JSON.stringify(updated));
-    }
-  };
-
-  const saveAkademikBanner = (e: React.FormEvent) => {
-    e.preventDefault();
-    const updated: AdminAkademikBanner = {
-      ...akademikBanner,
-      updatedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
-    };
-    setAkademikBanner(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_banner_akademik", JSON.stringify(updated));
-    }
-    setAkademikToast("Banner Header Akademik (1440x480 px) berhasil diperbarui secara langsung!");
-    setTimeout(() => setAkademikToast(null), 3500);
-  };
 
   const handleOpenCreate = () => {
     setEditingItem(null);
     setFormTitle("");
     setFormSubtitle("");
-    setFormBadge("PMB 2026 DIBUKA");
-    setFormImage("/images/hero-1.jpg");
+    setFormImage("/images/banners/hero-campus-students-optimized.jpg");
     setFormCtaText("Daftar Sekarang");
-    setFormCtaLink("/admisi-pmb");
+    setFormCtaLink("/#daftar");
     setFormActive(true);
     setFormOrder(banners.length + 1);
+    setFormVersion(1);
+    setFormError(null);
     setModalOpen(true);
   };
 
-  const handleOpenEdit = (item: AdminBannerItem) => {
+  const handleOpenEdit = (item: HeroSlideData) => {
     setEditingItem(item);
     setFormTitle(item.title);
     setFormSubtitle(item.subtitle);
-    setFormBadge(item.badge);
-    setFormImage(item.image);
-    setFormCtaText(item.ctaText);
-    setFormCtaLink(item.ctaLink);
-    setFormActive(item.active);
+    setFormImage(item.imageUrl);
+    setFormCtaText(item.ctaLabel);
+    setFormCtaLink(item.ctaHref);
+    setFormActive(item.isActive);
     setFormOrder(item.order);
+    setFormVersion(item.version);
+    setFormError(null);
     setModalOpen(true);
   };
 
   const handleSaveHero = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formTitle.trim()) return;
+    setFormError(null);
 
-    if (editingItem) {
-      const updated = banners.map((b) =>
-        b.id === editingItem.id
-          ? {
-              ...b,
-              title: formTitle,
-              subtitle: formSubtitle,
-              badge: formBadge,
-              image: formImage,
-              ctaText: formCtaText,
-              ctaLink: formCtaLink,
-              active: formActive,
-              order: Number(formOrder),
-            }
-          : b
-      );
-      saveHeroToStorage(updated);
-    } else {
-      const newItem: AdminBannerItem = {
-        id: `bnr-${Date.now().toString().slice(-4)}`,
+    startTransition(async () => {
+      const res = await saveHeroSlideAction(editingItem?.id || null, {
         title: formTitle,
         subtitle: formSubtitle,
-        badge: formBadge,
-        image: formImage,
-        ctaText: formCtaText,
-        ctaLink: formCtaLink,
-        active: formActive,
+        ctaLabel: formCtaText,
+        ctaHref: formCtaLink,
+        imageUrl: formImage,
         order: Number(formOrder),
-      };
-      saveHeroToStorage([...banners, newItem]);
-    }
-    setModalOpen(false);
+        isActive: formActive,
+        version: formVersion,
+      });
+
+      if (res.ok) {
+        setModalOpen(false);
+        showToast(res.message);
+        await loadData();
+      } else {
+        setFormError(res.message);
+      }
+    });
   };
 
   const handleDeleteHero = (id: string) => {
-    const updated = banners.filter((b) => b.id !== id);
-    saveHeroToStorage(updated);
-    setDeleteConfirmId(null);
+    startTransition(async () => {
+      const res = await deleteHeroSlideAction(id);
+      if (res.ok) {
+        setDeleteConfirmId(null);
+        showToast(res.message);
+        await loadData();
+      } else {
+        alert(res.message);
+      }
+    });
   };
 
-  const handleToggleActiveHero = (id: string) => {
-    const updated = banners.map((b) =>
-      b.id === id ? { ...b, active: !b.active } : b
-    );
-    saveHeroToStorage(updated);
+  const handleToggleActiveHero = (id: string, currentState: boolean) => {
+    startTransition(async () => {
+      const res = await toggleHeroSlideActiveAction(id, currentState);
+      if (res.ok) {
+        showToast(res.message);
+        await loadData();
+      } else {
+        alert(res.message);
+      }
+    });
   };
 
-  const presetImages = [
-    { label: "Kuliah Interaktif", path: "/images/kuliah-1.jpeg" },
-    { label: "Lab Komputasi AI", path: "/images/ar-vr.jpg" },
-    { label: "Gedung Kampus UPITRA", path: "/images/gedung-upitra.jpg" },
-    { label: "Kegiatan Mahasiswa", path: "/images/kegiatan.jpg" },
-    { label: "Ekonomi & Bisnis FEB", path: "/images/feb-full.jpg" },
-    { label: "Pariwisata & Hospitaliti", path: "/images/pariwisata/par-1.jpg" },
-    { label: "Kampus Modern", path: "/images/kampus-1.jpg" },
-  ];
+  const saveAkademikBanner = (e: React.FormEvent) => {
+    e.preventDefault();
+    startTransition(async () => {
+      const res = await savePageHeaderBannerAction("akademik", {
+        title: akademikBanner.title,
+        description: akademikBanner.description,
+        imageUrl: akademikBanner.bgImage,
+      });
+      if (res.ok) {
+        showToast(res.message);
+        await loadData();
+      } else {
+        alert(res.message);
+      }
+    });
+  };
 
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
-      {akademikToast && (
+      {toastMessage && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-          <span>{akademikToast}</span>
+          <span>{toastMessage}</span>
         </div>
       )}
 
@@ -200,434 +224,333 @@ export default function AdminBannerHeroPage() {
               Visual Marketing &amp; Header Portal
             </span>
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <Sliders className="w-7 h-7 text-sky-400" />
-            Manajemen Banner Website &amp; Header Akademik
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+            <Sliders className="w-6 h-6 text-sky-400" />
+            Manajemen Hero &amp; Banner
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Kelola hero slider beranda utama dan gambar header halaman Akademik (ukuran fixed 1440x480 px) secara terpusat.
+          <p className="text-slate-400 text-xs mt-1">
+            Atur slider beranda (1440x810) dan banner header setiap segmen halaman yang tersimpan langsung di database.
           </p>
         </div>
 
-        {activeTab === "HERO" && (
-          <button
-            onClick={handleOpenCreate}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            Tambah Banner Hero
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {activeTab === "HERO" && (
+            <button
+              onClick={handleOpenCreate}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition shadow-lg shadow-blue-600/30 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Slide Hero</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-blue-900/40 pb-1 text-xs font-bold">
+      {/* Tabs */}
+      <div className="flex border-b border-blue-900/40 gap-6">
         <button
           onClick={() => setActiveTab("HERO")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+          className={`pb-3 text-xs font-bold tracking-wide uppercase transition relative cursor-pointer ${
             activeTab === "HERO"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-              : "text-slate-400 hover:text-white hover:bg-blue-950/60"
+              ? "text-sky-400 border-b-2 border-sky-400"
+              : "text-slate-400 hover:text-slate-200"
           }`}
         >
-          <Sliders className="w-4 h-4" />
-          <span>Banner Hero Beranda Utama ({banners.length})</span>
+          Slide Beranda (1440x810 px)
         </button>
-
         <button
           onClick={() => setActiveTab("AKADEMIK")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+          className={`pb-3 text-xs font-bold tracking-wide uppercase transition relative cursor-pointer ${
             activeTab === "AKADEMIK"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-              : "text-slate-400 hover:text-white hover:bg-blue-950/60"
+              ? "text-sky-400 border-b-2 border-sky-400"
+              : "text-slate-400 hover:text-slate-200"
           }`}
         >
-          <GraduationCap className="w-4 h-4 text-sky-300" />
-          <span>Banner Header Halaman Akademik (Fixed 1440x480 px)</span>
-          <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            Live
-          </span>
+          Header Akademik (1440x480 px)
         </button>
       </div>
 
-      {/* TAB 1: HERO BANNERS */}
+      {/* TAB 1: HERO SLIDES */}
       {activeTab === "HERO" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {banners.map((item) => (
-            <div
-              key={item.id}
-              className={`bg-[#0a192f] border rounded-2xl overflow-hidden transition-all flex flex-col justify-between ${
-                item.active ? "border-blue-900/40 hover:border-blue-700/60" : "border-slate-800 opacity-60"
-              }`}
-            >
-              <div>
-                <div className="relative h-44 w-full bg-slate-900">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute top-3 left-3 flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-black/70 backdrop-blur-md text-amber-300 border border-amber-400/30">
-                      {item.badge}
-                    </span>
-                    <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-blue-900/80 text-sky-200">
-                      Urutan #{item.order}
-                    </span>
-                  </div>
-
-                  <div className="absolute top-3 right-3">
-                    <button
-                      onClick={() => handleToggleActiveHero(item.id)}
-                      className={`p-1.5 rounded-lg text-xs font-semibold backdrop-blur-md transition-colors ${
-                        item.active 
-                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" 
-                          : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
-                      }`}
-                      title={item.active ? "Nonaktifkan Banner" : "Aktifkan Banner"}
-                    >
-                      {item.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-5 space-y-3">
-                  <div>
-                    <h3 className="text-base font-bold text-white line-clamp-1">{item.title}</h3>
-                    <p className="text-xs text-slate-300 line-clamp-2 mt-1">{item.subtitle}</p>
-                  </div>
-
-                  <div className="pt-2 border-t border-blue-900/30 flex items-center justify-between text-xs">
-                    <span className="text-slate-400">Tombol Aksi:</span>
-                    <span className="font-semibold text-amber-300">{item.ctaText} &rarr; {item.ctaLink}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-[#081528] border-t border-blue-900/40 flex items-center justify-between">
-                <span className={`text-[11px] font-bold ${item.active ? "text-emerald-400" : "text-slate-500"}`}>
-                  {item.active ? "● Aktif Ditampilkan" : "○ Disembunyikan"}
-                </span>
-
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => handleOpenEdit(item)}
-                    className="p-1.5 rounded-lg bg-blue-950 hover:bg-blue-900 text-sky-300 hover:text-white transition"
-                    title="Edit Banner"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setDeleteConfirmId(item.id)}
-                    className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 text-rose-300 hover:text-white transition"
-                    title="Hapus Banner"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {deleteConfirmId === item.id && (
-                <div className="p-3 bg-rose-950/80 border-t border-rose-800 text-center space-y-2">
-                  <p className="text-xs text-rose-200">Hapus banner ini dari rotasi?</p>
-                  <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => handleDeleteHero(item.id)}
-                      className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg"
-                    >
-                      Ya, Hapus
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirmId(null)}
-                      className="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-lg"
-                    >
-                      Batal
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* TAB 2: AKADEMIK BANNER HEADER (1440x480 px) */}
-      {activeTab === "AKADEMIK" && (
-        <div className="space-y-6">
-          {/* Information & Live Preview */}
-          <div className="bg-[#071a33] border border-blue-900/50 rounded-3xl p-6 shadow-xl space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-blue-900/60">
-              <div>
-                <h2 className="text-base font-black text-white flex items-center gap-2">
-                  <ImageIcon className="w-5 h-5 text-sky-400" />
-                  <span>Live Preview: Banner Header Halaman /akademik</span>
-                </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Ukuran visual banner disetel presisi pada fixed <span className="text-amber-300 font-bold font-mono">1440px × 480px</span> untuk pengalaman desktop optimal.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold px-3 py-1 rounded-xl bg-blue-900/80 text-sky-200 border border-blue-700/60">
-                  Fixed 1440 × 480 px
-                </span>
-                <a
-                  href="/akademik"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition"
-                >
-                  <span>Buka Halaman Live</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-
-            {/* PREVIEW CONTAINER */}
-            <div className="w-full bg-[#040e1e] p-2 sm:p-4 rounded-xl border border-blue-950 flex justify-center overflow-x-auto">
-              <div className="relative w-full max-w-[1440px] h-[340px] sm:h-[400px] lg:h-[480px] rounded-none overflow-hidden border-0 group shrink-0">
-                <Image
-                  src={akademikBanner.imageUrl}
-                  alt={akademikBanner.title}
-                  fill
-                  className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                />
-                
-                {/* Overlay Preview (Center Rata Kiri, Vertically Centered Without Breadcrumbs) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/50 to-[#06172e]/30 flex flex-col justify-center p-6 sm:p-10 text-white">
-                  <div className="space-y-2 max-w-2xl text-left">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-md">
-                      {akademikBanner.title || "Akademik"}
-                    </h1>
-                    <p className="text-sm sm:text-base lg:text-lg font-bold text-sky-200/95 leading-snug drop-shadow-xs whitespace-pre-line">
-                      {akademikBanner.description || "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* EDIT FORM */}
-          <div className="bg-[#071a33] border border-blue-900/50 rounded-3xl p-6 shadow-xl">
-            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <Edit3 className="w-4 h-4 text-sky-400" />
-              <span>Formulir Edit Banner Header Akademik</span>
-            </h3>
-
-            <form onSubmit={saveAkademikBanner} className="space-y-4 text-xs">
-              {/* Image URL with Preset Selector */}
-              <div className="space-y-2">
-                <label className="block text-slate-300 font-semibold">
-                  URL / Path Gambar Banner (Fixed 1440x480 px)
-                </label>
-                <div className="relative">
-                  <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    value={akademikBanner.imageUrl}
-                    onChange={(e) => setAkademikBanner({ ...akademikBanner, imageUrl: e.target.value })}
-                    placeholder="/images/kuliah-1.jpeg"
-                    className="w-full bg-[#051326] border border-blue-900/60 rounded-xl pl-10 pr-3 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 font-mono"
-                  />
-                </div>
-
-                {/* Preset Chips */}
-                <div className="pt-1">
-                  <span className="text-[11px] text-slate-400 block mb-1.5 font-medium">
-                    Pilihan Foto Cepat Rekomendasi UPITRA:
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {presetImages.map((p, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setAkademikBanner({ ...akademikBanner, imageUrl: p.path })}
-                        className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold border transition cursor-pointer ${
-                          akademikBanner.imageUrl === p.path
-                            ? "bg-blue-600 text-white border-blue-500 shadow-xs"
-                            : "bg-blue-950/60 text-slate-300 border-blue-900/60 hover:bg-blue-900/60 hover:text-white"
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {banners.map((item) => (
+              <div
+                key={item.id}
+                className="bg-[#0a192f] border border-blue-900/40 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between group hover:border-blue-700/60 transition"
+              >
+                <div>
+                  {/* Image Preview */}
+                  <div className="relative aspect-video w-full bg-slate-900 overflow-hidden">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      unoptimized={item.imageUrl.startsWith("/uploads/") || item.imageUrl.startsWith("http")}
+                    />
+                    <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/80 text-white border border-slate-700">
+                        Urutan #{item.order}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          item.isActive
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                            : "bg-slate-700/50 text-slate-400 border-slate-600"
                         }`}
                       >
-                        {p.label}
-                      </button>
-                    ))}
+                        {item.isActive ? "Aktif" : "Non-aktif"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4 space-y-2">
+                    <h3 className="font-bold text-white text-sm line-clamp-1">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-400 text-xs line-clamp-2">
+                      {item.subtitle || "Tidak ada deskripsi tambahan."}
+                    </p>
+                    <div className="pt-2 flex items-center justify-between text-[11px] text-slate-400">
+                      <span>CTA: <strong className="text-sky-300">{item.ctaLabel}</strong></span>
+                      <span className="truncate max-w-[120px] font-mono text-[10px] text-slate-500">{item.ctaHref}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="p-3 bg-blue-950/30 border-t border-blue-900/40 flex items-center justify-between">
+                  <button
+                    onClick={() => handleToggleActiveHero(item.id, item.isActive)}
+                    disabled={isPending}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-blue-900/40 transition cursor-pointer"
+                    title={item.isActive ? "Non-aktifkan slide" : "Aktifkan slide"}
+                  >
+                    {item.isActive ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleOpenEdit(item)}
+                      className="p-1.5 rounded-lg text-sky-400 hover:text-white hover:bg-sky-600/30 transition cursor-pointer"
+                      title="Edit slide"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirmId(item.id)}
+                      className="p-1.5 rounded-lg text-rose-400 hover:text-white hover:bg-rose-600/30 transition cursor-pointer"
+                      title="Hapus slide"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Badge Text */}
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">
-                  Teks Badge Header
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={akademikBanner.badge}
-                  onChange={(e) => setAkademikBanner({ ...akademikBanner, badge: e.target.value })}
-                  placeholder="EKOSISTEM AKADEMIK UPITRA"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 uppercase tracking-wider font-semibold"
-                />
-              </div>
-
-              {/* Title */}
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">
-                  Judul Halaman
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={akademikBanner.title}
-                  onChange={(e) => setAkademikBanner({ ...akademikBanner, title: e.target.value })}
-                  placeholder="Akademik & Fakultas"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 font-bold"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">
-                  Deskripsi / Narasi Header
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  value={akademikBanner.description}
-                  onChange={(e) => setAkademikBanner({ ...akademikBanner, description: e.target.value })}
-                  placeholder="Penyelenggaraan pendidikan tinggi berkarakter Triputra DNA..."
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 leading-relaxed"
-                />
-              </div>
-
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-blue-900/40">
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white font-bold shadow-lg shadow-blue-600/30 transition cursor-pointer"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>Simpan Perubahan Banner Akademik</span>
-                </button>
-              </div>
-            </form>
+            ))}
           </div>
         </div>
       )}
 
-      {/* CREATE/EDIT MODAL FOR HERO BANNER */}
+      {/* TAB 2: AKADEMIK BANNER */}
+      {activeTab === "AKADEMIK" && (
+        <form onSubmit={saveAkademikBanner} className="bg-[#0a192f] border border-blue-900/40 rounded-2xl p-6 space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-white">Banner Header Halaman Akademik (1440x480 px)</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Judul Header</label>
+                <input
+                  type="text"
+                  value={akademikBanner.title}
+                  onChange={(e) => setAkademikBanner({ ...akademikBanner, title: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Subjudul / Deskripsi</label>
+                <input
+                  type="text"
+                  value={akademikBanner.description}
+                  onChange={(e) => setAkademikBanner({ ...akademikBanner, description: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
+                />
+              </div>
+            </div>
+
+            <ImageUploadField
+              label="Foto Latar Belakang Header Akademik"
+              value={akademikBanner.bgImage}
+              onChange={(url) => setAkademikBanner({ ...akademikBanner, bgImage: url })}
+              recommendedSize="1440 × 480 px"
+            />
+          </div>
+
+          <div className="flex justify-end pt-4 border-t border-blue-900/40">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-sky-500/20"
+            >
+              {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span>Simpan Banner Akademik</span>
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* MODAL HERO FORM */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-[#071a33] border border-blue-900/80 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-blue-900/60">
-              <h3 className="text-sm font-bold text-white">
-                {editingItem ? "Edit Banner Hero Beranda" : "Tambah Banner Hero Baru"}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
+          <form
+            onSubmit={handleSaveHero}
+            className="w-full max-w-lg bg-[#0a192f] border border-blue-900/60 rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-blue-900/40">
+              <h3 className="text-base font-bold text-white">
+                {editingItem ? "Edit Slide Hero" : "Tambah Slide Hero Baru"}
               </h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-slate-400 hover:text-white">
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="p-1 text-slate-400 hover:text-white rounded"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveHero} className="space-y-3 text-xs">
+            {formError && (
+              <div className="p-3 bg-red-950/60 border border-red-800/60 rounded-xl text-xs text-red-300 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{formError}</span>
+              </div>
+            )}
+
+            <div>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Judul Slide *</label>
+              <input
+                type="text"
+                required
+                value={formTitle}
+                onChange={(e) => setFormTitle(e.target.value)}
+                placeholder="cth: Kampus Merdeka Vokasi Masa Depan"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Subjudul / Keterangan</label>
+              <textarea
+                rows={2}
+                value={formSubtitle}
+                onChange={(e) => setFormSubtitle(e.target.value)}
+                placeholder="Penjelasan ringkas mengenai slide..."
+                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
+              />
+            </div>
+
+            <ImageUploadField
+              label="Gambar Hero Banner"
+              value={formImage}
+              onChange={setFormImage}
+              recommendedSize="1440 × 810 px"
+              required
+            />
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Judul Utama Banner</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Label Tombol CTA</label>
                 <input
                   type="text"
-                  required
-                  value={formTitle}
-                  onChange={(e) => setFormTitle(e.target.value)}
-                  placeholder="Misal: Penerimaan Mahasiswa Baru 2026/2027"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                  value={formCtaText}
+                  onChange={(e) => setFormCtaText(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
                 />
               </div>
-
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Subjudul / Deskripsi Pendek</label>
-                <textarea
-                  rows={2}
-                  value={formSubtitle}
-                  onChange={(e) => setFormSubtitle(e.target.value)}
-                  placeholder="Keterangan singkat promo atau program..."
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 leading-relaxed"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Teks Badge Label</label>
-                  <input
-                    type="text"
-                    value={formBadge}
-                    onChange={(e) => setFormBadge(e.target.value)}
-                    placeholder="PMB 2026 DIBUKA"
-                    className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 font-semibold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Nomor Urutan Tampil</label>
-                  <input
-                    type="number"
-                    value={formOrder}
-                    onChange={(e) => setFormOrder(parseInt(e.target.value) || 1)}
-                    className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-sky-400"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">URL / Path Foto Banner</label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Link Tujuan CTA</label>
                 <input
                   type="text"
-                  required
-                  value={formImage}
-                  onChange={(e) => setFormImage(e.target.value)}
-                  placeholder="/images/hero-1.jpg"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 font-mono"
+                  value={formCtaLink}
+                  onChange={(e) => setFormCtaLink(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
                 />
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Teks Tombol Aksi (CTA)</label>
-                  <input
-                    type="text"
-                    value={formCtaText}
-                    onChange={(e) => setFormCtaText(e.target.value)}
-                    placeholder="Daftar Sekarang"
-                    className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Link URL Tombol (CTA)</label>
-                  <input
-                    type="text"
-                    value={formCtaLink}
-                    onChange={(e) => setFormCtaLink(e.target.value)}
-                    placeholder="/pmb"
-                    className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 font-mono"
-                  />
-                </div>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Nomor Urut Tampil</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={formOrder}
+                  onChange={(e) => setFormOrder(Number(e.target.value))}
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
+                />
               </div>
+              <div className="flex items-center pt-5">
+                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formActive}
+                    onChange={(e) => setFormActive(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-700 text-sky-500 focus:ring-0"
+                  />
+                  <span>Slide Aktif</span>
+                </label>
+              </div>
+            </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-blue-900/40">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Simpan Banner</span>
-                </button>
-              </div>
-            </form>
+            <div className="flex justify-end gap-2 pt-4 border-t border-blue-900/40">
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-xl"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-600/25"
+              >
+                {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>Simpan Slide</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* CONFIRM DELETE MODAL */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
+          <div className="w-full max-w-sm bg-[#0a192f] border border-rose-900/50 rounded-2xl p-6 shadow-2xl space-y-4">
+            <h3 className="text-base font-bold text-rose-400">Hapus Slide Hero?</h3>
+            <p className="text-xs text-slate-300">
+              Slide ini akan dihapus dari rotasi hero beranda website publik.
+            </p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmId(null)}
+                className="px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-xl"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => handleDeleteHero(deleteConfirmId)}
+                className="px-4 py-2 text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white rounded-xl flex items-center gap-1.5 cursor-pointer"
+              >
+                {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Hapus
+              </button>
+            </div>
           </div>
         </div>
       )}

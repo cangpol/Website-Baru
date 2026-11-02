@@ -1,10 +1,13 @@
+"use server";
+
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
 
-export const partnerInputSchema = z.object({
+const partnerInputSchema = z.object({
   name: z.string().min(2, "Nama mitra minimal 2 karakter").max(150),
   category: z.string().min(2, "Kategori mitra wajib diisi"),
   logoUrl: z.string().optional().nullable(),
@@ -163,6 +166,91 @@ export async function softDeletePartnerAction(id: string) {
   } catch (error) {
     console.error("Delete partner error:", error);
     return { ok: false, message: "Gagal menghapus data mitra." };
+  }
+}
+
+// ── MoU / MoA Dokumen Kerjasama ─────────────────────────────────────────────
+export interface KerjasamaMouItem {
+  id: string;
+  partnerName: string;
+  documentType: "MoU" | "MoA" | "IA" | "Surat Tugas";
+  scope: string;
+  startYear: string;
+  endYear: string;
+  signatory: string;
+  status: "Aktif" | "Perpanjangan" | "Selesai";
+  fileUrl?: string;
+}
+
+const DEFAULT_MOU_LIST: KerjasamaMouItem[] = [
+  {
+    id: "mou-01",
+    partnerName: "Triputra Group",
+    documentType: "MoU",
+    scope: "Penyelenggaraan Program Immersion 3+1, Magang Industri Berbayar, Beasiswa Penuh, dan Penyerapan Karir Lulusan",
+    startYear: "2023",
+    endYear: "2028",
+    signatory: "Rektor UPITRA & CEO Triputra Group",
+    status: "Aktif",
+    fileUrl: "/images/logo.png",
+  },
+  {
+    id: "mou-02",
+    partnerName: "Pemerintah Provinsi Jawa Tengah",
+    documentType: "MoU",
+    scope: "Pengembangan SDM Daerah, Riset Kebijakan Publik, dan Pelatihan Kompetensi Digital ASN dan Pemuda Jawa Tengah",
+    startYear: "2026",
+    endYear: "2031",
+    signatory: "Rektor UPITRA & Gubernur Jawa Tengah",
+    status: "Aktif",
+    fileUrl: "/images/logo.png",
+  },
+];
+
+export async function getMouList(): Promise<KerjasamaMouItem[]> {
+  try {
+    const setting = await prisma.siteSetting.findUnique({
+      where: { key: "admin_kerjasama_mou" },
+    });
+    if (!setting || !Array.isArray(setting.value)) {
+      return DEFAULT_MOU_LIST;
+    }
+    return (setting.value as unknown) as KerjasamaMouItem[];
+  } catch {
+    return DEFAULT_MOU_LIST;
+  }
+}
+
+export async function saveMouListAction(items: KerjasamaMouItem[]) {
+  const session = await requirePermission("kerjasama", "update");
+
+  try {
+    await prisma.siteSetting.upsert({
+      where: { key: "admin_kerjasama_mou" },
+      create: {
+        key: "admin_kerjasama_mou",
+        value: items as unknown as Prisma.InputJsonValue,
+        description: "Daftar MoU dan MoA Kerjasama UPITRA",
+      },
+      update: {
+        value: items as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: "UPDATE",
+      entity: "SiteSetting",
+      entityId: "admin_kerjasama_mou",
+      details: JSON.stringify({ count: items.length }),
+    });
+
+    await invalidateEntity(CACHE_TAGS.PARTNERS, "/kerjasama");
+    return { ok: true, message: "Daftar MoU kerjasama berhasil disimpan ke database." };
+  } catch (err) {
+    console.error("Error saving MoU list:", err);
+    return { ok: false, message: "Gagal menyimpan daftar MoU." };
   }
 }
 

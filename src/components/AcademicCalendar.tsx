@@ -606,30 +606,29 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [listFilter, setListFilter] = useState<"all" | "upcoming" | "past">("all");
 
-  // Client-side hydration sync to guarantee matching local browser time & dynamic admin events
+  // Client-side hydration sync to guarantee matching local browser time & dynamic DB events
   useEffect(() => {
     const now = new Date();
     setCurrentDate(now);
     setTodayStr(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`);
 
-    const saved = localStorage.getItem("upitra_academic_events");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const mapped: CalendarEvent[] = parsed.map((item: any) => ({
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
+          const mapped: CalendarEvent[] = json.data.map((item: any) => ({
             id: item.id,
-            name: item.title || item.name || "Event Kampus",
-            start_date: item.start_date || item.event_date || "",
-            end_date: item.end_date || item.start_date || item.event_date || "",
-            category: (item.category || "Akademik") as CalendarEvent["category"],
+            name: item.title || "Event Kampus",
+            start_date: item.startDate ? item.startDate.split("T")[0] : "",
+            end_date: item.endDate ? item.endDate.split("T")[0] : item.startDate ? item.startDate.split("T")[0] : "",
+            category: (item.type || "Akademik") as CalendarEvent["category"],
             description: item.description || "",
-            all_day: item.all_day ?? true,
+            all_day: true,
           }));
           setCalendarData(mapped);
         }
-      } catch {}
-    }
+      })
+      .catch((err) => console.warn("Failed to load academic events:", err));
   }, []);
 
   const year = currentDate.getFullYear();

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { searchAiKnowledge } from "@/lib/aiAssistantService";
+import { getAIDataset } from "@/server/ai-dataset";
 
 export async function POST(request: Request) {
   try {
@@ -13,8 +14,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const customDataset = Array.isArray(body?.customDataset) ? body.customDataset : undefined;
-    const result = searchAiKnowledge(message, customDataset);
+    // Field customDataset dari klien diabaikan demi keamanan (baca langsung dari DB)
+    const dbDataset = await getAIDataset();
+    const result = searchAiKnowledge(message, dbDataset);
     return NextResponse.json(result);
   } catch (error) {
     console.error("AI Assistant API Error:", error);

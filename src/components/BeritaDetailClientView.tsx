@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { NewsArticle, CampusEvent } from "@/lib/newsData";
-import { getMergedArticleBySlug, getMergedArticles } from "@/lib/syncArticles";
 import { 
   Calendar, 
   Clock, 
@@ -40,23 +39,10 @@ export default function BeritaDetailClientView({
   const [isClientChecked, setIsClientChecked] = useState(false);
 
   useEffect(() => {
-    // Check client local storage for the latest version of the article
-    const synced = getMergedArticleBySlug(slug, initialArticle);
-    if (synced) {
-      setArticle(synced);
-    }
-
-    // Refresh related articles with any newly created admin articles
-    const allMerged = getMergedArticles([]);
-    if (allMerged.length > 0) {
-      const filtered = allMerged.filter((a) => a.slug !== slug).slice(0, 4);
-      if (filtered.length > 0) {
-        setRelatedArticles(filtered);
-      }
-    }
-
+    setArticle(initialArticle);
+    setRelatedArticles(initialRelatedArticles);
     setIsClientChecked(true);
-  }, [slug, initialArticle]);
+  }, [slug, initialArticle, initialRelatedArticles]);
 
   const getCategoryBadgeClass = (category: string) => {
     switch (category) {
@@ -69,7 +55,7 @@ export default function BeritaDetailClientView({
     }
   };
 
-  // If not found even after checking localStorage
+  // If not found in database or static
   if (!article && isClientChecked) {
     return (
       <main className="flex-1 max-w-4xl mx-auto px-4 py-20 text-center space-y-6">

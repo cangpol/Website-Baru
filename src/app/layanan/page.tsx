@@ -20,7 +20,17 @@ import {
   HelpCircle,
   Play,
 } from "lucide-react";
-import { initialAdminLayananBanner, AdminLayananBanner } from "@/lib/adminDataStore";
+interface LayananBanner {
+  title: string;
+  description: string;
+  imageUrl?: string;
+}
+
+const defaultLayananBanner: LayananBanner = {
+  title: "Layanan",
+  description: "Pusat Layanan Terpadu, Fasilitas Digital, Download Center & Portal Informasi Sivitas Akademika",
+  imageUrl: "/images/perpustakaan.jpg",
+};
 
 // ── SVG Brand Icons untuk Media Sosial Resmi ──
 function InstagramIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -211,18 +221,24 @@ const socialMediaList = [
 ];
 
 export default function LayananIndexPage() {
-  const [banner, setBanner] = useState<AdminLayananBanner>(initialAdminLayananBanner);
+  const [banner, setBanner] = useState<LayananBanner>(defaultLayananBanner);
   const [isPmbExpanded, setIsPmbExpanded] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  // Load dynamic banner from localStorage (editable via Admin if configured)
+  // Load dynamic banner from database via API
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_banner_layanan");
-    if (saved) {
-      try {
-        setBanner(JSON.parse(saved));
-      } catch {}
-    }
+    fetch("/api/banner?page=layanan")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && json.data) {
+          setBanner({
+            title: json.data.title || defaultLayananBanner.title,
+            description: json.data.description || defaultLayananBanner.description,
+            imageUrl: json.data.imageUrl || defaultLayananBanner.imageUrl,
+          });
+        }
+      })
+      .catch((err) => console.warn("Failed to load banner:", err));
   }, []);
 
   return (

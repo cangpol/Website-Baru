@@ -10,7 +10,17 @@ import Image from "next/image";
 import { 
   ArrowRight 
 } from "lucide-react";
-import { initialAdminAkademikBanner, AdminAkademikBanner } from "@/lib/adminDataStore";
+interface AkademikBanner {
+  title: string;
+  description: string;
+  imageUrl?: string;
+}
+
+const defaultBanner: AkademikBanner = {
+  title: "Akademik",
+  description: "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan",
+  imageUrl: "/images/kuliah-1.jpeg",
+};
 
 const fakultasData = [
   {
@@ -52,22 +62,22 @@ const fakultasData = [
 ];
 
 export default function AkademikOverviewPage() {
-  const [banner, setBanner] = useState<AdminAkademikBanner>(initialAdminAkademikBanner);
+  const [banner, setBanner] = useState<AkademikBanner>(defaultBanner);
 
-  // Load dynamic banner from localStorage (editable via /admin/banner-hero)
+  // Load dynamic banner from database via API
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_banner_akademik");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.title === "Akademik & Fakultas") {
-          parsed.title = "Akademik";
-          parsed.description = "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan";
-          localStorage.setItem("upitra_banner_akademik", JSON.stringify(parsed));
+    fetch("/api/banner?page=akademik")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && json.data) {
+          setBanner({
+            title: json.data.title || defaultBanner.title,
+            description: json.data.description || defaultBanner.description,
+            imageUrl: json.data.imageUrl || defaultBanner.imageUrl,
+          });
         }
-        setBanner(parsed);
-      } catch {}
-    }
+      })
+      .catch((err) => console.warn("Failed to load banner:", err));
   }, []);
 
   return (

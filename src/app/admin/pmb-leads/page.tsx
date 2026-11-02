@@ -19,10 +19,37 @@ import {
   Mail,
   GraduationCap
 } from "lucide-react";
-import { initialAdminLeads, AdminLeadItem } from "@/lib/adminDataStore";
+import { 
+  getAdmissionLeads, 
+  updateLeadStatusAction, 
+  softDeleteLeadAction,
+  exportLeadsCsvAction
+} from "@/server/leads";
+import { AdmissionStatus } from "@prisma/client";
+
+export interface AdminLeadItem {
+  id: string;
+  fullName: string;
+  name?: string;
+  phoneWhatsapp: string;
+  phone?: string;
+  email: string;
+  highSchool: string;
+  school?: string;
+  city?: string | null;
+  targetYear: number;
+  programChoice?: string;
+  programName?: string;
+  prodi?: string;
+  status: any;
+  notes?: string | null;
+  source?: string | null;
+  createdAt: string;
+  date?: string;
+}
 
 export default function AdminPmbLeadsPage() {
-  const [leads, setLeads] = useState<AdminLeadItem[]>(initialAdminLeads);
+  const [leads, setLeads] = useState<AdminLeadItem[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [prodiFilter, setProdiFilter] = useState<string>("ALL");
@@ -41,21 +68,31 @@ export default function AdminPmbLeadsPage() {
   const [formStatus, setFormStatus] = useState<AdminLeadItem["status"]>("BARU_MASUK");
   const [formNotes, setFormNotes] = useState("");
 
-  // Load from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_leads");
-    if (saved) {
-      try {
-        setLeads(JSON.parse(saved));
-      } catch {}
+  // Load from Database
+  const loadData = async () => {
+    try {
+      const data = await getAdmissionLeads();
+      const mapped: AdminLeadItem[] = data.map((l) => ({
+        ...l,
+        name: l.fullName,
+        phone: l.phoneWhatsapp,
+        school: l.highSchool,
+        prodi: l.programName,
+        date: l.createdAt.split("T")[0],
+      }));
+      setLeads(mapped);
+    } catch (err) {
+      console.error("Error loading leads:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const saveToStorage = (updated: AdminLeadItem[]) => {
+  const saveToStorage = async (updated: AdminLeadItem[]) => {
     setLeads(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_leads", JSON.stringify(updated));
-    }
+    await loadData();
   };
 
   const handleOpenCreate = () => {
@@ -74,15 +111,15 @@ export default function AdminPmbLeadsPage() {
 
   const handleOpenEdit = (lead: AdminLeadItem) => {
     setEditingLead(lead);
-    setFormName(lead.fullName);
-    setFormPhone(lead.phoneWhatsapp);
-    setFormEmail(lead.email);
-    setFormSchool(lead.highSchool);
-    setFormCity(lead.city);
-    setFormProdi(lead.programChoice);
-    setFormTargetYear(lead.targetYear);
-    setFormStatus(lead.status);
-    setFormNotes(lead.notes);
+    setFormName(lead.fullName || lead.name || "");
+    setFormPhone(lead.phoneWhatsapp || lead.phone || "");
+    setFormEmail(lead.email || "");
+    setFormSchool(lead.highSchool || lead.school || "");
+    setFormCity(lead.city || "");
+    setFormProdi(lead.programChoice || lead.programName || lead.prodi || "");
+    setFormTargetYear(lead.targetYear || 2026);
+    setFormStatus(lead.status || "BARU_MASUK");
+    setFormNotes(lead.notes || "");
     setModalOpen(true);
   };
 
@@ -138,30 +175,25 @@ export default function AdminPmbLeadsPage() {
     saveToStorage(updated);
   };
 
-  const exportToCSV = () => {
-    const headers = ["ID", "Nama Lengkap", "Nomor WA", "Email", "Asal Sekolah", "Kota", "Pilihan Prodi", "Tahun Masuk", "Status", "Catatan", "Tanggal Masuk"];
-    const rows = leads.map((l) => [
-      l.id,
-      `"${l.fullName}"`,
-      `"${l.phoneWhatsapp}"`,
-      `"${l.email}"`,
-      `"${l.highSchool}"`,
-      `"${l.city}"`,
-      `"${l.programChoice}"`,
-      l.targetYear,
-      l.status,
-      `"${l.notes.replace(/"/g, '""')}"`,
-      `"${l.createdAt}"`
-    ]);
-
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Data-PMB-Leads-UPITRA-${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const exportToCSV = async () => {
+    try {
+      const res = await exportLeadsCsvAction();
+      if (!res.ok || !res.csv) {
+        alert(res.message || "Gagal mengekspor data CSV.");
+        return;
+      }
+      const blob = new Blob([res.csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", res.filename || "Leads-PMB-UPITRA.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Terjadi kesalahan saat mengekspor data CSV.");
+    }
   };
 
   const openWhatsApp = (phone: string, name: string, prodi: string) => {
@@ -175,12 +207,13 @@ export default function AdminPmbLeadsPage() {
   // Filtered Leads
   const filtered = leads.filter((l) => {
     const matchSearch =
-      l.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      l.phoneWhatsapp.includes(search) ||
-      l.highSchool.toLowerCase().includes(search.toLowerCase()) ||
-      l.city.toLowerCase().includes(search.toLowerCase());
+      (l.fullName || l.name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (l.phoneWhatsapp || l.phone || "").includes(search) ||
+      (l.highSchool || l.school || "").toLowerCase().includes(search.toLowerCase()) ||
+      (l.city || "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "ALL" || l.status === statusFilter;
-    const matchProdi = prodiFilter === "ALL" || l.programChoice.includes(prodiFilter);
+    const prodiVal = l.programChoice || l.programName || l.prodi || "";
+    const matchProdi = prodiFilter === "ALL" || prodiVal.includes(prodiFilter);
     return matchSearch && matchStatus && matchProdi;
   });
 
@@ -409,7 +442,7 @@ export default function AdminPmbLeadsPage() {
                     <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
-                          onClick={() => openWhatsApp(lead.phoneWhatsapp, lead.fullName, lead.programChoice)}
+                          onClick={() => openWhatsApp(lead.phoneWhatsapp || lead.phone || "", lead.fullName || lead.name || "", lead.programChoice || lead.programName || "")}
                           className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition"
                           title="Chat via WhatsApp Resmi"
                         >

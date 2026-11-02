@@ -2,24 +2,24 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { NewsArticle } from "@/lib/newsData";
-import { getMergedArticles } from "@/lib/syncArticles";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { NewsArticle } from "@/lib/newsData";
 
-interface BeritaFeaturedHeroProps {
+export interface BeritaFeaturedHeroProps {
   initialFeatured?: NewsArticle;
   allStaticArticles: NewsArticle[];
 }
 
 export default function BeritaFeaturedHero({ initialFeatured, allStaticArticles }: BeritaFeaturedHeroProps) {
-  const [featured, setFeatured] = useState<NewsArticle | undefined>(initialFeatured);
+  const [featured, setFeatured] = useState<NewsArticle | undefined>(initialFeatured || allStaticArticles[0]);
 
   useEffect(() => {
-    const merged = getMergedArticles(allStaticArticles);
-    if (merged.length > 0) {
-      setFeatured(merged[0]);
+    if (initialFeatured) {
+      setFeatured(initialFeatured);
+    } else if (allStaticArticles.length > 0) {
+      setFeatured(allStaticArticles[0]);
     }
-  }, [allStaticArticles]);
+  }, [initialFeatured, allStaticArticles]);
 
   if (!featured) return null;
 

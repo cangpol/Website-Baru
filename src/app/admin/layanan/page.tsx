@@ -15,10 +15,25 @@ import {
   User,
   AlertCircle
 } from "lucide-react";
-import { initialAdminServices, AdminServiceItem } from "@/lib/adminDataStore";
+import { getServiceItems, saveServiceItemAction, deleteServiceItemAction } from "@/server/services";
+
+export interface AdminServiceItem {
+  id: string;
+  name: string;
+  category?: string;
+  pic?: string;
+  contact?: string;
+  url?: string | null;
+  status?: string;
+  description?: string | null;
+  icon?: string | null;
+  order?: number;
+  isActive?: boolean;
+  version?: number;
+}
 
 export default function AdminLayananPage() {
-  const [services, setServices] = useState<AdminServiceItem[]>(initialAdminServices);
+  const [services, setServices] = useState<AdminServiceItem[]>([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,14 +49,29 @@ export default function AdminLayananPage() {
   const [formStatus, setFormStatus] = useState<AdminServiceItem["status"]>("Operasional Normal");
   const [formDescription, setFormDescription] = useState("");
 
-  // Load from localStorage & sync unit param
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_services");
-    if (saved) {
-      try {
-        setServices(JSON.parse(saved));
-      } catch {}
+  // Load from database
+  const loadData = async () => {
+    try {
+      const data = await getServiceItems();
+      const mapped: AdminServiceItem[] = data.map((s) => ({
+        id: s.id,
+        name: s.name,
+        category: "Umum",
+        url: s.url,
+        description: s.description,
+        icon: s.icon,
+        order: s.order,
+        isActive: s.isActive,
+        version: s.version,
+      }));
+      setServices(mapped);
+    } catch (err) {
+      console.error("Error loading services:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
 
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -56,11 +86,9 @@ export default function AdminLayananPage() {
     }
   }, []);
 
-  const saveToStorage = (updated: AdminServiceItem[]) => {
+  const saveToStorage = async (updated: AdminServiceItem[]) => {
     setServices(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_services", JSON.stringify(updated));
-    }
+    await loadData();
   };
 
   const handleOpenCreate = () => {
@@ -79,11 +107,11 @@ export default function AdminLayananPage() {
     setEditingItem(item);
     setFormName(item.name);
     setFormCategory(item.category);
-    setFormPic(item.pic);
-    setFormContact(item.contact);
-    setFormUrl(item.url);
-    setFormStatus(item.status);
-    setFormDescription(item.description);
+    setFormPic(item.pic || "");
+    setFormContact(item.contact || "");
+    setFormUrl(item.url || "/layanan");
+    setFormStatus(item.status || "Operasional Normal");
+    setFormDescription(item.description || "");
     setModalOpen(true);
   };
 
@@ -145,8 +173,8 @@ export default function AdminLayananPage() {
   const filtered = services.filter((s) => {
     const matchSearch =
       s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.pic.toLowerCase().includes(search.toLowerCase()) ||
-      s.description.toLowerCase().includes(search.toLowerCase());
+      (s.pic || "").toLowerCase().includes(search.toLowerCase()) ||
+      (s.description || "").toLowerCase().includes(search.toLowerCase());
     const matchCategory = categoryFilter === "ALL" || s.category === categoryFilter;
     return matchSearch && matchCategory;
   });
@@ -259,7 +287,7 @@ export default function AdminLayananPage() {
 
             <div className="pt-4 mt-4 border-t border-blue-900/30 flex items-center justify-between">
               <a
-                href={item.url}
+                href={item.url || "#"}
                 target="_blank"
                 rel="noreferrer"
                 className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 font-mono transition"

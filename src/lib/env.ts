@@ -6,7 +6,7 @@ const envSchema = z.object({
   NEXTAUTH_SECRET: z.string().min(32, "NEXTAUTH_SECRET minimal 32 karakter demi keamanan enkripsi").optional(),
   ADMIN_SESSION_SECRET: z.string().min(32, "ADMIN_SESSION_SECRET minimal 32 karakter").optional(),
   SEED_ADMIN_EMAIL: z.string().email().optional().default("admin@upitra.ac.id"),
-  SEED_ADMIN_PASSWORD: z.string().min(8).optional().default("upitra2026"),
+  SEED_ADMIN_PASSWORD: z.string().min(8).optional(),
   PORT: z.string().optional().default("3000"),
 });
 

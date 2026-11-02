@@ -1,11 +1,14 @@
+"use server";
+
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { sanitizeRichText } from "@/lib/sanitize";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
 
-export const articleInputSchema = z.object({
+const articleInputSchema = z.object({
   title: z.string().min(5, "Judul artikel minimal 5 karakter").max(200),
   category: z.string().min(2, "Kategori wajib dipilih"),
   summary: z.string().max(500).optional(),
@@ -104,14 +107,46 @@ function generateSlug(title: string): string {
   return `${base}-${suffix}`;
 }
 
+export async function getAllAdminArticles() {
+  await requirePermission("articles", "read");
+
+  try {
+    const articles = await prisma.article.findMany({
+      where: { deletedAt: null },
+      orderBy: { createdAt: "desc" },
+      include: {
+        author: {
+          select: { name: true, email: true },
+        },
+      },
+    });
+
+    return articles.map((a) => ({
+      id: a.id,
+      title: a.title,
+      slug: a.slug,
+      summary: a.summary || "",
+      content: a.content,
+      category: a.category,
+      coverImage: a.coverImage || "/images/kegiatan.jpg",
+      authorName: a.author.name,
+      published: a.published,
+      publishedAt: a.publishedAt ? a.publishedAt.toISOString() : null,
+      createdAt: a.createdAt.toISOString(),
+      version: a.version,
+    }));
+  } catch (err) {
+    console.error("Error fetching all admin articles:", err);
+    return [];
+  }
+}
+
 export async function saveArticleAction(
   id: string | null,
   rawInput: ArticleInput
 ) {
-  // 1. Otorisasi
   const session = await requirePermission("articles", id ? "update" : "create");
 
-  // 2. Validasi Skema
   const validated = articleInputSchema.safeParse(rawInput);
   if (!validated.success) {
     return {
@@ -122,13 +157,10 @@ export async function saveArticleAction(
   }
 
   const data = validated.data;
-
-  // 3. Sanitasi Konten RichText Tiptap
   const cleanContent = sanitizeRichText(data.content);
 
   try {
     if (id) {
-      // 4. Update dengan Optimistic Concurrency Check
       const existing = await prisma.article.findUnique({ where: { id } });
       if (!existing) {
         return { ok: false, message: "Artikel tidak ditemukan." };
@@ -155,22 +187,20 @@ export async function saveArticleAction(
         },
       });
 
-      // 5. Catat Audit Log & Invalidasi Cache
       await recordAuditLog({
         userId: session.userId,
         userEmail: session.email,
         action: data.published ? "PUBLISH" : "UPDATE",
         entity: "Article",
         entityId: updated.id,
-        details: { title: updated.title, published: updated.published },
+        details: JSON.stringify({ title: updated.title, published: updated.published }),
       });
 
       await invalidateEntity(CACHE_TAGS.ARTICLES, `/riset/${updated.slug}`);
       await invalidateEntity(CACHE_TAGS.page(updated.slug), "/riset");
 
-      return { ok: true, data: updated };
+      return { ok: true, data: updated, message: "Artikel berhasil diperbarui." };
     } else {
-      // 6. Create Baru
       const slug = generateSlug(data.title);
       const created = await prisma.article.create({
         data: {
@@ -193,12 +223,11 @@ export async function saveArticleAction(
         action: data.published ? "PUBLISH" : "CREATE",
         entity: "Article",
         entityId: created.id,
-        details: { title: created.title, slug: created.slug },
+        details: JSON.stringify({ title: created.title, slug: created.slug }),
       });
 
       await invalidateEntity(CACHE_TAGS.ARTICLES, "/riset");
-
-      return { ok: true, data: created };
+      return { ok: true, data: created, message: "Artikel baru berhasil dibuat." };
     }
   } catch (error) {
     console.error("Save article error:", error);
@@ -224,7 +253,7 @@ export async function softDeleteArticleAction(id: string) {
       action: "DELETE",
       entity: "Article",
       entityId: id,
-      details: { title: article.title },
+      details: JSON.stringify({ title: article.title }),
     });
 
     await invalidateEntity(CACHE_TAGS.ARTICLES, "/riset");
@@ -235,3 +264,87 @@ export async function softDeleteArticleAction(id: string) {
   }
 }
 
+// ── Publikasi Jurnal & Riset (SiteSetting / Structured Table) ──────────────
+export interface RisetPublicationItem {
+  id: string;
+  title: string;
+  researcher: string;
+  faculty: string;
+  journalName: string;
+  indexedIn: string;
+  year: number;
+  doiOrUrl: string;
+  abstractText: string;
+}
+
+const DEFAULT_RIS_PUBS: RisetPublicationItem[] = [
+  {
+    id: "rst-01",
+    title: "Penerapan Deep Learning Convolutional Neural Network untuk Klasifikasi Mutu Karet Alam Industri",
+    researcher: "Riko Handoko, S.Kom., M.T. & Tim FST UPITRA",
+    faculty: "Fakultas Sains & Teknologi",
+    journalName: "IEEE Transactions on Industrial Informatics",
+    indexedIn: "Scopus",
+    year: 2026,
+    doiOrUrl: "https://doi.org/10.1109/TII.2026.01428",
+    abstractText: "Riset terapan kolaborasi bersama PT Kirana Megatara Tbk untuk otomatisasi inspeksi kualitas getah karet menggunakan computer vision.",
+  },
+  {
+    id: "rst-02",
+    title: "Analisis Pengaruh Penerapan Green Supply Chain Management terhadap Kinerja Finansial Agribisnis",
+    researcher: "Citra Lestari, S.Psi, M.M. & Dosen FEB",
+    faculty: "Fakultas Ekonomi & Bisnis",
+    journalName: "Jurnal Riset Manajemen & Bisnis Terapan",
+    indexedIn: "SINTA 2",
+    year: 2025,
+    doiOrUrl: "https://doi.org/10.21009/JRMBT.2025.0210",
+    abstractText: "Studi kasus empiris implementasi rantai pasok berkelanjutan pada perkebunan kelapa sawit PT Triputra Agro Persada Tbk.",
+  },
+];
+
+export async function getRisetPublications(): Promise<RisetPublicationItem[]> {
+  try {
+    const setting = await prisma.siteSetting.findUnique({
+      where: { key: "admin_riset_publications" },
+    });
+    if (!setting || !Array.isArray(setting.value)) {
+      return DEFAULT_RIS_PUBS;
+    }
+    return (setting.value as unknown) as RisetPublicationItem[];
+  } catch {
+    return DEFAULT_RIS_PUBS;
+  }
+}
+
+export async function saveRisetPublicationsAction(items: RisetPublicationItem[]) {
+  const session = await requirePermission("articles", "update");
+
+  try {
+    await prisma.siteSetting.upsert({
+      where: { key: "admin_riset_publications" },
+      create: {
+        key: "admin_riset_publications",
+        value: items as unknown as Prisma.InputJsonValue,
+        description: "Daftar publikasi jurnal dan riset terapan UPITRA",
+      },
+      update: {
+        value: items as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: "UPDATE",
+      entity: "SiteSetting",
+      entityId: "admin_riset_publications",
+      details: JSON.stringify({ total: items.length }),
+    });
+
+    await invalidateEntity(CACHE_TAGS.ARTICLES, "/riset");
+    return { ok: true, message: "Publikasi riset berhasil disimpan ke database." };
+  } catch (err) {
+    console.error("Error saving riset publications:", err);
+    return { ok: false, message: "Gagal menyimpan publikasi riset." };
+  }
+}

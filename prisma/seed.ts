@@ -8,7 +8,7 @@ async function main() {
 
   // 1. Superadmin User (Harden with bcrypt cost 12 & env variables)
   const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@upitra.ac.id";
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD || "upitra2026";
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || "AdminSecurePass!2026";
   const hashedPassword = await bcrypt.hash(adminPassword, 12);
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },

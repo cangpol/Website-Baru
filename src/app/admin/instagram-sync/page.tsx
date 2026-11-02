@@ -24,7 +24,59 @@ import {
   Check
 } from "lucide-react";
 import Image from "next/image";
-import { initialConnectedInstagramAccount, ConnectedInstagramAccount, InstagramFeedCard } from "@/lib/adminDataStore";
+export interface InstagramFeedCard {
+  id: string;
+  caption: string;
+  mediaUrl: string;
+  permalink: string;
+  timestamp: string;
+  timeAgo?: string;
+  likeCount: number;
+  commentCount: number;
+  category?: string;
+}
+
+export interface ConnectedInstagramAccount {
+  isConnected: boolean;
+  username: string;
+  displayName: string;
+  profilePicUrl: string;
+  bio: string;
+  followersCount: number;
+  followingCount: number;
+  postsCount: number;
+  connectedAt: string;
+  tokenExpiresAt: string;
+  source: "official_login" | "graph_api";
+  recentPosts: InstagramFeedCard[];
+}
+
+export const initialConnectedInstagramAccount: ConnectedInstagramAccount = {
+  isConnected: true,
+  username: "upitra_campus",
+  displayName: "Universitas Pignatelli Triputra",
+  profilePicUrl: "/images/logo.png",
+  bio: "Official Account of Universitas Pignatelli Triputra (UPITRA) Surakarta. Membangun Generasi Unggul Berkarakter Triputra.",
+  followersCount: 4820,
+  followingCount: 142,
+  postsCount: 184,
+  connectedAt: "29 Okt 2026, 12:45 WIB",
+  tokenExpiresAt: "Permanen (Sampai Logout Manual)",
+  source: "official_login",
+  recentPosts: [
+    {
+      id: "ig_post_01",
+      caption: "🌍 Suka petualangan & dunia kreatif? Pilih jurusan sesuai passionmu di S1 Pariwisata UPITRA!",
+      mediaUrl: "/images/pariwisata/par-1.jpg",
+      permalink: "https://www.instagram.com/upitra_campus/",
+      timestamp: "2026-10-28T14:30:00Z",
+      timeAgo: "1 hari yang lalu",
+      likeCount: 368,
+      commentCount: 32,
+      category: "S1 Pariwisata",
+    },
+  ],
+};
 
 export default function AdminInstagramSyncPage() {
   const [account, setAccount] = useState<ConnectedInstagramAccount>(initialConnectedInstagramAccount);
@@ -51,26 +103,6 @@ export default function AdminInstagramSyncPage() {
     commentCount: 38,
   });
 
-  // Load persisted session on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_ig_connected_session");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setAccount(parsed);
-      } catch {
-        // use default
-      }
-    }
-    // Also sync from API
-    fetchApiFeed();
-  }, []);
-
-  const saveSession = (acc: ConnectedInstagramAccount) => {
-    setAccount(acc);
-    localStorage.setItem("upitra_ig_connected_session", JSON.stringify(acc));
-  };
-
   const fetchApiFeed = async () => {
     try {
       const res = await fetch("/api/instagram", { cache: "no-store" });
@@ -88,6 +120,15 @@ export default function AdminInstagramSyncPage() {
     } catch {
       // ignore
     }
+  };
+
+  // Load feed from API on mount
+  useEffect(() => {
+    fetchApiFeed();
+  }, []);
+
+  const saveSession = (acc: ConnectedInstagramAccount) => {
+    setAccount(acc);
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {

@@ -15,10 +15,25 @@ import {
   FileCheck,
   Calendar
 } from "lucide-react";
-import { initialAdminDownloads, AdminDownloadItem } from "@/lib/adminDataStore";
+import { getDownloadDocs, saveDownloadDocAction, deleteDownloadDocAction } from "@/server/services";
+import { FileUploadField } from "@/components/admin/FileUploadField";
+
+export interface AdminDownloadItem {
+  id: string;
+  title: string;
+  category: string;
+  fileName?: string;
+  fileSize?: string | null;
+  fileUrl: string;
+  previewUrl?: string;
+  downloadCount?: number;
+  uploadedAt?: string;
+  updatedAt?: string;
+  version?: number;
+}
 
 export default function AdminDownloadCenterPage() {
-  const [downloads, setDownloads] = useState<AdminDownloadItem[]>(initialAdminDownloads);
+  const [downloads, setDownloads] = useState<AdminDownloadItem[]>([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
@@ -33,28 +48,39 @@ export default function AdminDownloadCenterPage() {
   const [formFileUrl, setFormFileUrl] = useState("/images/hero-1.jpg");
   const [formPreviewUrl, setFormPreviewUrl] = useState("/images/hero-1.jpg");
 
-  // Load from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_downloads");
-    if (saved) {
-      try {
-        setDownloads(JSON.parse(saved));
-      } catch {}
+  const loadData = async () => {
+    try {
+      const data = await getDownloadDocs();
+      const mapped: AdminDownloadItem[] = data.map((d) => ({
+        id: d.id,
+        title: d.title,
+        category: d.category,
+        fileUrl: d.fileUrl,
+        fileName: d.title,
+        fileSize: d.fileSize,
+        downloadCount: d.downloadCount,
+        version: d.version,
+      }));
+      setDownloads(mapped);
+    } catch (err) {
+      console.error("Error loading downloads:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const saveToStorage = (updated: AdminDownloadItem[]) => {
+  const saveToStorage = async (updated: AdminDownloadItem[]) => {
     setDownloads(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_downloads", JSON.stringify(updated));
-    }
+    await loadData();
   };
 
   const handleOpenCreate = () => {
     setEditingItem(null);
     setFormTitle("");
     setFormCategory("Brosur PMB");
-    setFormFileName("Brosur-UPITRA-2026.pdf");
+    setFormFileName("Brosur-Resmi-UPITRA.pdf");
     setFormFileSize("3.5 MB");
     setFormFileUrl("/images/hero-1.jpg");
     setFormPreviewUrl("/images/hero-1.jpg");
@@ -65,10 +91,10 @@ export default function AdminDownloadCenterPage() {
     setEditingItem(item);
     setFormTitle(item.title);
     setFormCategory(item.category);
-    setFormFileName(item.fileName);
-    setFormFileSize(item.fileSize);
+    setFormFileName(item.fileName || item.title);
+    setFormFileSize(item.fileSize || "3.5 MB");
     setFormFileUrl(item.fileUrl);
-    setFormPreviewUrl(item.previewUrl);
+    setFormPreviewUrl(item.previewUrl || "/images/hero-1.jpg");
     setModalOpen(true);
   };
 
@@ -115,13 +141,13 @@ export default function AdminDownloadCenterPage() {
     setDeleteConfirmId(null);
   };
 
-  const totalDownloads = downloads.reduce((acc, curr) => acc + curr.downloadCount, 0);
+  const totalDownloads = downloads.reduce((acc, curr) => acc + (curr.downloadCount || 0), 0);
 
   // Filtered
   const filtered = downloads.filter((d) => {
     const matchSearch =
       d.title.toLowerCase().includes(search.toLowerCase()) ||
-      d.fileName.toLowerCase().includes(search.toLowerCase());
+      (d.fileName || "").toLowerCase().includes(search.toLowerCase());
     const matchCategory = categoryFilter === "ALL" || d.category === categoryFilter;
     return matchSearch && matchCategory;
   });
@@ -260,11 +286,11 @@ export default function AdminDownloadCenterPage() {
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-400">
                         <Download className="w-3.5 h-3.5" />
-                        <span>{item.downloadCount.toLocaleString()}x</span>
+                        <span>{(item.downloadCount || 0).toLocaleString()}x</span>
                       </div>
                     </td>
                     <td className="py-4 px-4 text-xs font-mono text-slate-400">
-                      {item.updatedAt}
+                      {item.updatedAt || "-"}
                     </td>
                     <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
@@ -354,7 +380,7 @@ export default function AdminDownloadCenterPage() {
                     required
                     value={formFileName}
                     onChange={(e) => setFormFileName(e.target.value)}
-                    placeholder="Brosur-UPITRA-2026.pdf"
+                    placeholder="Brosur-Resmi-UPITRA.pdf"
                     className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm font-mono text-emerald-300 focus:outline-none focus:border-emerald-400"
                   />
                 </div>

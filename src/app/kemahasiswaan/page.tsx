@@ -24,7 +24,17 @@ import {
   Clock,
   Compass
 } from "lucide-react";
-import { initialAdminKemahasiswaanBanner, AdminKemahasiswaanBanner } from "@/lib/adminDataStore";
+interface KemahasiswaanBanner {
+  title: string;
+  description: string;
+  imageUrl?: string;
+}
+
+const defaultKemahasiswaanBanner: KemahasiswaanBanner = {
+  title: "Kemahasiswaan",
+  description: "Ruang Kolaborasi, Prestasi, dan Pengembangan Karakter Unggul Mahasiswa UPITRA",
+  imageUrl: "/images/kegiatan.jpg",
+};
 
 // ── 1. Data About Kemahasiswaan (Tupoksi) ──
 const tupoksiList = [
@@ -259,17 +269,23 @@ const galeriKegiatan = [
 ];
 
 export default function KemahasiswaanIndexPage() {
-  const [banner, setBanner] = useState<AdminKemahasiswaanBanner>(initialAdminKemahasiswaanBanner);
+  const [banner, setBanner] = useState<KemahasiswaanBanner>(defaultKemahasiswaanBanner);
   const [activeTab, setActiveTab] = useState<KemahasiswaanTabKey>("about");
 
-  // Load dynamic banner from localStorage (editable via Admin if configured)
+  // Load dynamic banner from database via API
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_banner_kemahasiswaan");
-    if (saved) {
-      try {
-        setBanner(JSON.parse(saved));
-      } catch {}
-    }
+    fetch("/api/banner?page=kemahasiswaan")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && json.data) {
+          setBanner({
+            title: json.data.title || defaultKemahasiswaanBanner.title,
+            description: json.data.description || defaultKemahasiswaanBanner.description,
+            imageUrl: json.data.imageUrl || defaultKemahasiswaanBanner.imageUrl,
+          });
+        }
+      })
+      .catch((err) => console.warn("Failed to load banner:", err));
   }, []);
 
   return (

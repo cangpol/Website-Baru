@@ -142,6 +142,19 @@ export const ADMIN_MODULES_REGISTRY: Record<string, AdminModuleConfig> = {
       { label: "Knowledge Base", href: "/admin/ai-dataset" },
     ],
   },
+  media: {
+    key: "media",
+    label: "Pustaka Media",
+    description: "Kelola aset gambar dan dokumen UPITRA dengan validasi magic bytes.",
+    iconName: "FolderOpen",
+    adminRoute: "/admin/media",
+    publicRoute: "/admin/media",
+    allowedRoles: [Role.SUPERADMIN, Role.CONTENT_WRITER],
+    revalidateTags: ["media"],
+    submenus: [
+      { label: "Semua Media", href: "/admin/media" },
+    ],
+  },
   users: {
     key: "users",
     label: "Manajemen Pengguna",

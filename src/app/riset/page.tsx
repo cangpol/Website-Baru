@@ -15,25 +15,59 @@ import {
   Newspaper,
   BookOpen 
 } from "lucide-react";
-import { initialAdminRisetBanner, AdminRisetBanner } from "@/lib/adminDataStore";
 import { getAllArticles, NewsArticle } from "@/lib/newsData";
-import { getMergedArticles } from "@/lib/syncArticles";
+
+interface RisetBanner {
+  title: string;
+  description: string;
+  imageUrl?: string;
+}
+
+const defaultRisetBanner: RisetBanner = {
+  title: "Riset & Inovasi",
+  description: "Pusat Penelitian Terapan, Publikasi Ilmiah & Inovasi Kolaboratif Sivitas Akademika UPITRA",
+  imageUrl: "/images/kegiatan.jpg",
+};
 
 export default function RisetPortalPage() {
-  const [banner, setBanner] = useState<AdminRisetBanner>(initialAdminRisetBanner);
+  const [banner, setBanner] = useState<RisetBanner>(defaultRisetBanner);
   const [recentArticles, setRecentArticles] = useState<NewsArticle[]>(() => getAllArticles().slice(0, 4));
 
-  // Load dynamic banner and merged articles from localStorage
+  // Load dynamic banner and published articles from Database via API
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_banner_riset");
-    if (saved) {
-      try {
-        setBanner(JSON.parse(saved));
-      } catch {}
-    }
+    fetch("/api/banner?page=riset")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && json.data) {
+          setBanner({
+            title: json.data.title || defaultRisetBanner.title,
+            description: json.data.description || defaultRisetBanner.description,
+            imageUrl: json.data.imageUrl || defaultRisetBanner.imageUrl,
+          });
+        }
+      })
+      .catch((err) => console.warn("Failed to load banner:", err));
 
-    const merged = getMergedArticles(getAllArticles());
-    setRecentArticles(merged.slice(0, 4));
+    fetch("/api/articles?limit=4")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
+          const mapped: NewsArticle[] = json.data.map((item: any) => ({
+            id: item.id,
+            slug: item.slug,
+            title: item.title,
+            excerpt: item.summary || item.title,
+            content: item.content || "",
+            category: item.category || "Berita Kampus",
+            publishedAt: item.publishedAt || item.createdAt,
+            readTimeMinutes: 3,
+            imageUrl: item.coverImage || "/images/kegiatan.jpg",
+            author: item.authorName || "Humas UPITRA",
+          }));
+          setRecentArticles(mapped);
+        }
+      })
+      .catch((err) => console.warn("Failed to load articles:", err));
   }, []);
 
   const getCategoryBadgeClass = (category: string) => {

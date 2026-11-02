@@ -31,8 +31,9 @@ function UGateLoginForm() {
     e.preventDefault();
     setError(null);
 
-    // Verifikasi Gateway Key instansi (UPITRA-2026)
-    if (gatewayKey.trim() !== "UPITRA-2026") {
+    // Verifikasi Gateway Key instansi
+    const validKey = process.env.NEXT_PUBLIC_ADMIN_GATEWAY_KEY || "UPITRA-GATEWAY-2026";
+    if (gatewayKey.trim() !== validKey) {
       setError("Security Gateway Key instansi tidak valid. Akses ditolak.");
       return;
     }
@@ -45,15 +46,6 @@ function UGateLoginForm() {
       const result = await loginAdminAction({ success: false, message: "" }, formData);
 
       if (result.success) {
-        // Simpan sesi display di localStorage untuk kompatibilitas tampilan antarmuka
-        const sessionData = {
-          email: email.trim().toLowerCase(),
-          name: "Administrator UPITRA",
-          role: "SUPERADMIN",
-          loginAt: new Date().toISOString(),
-        };
-        localStorage.setItem("upitra_admin_session", JSON.stringify(sessionData));
-
         // Alihkan ke rute admin yang dituju
         router.push(redirectTarget);
         router.refresh();
@@ -65,8 +57,7 @@ function UGateLoginForm() {
 
   const handleQuickDemoFill = () => {
     setEmail("admin@upitra.ac.id");
-    setPassword("upitra2026");
-    setGatewayKey("UPITRA-2026");
+    setGatewayKey(process.env.NEXT_PUBLIC_ADMIN_GATEWAY_KEY || "UPITRA-GATEWAY-2026");
     setError(null);
   };
 
@@ -178,7 +169,7 @@ function UGateLoginForm() {
                 required
                 value={gatewayKey}
                 onChange={(e) => setGatewayKey(e.target.value)}
-                placeholder="UPITRA-2026"
+                placeholder="UPITRA-GATEWAY-2026"
                 className="w-full bg-blue-50/40 border border-blue-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-mono text-blue-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition"
               />
             </div>

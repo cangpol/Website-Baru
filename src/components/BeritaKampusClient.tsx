@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { NewsArticle } from "@/lib/newsData";
-import { getMergedArticles } from "@/lib/syncArticles";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { NewsArticle } from "@/lib/newsData";
 
-interface BeritaKampusClientProps {
+export interface BeritaKampusClientProps {
   initialArticles: NewsArticle[];
 }
 
@@ -14,7 +13,7 @@ export default function BeritaKampusClient({ initialArticles }: BeritaKampusClie
   const [articles, setArticles] = useState<NewsArticle[]>(initialArticles);
 
   useEffect(() => {
-    setArticles(getMergedArticles(initialArticles));
+    setArticles(initialArticles);
   }, [initialArticles]);
 
   const featuredArticle = articles[0];

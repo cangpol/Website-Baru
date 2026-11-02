@@ -18,7 +18,13 @@ import {
   Sparkles
 } from "lucide-react";
 import Image from "next/image";
-import { initialAdminKemahasiswaanList, AdminKemahasiswaanSection } from "@/lib/adminDataStore";
+import { 
+  getKemahasiswaanSections, 
+  saveKemahasiswaanSectionsAction, 
+  KemahasiswaanSectionItem 
+} from "@/server/student-affairs";
+
+export type AdminKemahasiswaanSection = KemahasiswaanSectionItem;
 
 function KemahasiswaanManagerContent() {
   const searchParams = useSearchParams();
@@ -48,23 +54,31 @@ function KemahasiswaanManagerContent() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_kemahasiswaan");
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch {
-        setItems(initialAdminKemahasiswaanList);
-      }
-    } else {
-      setItems(initialAdminKemahasiswaanList);
-      localStorage.setItem("upitra_admin_kemahasiswaan", JSON.stringify(initialAdminKemahasiswaanList));
+  const loadData = async () => {
+    try {
+      const data = await getKemahasiswaanSections();
+      setItems(data);
+    } catch (err) {
+      console.error("Error loading kemahasiswaan sections:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const saveToStorage = (updated: AdminKemahasiswaanSection[]) => {
+  const saveToStorage = async (updated: AdminKemahasiswaanSection[]) => {
     setItems(updated);
-    localStorage.setItem("upitra_admin_kemahasiswaan", JSON.stringify(updated));
+    try {
+      const res = await saveKemahasiswaanSectionsAction(updated);
+      if (res.ok) {
+        showNotification(res.message);
+      } else {
+        alert(res.message);
+      }
+    } catch {
+      alert("Gagal menyimpan data kemahasiswaan.");
+    }
   };
 
   const showNotification = (msg: string) => {
@@ -85,7 +99,7 @@ function KemahasiswaanManagerContent() {
     const matchesSearch = 
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.toLowerCase());
+      (item.category || "").toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesTab && matchesSearch;
   });
@@ -95,7 +109,7 @@ function KemahasiswaanManagerContent() {
       setEditingItem(item);
       setFormData({
         title: item.title,
-        category: item.category,
+        category: item.category || "",
         description: item.description,
         dateOrSemester: item.dateOrSemester || "",
         image: item.image || "",

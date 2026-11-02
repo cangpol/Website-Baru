@@ -1,3 +1,5 @@
+"use server";
+
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
@@ -5,7 +7,7 @@ import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
 import { DegreeLevel } from "@prisma/client";
 
-export const programInputSchema = z.object({
+const programInputSchema = z.object({
   facultyId: z.string().min(1, "Fakultas wajib dipilih"),
   name: z.string().min(3, "Nama prodi minimal 3 karakter"),
   slug: z.string().min(2, "Slug wajib diisi"),
@@ -63,6 +65,39 @@ export async function getFacultiesWithPrograms() {
     }));
   } catch (err) {
     console.error("Error fetching faculties and programs:", err);
+    return [];
+  }
+}
+
+export async function getAllAdminPrograms() {
+  try {
+    const programs = await prisma.program.findMany({
+      where: { deletedAt: null },
+      include: { faculty: { select: { id: true, name: true, code: true } } },
+      orderBy: [{ faculty: { code: "asc" } }, { name: "asc" }],
+    });
+
+    return programs.map((p) => ({
+      id: p.id,
+      facultyId: p.facultyId,
+      facultyCode: p.faculty.code,
+      facultyName: p.faculty.name,
+      name: p.name,
+      slug: p.slug,
+      degreeLevel: p.degreeLevel === DegreeLevel.DIPLOMA ? "D3" : "S1",
+      degreeTitle: p.degreeTitle || (p.degreeLevel === DegreeLevel.DIPLOMA ? "A.Md." : "S.Kom."),
+      accreditation: p.accreditation,
+      campusLocation: p.campusLocation,
+      shortDesc: p.shortDesc || "",
+      fullDesc: p.fullDesc || "",
+      careerProspect: p.careerProspect || "",
+      tuitionFeeEst: p.tuitionFeeEst ? Number(p.tuitionFeeEst) : null,
+      coverImage: p.coverImage || "/images/banners/hero-pmb.jpg",
+      featured: p.featured,
+      version: p.version,
+    }));
+  } catch (err) {
+    console.error("Error fetching admin programs:", err);
     return [];
   }
 }
@@ -199,6 +234,32 @@ export async function deleteFacultyAction(facultyId: string) {
   } catch (error) {
     console.error("Delete faculty error:", error);
     return { ok: false, message: "Gagal menghapus fakultas." };
+  }
+}
+
+export async function softDeleteProgramAction(id: string) {
+  const session = await requirePermission("akademik", "delete");
+
+  try {
+    const program = await prisma.program.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: "DELETE",
+      entity: "Program",
+      entityId: id,
+      details: { name: program.name },
+    });
+
+    await invalidateEntity(CACHE_TAGS.PROGRAMS, "/akademik");
+    return { ok: true, message: `Program studi ${program.name} berhasil dihapus.` };
+  } catch (error) {
+    console.error("Delete program error:", error);
+    return { ok: false, message: "Gagal menghapus program studi." };
   }
 }
 

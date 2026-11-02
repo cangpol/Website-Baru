@@ -28,11 +28,32 @@ import {
 import Image from "next/image";
 import RichEditor from "@/components/admin/RichEditor";
 import { 
-  initialAdminArticles, 
-  AdminArticleItem, 
-  initialAdminRisetList, 
-  AdminRisetSection 
-} from "@/lib/adminDataStore";
+  getAllAdminArticles,
+  saveArticleAction,
+  softDeleteArticleAction,
+  getRisetPublications,
+  saveRisetPublicationsAction,
+  RisetPublicationItem
+} from "@/server/articles";
+
+export interface AdminArticleItem {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  authorName: string;
+  author?: string;
+  publishedAt: string | null;
+  createdAt: string;
+  summary: string;
+  content: string;
+  coverImage: string;
+  published: boolean;
+  viewCount?: number;
+  version: number;
+}
+
+export type AdminRisetSection = RisetPublicationItem;
 
 const newsCategories = [
   "Semua",
@@ -54,10 +75,13 @@ const emptyNewsForm: AdminArticleItem = {
   summary: "",
   content: "",
   coverImage: "/images/ar-vr.jpg",
+  authorName: "Humas UPITRA",
   author: "Humas UPITRA",
   published: true,
   publishedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+  createdAt: new Date().toISOString(),
   viewCount: 1,
+  version: 1,
 };
 
 export default function AdminRisetPage() {
@@ -115,9 +139,21 @@ export default function AdminRisetPage() {
   });
   const [deleteRisetId, setDeleteRisetId] = useState<string | null>(null);
 
-  // ── Load from LocalStorage ────────────────────────────────────────────────
+  // ── Load from Database ───────────────────────────────────────────────────
+  const loadData = async () => {
+    try {
+      const [news, riset] = await Promise.all([
+        getAllAdminArticles(),
+        getRisetPublications(),
+      ]);
+      setArticles(news);
+      setRisetItems(riset);
+    } catch (err) {
+      console.error("Error loading articles from DB:", err);
+    }
+  };
+
   useEffect(() => {
-    // Check URL query tab parameter if exists
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get("tab");
@@ -125,42 +161,7 @@ export default function AdminRisetPage() {
         setActiveTab("publikasi");
       }
     }
-
-    // Load Berita
-    const savedNews = localStorage.getItem("upitra_admin_articles");
-    if (savedNews) {
-      try {
-        const parsed = JSON.parse(savedNews);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setArticles(parsed);
-        } else {
-          setArticles(initialAdminArticles);
-        }
-      } catch {
-        setArticles(initialAdminArticles);
-      }
-    } else {
-      setArticles(initialAdminArticles);
-      localStorage.setItem("upitra_admin_articles", JSON.stringify(initialAdminArticles));
-    }
-
-    // Load Riset
-    const savedRiset = localStorage.getItem("upitra_admin_riset");
-    if (savedRiset) {
-      try {
-        const parsed = JSON.parse(savedRiset);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setRisetItems(parsed);
-        } else {
-          setRisetItems(initialAdminRisetList);
-        }
-      } catch {
-        setRisetItems(initialAdminRisetList);
-      }
-    } else {
-      setRisetItems(initialAdminRisetList);
-      localStorage.setItem("upitra_admin_riset", JSON.stringify(initialAdminRisetList));
-    }
+    loadData();
   }, []);
 
   const showToast = (msg: string) => {
@@ -168,14 +169,18 @@ export default function AdminRisetPage() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const saveNewsToStorage = (updated: AdminArticleItem[]) => {
-    setArticles(updated);
-    localStorage.setItem("upitra_admin_articles", JSON.stringify(updated));
-  };
-
-  const saveRisetToStorage = (updated: AdminRisetSection[]) => {
+  const saveRisetToStorage = async (updated: AdminRisetSection[]) => {
     setRisetItems(updated);
-    localStorage.setItem("upitra_admin_riset", JSON.stringify(updated));
+    try {
+      const res = await saveRisetPublicationsAction(updated);
+      if (res.ok) {
+        showToast(res.message);
+      } else {
+        alert(res.message);
+      }
+    } catch {
+      alert("Gagal menyimpan publikasi riset.");
+    }
   };
 
   const generateSlug = (text: string) => {
@@ -205,46 +210,71 @@ export default function AdminRisetPage() {
     setNewsModalOpen(true);
   };
 
-  const handleSaveNews = (e: React.FormEvent) => {
+  const handleSaveNews = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsForm.title.trim()) {
       alert("Judul berita wajib diisi.");
       return;
     }
 
-    const slug = newsForm.slug.trim() || generateSlug(newsForm.title);
+    try {
+      const res = await saveArticleAction(editingArticle?.id || null, {
+        title: newsForm.title,
+        category: newsForm.category,
+        summary: newsForm.summary,
+        content: newsForm.content,
+        coverImage: newsForm.coverImage,
+        published: newsForm.published,
+        version: newsForm.version || 1,
+      });
 
-    if (editingArticle) {
-      const updated = articles.map((a) =>
-        a.id === editingArticle.id ? { ...newsForm, slug } : a
-      );
-      saveNewsToStorage(updated);
-      showToast("Berita kampus berhasil diperbarui!");
-    } else {
-      const newArticle: AdminArticleItem = {
-        ...newsForm,
-        id: `art-${Date.now().toString().slice(-5)}`,
-        slug,
-      };
-      saveNewsToStorage([newArticle, ...articles]);
-      showToast("Berita kampus baru berhasil diterbitkan!");
+      if (res.ok) {
+        setNewsModalOpen(false);
+        showToast(res.message || "Artikel berhasil disimpan ke database!");
+        await loadData();
+      } else {
+        alert(res.message || "Gagal menyimpan artikel.");
+      }
+    } catch (err) {
+      alert("Terjadi kesalahan sistem saat menyimpan artikel.");
     }
-    setNewsModalOpen(false);
   };
 
-  const handleDeleteNews = (id: string) => {
-    const updated = articles.filter((a) => a.id !== id);
-    saveNewsToStorage(updated);
-    setDeleteNewsId(null);
-    showToast("Berita berhasil dihapus.");
+  const handleDeleteNews = async (id: string) => {
+    try {
+      const res = await softDeleteArticleAction(id);
+      if (res.ok) {
+        setDeleteNewsId(null);
+        showToast(res.message);
+        await loadData();
+      } else {
+        alert(res.message);
+      }
+    } catch {
+      alert("Gagal menghapus artikel.");
+    }
   };
 
-  const togglePublishNews = (id: string) => {
-    const updated = articles.map((a) =>
-      a.id === id ? { ...a, published: !a.published } : a
-    );
-    saveNewsToStorage(updated);
-    showToast("Status publikasi diperbarui.");
+  const togglePublishNews = async (id: string) => {
+    const art = articles.find((a) => a.id === id);
+    if (!art) return;
+    try {
+      const res = await saveArticleAction(id, {
+        title: art.title,
+        category: art.category,
+        summary: art.summary,
+        content: art.content,
+        coverImage: art.coverImage,
+        published: !art.published,
+        version: art.version || 1,
+      });
+      if (res.ok) {
+        showToast("Status publikasi diperbarui.");
+        await loadData();
+      }
+    } catch {
+      showToast("Gagal memperbarui status publikasi.");
+    }
   };
 
   // ── PUBLIKASI RISET HANDLERS ──────────────────────────────────────────────
@@ -791,7 +821,7 @@ export default function AdminRisetPage() {
                   <input
                     type="text"
                     placeholder="28 Okt 2026"
-                    value={newsForm.publishedAt}
+                    value={newsForm.publishedAt || ""}
                     onChange={(e) => setNewsForm({ ...newsForm, publishedAt: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
                   />

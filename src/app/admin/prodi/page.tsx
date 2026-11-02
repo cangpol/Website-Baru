@@ -14,10 +14,35 @@ import {
   Sparkles,
   ExternalLink
 } from "lucide-react";
-import { initialAdminProdiList, AdminProdiItem } from "@/lib/adminDataStore";
+import { getAllAdminPrograms, saveProgramAction, softDeleteProgramAction } from "@/server/programs";
+
+export interface AdminProdiItem {
+  id: string;
+  facultyId?: string;
+  faculty: "FST" | "FEB" | "FSH" | "FKES";
+  facultyCode?: string;
+  facultyName?: string;
+  name: string;
+  slug: string;
+  degreeLevel?: string;
+  degree: "S1" | "D3";
+  degreeTitle: string;
+  accreditation: string;
+  tuitionFeeEst?: number | null;
+  tuitionPerSemester?: string;
+  tuition: string;
+  shortDesc: string;
+  careerProspect?: string;
+  careerProspects?: string;
+  career: string;
+  coverImage: string;
+  featured?: boolean;
+  totalStudentsEst?: number;
+  version: number;
+}
 
 export default function AdminProdiCrudPage() {
-  const [prodis, setProdis] = useState<AdminProdiItem[]>(initialAdminProdiList);
+  const [prodis, setProdis] = useState<AdminProdiItem[]>([]);
   const [search, setSearch] = useState("");
   const [facultyFilter, setFacultyFilter] = useState<string>("ALL");
   const [degreeFilter, setDegreeFilter] = useState<string>("ALL");
@@ -37,14 +62,37 @@ export default function AdminProdiCrudPage() {
   const [formCareer, setFormCareer] = useState("");
   const [formCoverImage, setFormCoverImage] = useState("/images/banners/hero-pmb.jpg");
 
-  // Load from localStorage if present & sync faculty URL param
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_prodis");
-    if (saved) {
-      try {
-        setProdis(JSON.parse(saved));
-      } catch {}
+  // Load from database
+  const loadData = async () => {
+    try {
+      const data = await getAllAdminPrograms();
+      const mapped: AdminProdiItem[] = data.map((p) => ({
+        id: p.id,
+        facultyId: p.facultyId,
+        faculty: (p.facultyCode as any) || "FST",
+        facultyCode: p.facultyCode,
+        facultyName: p.facultyName,
+        name: p.name,
+        slug: p.slug,
+        degree: (p.degreeLevel as any) || "S1",
+        degreeTitle: p.degreeTitle,
+        accreditation: p.accreditation,
+        tuitionFeeEst: p.tuitionFeeEst,
+        tuition: p.tuitionFeeEst ? `Rp ${p.tuitionFeeEst.toLocaleString("id-ID")}` : "Rp 6.500.000",
+        shortDesc: p.shortDesc,
+        careerProspect: p.careerProspect,
+        career: p.careerProspect,
+        coverImage: p.coverImage,
+        version: p.version,
+      }));
+      setProdis(mapped);
+    } catch (err) {
+      console.error("Error loading programs:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
 
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -55,11 +103,9 @@ export default function AdminProdiCrudPage() {
     }
   }, []);
 
-  const saveToStorage = (updated: AdminProdiItem[]) => {
+  const saveToStorage = async (updated: AdminProdiItem[]) => {
     setProdis(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_prodis", JSON.stringify(updated));
-    }
+    await loadData();
   };
 
   const handleOpenCreate = () => {
@@ -82,12 +128,12 @@ export default function AdminProdiCrudPage() {
     setFormFaculty(item.faculty);
     setFormName(item.name);
     setFormSlug(item.slug);
-    setFormDegree(item.degreeLevel);
+    setFormDegree((item.degreeLevel as "D3" | "S1") || item.degree || "S1");
     setFormDegreeTitle(item.degreeTitle);
     setFormAccreditation(item.accreditation);
-    setFormTuition(item.tuitionPerSemester);
+    setFormTuition(item.tuitionPerSemester || item.tuition || "");
     setFormShortDesc(item.shortDesc);
-    setFormCareer(item.careerProspects);
+    setFormCareer(item.careerProspects || item.careerProspect || item.career || "");
     setFormCoverImage(item.coverImage);
     setModalOpen(true);
   };
@@ -136,8 +182,12 @@ export default function AdminProdiCrudPage() {
         degreeTitle: formDegreeTitle,
         accreditation: formAccreditation,
         tuitionPerSemester: formTuition,
+        tuition: formTuition,
         shortDesc: formShortDesc,
         careerProspects: formCareer,
+        career: formCareer,
+        degree: formDegree,
+        version: 1,
         totalStudentsEst: 150,
         coverImage: formCoverImage,
         featured: false,
@@ -158,7 +208,7 @@ export default function AdminProdiCrudPage() {
   const filtered = prodis.filter((p) => {
     const matchSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.facultyName.toLowerCase().includes(search.toLowerCase()) ||
+      (p.facultyName || "").toLowerCase().includes(search.toLowerCase()) ||
       p.degreeTitle.toLowerCase().includes(search.toLowerCase());
     const matchFaculty = facultyFilter === "ALL" || p.faculty === facultyFilter;
     const matchDegree = degreeFilter === "ALL" || p.degreeLevel === degreeFilter;

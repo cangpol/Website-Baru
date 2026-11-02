@@ -16,10 +16,28 @@ import {
   Sparkles
 } from "lucide-react";
 import Image from "next/image";
-import { initialAdminMitra, AdminMitraItem } from "@/lib/adminDataStore";
+import { getPartners, savePartnerAction, softDeletePartnerAction } from "@/server/partners";
+
+export interface AdminMitraItem {
+  id: string;
+  name: string;
+  category: string;
+  partnershipType?: string;
+  logo?: string;
+  logoUrl?: string;
+  websiteUrl?: string | null;
+  description?: string | null;
+  startYear?: number | null;
+  mouYear?: string | number;
+  status?: string;
+  mouStatus?: string | null;
+  order: number;
+  isActive: boolean;
+  version: number;
+}
 
 export default function AdminMitraPage() {
-  const [mitras, setMitras] = useState<AdminMitraItem[]>(initialAdminMitra);
+  const [mitras, setMitras] = useState<AdminMitraItem[]>([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
@@ -35,21 +53,22 @@ export default function AdminMitraPage() {
   const [formMouYear, setFormMouYear] = useState("2024 - 2029");
   const [formStatus, setFormStatus] = useState<AdminMitraItem["status"]>("Aktif");
 
-  // Load from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_mitra");
-    if (saved) {
-      try {
-        setMitras(JSON.parse(saved));
-      } catch {}
+  const loadData = async () => {
+    try {
+      const data = await getPartners();
+      setMitras(data as any);
+    } catch (err) {
+      console.error("Error loading partners:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const saveToStorage = (updated: AdminMitraItem[]) => {
+  const saveToStorage = async (updated: AdminMitraItem[]) => {
     setMitras(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_mitra", JSON.stringify(updated));
-    }
+    await loadData();
   };
 
   const handleOpenCreate = () => {
@@ -67,10 +86,10 @@ export default function AdminMitraPage() {
     setEditingItem(item);
     setFormName(item.name);
     setFormCategory(item.category);
-    setFormPartnershipType(item.partnershipType);
-    setFormLogo(item.logo);
-    setFormMouYear(item.mouYear);
-    setFormStatus(item.status);
+    setFormPartnershipType(item.partnershipType || "Immersion 3+1");
+    setFormLogo(item.logo || item.logoUrl || "/images/logo.png");
+    setFormMouYear(String(item.mouYear || item.startYear || "2024 - 2029"));
+    setFormStatus(item.status || "Aktif");
     setModalOpen(true);
   };
 
@@ -102,6 +121,9 @@ export default function AdminMitraPage() {
         logo: formLogo,
         mouYear: formMouYear,
         status: formStatus,
+        order: 0,
+        isActive: true,
+        version: 1,
       };
       saveToStorage([newItem, ...mitras]);
     }
@@ -245,7 +267,7 @@ export default function AdminMitraPage() {
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-12 h-12 rounded-xl bg-slate-900 border border-blue-900/50 flex items-center justify-center p-2 relative overflow-hidden flex-shrink-0">
                   <Image
-                    src={item.logo}
+                    src={item.logo || item.logoUrl || "/images/logo.png"}
                     alt={item.name}
                     width={40}
                     height={40}

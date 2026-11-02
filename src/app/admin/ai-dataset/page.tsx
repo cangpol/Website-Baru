@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import initialDatasetRaw from "@/data/upitraAiKnowledge.json";
 import { searchAiKnowledge, KnowledgeItem } from "@/lib/aiAssistantService";
+import { getAIDataset, saveAIDatasetAction } from "@/server/ai-dataset";
 
 export interface AIDatasetItem {
   id: string;
@@ -37,6 +38,7 @@ export interface AIDatasetItem {
   question: string;
   keywords: string[];
   answer: string;
+  active?: boolean;
   updatedAt?: string;
 }
 
@@ -89,28 +91,19 @@ export default function AdminAiDatasetPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load dataset from localStorage or initial fallback
+  // Load dataset from Prisma Database
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_ai_dataset");
-    if (saved) {
+    async function loadData() {
       try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setDataset(parsed);
-          return;
+        const data = await getAIDataset();
+        if (data && data.length > 0) {
+          setDataset(data);
         }
-      } catch {}
+      } catch (err) {
+        console.error("Gagal memuat dataset AI dari database:", err);
+      }
     }
-    // Initial fallback from JSON
-    const initialFormatted: AIDatasetItem[] = (initialDatasetRaw as KnowledgeItem[]).map((item) => ({
-      id: item.id || `qa-${Math.random().toString(36).substring(2, 8)}`,
-      category: item.category || "umum",
-      question: item.question || "Pertanyaan",
-      keywords: Array.isArray(item.keywords) ? item.keywords : [],
-      answer: item.answer || "",
-      updatedAt: "Bawaan Sistem"
-    }));
-    setDataset(initialFormatted);
+    loadData();
   }, []);
 
   const showToast = (msg: string) => {
@@ -118,9 +111,22 @@ export default function AdminAiDatasetPage() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const saveDatasetToStorage = (updated: AIDatasetItem[]) => {
+  const saveDatasetToStorage = async (updated: AIDatasetItem[]) => {
     setDataset(updated);
-    localStorage.setItem("upitra_ai_dataset", JSON.stringify(updated));
+    try {
+      const payload = updated.map((item) => ({
+        ...item,
+        active: item.active ?? true,
+      }));
+      const res = await saveAIDatasetAction(payload);
+      if (res.ok) {
+        showToast("✓ Dataset AI berhasil disimpan ke database!");
+      } else {
+        showToast("⚠️ " + res.message);
+      }
+    } catch {
+      showToast("Gagal menyimpan dataset ke database.");
+    }
   };
 
   // Categories extraction

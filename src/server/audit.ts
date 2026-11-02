@@ -9,7 +9,12 @@ export type AuditAction =
   | "DELETE" 
   | "RESTORE" 
   | "PUBLISH" 
-  | "UNPUBLISH";
+  | "UNPUBLISH"
+  | "EXPORT"
+  | "UPLOAD"
+  | "ROLE_CHANGE"
+  | "SECURITY_LOCKOUT"
+  | "ARCHIVE";
 
 export interface LogAuditParams {
   userId?: string | null;
@@ -17,7 +22,7 @@ export interface LogAuditParams {
   action: AuditAction;
   entity: string;
   entityId?: string | null;
-  details?: Record<string, unknown> | null;
+  details?: Record<string, unknown> | string | null;
   ipAddress?: string | null;
 }
 

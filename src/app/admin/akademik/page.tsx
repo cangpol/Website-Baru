@@ -22,7 +22,36 @@ import {
   List,
   Layers
 } from "lucide-react";
-import { initialAdminCalendarEvents, AdminCalendarEvent } from "@/lib/adminDataStore";
+import { getEvents, saveEventAction, deleteEventAction } from "@/server/events";
+
+export interface AdminCalendarEvent {
+  id: string;
+  title: string;
+  name?: string;
+  slug?: string;
+  description?: string;
+  category?: string;
+  type?: string;
+  location?: string;
+  start_date: string;
+  end_date: string;
+  startDate?: string;
+  endDate?: string;
+  time?: string;
+  event_time?: string;
+  organizer?: string;
+  status?: string;
+  target_audience?: string;
+  registration_link?: string;
+  registrationUrl?: string | null;
+  bannerImage?: string | null;
+  isOnline?: boolean;
+  color?: string;
+  all_day?: boolean;
+  is_featured?: boolean;
+  sort_order?: number;
+  version?: number;
+}
 
 const categories = [
   "Semua",
@@ -85,26 +114,38 @@ export default function AdminAkademikCalendarPage() {
   // Calendar Visual View State
   const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
 
-  // Load from LocalStorage or seed initial data
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_academic_events");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setEvents(parsed);
-          return;
-        }
-      } catch {}
+  // Load from Database
+  const loadData = async () => {
+    try {
+      const data = await getEvents();
+      const mapped: AdminCalendarEvent[] = data.map((ev) => ({
+        id: ev.id,
+        title: ev.title,
+        name: ev.title,
+        slug: ev.slug,
+        description: ev.description,
+        category: ev.type,
+        type: ev.type,
+        location: ev.location,
+        start_date: ev.startDate.split("T")[0],
+        end_date: ev.endDate.split("T")[0],
+        startDate: ev.startDate,
+        endDate: ev.endDate,
+        bannerImage: ev.bannerImage,
+        isOnline: ev.isOnline,
+        registrationUrl: ev.registrationUrl,
+        version: ev.version,
+        status: new Date(ev.endDate) < new Date() ? "Selesai" : new Date(ev.startDate) <= new Date() ? "Berlangsung" : "Mendatang",
+      }));
+      setEvents(mapped);
+    } catch (err) {
+      console.error("Error loading events:", err);
     }
-    setEvents(initialAdminCalendarEvents);
-    localStorage.setItem("upitra_academic_events", JSON.stringify(initialAdminCalendarEvents));
-  }, []);
-
-  const saveToStorage = (updated: AdminCalendarEvent[]) => {
-    setEvents(updated);
-    localStorage.setItem("upitra_academic_events", JSON.stringify(updated));
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -119,7 +160,7 @@ export default function AdminAkademikCalendarPage() {
       const orgMatch = (ev.organizer || "").toLowerCase().includes(search.toLowerCase());
       const matchesSearch = titleMatch || locMatch || orgMatch;
 
-      const matchesCat = filterCategory === "Semua" || ev.category === filterCategory;
+      const matchesCat = filterCategory === "Semua" || ev.category === filterCategory || ev.type === filterCategory;
       const matchesStatus = filterStatus === "all" || ev.status === filterStatus;
 
       return matchesSearch && matchesCat && matchesStatus;
@@ -151,7 +192,7 @@ export default function AdminAkademikCalendarPage() {
     setEditingEvent(ev);
     setForm({
       ...ev,
-      title: ev.title || ev.name,
+      title: ev.title || ev.name || "",
       name: ev.name || ev.title || "",
       start_date: ev.start_date || new Date().toISOString().split("T")[0],
       end_date: ev.end_date || ev.start_date || new Date().toISOString().split("T")[0],
@@ -159,7 +200,7 @@ export default function AdminAkademikCalendarPage() {
     setIsFormOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const eventName = form.title?.trim() || form.name?.trim();
     if (!eventName || !form.start_date) {
@@ -167,35 +208,45 @@ export default function AdminAkademikCalendarPage() {
       return;
     }
 
-    const payload: AdminCalendarEvent = {
-      ...form,
-      name: eventName,
-      title: eventName,
-      end_date: form.end_date || form.start_date,
-    };
+    try {
+      const res = await saveEventAction(editingEvent ? String(editingEvent.id) : null, {
+        title: eventName,
+        description: form.description || "Agenda akademik UPITRA.",
+        location: form.location || "Kampus UPITRA Surakarta",
+        startDate: new Date(form.start_date).toISOString(),
+        endDate: new Date(form.end_date || form.start_date).toISOString(),
+        bannerImage: form.bannerImage || null,
+        isOnline: Boolean(form.isOnline),
+        type: form.category || form.type || "Akademik",
+        registrationUrl: form.registration_link || form.registrationUrl || null,
+        version: form.version || 1,
+      });
 
-    if (editingEvent) {
-      const updated = events.map((ev) => (ev.id === editingEvent.id ? { ...payload, id: editingEvent.id } : ev));
-      saveToStorage(updated);
-      showToast("Event kampus berhasil diperbarui!");
-    } else {
-      const newId = `ev-${Date.now().toString().slice(-6)}`;
-      const newEvent: AdminCalendarEvent = {
-        ...payload,
-        id: newId,
-      };
-      saveToStorage([newEvent, ...events]);
-      showToast("Event kampus baru berhasil ditambahkan!");
+      if (res.ok) {
+        setIsFormOpen(false);
+        showToast(res.message || "Agenda berhasil disimpan.");
+        await loadData();
+      } else {
+        alert(res.message || "Gagal menyimpan event.");
+      }
+    } catch {
+      alert("Terjadi kesalahan sistem saat menyimpan event.");
     }
-
-    setIsFormOpen(false);
   };
 
-  const handleDelete = (id: string | number) => {
-    const updated = events.filter((e) => e.id !== id);
-    saveToStorage(updated);
-    setDeleteConfirmId(null);
-    showToast("Event kampus berhasil dihapus.");
+  const handleDelete = async (id: string | number) => {
+    try {
+      const res = await deleteEventAction(String(id));
+      if (res.ok) {
+        setDeleteConfirmId(null);
+        showToast(res.message);
+        await loadData();
+      } else {
+        alert(res.message);
+      }
+    } catch {
+      alert("Gagal menghapus event.");
+    }
   };
 
   // Calendar Days Calculation

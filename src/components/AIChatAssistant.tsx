@@ -173,23 +173,11 @@ export default function AIChatAssistant() {
     setLoading(true);
 
     try {
-      // Check if admin has customized the AI Dataset in localStorage
-      let customDataset = undefined;
-      if (typeof window !== "undefined") {
-        const savedDataset = localStorage.getItem("upitra_ai_dataset");
-        if (savedDataset) {
-          try {
-            customDataset = JSON.parse(savedDataset);
-          } catch {}
-        }
-      }
-
       const res = await fetch("/api/assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           message: userMsg.text,
-          customDataset
         })
       });
 

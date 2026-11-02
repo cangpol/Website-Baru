@@ -28,14 +28,46 @@ import {
   HelpCircle,
   Check
 } from "lucide-react";
-import { 
-  initialAdminCalendarEvents, 
-  AdminCalendarEvent, 
-  initialAdminArticles, 
-  AdminArticleItem, 
-  initialAdminRisetList, 
-  AdminRisetSection 
-} from "@/lib/adminDataStore";
+import { getAllAdminArticles, getRisetPublications } from "@/server/articles";
+import { getEvents } from "@/server/events";
+import { getAIDataset } from "@/server/ai-dataset";
+import { getAdmissionLeads } from "@/server/leads";
+
+export interface AdminCalendarEvent {
+  id: string;
+  title: string;
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+  start_date?: string;
+  end_date?: string;
+  type?: string;
+  category?: string;
+  location?: string;
+  status?: string;
+  all_day?: boolean;
+}
+
+export interface AdminArticleItem {
+  id: string;
+  title: string;
+  category: string;
+  createdAt: string;
+  published: boolean;
+  publishedAt?: string | null;
+  authorName?: string;
+  summary?: string;
+}
+
+export interface AdminRisetSection {
+  id: string;
+  title: string;
+  researcher: string;
+  faculty: string;
+  journalName: string;
+  indexedIn: string;
+  year: number;
+}
 
 interface AdminUserSession {
   email: string;
@@ -58,78 +90,36 @@ export default function AdminDashboardPage() {
   const [feedTab, setFeedTab] = useState<"all" | "news" | "events">("all");
   const [feedSearch, setFeedSearch] = useState("");
 
-  // Load institutional data from local storage
-  const loadData = () => {
-    // 1. Session Info
-    const savedSession = localStorage.getItem("upitra_admin_session");
-    if (savedSession) {
-      try {
-        setSession(JSON.parse(savedSession));
-      } catch {}
-    }
+  // Load institutional data from Database
+  const loadData = async () => {
+    try {
+      const [allArticles, allEvents, allRiset, allDataset] = await Promise.all([
+        getAllAdminArticles(),
+        getEvents(),
+        getRisetPublications(),
+        getAIDataset(),
+      ]);
 
-    // 2. Academic Events
-    const savedEvents = localStorage.getItem("upitra_academic_events");
-    if (savedEvents) {
-      try {
-        const parsed = JSON.parse(savedEvents);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setEvents(parsed);
-        } else {
-          setEvents(initialAdminCalendarEvents);
-        }
-      } catch {
-        setEvents(initialAdminCalendarEvents);
-      }
-    } else {
-      setEvents(initialAdminCalendarEvents);
-    }
-
-    // 3. Berita & Artikel
-    const savedNews = localStorage.getItem("upitra_admin_articles");
-    if (savedNews) {
-      try {
-        const parsed = JSON.parse(savedNews);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setArticles(parsed);
-        } else {
-          setArticles(initialAdminArticles);
-        }
-      } catch {
-        setArticles(initialAdminArticles);
-      }
-    } else {
-      setArticles(initialAdminArticles);
-    }
-
-    // 4. Riset Dosen
-    const savedRiset = localStorage.getItem("upitra_admin_riset");
-    if (savedRiset) {
-      try {
-        const parsed = JSON.parse(savedRiset);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setRisetItems(parsed);
-        } else {
-          setRisetItems(initialAdminRisetList);
-        }
-      } catch {
-        setRisetItems(initialAdminRisetList);
-      }
-    } else {
-      setRisetItems(initialAdminRisetList);
-    }
-
-    // 5. AI Dataset
-    const savedDataset = localStorage.getItem("upitra_ai_dataset");
-    if (savedDataset) {
-      try {
-        const parsed = JSON.parse(savedDataset);
-        if (Array.isArray(parsed)) {
-          setAiDatasetCount(parsed.length);
-          const uniqueCats = new Set(parsed.map((item: { category?: string }) => item.category || "Umum"));
-          setAiCategoryCount(uniqueCats.size);
-        }
-      } catch {}
+      setArticles(allArticles as any);
+      setEvents(
+        allEvents.map((e) => ({
+          id: e.id,
+          title: e.title,
+          name: e.title,
+          start_date: e.startDate.split("T")[0],
+          end_date: e.endDate.split("T")[0],
+          type: e.type,
+          category: e.type,
+          location: e.location,
+          status: new Date(e.endDate) < new Date() ? "Selesai" : new Date(e.startDate) <= new Date() ? "Berlangsung" : "Mendatang",
+        }))
+      );
+      setRisetItems(allRiset as any);
+      setAiDatasetCount(allDataset.length);
+      const uniqueCats = new Set(allDataset.map((item) => item.category || "Umum"));
+      setAiCategoryCount(uniqueCats.size);
+    } catch (err) {
+      console.error("Error loading dashboard data:", err);
     }
 
     const now = new Date();
@@ -218,7 +208,7 @@ export default function AdminDashboardPage() {
       result = result.filter(
         (item) =>
           item.title.toLowerCase().includes(q) ||
-          item.category.toLowerCase().includes(q) ||
+          (item.category || "").toLowerCase().includes(q) ||
           item.status.toLowerCase().includes(q)
       );
     }

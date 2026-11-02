@@ -17,10 +17,23 @@ import {
   Mail,
   ShieldAlert
 } from "lucide-react";
-import { initialAdminUsers, AdminUserItem } from "@/lib/adminDataStore";
+import { getUsers, saveUserAction, deleteUserAction } from "@/server/users";
+
+export interface AdminUserItem {
+  id: string;
+  name: string;
+  email: string;
+  role: "SUPERADMIN" | "STAFF_PMB" | "CONTENT_WRITER";
+  isActive?: boolean;
+  status: "Aktif" | "Nonaktif";
+  lastLogin?: string;
+  lastLoginAt?: string | null;
+  mustChangePassword?: boolean;
+  createdAt?: string;
+}
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<AdminUserItem[]>(initialAdminUsers);
+  const [users, setUsers] = useState<AdminUserItem[]>([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
@@ -33,21 +46,37 @@ export default function AdminUsersPage() {
   const [formRole, setFormRole] = useState<AdminUserItem["role"]>("STAFF_PMB");
   const [formStatus, setFormStatus] = useState<AdminUserItem["status"]>("Aktif");
 
-  // Load from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_users");
-    if (saved) {
-      try {
-        setUsers(JSON.parse(saved));
-      } catch {}
+  const [formPassword, setFormPassword] = useState("");
+
+  // Load from Database
+  const loadData = async () => {
+    try {
+      const data = await getUsers();
+      const mapped: AdminUserItem[] = data.map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role as any,
+        isActive: u.isActive,
+        status: u.isActive ? "Aktif" : "Nonaktif",
+        lastLogin: u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("id-ID") : "Belum pernah login",
+        lastLoginAt: u.lastLoginAt,
+        mustChangePassword: u.mustChangePassword,
+        createdAt: u.createdAt,
+      }));
+      setUsers(mapped);
+    } catch (err) {
+      console.error("Error loading users:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const saveToStorage = (updated: AdminUserItem[]) => {
+  const saveToStorage = async (updated: AdminUserItem[]) => {
     setUsers(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("upitra_admin_users", JSON.stringify(updated));
-    }
+    await loadData();
   };
 
   const handleOpenCreate = () => {
@@ -384,7 +413,7 @@ export default function AdminUsersPage() {
               {!editingItem && (
                 <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300">
                   <p className="font-semibold mb-1">Kredensial Default Awal:</p>
-                  <p>Password akun baru diset ke <code className="bg-slate-900 px-1.5 py-0.5 rounded text-amber-300">upitra2026</code> dan harus diganti saat login pertama melalui gateway portal.</p>
+                  <p>Password akun baru diset ke password sementara yang dimasukkan dan harus diganti saat login pertama melalui gateway portal.</p>
                 </div>
               )}
 

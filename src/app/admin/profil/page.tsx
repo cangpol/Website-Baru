@@ -18,7 +18,13 @@ import {
   CheckCircle2
 } from "lucide-react";
 import Image from "next/image";
-import { initialAdminProfilList, AdminProfilSection } from "@/lib/adminDataStore";
+import { 
+  getProfilSections, 
+  saveProfilSectionsAction, 
+  ProfilSectionItem 
+} from "@/server/profile";
+
+export type AdminProfilSection = ProfilSectionItem;
 
 function ProfilManagerContent() {
   const searchParams = useSearchParams();
@@ -47,23 +53,31 @@ function ProfilManagerContent() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_profil");
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch {
-        setItems(initialAdminProfilList);
-      }
-    } else {
-      setItems(initialAdminProfilList);
-      localStorage.setItem("upitra_admin_profil", JSON.stringify(initialAdminProfilList));
+  const loadData = async () => {
+    try {
+      const data = await getProfilSections();
+      setItems(data);
+    } catch (err) {
+      console.error("Error loading profil sections:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const saveToStorage = (updated: AdminProfilSection[]) => {
+  const saveToStorage = async (updated: AdminProfilSection[]) => {
     setItems(updated);
-    localStorage.setItem("upitra_admin_profil", JSON.stringify(updated));
+    try {
+      const res = await saveProfilSectionsAction(updated);
+      if (res.ok) {
+        showNotification(res.message);
+      } else {
+        alert(res.message);
+      }
+    } catch {
+      alert("Gagal menyimpan data profil ke database.");
+    }
   };
 
   const showNotification = (msg: string) => {
@@ -285,7 +299,7 @@ function ProfilManagerContent() {
 
                 <div>
                   <div className="text-[10px] font-bold uppercase text-sky-400 tracking-wider">
-                    {item.type.replace("_", " ")}
+                    {(item.type || item.category || "").replace("_", " ")}
                   </div>
                   <h3 className="text-sm font-bold text-white mt-0.5 leading-snug">
                     {item.title}

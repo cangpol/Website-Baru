@@ -128,6 +128,15 @@ const sidebarNavigation: SidebarItem[] = [
     badgeColor: "bg-sky-500/20 text-sky-200 border-sky-400/30",
   },
   {
+    id: "media",
+    groupTitle: "PENDUKUNG",
+    label: "Pustaka Media",
+    href: "/admin/media",
+    icon: Building2,
+    badge: "Aset",
+    badgeColor: "bg-emerald-500/20 text-emerald-200 border-emerald-400/30",
+  },
+  {
     id: "users",
     groupTitle: "SISTEM",
     label: "Manajemen Staf",
@@ -146,19 +155,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
 
-  // Cek otorisasi sesi admin
+  // Cek otorisasi sesi admin via server cookie
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("upitra_admin_session");
-    if (!saved) {
-      router.push("/u-gate");
-    } else {
-      try {
-        setSession(JSON.parse(saved));
-      } catch {
-        router.push("/u-gate");
-      }
-    }
+
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && json.user) {
+          setSession({
+            email: json.user.email,
+            name: json.user.name,
+            role: json.user.role,
+            loginAt: new Date().toISOString(),
+          });
+        } else {
+          router.push("/u-gate");
+        }
+      })
+      .catch(() => router.push("/u-gate"));
 
     // Jam Real-Time
     const updateClock = () => {
@@ -191,11 +206,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const breadcrumb = getBreadcrumb();
 
   const handleLogout = async () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("upitra_admin_session");
-      document.cookie = "upitra_admin_auth=; path=/; max-age=0";
-    }
     await logoutAdminAction();
+    router.push("/u-gate");
   };
 
   if (!mounted || !session) {

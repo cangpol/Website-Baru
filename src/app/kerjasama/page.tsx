@@ -19,35 +19,85 @@ import {
   ExternalLink,
   Award
 } from "lucide-react";
-import { 
-  initialAdminKerjasamaBanner, 
-  AdminKerjasamaBanner, 
-  initialAdminMitra,
-  initialAdminMouList
-} from "@/lib/adminDataStore";
+interface KerjasamaBanner {
+  title: string;
+  description: string;
+  imageUrl?: string;
+}
 
-// ── 3 Menu Subnav Tabs (Sesuai Gambar Referensi Pengguna) ──
+const defaultKerjasamaBanner: KerjasamaBanner = {
+  title: "Kerjasama",
+  description: "Membangun Sinergi Strategis Bersama Industri, Pemerintah, dan Perguruan Tinggi Terkemuka",
+  imageUrl: "/images/gedung-upitra.jpg",
+};
+
 const subnavTabs = [
-  { id: "mitra", label: "Mitra Kerjasama", href: "/kerjasama/mitra-kerjasama" },
-  { id: "daftar", label: "Daftar Kerjasama (MoU / MoA)", href: "/kerjasama/daftar-kerjasama" },
-  { id: "kegiatan", label: "Kegiatan Kerjasama", href: "/kerjasama/kegiatan-kerjasama" },
+  { id: "mitra", label: "Mitra Industri & Kampus" },
+  { id: "mou", label: "MoU & Kerja Sama" },
+  { id: "kegiatan", label: "Aktivitas Kerja Sama" },
 ];
 
 // ── Kurasi Mitra Unggulan untuk Marquee 1 Baris Berjalan Pelan ──
-const marqueePartners = initialAdminMitra.slice(0, 18);
+const marqueePartners = [
+  { id: "m1", name: "PT Astra Agro Lestari Tbk", logo: "/images/mitra/mitra1.png", partnershipType: "Immersion 3+1", category: "Triputra Group" },
+  { id: "m2", name: "PT United Tractors Tbk", logo: "/images/mitra/mitra2.png", partnershipType: "Magang & Riset", category: "Alat Berat & Mesin" },
+  { id: "m3", name: "PT Pamapersada Nusantara", logo: "/images/mitra/mitra3.png", partnershipType: "Rekrutmen Kampus", category: "Pertambangan" },
+  { id: "m4", name: "PT Triputra Agro Persada Tbk", logo: "/images/mitra/mitra4.png", partnershipType: "Beasiswa Ikatan Dinas", category: "Agribisnis" },
+  { id: "m5", name: "PT Kirana Megatara Tbk", logo: "/images/mitra/mitra5.png", partnershipType: "Kerjasama Riset", category: "Manufaktur Karet" },
+  { id: "m6", name: "PT Dharma Polimetal Tbk", logo: "/images/mitra/mitra6.png", partnershipType: "Penyusunan Kurikulum", category: "Otomotif" },
+];
+
+const defaultMouList = [
+  {
+    id: "mou-01",
+    partnerName: "PT Astra Agro Lestari Tbk",
+    documentType: "MoU & MoA",
+    scope: "Program Magang Industri 3+1 dan Rekrutmen Kampus",
+    startYear: 2024,
+    endYear: 2029,
+    signatory: "Rektor UPITRA & Direktur HRD AAL",
+    status: "Aktif",
+  },
+  {
+    id: "mou-02",
+    partnerName: "PT United Tractors Tbk",
+    documentType: "MoU",
+    scope: "Penyelarasan Kurikulum Teknik & Vokasi Industri",
+    startYear: 2023,
+    endYear: 2028,
+    signatory: "Dekan FST & Head of Learning UT",
+    status: "Aktif",
+  },
+  {
+    id: "mou-03",
+    partnerName: "PT Triputra Agro Persada Tbk",
+    documentType: "MoA Beasiswa",
+    scope: "Pemberian Beasiswa Ikatan Dinas dan Riset Bersama",
+    startYear: 2024,
+    endYear: 2027,
+    signatory: "Rektor UPITRA & CEO Triputra Agro",
+    status: "Aktif",
+  },
+];
 
 export default function KerjasamaIndexPage() {
-  const [banner, setBanner] = useState<AdminKerjasamaBanner>(initialAdminKerjasamaBanner);
+  const [banner, setBanner] = useState<KerjasamaBanner>(defaultKerjasamaBanner);
   const [activeTab, setActiveTab] = useState<string>("mitra");
 
-  // Load dynamic banner from localStorage (editable via Admin if configured)
+  // Load dynamic banner from database via API
   useEffect(() => {
-    const saved = localStorage.getItem("upitra_banner_kerjasama");
-    if (saved) {
-      try {
-        setBanner(JSON.parse(saved));
-      } catch {}
-    }
+    fetch("/api/banner?page=kerjasama")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && json.data) {
+          setBanner({
+            title: json.data.title || defaultKerjasamaBanner.title,
+            description: json.data.description || defaultKerjasamaBanner.description,
+            imageUrl: json.data.imageUrl || defaultKerjasamaBanner.imageUrl,
+          });
+        }
+      })
+      .catch((err) => console.warn("Failed to load banner:", err));
   }, []);
 
   return (
@@ -295,7 +345,7 @@ export default function KerjasamaIndexPage() {
               </div>
 
               <div className="divide-y divide-slate-100">
-                {initialAdminMouList.slice(0, 5).map((mou) => (
+                {defaultMouList.slice(0, 5).map((mou) => (
                   <div key={mou.id} className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">

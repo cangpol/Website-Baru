@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
-import { initialAdminArticles, initialAdminCalendarEvents } from "@/lib/adminDataStore";
+import { staticArticles } from "@/lib/newsData";
 import { Newspaper, Calendar, ArrowRight, MapPin, Clock } from "lucide-react";
 
 interface ArticleItem {
@@ -49,7 +49,7 @@ export default async function HomepageNewsEvents() {
         createdAt: a.createdAt,
       }));
     } else {
-      articles = initialAdminArticles.slice(0, 3).map((a) => ({
+      articles = staticArticles.slice(0, 3).map((a) => ({
         id: a.id,
         title: a.title,
         slug: a.slug,
@@ -60,7 +60,7 @@ export default async function HomepageNewsEvents() {
       }));
     }
   } catch (err) {
-    articles = initialAdminArticles.slice(0, 3).map((a) => ({
+    articles = staticArticles.slice(0, 3).map((a) => ({
       id: a.id,
       title: a.title,
       slug: a.slug,
@@ -89,28 +89,21 @@ export default async function HomepageNewsEvents() {
         isOnline: e.isOnline,
       }));
     } else {
-      events = initialAdminCalendarEvents.slice(0, 3).map((e) => ({
-        id: String(e.id),
-        title: e.title || e.name || "Agenda Kampus UPITRA",
-        slug: String(e.id),
-        description: e.description || e.name || "Kegiatan akademik dan kemahasiswaan di lingkungan UPITRA.",
-        location: e.location || "Kampus UPITRA Surakarta",
-        startDate: new Date(e.start_date),
-        endDate: e.end_date ? new Date(e.end_date) : undefined,
-        isOnline: false,
-      }));
+      events = [
+        {
+          id: "ev-1",
+          title: "Seminar Nasional Kecerdasan Buatan & Transformasi Industri",
+          slug: "seminar-nasional-ai-2026",
+          description: "Membahas aplikasi AI mutakhir dalam efisiensi operasional industri bersama praktisi Triputra Group.",
+          location: "Auditorium Kampus UPITRA Surakarta",
+          startDate: new Date(),
+          endDate: new Date(),
+          isOnline: false,
+        },
+      ];
     }
   } catch (err) {
-    events = initialAdminCalendarEvents.slice(0, 3).map((e) => ({
-      id: String(e.id),
-      title: e.title || e.name || "Agenda Kampus UPITRA",
-      slug: String(e.id),
-      description: e.description || e.name || "Kegiatan akademik dan kemahasiswaan di lingkungan UPITRA.",
-      location: e.location || "Kampus UPITRA Surakarta",
-      startDate: new Date(e.start_date),
-      endDate: e.end_date ? new Date(e.end_date) : undefined,
-      isOnline: false,
-    }));
+    events = [];
   }
 
   return (

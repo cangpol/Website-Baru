@@ -18,7 +18,13 @@ import {
   CheckCircle2,
   Briefcase
 } from "lucide-react";
-import { initialAdminMouList, AdminKerjasamaMouItem } from "@/lib/adminDataStore";
+import { 
+  getMouList, 
+  saveMouListAction, 
+  KerjasamaMouItem 
+} from "@/server/partners";
+
+export type AdminKerjasamaMouItem = KerjasamaMouItem;
 
 function KerjasamaManagerContent() {
   const searchParams = useSearchParams();
@@ -50,23 +56,31 @@ function KerjasamaManagerContent() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("upitra_admin_mou");
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch {
-        setItems(initialAdminMouList);
-      }
-    } else {
-      setItems(initialAdminMouList);
-      localStorage.setItem("upitra_admin_mou", JSON.stringify(initialAdminMouList));
+  const loadData = async () => {
+    try {
+      const data = await getMouList();
+      setItems(data);
+    } catch (err) {
+      console.error("Error loading MoU list:", err);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const saveToStorage = (updated: AdminKerjasamaMouItem[]) => {
+  const saveToStorage = async (updated: AdminKerjasamaMouItem[]) => {
     setItems(updated);
-    localStorage.setItem("upitra_admin_mou", JSON.stringify(updated));
+    try {
+      const res = await saveMouListAction(updated);
+      if (res.ok) {
+        showNotification(res.message);
+      } else {
+        alert(res.message);
+      }
+    } catch {
+      alert("Gagal menyimpan data MoU ke database.");
+    }
   };
 
   const showNotification = (msg: string) => {

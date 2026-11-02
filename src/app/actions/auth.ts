@@ -105,17 +105,19 @@ export async function loginAdminAction(
     } catch {
       // Fallback jika database belum aktif atau error
       console.warn("Database offline during admin login, checking emergency admin fallback");
-      if (rateLimitKey === "admin@upitra.ac.id" && password === "upitra2026") {
+      const emergencyPass = process.env.SEED_ADMIN_PASSWORD;
+      const emergencyEmail = process.env.SEED_ADMIN_EMAIL || "admin@upitra.ac.id";
+      if (emergencyPass && rateLimitKey === emergencyEmail && password === emergencyPass) {
         clearFailedAttempts(rateLimitKey);
         await setSessionCookie({
-          userId: "fallback-superadmin-id",
-          email: "admin@upitra.ac.id",
-          name: "Administrator Utama UPITRA (Emergency Fallback)",
+          userId: "emergency-superadmin",
+          email: emergencyEmail,
+          name: "Administrator Utama UPITRA",
           role: "SUPERADMIN",
         });
         return {
           success: true,
-          message: "Login darurat berhasil.",
+          message: "Login berhasil.",
         };
       }
     }
