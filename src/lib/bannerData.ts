@@ -28,16 +28,16 @@ export interface PromoBanner {
 export const defaultBanners: PromoBanner[] = [
   {
     id: 1,
-    badge: "PENERIMAAN MAHASISWA BARU TA 2026/2027",
-    title: "Wujudkan Karir Masa Depan di Kampus Berkarakter Industri",
-    subtitle: "Dapatkan Beasiswa Penuh Triputra Peduli Prestasi hingga 100% dan jaminan prioritas magang di 43+ grup korporasi.",
-    image: "/images/banners/hero-pmb.jpg",
+    badge: "UNIVERSITAS PIGNATELLI TRIPUTRA",
+    title: "Campus to Career",
+    subtitle: "Temukan program studi, kembangkan potensimu, dan dapatkan pekerjaan sebelum lulus kuliah di Universitas Pignatelli Triputra.",
+    image: "/images/banners/hero-campus-students-optimized.jpg",
     link: "https://pmb.upitra.ac.id",
-    ctaText: "Daftar PMB Online",
+    ctaText: "Daftar Sekarang",
     secondaryCtaText: "Informasi Beasiswa",
     secondaryCtaLink: "https://pmb.upitra.ac.id",
-    alt: "Penerimaan Mahasiswa Baru UPITRA 2026/2027 - Gedung Kampus UPITRA Surakarta",
-    fallbackGradient: "from-[#05172e] via-[#0b2545] to-[#0f3b73]",
+    alt: "Universitas Pignatelli Triputra Campus to Career",
+    fallbackGradient: "from-[#006bbd] via-[#006bbd] to-[#0052a3]",
   },
   {
     id: 2,

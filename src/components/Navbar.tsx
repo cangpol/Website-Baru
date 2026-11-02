@@ -56,83 +56,86 @@ export default function Navbar() {
         <div className="w-full h-[80px] flex items-center">
           <div className="w-full max-w-[1440px] mx-auto h-[80px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           
-          {/* Brand Mark UPITRA - 3D White Badge & Refined Authoritative Typography */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0" aria-label="UPITRA Beranda">
-            <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white p-1.5 sm:p-2 flex items-center justify-center shadow-[0_10px_25px_-4px_rgba(6,23,46,0.18),0_4px_10px_-2px_rgba(6,23,46,0.08),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_4px_rgba(0,0,0,0.04)] border border-slate-100/90 ring-1 ring-slate-900/5 group-hover:-translate-y-0.5 group-hover:shadow-[0_16px_32px_-4px_rgba(6,23,46,0.22),0_6px_12px_-2px_rgba(6,23,46,0.1)] transition-all duration-300 shrink-0">
+          {/* Brand Mark UPITRA - Logo Icon & 3-Line Authoritative Typography */}
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0" aria-label="UPITRA Beranda">
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-xs border border-slate-100 ring-1 ring-slate-900/5 group-hover:scale-105 transition-transform duration-300 shrink-0">
               <img
                 src="/images/logo.png"
                 alt="Logo UPITRA"
-                className="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(6,23,46,0.22)] drop-shadow-[0_1px_2px_rgba(6,23,46,0.15)] group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(6,23,46,0.18)]"
               />
             </div>
-            <div className="flex flex-col justify-center">
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg sm:text-2xl font-black tracking-[0.16em] text-[#06172e] uppercase font-sans drop-shadow-[0_1px_1px_rgba(0,0,0,0.06)] group-hover:text-blue-700 transition-colors leading-none">
-                  UPITRA
-                </span>
-                <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-blue-600/70" />
-              </div>
-              <span className="text-[8px] sm:text-[9.5px] font-bold tracking-[0.24em] text-blue-900/90 uppercase mt-1 leading-none">
-                Universitas Pignatelli Triputra
+            <div className="flex flex-col justify-center leading-tight">
+              <span className="text-[10px] sm:text-[11.5px] font-black tracking-[0.08em] text-[#06172e] uppercase font-sans leading-[1.1]">
+                UNIVERSITAS
+              </span>
+              <span className="text-[10px] sm:text-[11.5px] font-black tracking-[0.08em] text-[#06172e] uppercase font-sans leading-[1.1]">
+                PIGNATELLI
+              </span>
+              <span className="text-[10px] sm:text-[11.5px] font-black tracking-[0.08em] text-[#06172e] uppercase font-sans leading-[1.1]">
+                TRIPUTRA
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-1.5 2xl:gap-2.5 text-[13px] font-bold text-slate-800 tracking-wide">
+          <nav className="hidden xl:flex items-center gap-2 2xl:gap-3 text-[14px] text-slate-800 tracking-normal">
             
-            {/* 1. PROFIL Dropdown */}
-            <Link
-              href="/profil"
-              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
-            >
-              Profil
-            </Link>
+            {/* 1. PROFIL with active blue underline indicator */}
+            <div className="relative flex flex-col items-center">
+              <Link
+                href="/profil"
+                className="h-[36px] px-3.5 inline-flex items-center justify-center rounded-lg text-slate-800 font-bold hover:text-blue-700 transition-colors"
+              >
+                Profil
+              </Link>
+              <div className="absolute -bottom-[22px] inset-x-2 h-[3px] bg-blue-600 rounded-full" />
+            </div>
 
-            {/* 2. AKADEMIK (Tautan Langsung ke /akademik) */}
+            {/* 2. AKADEMIK */}
             <Link
               href="/akademik"
-              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+              className="h-[36px] px-3.5 inline-flex items-center justify-center rounded-lg text-slate-700 font-semibold hover:text-blue-700 hover:bg-slate-50 transition-colors"
             >
               Akademik
             </Link>
 
-            {/* 3. RISET Dropdown */}
+            {/* 3. RISET */}
             <Link
               href="/riset"
-              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+              className="h-[36px] px-3.5 inline-flex items-center justify-center rounded-lg text-slate-700 font-semibold hover:text-blue-700 hover:bg-slate-50 transition-colors"
             >
               Riset
             </Link>
 
-            {/* 4. KEMAHASISWAAN Dropdown */}
+            {/* 4. KEMAHASISWAAN */}
             <Link
               href="/kemahasiswaan"
-              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+              className="h-[36px] px-3.5 inline-flex items-center justify-center rounded-lg text-slate-700 font-semibold hover:text-blue-700 hover:bg-slate-50 transition-colors"
             >
               Kemahasiswaan
             </Link>
 
-            {/* 5. KERJASAMA Dropdown */}
+            {/* 5. KERJASAMA */}
             <Link
               href="/kerjasama"
-              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+              className="h-[36px] px-3.5 inline-flex items-center justify-center rounded-lg text-slate-700 font-semibold hover:text-blue-700 hover:bg-slate-50 transition-colors"
             >
               Kerjasama
             </Link>
 
-            {/* 6. LAYANAN Dropdown */}
+            {/* 6. LAYANAN */}
             <Link
               href="/layanan"
-              className="h-[32px] px-3 max-w-[150px] inline-flex items-center justify-center gap-1 rounded-lg text-slate-700 hover:text-blue-700 hover:bg-slate-100/70 transition-colors"
+              className="h-[36px] px-3.5 inline-flex items-center justify-center rounded-lg text-slate-700 font-semibold hover:text-blue-700 hover:bg-slate-50 transition-colors"
             >
               Layanan
             </Link>
 
-            {/* 7. CTA DAFTAR SEKARANG (Kuning Oranye, Hug Width 150px & Fixed Height 32px) */}
+            {/* 7. CTA DAFTAR SEKARANG (Yellow Button matching Figma) */}
             <Link
               href="https://pmb.upitra.ac.id"
-              className="h-[32px] px-4 max-w-[150px] inline-flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 via-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-sm shadow-orange-500/20 hover:shadow-orange-500/30 transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+              className="h-[38px] px-5 ml-2 inline-flex items-center justify-center rounded-xl bg-[#FFD400] hover:bg-[#F2C900] text-slate-900 font-bold text-xs sm:text-[13px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Daftar Sekarang</span>
             </Link>
