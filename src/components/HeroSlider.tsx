@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 
 export default function HeroSlider() {
   return (
-    <section className="relative w-full overflow-hidden select-none" aria-label="Grand Gateway UPITRA">
+    <section className="relative w-full bg-[#006bbd] overflow-hidden select-none" aria-label="Grand Gateway UPITRA">
       
-      {/* ── 1. CINEMATIC HERO BANNER (EXACT FIGMA 1440x810 SPECIFICATION) ───── */}
-      <div className="relative w-full bg-[#006bbd] overflow-hidden">
+      {/* ── CINEMATIC HERO BANNER (FIGMA 1440x810 SPECIFICATION) ─────────────── */}
+      <div className="relative w-full overflow-hidden">
         
         {/* Full-bleed background photo & precise gradient overlay */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
@@ -71,63 +71,6 @@ export default function HeroSlider() {
           </motion.div>
         </div>
 
-      </div>
-
-      {/* ── 2. PRESTIGE METRICS BASELINE ─────────────────────────────────────── */}
-      <div className="bg-[#06172e] border-t border-blue-900/40 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-blue-900/60 text-center">
-            
-            <div className="pt-4 sm:pt-0 sm:px-4 space-y-1">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                BAIK SEKALI
-              </div>
-              <div className="text-xs font-bold text-sky-300 uppercase tracking-wider">
-                Akreditasi BAN-PT
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Standar mutu institusi perguruan tinggi nasional
-              </p>
-            </div>
-
-            <div className="pt-4 sm:pt-0 sm:px-4 space-y-1">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                4 FAKULTAS
-              </div>
-              <div className="text-xs font-bold text-sky-300 uppercase tracking-wider">
-                10 Program Studi
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Pendidikan Sarjana (S1) &amp; Diploma (D3)
-              </p>
-            </div>
-
-            <div className="pt-4 sm:pt-0 sm:px-4 space-y-1">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                100+ MITRA
-              </div>
-              <div className="text-xs font-bold text-sky-300 uppercase tracking-wider">
-                Ekosistem Industri
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Didukung korporasi besar Triputra Group
-              </p>
-            </div>
-
-            <div className="pt-4 sm:pt-0 sm:px-4 space-y-1">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                95%
-              </div>
-              <div className="text-xs font-bold text-sky-300 uppercase tracking-wider">
-                Tingkat Serapan
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Alumni langsung berkarir atau berwirausaha
-              </p>
-            </div>
-
-          </div>
-        </div>
       </div>
 
     </section>
