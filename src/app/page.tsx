@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
-import StatsStrip from "@/components/StatsStrip";
 import HomepagePrograms from "@/components/HomepagePrograms";
 import CareerPathwaySection from "@/components/CareerPathwaySection";
 import HomepageNewsEvents from "@/components/HomepageNewsEvents";
@@ -18,26 +17,23 @@ export default function HomePage() {
         {/* 2. Hero Banner: "Campus to Career" (1440x810 Frame, 120px Padding, 50px Gap, #006bbd Gradient) */}
         <HeroSlider />
 
-        {/* 3. Strip Statistik & Keunggulan Institusional */}
-        <StatsStrip />
-
-        {/* 4. Fakultas & Program Studi (Prisma Data with Resilient Fallback) */}
+        {/* 3. Fakultas & Program Studi (Prisma Data with Resilient Fallback) */}
         <HomepagePrograms />
 
-        {/* 5. Jalur Karier "Campus to Career" (4 Langkah Terarah Menuju Dunia Industri) */}
+        {/* 4. Jalur Karier "Campus to Career" (4 Langkah Terarah Menuju Dunia Industri) */}
         <CareerPathwaySection />
 
-        {/* 6. Berita & Riset Terbaru serta Event Mendatang */}
+        {/* 5. Berita & Riset Terbaru serta Event Mendatang */}
         <HomepageNewsEvents />
 
-        {/* 7. Formulir Cepat PMB 2026 & Booking Jadwal Campus Tour */}
+        {/* 6. Formulir Cepat PMB 2026 & Booking Jadwal Campus Tour */}
         <HomepageCtaTour />
       </main>
 
-      {/* 8. Signature Directory Footer */}
+      {/* 7. Signature Directory Footer */}
       <Footer />
 
-      {/* 9. Floating WhatsApp Direct Hotline */}
+      {/* 8. Floating WhatsApp Direct Hotline */}
       <FloatingWhatsApp />
     </div>
   );
