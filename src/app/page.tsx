@@ -3,7 +3,6 @@ import HeroSlider from "@/components/HeroSlider";
 import WelcomeAdmissionWaves from "@/components/WelcomeAdmissionWaves";
 import UpitraDalamAngka from "@/components/UpitraDalamAngka";
 import HomepageNewsEvents from "@/components/HomepageNewsEvents";
-import HomepageCtaTour from "@/components/HomepageCtaTour";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 
@@ -25,15 +24,12 @@ export default function HomePage() {
 
         {/* 5. Berita & Riset Terbaru serta Event Mendatang */}
         <HomepageNewsEvents />
-
-        {/* 6. Formulir Cepat PMB 2026 & Booking Jadwal Campus Tour */}
-        <HomepageCtaTour />
       </main>
 
-      {/* 7. Signature Directory Footer */}
+      {/* 6. Signature Directory Footer */}
       <Footer />
 
-      {/* 8. Floating WhatsApp Direct Hotline */}
+      {/* 7. Floating WhatsApp Direct Hotline */}
       <FloatingWhatsApp />
     </div>
   );
