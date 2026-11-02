@@ -27,6 +27,7 @@
 *.sql
 postgres_data/
 /uploads
+.vscode/
 
 # debug
 npm-debug.log*

@@ -38,3 +38,4 @@ describe("sanitizeRichText - XSS Prevention", () => {
     expect(output).toBe('<h2>Judul</h2><p>Paragraf <strong>tebal</strong> dan <em>miring</em>.</p>');
   });
 });
+

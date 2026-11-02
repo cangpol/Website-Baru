@@ -11,3 +11,4 @@ export interface StorageDriver {
   deleteFile(path: string): Promise<boolean>;
   getFileUrl(path: string): string;
 }
+

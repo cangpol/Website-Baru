@@ -63,8 +63,9 @@ const fakultasData = [
 
 export default function AkademikOverviewPage() {
   const [banner, setBanner] = useState<AkademikBanner>(defaultBanner);
+  const [faculties, setFaculties] = useState(fakultasData);
 
-  // Load dynamic banner from database via API
+  // Load dynamic banner and faculties from database via API
   useEffect(() => {
     fetch("/api/banner?page=akademik")
       .then((res) => res.json())
@@ -78,6 +79,29 @@ export default function AkademikOverviewPage() {
         }
       })
       .catch((err) => console.warn("Failed to load banner:", err));
+
+    fetch("/api/faculties")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
+          const mapped = json.data.map((f: any) => {
+            const fallback = fakultasData.find((fd) => fd.code.toLowerCase() === f.code.toLowerCase()) || fakultasData[0];
+            return {
+              id: f.id || fallback.id,
+              code: f.code || fallback.code,
+              name: f.name || fallback.name,
+              slug: f.slug?.startsWith("/") ? f.slug : `/${f.slug}` || fallback.slug,
+              cover: f.icon || fallback.cover,
+              prodiTags: Array.isArray(f.programs) && f.programs.length > 0
+                ? f.programs.map((p: any) => p.name)
+                : fallback.prodiTags,
+              desc: f.description || fallback.desc,
+            };
+          });
+          setFaculties(mapped);
+        }
+      })
+      .catch((err) => console.warn("Failed to load faculties:", err));
   }, []);
 
   return (
@@ -130,7 +154,7 @@ export default function AkademikOverviewPage() {
 
           {/* Kotak Fakultas & Program Studi: Fixed Height 392px Sesuai Dimensi 335x392 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {fakultasData.map((fakultas) => {
+            {faculties.map((fakultas) => {
               return (
                 <div
                   key={fakultas.id}

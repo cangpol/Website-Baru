@@ -8,23 +8,58 @@ import { recordAuditLog } from "@/server/audit";
 
 const eventInputSchema = z.object({
   title: z.string().min(3, "Judul event minimal 3 karakter").max(200),
-  description: z.string().min(5, "Deskripsi event minimal 5 karakter"),
+  description: z.string().min(3, "Deskripsi event minimal 3 karakter"),
   location: z.string().min(2, "Lokasi wajib diisi"),
   startDate: z.string().min(1, "Tanggal mulai wajib diisi"),
   endDate: z.string().min(1, "Tanggal selesai wajib diisi"),
   bannerImage: z.string().optional().nullable(),
   isOnline: z.boolean().default(false),
-  type: z.string().default("Akademik"), // Akademik, Seminar, Workshop, Kemahasiswaan
+  type: z.string().default("Akademik"), // Akademik, Ujian, Libur, Wisuda, PMB, Kemahasiswaan, Seminar, Workshop, dll
   registrationUrl: z.string().url("Format URL pendaftaran tidak valid").optional().nullable().or(z.literal("")),
+  academicYear: z.string().optional().nullable(), // e.g. "2025/2026", "2026/2027"
+  semester: z.string().optional().nullable(), // e.g. "Gasal", "Genap", "Antara"
   version: z.number().int().default(1),
 });
 
 export type EventInput = z.infer<typeof eventInputSchema>;
 
-export async function getEvents(params?: { type?: string; limit?: number }) {
+export interface AcademicCalendarDoc {
+  fileUrl: string;
+  fileName: string;
+  fileSize?: string;
+  academicYear: string;
+  updatedAt?: string;
+}
+
+// Helper untuk mengekstrak metadata dari deskripsi event
+function extractEventMetadata(rawDesc: string) {
+  if (!rawDesc) return { meta: {} as Record<string, string>, cleanDesc: "" };
+  const match = rawDesc.match(/^<!--meta:(\{[\s\S]*?\})-->/);
+  if (match) {
+    try {
+      const meta = JSON.parse(match[1]);
+      const cleanDesc = rawDesc.replace(/^<!--meta:(\{[\s\S]*?\})-->\s*/, "");
+      return { meta, cleanDesc };
+    } catch {
+      return { meta: {} as Record<string, string>, cleanDesc: rawDesc };
+    }
+  }
+  return { meta: {} as Record<string, string>, cleanDesc: rawDesc };
+}
+
+// Helper untuk mengemas metadata ke dalam deskripsi event
+function packEventMetadata(cleanDesc: string, academicYear?: string | null, semester?: string | null) {
+  const meta: Record<string, string> = {};
+  if (academicYear) meta.academicYear = academicYear;
+  if (semester) meta.semester = semester;
+  if (Object.keys(meta).length === 0) return cleanDesc;
+  return `<!--meta:${JSON.stringify(meta)}-->\n${cleanDesc}`;
+}
+
+export async function getEvents(params?: { type?: string; academicYear?: string; semester?: string; limit?: number }) {
   try {
     const where: any = { deletedAt: null };
-    if (params?.type && params.type !== "ALL") {
+    if (params?.type && params.type !== "ALL" && params.type !== "Semua") {
       where.type = params.type;
     }
 
@@ -34,20 +69,25 @@ export async function getEvents(params?: { type?: string; limit?: number }) {
       take: params?.limit,
     });
 
-    return events.map((ev) => ({
-      id: ev.id,
-      title: ev.title,
-      slug: ev.slug,
-      description: ev.description,
-      location: ev.location,
-      startDate: ev.startDate.toISOString(),
-      endDate: ev.endDate.toISOString(),
-      bannerImage: ev.bannerImage || "/images/kegiatan.jpg",
-      isOnline: ev.isOnline,
-      type: ev.type,
-      registrationUrl: ev.registrationUrl,
-      version: ev.version,
-    }));
+    return events.map((ev) => {
+      const { meta, cleanDesc } = extractEventMetadata(ev.description);
+      return {
+        id: ev.id,
+        title: ev.title,
+        slug: ev.slug,
+        description: cleanDesc,
+        location: ev.location,
+        startDate: ev.startDate.toISOString(),
+        endDate: ev.endDate.toISOString(),
+        bannerImage: ev.bannerImage || "/images/kegiatan.jpg",
+        isOnline: ev.isOnline,
+        type: ev.type,
+        registrationUrl: ev.registrationUrl,
+        academicYear: meta.academicYear || "2025/2026",
+        semester: meta.semester || "Gasal",
+        version: ev.version,
+      };
+    });
   } catch (err) {
     console.error("Error fetching events:", err);
     return [];
@@ -78,6 +118,8 @@ export async function saveEventAction(id: string | null, rawInput: EventInput) {
   }
 
   try {
+    const packedDescription = packEventMetadata(data.description, data.academicYear, data.semester);
+
     // Generate slug
     const baseSlug = data.title
       .toLowerCase()
@@ -109,7 +151,7 @@ export async function saveEventAction(id: string | null, rawInput: EventInput) {
         where: { id },
         data: {
           title: data.title,
-          description: data.description,
+          description: packedDescription,
           location: data.location,
           startDate: start,
           endDate: end,
@@ -127,7 +169,7 @@ export async function saveEventAction(id: string | null, rawInput: EventInput) {
         action: "UPDATE",
         entity: "Event",
         entityId: updated.id,
-        details: JSON.stringify({ title: updated.title }),
+        details: JSON.stringify({ title: updated.title, academicYear: data.academicYear, semester: data.semester }),
       });
 
       await invalidateEntity(CACHE_TAGS.EVENTS, "/akademik");
@@ -137,7 +179,7 @@ export async function saveEventAction(id: string | null, rawInput: EventInput) {
         data: {
           title: data.title,
           slug: finalSlug,
-          description: data.description,
+          description: packedDescription,
           location: data.location,
           startDate: start,
           endDate: end,
@@ -154,7 +196,7 @@ export async function saveEventAction(id: string | null, rawInput: EventInput) {
         action: "CREATE",
         entity: "Event",
         entityId: created.id,
-        details: JSON.stringify({ title: created.title, slug: created.slug }),
+        details: JSON.stringify({ title: created.title, slug: created.slug, academicYear: data.academicYear }),
       });
 
       await invalidateEntity(CACHE_TAGS.EVENTS, "/akademik");
@@ -194,5 +236,136 @@ export async function deleteEventAction(id: string) {
   } catch (err) {
     console.error("Error deleting event:", err);
     return { ok: false, message: "Gagal menghapus event." };
+  }
+}
+
+// ── MANAJEMEN DOKUMEN PDF KALENDER AKADEMIK RESMI ───────────────────────────
+
+export async function getAcademicCalendarDoc(): Promise<AcademicCalendarDoc | null> {
+  try {
+    const setting = await prisma.siteSetting.findUnique({
+      where: { key: "academic_calendar_document" },
+    });
+    if (!setting || !setting.value) return null;
+    return setting.value as unknown as AcademicCalendarDoc;
+  } catch (err) {
+    console.error("Error fetching academic calendar doc:", err);
+    return null;
+  }
+}
+
+export async function saveAcademicCalendarDocAction(data: {
+  fileUrl: string;
+  fileName: string;
+  fileSize?: string;
+  academicYear?: string;
+}) {
+  const session = await requirePermission("akademik", "update");
+
+  if (!data.fileUrl) {
+    return { ok: false, message: "URL berkas PDF wajib diisi." };
+  }
+
+  try {
+    const payload: AcademicCalendarDoc = {
+      fileUrl: data.fileUrl,
+      fileName: data.fileName || "Kalender-Akademik-Resmi-UPITRA.pdf",
+      fileSize: data.fileSize || "PDF",
+      academicYear: data.academicYear || "2025/2026",
+      updatedAt: new Date().toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    };
+
+    await prisma.siteSetting.upsert({
+      where: { key: "academic_calendar_document" },
+      create: {
+        key: "academic_calendar_document",
+        value: payload as any,
+        description: "Dokumen PDF Resmi Kalender Akademik UPITRA",
+      },
+      update: {
+        value: payload as any,
+      },
+    });
+
+    // Sinkronkan ke DownloadDoc kategori Kalender Akademik agar muncul juga di Download Center
+    try {
+      const existingDoc = await prisma.downloadDoc.findFirst({
+        where: { category: "Kalender Akademik", deletedAt: null },
+      });
+      if (existingDoc) {
+        await prisma.downloadDoc.update({
+          where: { id: existingDoc.id },
+          data: {
+            title: `Kalender Akademik Resmi TA ${payload.academicYear}`,
+            fileUrl: payload.fileUrl,
+            fileSize: payload.fileSize,
+          },
+        });
+      } else {
+        await prisma.downloadDoc.create({
+          data: {
+            title: `Kalender Akademik Resmi TA ${payload.academicYear}`,
+            category: "Kalender Akademik",
+            fileUrl: payload.fileUrl,
+            fileSize: payload.fileSize,
+          },
+        });
+      }
+    } catch (e) {
+      console.warn("Could not sync to downloadDoc:", e);
+    }
+
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: "UPDATE",
+      entity: "SiteSetting",
+      entityId: "academic_calendar_document",
+      details: JSON.stringify({ fileUrl: payload.fileUrl, academicYear: payload.academicYear }),
+    });
+
+    await invalidateEntity(CACHE_TAGS.EVENTS, "/akademik");
+    return { ok: true, data: payload, message: "Dokumen PDF kalender akademik resmi berhasil disimpan." };
+  } catch (err) {
+    console.error("Error saving academic calendar doc:", err);
+    return { ok: false, message: "Gagal menyimpan dokumen PDF kalender akademik." };
+  }
+}
+
+export async function deleteAcademicCalendarDocAction() {
+  const session = await requirePermission("akademik", "delete");
+
+  try {
+    await prisma.siteSetting.deleteMany({
+      where: { key: "academic_calendar_document" },
+    });
+
+    try {
+      await prisma.downloadDoc.updateMany({
+        where: { category: "Kalender Akademik", deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
+    } catch (e) {
+      console.warn("Could not soft delete downloadDoc:", e);
+    }
+
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: "DELETE",
+      entity: "SiteSetting",
+      entityId: "academic_calendar_document",
+      details: "Hapus dokumen resmi kalender akademik",
+    });
+
+    await invalidateEntity(CACHE_TAGS.EVENTS, "/akademik");
+    return { ok: true, message: "Dokumen PDF kalender akademik resmi berhasil dihapus." };
+  } catch (err) {
+    console.error("Error deleting academic calendar doc:", err);
+    return { ok: false, message: "Gagal menghapus dokumen PDF kalender akademik." };
   }
 }

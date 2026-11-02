@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { 
-  Calendar as CalendarIcon, 
   ChevronLeft, 
   ChevronRight, 
   Clock, 
@@ -10,12 +9,13 @@ import {
   X, 
   List, 
   CalendarDays,
-  Sparkles,
   ArrowRight,
   Download,
-  FileText
+  Eye,
+  MapPin
 } from "lucide-react";
 import { generateAcademicCalendarPdf } from "@/lib/generateAcademicCalendarPdf";
+import { sanitizeRichText } from "@/lib/sanitize";
 
 export interface CalendarEvent {
   id: number | string;
@@ -25,6 +25,9 @@ export interface CalendarEvent {
   category: "Akademik" | "Ujian" | "Libur" | "Wisuda" | "PMB" | "Kemahasiswaan" | "Seminar" | "Workshop" | "Kompetisi" | "Festival" | "Expo" | "Umum" | string;
   description?: string;
   all_day?: boolean;
+  academicYear?: string;
+  semester?: string;
+  location?: string;
 }
 
 // Modern hex colors matching ModifikasiUpitra blue & white executive palette
@@ -605,6 +608,13 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [listFilter, setListFilter] = useState<"all" | "upcoming" | "past">("all");
+  const [officialPdf, setOfficialPdf] = useState<{
+    fileUrl: string;
+    fileName: string;
+    fileSize?: string;
+    academicYear?: string;
+    updatedAt?: string;
+  } | null>(null);
 
   // Client-side hydration sync to guarantee matching local browser time & dynamic DB events
   useEffect(() => {
@@ -615,17 +625,25 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
     fetch("/api/events")
       .then((res) => res.json())
       .then((json) => {
-        if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
-          const mapped: CalendarEvent[] = json.data.map((item: any) => ({
-            id: item.id,
-            name: item.title || "Event Kampus",
-            start_date: item.startDate ? item.startDate.split("T")[0] : "",
-            end_date: item.endDate ? item.endDate.split("T")[0] : item.startDate ? item.startDate.split("T")[0] : "",
-            category: (item.type || "Akademik") as CalendarEvent["category"],
-            description: item.description || "",
-            all_day: true,
-          }));
-          setCalendarData(mapped);
+        if (json?.ok) {
+          if (json.officialPdf) {
+            setOfficialPdf(json.officialPdf);
+          }
+          if (Array.isArray(json.data) && json.data.length > 0) {
+            const mapped: CalendarEvent[] = json.data.map((item: any) => ({
+              id: item.id,
+              name: item.title || "Event Kampus",
+              start_date: item.startDate ? item.startDate.split("T")[0] : "",
+              end_date: item.endDate ? item.endDate.split("T")[0] : item.startDate ? item.startDate.split("T")[0] : "",
+              category: (item.type || "Akademik") as CalendarEvent["category"],
+              description: item.description || "",
+              all_day: true,
+              academicYear: item.academicYear || "2025/2026",
+              semester: item.semester || "Gasal",
+              location: item.location || "",
+            }));
+            setCalendarData(mapped);
+          }
         }
       })
       .catch((err) => console.warn("Failed to load academic events:", err));
@@ -1059,31 +1077,64 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
       </div>
 
       {/* 4. DOWNLOAD KALENDER AKADEMIK BAR (KOTAK PERSEGI PANJANG SEPANJANG KALENDER) */}
-      <button
-        type="button"
-        onClick={() => generateAcademicCalendarPdf(year, sortedEvents)}
-        className="w-full bg-[#06172e] hover:bg-[#0b2545] border border-blue-900/60 rounded-2xl p-5 sm:p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl transition-all duration-300 group cursor-pointer hover:shadow-2xl hover:border-blue-700/80 text-left"
-      >
+      <div className="w-full bg-[#06172e] border border-blue-900/60 rounded-2xl p-5 sm:p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl transition-all duration-300">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-600/20 text-sky-400 border border-blue-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-blue-600/20 text-sky-400 border border-blue-500/30 flex items-center justify-center shrink-0">
             <Download className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="text-lg sm:text-xl font-black text-white group-hover:text-sky-300 transition-colors flex items-center gap-2">
-              <span>Download Kalender Akademik Disini</span>
-              <ArrowRight className="w-5 h-5 text-emerald-400 group-hover:translate-x-1.5 transition-transform" />
-            </h4>
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-lg sm:text-xl font-black text-white">
+                Download Kalender Akademik Disini
+              </h4>
+              {officialPdf?.fileUrl && (
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Dokumen Resmi SK Rektorat
+                </span>
+              )}
+            </div>
             <p className="text-xs text-slate-300 mt-1">
-              Dokumen resmi format PDF dari Januari sampai Desember {year} ({sortedEvents.length} agenda kegiatan akademik lengkap).
+              {officialPdf?.fileUrl
+                ? `Dokumen resmi format PDF (${officialPdf.fileName}, TA ${officialPdf.academicYear || "2025/2026"}). Unduh langsung dokumen ketetapan rektorat.`
+                : `Dokumen resmi format PDF dari Januari sampai Desember ${year} (${sortedEvents.length} agenda kegiatan akademik lengkap).`}
             </p>
           </div>
         </div>
 
-        <div className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 group-hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all shrink-0">
-          <span>Unduh PDF ({year})</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+        <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
+          {officialPdf?.fileUrl ? (
+            <>
+              <a
+                href={officialPdf.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+              >
+                <Eye className="w-4 h-4" />
+                <span>Pratinjau PDF</span>
+              </a>
+              <a
+                href={officialPdf.fileUrl}
+                download={officialPdf.fileName}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>Unduh PDF Resmi</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => generateAcademicCalendarPdf(year, sortedEvents)}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+            >
+              <span>Unduh PDF ({year})</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
         </div>
-      </button>
+      </div>
 
       {/* 5. EVENT DETAIL MODAL (Matching ModifikasiUpitra) */}
       {selectedEvent && (
@@ -1158,27 +1209,61 @@ export default function AcademicCalendar({ events = initialAcademicEvents }: Aca
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                       Kategori Agenda
                     </p>
-                    <div
-                      className="inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white mt-1 shadow-2xs"
-                      style={{
-                        backgroundColor:
-                          categoryColors[selectedEvent.category.toLowerCase()]?.hex || "#0284c7"
-                      }}
-                    >
-                      {selectedEvent.category}
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <div
+                        className="inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white shadow-2xs"
+                        style={{
+                          backgroundColor:
+                            categoryColors[selectedEvent.category.toLowerCase()]?.hex || "#0284c7"
+                        }}
+                      >
+                        {selectedEvent.category}
+                      </div>
+
+                      {selectedEvent.academicYear && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                          TA {selectedEvent.academicYear}
+                        </span>
+                      )}
+
+                      {selectedEvent.semester && (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                          Semester {selectedEvent.semester}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
+
+                {/* Lokasi Kegiatan (jika ada) */}
+                {selectedEvent.location && (
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-xl bg-rose-50 text-rose-600 shrink-0 mt-0.5">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        Lokasi Pelaksanaan
+                      </p>
+                      <p className="text-sm font-semibold text-slate-800 mt-0.5">
+                        {selectedEvent.location}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Deskripsi Kegiatan */}
-              <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/80">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              {/* Deskripsi Kegiatan (Rich Text Render) */}
+              <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/80 space-y-2">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Deskripsi Kegiatan
                 </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  {selectedEvent.description || "Tidak ada rincian deskripsi tambahan untuk agenda ini."}
-                </p>
+                <div 
+                  className="text-xs sm:text-sm text-slate-700 leading-relaxed prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeRichText(selectedEvent.description || "<p>Tidak ada rincian deskripsi tambahan untuk agenda ini.</p>")
+                  }}
+                />
               </div>
 
               {/* Close Action */}

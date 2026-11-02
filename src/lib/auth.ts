@@ -134,7 +134,7 @@ export async function requirePermission(
 
   // STAFF_PMB hak akses
   if (role === Role.STAFF_PMB) {
-    const allowedModules = ["pmb", "tours", "events", "programs", "dashboard"];
+    const allowedModules = ["pmb", "tours", "events", "akademik", "programs", "dashboard"];
     if (allowedModules.includes(moduleKey)) {
       if (moduleKey === "programs" && action !== "read") {
         throw new Error("Staff PMB hanya memiliki hak baca pada kurikulum program studi.");

@@ -78,3 +78,4 @@ describe("Auth Token & Session Verification", () => {
     expect(verifySessionToken("invalidBase64.invalidSig")).toBeNull();
   });
 });
+

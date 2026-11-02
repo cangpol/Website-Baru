@@ -12,3 +12,4 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ok: false, data: null }, { status: 500 });
   }
 }
+
