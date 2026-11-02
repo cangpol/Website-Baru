@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
-import HomepagePrograms from "@/components/HomepagePrograms";
+import WelcomeAdmissionWaves from "@/components/WelcomeAdmissionWaves";
 import CareerPathwaySection from "@/components/CareerPathwaySection";
 import HomepageNewsEvents from "@/components/HomepageNewsEvents";
 import HomepageCtaTour from "@/components/HomepageCtaTour";
@@ -17,8 +17,8 @@ export default function HomePage() {
         {/* 2. Hero Banner: "Campus to Career" (1440x810 Frame, 120px Padding, 50px Gap, #006bbd Gradient) */}
         <HeroSlider />
 
-        {/* 3. Fakultas & Program Studi (Prisma Data with Resilient Fallback) */}
-        <HomepagePrograms />
+        {/* 3. Selamat Datang di UPITRA - Gelombang Pendaftaran (Ready Early, Achievement, Admission) */}
+        <WelcomeAdmissionWaves />
 
         {/* 4. Jalur Karier "Campus to Career" (4 Langkah Terarah Menuju Dunia Industri) */}
         <CareerPathwaySection />
