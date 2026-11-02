@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
 import WelcomeAdmissionWaves from "@/components/WelcomeAdmissionWaves";
-import CareerPathwaySection from "@/components/CareerPathwaySection";
+import UpitraDalamAngka from "@/components/UpitraDalamAngka";
 import HomepageNewsEvents from "@/components/HomepageNewsEvents";
 import HomepageCtaTour from "@/components/HomepageCtaTour";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -20,8 +20,8 @@ export default function HomePage() {
         {/* 3. Selamat Datang di UPITRA - Gelombang Pendaftaran (Ready Early, Achievement, Admission) */}
         <WelcomeAdmissionWaves />
 
-        {/* 4. Jalur Karier "Campus to Career" (4 Langkah Terarah Menuju Dunia Industri) */}
-        <CareerPathwaySection />
+        {/* 4. UPITRA Dalam Angka (6 Metrik Prestasi & Capaian 1440x642) */}
+        <UpitraDalamAngka />
 
         {/* 5. Berita & Riset Terbaru serta Event Mendatang */}
         <HomepageNewsEvents />
