@@ -1,35 +1,43 @@
 import Navbar from "@/components/Navbar";
 import HeroSlider from "@/components/HeroSlider";
-import ImmersionProgramSection from "@/components/ImmersionProgramSection";
-import InstagramFeedSection from "@/components/InstagramFeedSection";
-import CtaEnrollmentSection from "@/components/CtaEnrollmentSection";
+import StatsStrip from "@/components/StatsStrip";
+import HomepagePrograms from "@/components/HomepagePrograms";
+import CareerPathwaySection from "@/components/CareerPathwaySection";
+import HomepageNewsEvents from "@/components/HomepageNewsEvents";
+import HomepageCtaTour from "@/components/HomepageCtaTour";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-slate-800 relative selection:bg-blue-600 selection:text-white">
-      {/* 1. Header & Megamenu */}
+    <div className="min-h-screen flex flex-col bg-white text-slate-800 relative selection:bg-[#006bbd] selection:text-white font-sans">
+      {/* 1. Header & Navigation Bar (Pure White, Sticky ~64px, Logo + Menu + CTA) */}
       <Navbar />
 
       <main className="flex-1">
-        {/* ACT 1: The Grand Gateway (Cinematic Hero + Fast-Track Dock + Prestige Metrics) */}
+        {/* 2. Hero Banner: "Campus to Career" (1440x810 Frame, 120px Padding, 50px Gap, #006bbd Gradient) */}
         <HeroSlider />
 
-        {/* ACT 2: Immersion Program 3+1 (Keunggulan yang Membedakan Kami) */}
-        <ImmersionProgramSection />
+        {/* 3. Strip Statistik & Keunggulan Institusional */}
+        <StatsStrip />
 
-        {/* ACT 3: Galeri Aktivitas Instagram Real-Time (@upitra_campus) */}
-        <InstagramFeedSection />
+        {/* 4. Fakultas & Program Studi (Prisma Data with Resilient Fallback) */}
+        <HomepagePrograms />
 
-        {/* ACT 4: Banner PMB 2026 & Kontak Admisi (Siap Memulai Perjalanan Akademikmu?) */}
-        <CtaEnrollmentSection />
+        {/* 5. Jalur Karier "Campus to Career" (4 Langkah Terarah Menuju Dunia Industri) */}
+        <CareerPathwaySection />
+
+        {/* 6. Berita & Riset Terbaru serta Event Mendatang */}
+        <HomepageNewsEvents />
+
+        {/* 7. Formulir Cepat PMB 2026 & Booking Jadwal Campus Tour */}
+        <HomepageCtaTour />
       </main>
 
-      {/* Signature Directory Footer */}
+      {/* 8. Signature Directory Footer */}
       <Footer />
 
-      {/* Floating WhatsApp Contact Widget */}
+      {/* 9. Floating WhatsApp Direct Hotline */}
       <FloatingWhatsApp />
     </div>
   );

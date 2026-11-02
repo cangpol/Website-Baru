@@ -1,55 +1,93 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
 export default function HeroSlider() {
   return (
     <section 
       className="relative w-full bg-[#006bbd] flex justify-center overflow-hidden select-none" 
       aria-label="Grand Gateway UPITRA"
     >
-      {/* ── BANNER 1440px x 810px (EXACT FIGMA DIMENSIONS) ────────────────────── */}
+      {/* ── CINEMATIC HERO BANNER (1440x810 FRAME SPECIFICATION) ─────────────── */}
       <div 
-        className="relative w-full max-w-[1440px] h-[810px] mx-auto overflow-hidden flex items-center justify-center shrink-0"
+        className="relative w-full max-w-[1440px] h-[580px] sm:h-[680px] lg:h-[810px] mx-auto overflow-hidden flex items-center px-6 sm:px-12 md:px-16 lg:px-[120px]"
         style={{
-          width: "1440px",
-          height: "810px",
-          maxWidth: "100%",
-          aspectRatio: "1440 / 810",
+          maxWidth: "1440px",
         }}
       >
-        {/* Exact 1440x810 Composite Banner Image */}
-        <img
-          src="/images/banners/banner-campus-to-career.jpg"
-          alt="Universitas Pignatelli Triputra Campus to Career"
-          loading="eager"
-          decoding="async"
-          className="w-full h-full object-cover object-center pointer-events-none select-none"
-        />
+        {/* Background Campus Photo with next/image priority */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          <Image
+            src="/images/hero-campus.jpg"
+            alt="Empat Mahasiswa Universitas Pignatelli Triputra di Kampus - Campus to Career"
+            fill
+            priority
+            sizes="100vw"
+            quality={90}
+            className="object-cover object-[center_right] lg:object-center pointer-events-none"
+          />
 
-        {/* Interactive Clickable Overlay Area for Yellow Button 'Daftar Sekarang' */}
-        {/* Exact button bounds: Left: 120px (8.333%), Top: 528px (65.185%), Width: 196px (13.611%), Height: 50px (6.173%) */}
-        <a
-          href="https://pmb.upitra.ac.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Daftar Sekarang PMB UPITRA"
-          className="absolute rounded-xl transition-all duration-200 hover:ring-4 hover:ring-amber-300/70 hover:shadow-lg active:scale-95 cursor-pointer z-20"
-          style={{
-            left: "8.333%",
-            top: "65.185%",
-            width: "13.611%",
-            height: "6.173%",
-          }}
-          title="Daftar Sekarang ke PMB UPITRA"
-        />
+          {/* Desktop Left-to-Right Royal Blue Gradient Overlay (Fades at ~48-52%) */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "linear-gradient(90deg, #006bbd 0%, #006bbd 24%, rgba(0, 107, 189, 0.92) 38%, rgba(0, 107, 189, 0.45) 50%, rgba(0, 107, 189, 0) 62%)"
+            }}
+          />
 
-        {/* Semantic Content for SEO & Screen Readers */}
-        <div className="sr-only">
-          <h1>Universitas Pignatelli Triputra Campus to Career</h1>
-          <p>
-            Temukan program studi, kembangkan potensimu, dan dapatkan pekerjaan sebelum lulus kuliah di Universitas Pignatelli Triputra.
-          </p>
-          <a href="https://pmb.upitra.ac.id">Daftar Sekarang</a>
+          {/* Mobile Vertical Gradient for readability */}
+          <div className="absolute inset-0 pointer-events-none lg:hidden bg-gradient-to-t from-[#006bbd]/95 via-[#006bbd]/70 to-[#006bbd]/30" />
         </div>
+
+        {/* Hero Content Layer: Left-aligned, 120px margin, 50px gap */}
+        <motion.div 
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative z-20 max-w-[580px] flex flex-col justify-center gap-6 sm:gap-8 lg:gap-[50px] py-12 lg:py-0"
+        >
+          {/* Main Title & Subtitle */}
+          <div className="space-y-4 sm:space-y-5">
+            <motion.h1 
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+              className="text-3xl sm:text-5xl lg:text-[56px] font-black text-white tracking-tight leading-[1.12] drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)] font-sans"
+            >
+              Universitas<br />
+              Pignatelli Triputra<br />
+              Campus to Career
+            </motion.h1>
+
+            <motion.p 
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+              className="text-sm sm:text-base lg:text-[16px] text-white/95 leading-relaxed font-normal max-w-[440px] drop-shadow-xs"
+            >
+              Temukan program studi, kembangkan potensimu, dan dapatkan pekerjaan sebelum lulus kuliah di Universitas Pignatelli Triputra.
+            </motion.p>
+          </div>
+
+          {/* CTA Button: Yellow #FFD400, dark text, rounded (~8-10px) */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+          >
+            <Link
+              href="https://pmb.upitra.ac.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 rounded-lg bg-[#FFD400] hover:bg-[#F2C900] text-slate-900 font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer"
+            >
+              Daftar Sekarang
+            </Link>
+          </motion.div>
+        </motion.div>
+
       </div>
     </section>
   );

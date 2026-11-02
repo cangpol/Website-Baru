@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
 export const metadata: Metadata = {
-  title: "UPITRA - Universitas Pignatelli Triputra | Integritas, Karakter & Inovasi",
-  description: "Portal resmi UPITRA (Universitas Pignatelli Triputra) Surakarta. Menyelenggarakan pendidikan tinggi unggul berkarakter pada Fakultas Sains & Technology, Fakultas Social Humaniora, dan Fakultas Ekonomika & Bussiness.",
+  title: "UPITRA - Universitas Pignatelli Triputra | Campus to Career",
+  description: "Portal resmi UPITRA (Universitas Pignatelli Triputra) Surakarta. Temukan program studi, kembangkan potensimu, dan dapatkan pekerjaan sebelum lulus kuliah di bawah naungan Triputra Group.",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -21,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className="h-full antialiased scroll-smooth">
+    <html lang="id" className={`h-full antialiased scroll-smooth ${montserrat.variable}`}>
       <body className="min-h-full flex flex-col font-sans bg-white text-slate-800">
         {children}
       </body>
