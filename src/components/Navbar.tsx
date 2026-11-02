@@ -74,8 +74,8 @@ export default function Navbar() {
             {/* Logo Sisi Kiri (UPITRA Hexagon Icon + 3 Baris Teks) */}
             <Logo />
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden xl:flex items-center gap-7 lg:gap-8 h-[64px] text-[14.5px] font-medium text-slate-800 tracking-normal">
+            {/* Desktop Navigation Links (Visible >= 1024px) */}
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 h-[64px] text-[14px] font-medium text-slate-800 tracking-normal">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
                 return (
@@ -98,23 +98,23 @@ export default function Navbar() {
                 );
               })}
 
-              {/* CTA Button: Yellow background, dark text, rounded (~8-10px) */}
+              {/* CTA Button: Yellow background, dark text, rounded pill (rounded-full) */}
               <Link
                 href="https://pmb.upitra.ac.id"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-[38px] px-5 ml-2 inline-flex items-center justify-center rounded-lg bg-[#FFD400] hover:bg-[#F2C900] text-slate-900 font-bold text-xs sm:text-[13px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+                className="h-[36px] px-5 ml-2 inline-flex items-center justify-center rounded-full bg-[#FCCB0C] hover:bg-[#F2C900] text-slate-900 font-bold text-xs sm:text-[13px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Daftar Sekarang</span>
               </Link>
             </nav>
 
-            {/* Mobile Hamburger Button */}
+            {/* Mobile Hamburger Button (< 1024px) */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Navigation Menu"
               aria-expanded={mobileMenuOpen}
-              className="cursor-pointer xl:hidden p-2 rounded-xl text-slate-700 hover:text-[#006bbd] hover:bg-slate-50 transition-colors"
+              className="cursor-pointer lg:hidden p-2 rounded-xl text-slate-700 hover:text-[#006bbd] hover:bg-slate-50 transition-colors"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -130,7 +130,7 @@ export default function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="xl:hidden bg-white border-b border-slate-200 shadow-xl overflow-hidden px-6 py-5 space-y-4 max-h-[calc(100vh-64px)] overflow-y-auto"
+              className="lg:hidden bg-white border-b border-slate-200 shadow-xl overflow-hidden px-6 py-5 space-y-4 max-h-[calc(100vh-64px)] overflow-y-auto"
             >
               <div className="space-y-1">
                 {navLinks.map((link) => (
@@ -152,7 +152,7 @@ export default function Navbar() {
                   href="https://pmb.upitra.ac.id"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#FFD400] text-slate-900 font-bold text-xs shadow-sm hover:bg-[#F2C900] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-[#FCCB0C] text-slate-900 font-bold text-xs shadow-sm hover:bg-[#F2C900] transition-colors"
                 >
                   <span>Daftar Sekarang (PMB Online)</span>
                   <ExternalLink className="w-3.5 h-3.5" />

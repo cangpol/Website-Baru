@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 /scratch
+*.sql
+postgres_data/
+/uploads
 
 # debug
 npm-debug.log*

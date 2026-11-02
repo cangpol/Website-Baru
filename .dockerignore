@@ -1,0 +1,15 @@
+.env
+.env*.local
+.git
+.gitignore
+node_modules
+postgres_data
+uploads
+scratch
+*.sql
+.next
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+

@@ -13,7 +13,9 @@ import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
 import {
   Bold,
   Italic,
@@ -83,11 +85,7 @@ export default function RichEditor({
   placeholder = "Tulis konten berita lengkap di sini. Anda dapat menyisipkan foto utuh dengan tombol Upload Gambar di atas...",
 }: RichEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   const editor = useEditor({
     immediatelyRender: false,

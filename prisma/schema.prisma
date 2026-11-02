@@ -1,4 +1,5 @@
 // Prisma schema for UPITRA (Universitas Pignatelli Triputra)
+// Model CMS Lengkap: Beranda, Profil, Akademik, Riset, Kemahasiswaan, Kerjasama, Layanan, PMB
 
 generator client {
   provider = "prisma-client-js"
@@ -29,15 +30,43 @@ enum AdmissionStatus {
   REJECTED
 }
 
+enum NavItemLocation {
+  HEADER
+  FOOTER
+}
+
+enum PageSection {
+  BERANDA
+  PROFIL
+  AKADEMIK
+  RISET
+  KEMAHASISWAAN
+  KERJASAMA
+  LAYANAN
+  UMUM
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(CONTENT_WRITER)
-  articles  Article[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  name               String
+  email              String    @unique
+  password           String
+  role               Role      @default(CONTENT_WRITER)
+  isActive           Boolean   @default(true)
+  lastLoginAt        DateTime?
+  mustChangePassword Boolean   @default(false)
+  failedLoginCount   Int       @default(0)
+  lockedUntil        DateTime?
+  articles           Article[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 model Faculty {
@@ -48,6 +77,8 @@ model Faculty {
   description String?   @db.Text
   icon        String?
   programs    Program[]
+  version     Int       @default(1)
+  deletedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -55,7 +86,7 @@ model Faculty {
 model Program {
   id             String          @id @default(cuid())
   facultyId      String
-  faculty        Faculty         @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  faculty        Faculty         @relation(fields: [facultyId], references: [id], onDelete: Restrict)
   name           String
   slug           String          @unique
   degreeLevel    DegreeLevel     @default(BACHELOR)
@@ -69,6 +100,8 @@ model Program {
   tuitionFeeEst  Decimal?        @db.Decimal(12, 2)
   coverImage     String?
   featured       Boolean         @default(false)
+  version        Int             @default(1)
+  deletedAt      DateTime?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   leads          AdmissionLead[]
@@ -85,9 +118,15 @@ model AdmissionLead {
   programId     String?
   program       Program?        @relation(fields: [programId], references: [id], onDelete: SetNull)
   status        AdmissionStatus @default(LEAD_SUBMITTED)
+  source        String?         @default("Website")
+  consentAt     DateTime?       @default(now())
+  assignedToId  String?
   notes         String?         @db.Text
+  deletedAt     DateTime?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+
+  @@index([status, createdAt])
 }
 
 model Article {
@@ -96,40 +135,286 @@ model Article {
   slug        String    @unique
   summary     String?   @db.Text
   content     String    @db.Text
-  category    String    // News, Innovation, Achievement, Campus Life
+  category    String    // Riset, Berita Kampus, Inovasi, Prestasi, Pengabdian
   coverImage  String?
   published   Boolean   @default(false)
   authorId    String
   author      User      @relation(fields: [authorId], references: [id])
+  viewCount   Int       @default(0)
+  version     Int       @default(1)
+  deletedAt   DateTime?
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([published, publishedAt])
+  @@index([category])
 }
 
 model Event {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   title           String
-  slug            String   @unique
-  description     String   @db.Text
-  location        String   // Auditorium Kampus UPITRA Surakarta / Zoom Online
+  slug            String    @unique
+  description     String    @db.Text
+  location        String    // Auditorium Kampus UPITRA Surakarta / Zoom Online
   startDate       DateTime
   endDate         DateTime
   bannerImage     String?
-  isOnline        Boolean  @default(false)
+  isOnline        Boolean   @default(false)
+  type            String    @default("Akademik") // Akademik, Seminar, Workshop, Kemahasiswaan
   registrationUrl String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  version         Int       @default(1)
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([startDate])
 }
 
 model CampusTourBooking {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   fullName      String
   phoneWhatsapp String
   email         String
-  totalVisitor  Int      @default(1)
+  totalVisitor  Int       @default(1)
   preferredDate DateTime
-  notes         String?  @db.Text
-  confirmed     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  notes         String?   @db.Text
+  confirmed     Boolean   @default(false)
+  version       Int       @default(1)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([preferredDate, confirmed])
+}
+
+// ── MODEL TAMBAHAN CMS REAL-TIME ─────────────────────────────────────────────
+
+model SiteSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HeroSlide {
+  id        String    @id @default(cuid())
+  title     String
+  subtitle  String?
+  ctaLabel  String?
+  ctaHref   String?
+  imageUrl  String
+  order     Int       @default(0)
+  isActive  Boolean   @default(true)
+  version   Int       @default(1)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([order, isActive])
+}
+
+model NavItem {
+  id            String          @id @default(cuid())
+  label         String
+  href          String?
+  pageId        String?
+  parentId      String?
+  location      NavItemLocation @default(HEADER)
+  order         Int             @default(0)
+  isVisible     Boolean         @default(true)
+  openInNewTab  Boolean         @default(false)
+  moduleKey     String?         // Kunci modul admin (profil, akademik, riset, dll)
+  version       Int             @default(1)
+  deletedAt     DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([location, order, isVisible])
+}
+
+model Page {
+  id             String         @id @default(cuid())
+  section        PageSection    @default(UMUM)
+  slug           String
+  title          String
+  status         ContentStatus  @default(DRAFT)
+  blocks         Json           // Array blok yang sudah diterbitkan
+  draftBlocks    Json?          // Autosaved unpublished blocks
+  seoTitle       String?
+  seoDescription String?
+  ogImageId      String?
+  publishedAt    DateTime?
+  scheduledAt    DateTime?
+  version        Int            @default(1)
+  deletedAt      DateTime?
+  createdById    String?
+  updatedById    String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  revisions      PageRevision[]
+
+  @@unique([section, slug])
+  @@index([section, status])
+}
+
+model PageRevision {
+  id          String   @id @default(cuid())
+  pageId      String
+  page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  version     Int
+  title       String
+  blocks      Json
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([pageId, version])
+}
+
+model StaffMember {
+  id        String    @id @default(cuid())
+  name      String
+  position  String
+  bio       String?   @db.Text
+  photoUrl  String?
+  type      String    // "PIMPINAN", "DOSEN", "TENAGA_KEPENDIDIKAN"
+  programId String?
+  order     Int       @default(0)
+  isActive  Boolean   @default(true)
+  version   Int       @default(1)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([type, order])
+}
+
+model StudentOrg {
+  id          String    @id @default(cuid())
+  name        String
+  category    String    // "BEM", "HIMA", "UKM"
+  description String?   @db.Text
+  logoUrl     String?
+  instagram   String?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  version     Int       @default(1)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([category, order])
+}
+
+model Scholarship {
+  id           String    @id @default(cuid())
+  title        String
+  provider     String
+  requirements String?   @db.Text
+  deadline     DateTime?
+  linkUrl      String?
+  isActive     Boolean   @default(true)
+  version      Int       @default(1)
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([isActive])
+}
+
+model Achievement {
+  id          String    @id @default(cuid())
+  title       String
+  studentName String
+  competition String
+  rank        String
+  level       String
+  year        Int       @default(2026)
+  photoUrl    String?
+  version     Int       @default(1)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([year])
+}
+
+model Partner {
+  id          String    @id @default(cuid())
+  name        String
+  category    String    // Industri, Pemerintah, Perguruan Tinggi, Yayasan
+  logoUrl     String?
+  websiteUrl  String?
+  description String?   @db.Text
+  startYear   Int?
+  mouStatus   String?   @default("Aktif")
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  version     Int       @default(1)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([category, order, isActive])
+}
+
+model ServiceItem {
+  id          String    @id @default(cuid())
+  name        String
+  description String?   @db.Text
+  icon        String?
+  url         String?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  version     Int       @default(1)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([order, isActive])
+}
+
+model DownloadDoc {
+  id            String    @id @default(cuid())
+  title         String
+  category      String
+  fileUrl       String
+  fileSize      String?
+  downloadCount Int       @default(0)
+  version       Int       @default(1)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([category])
+}
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  filename     String
+  path         String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  altText      String?
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@index([mimeType, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  details   String?  @db.Text
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, action, createdAt])
 }

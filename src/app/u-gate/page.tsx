@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { 
   ShieldCheck, 
   Lock, 
@@ -13,45 +13,54 @@ import {
   EyeOff
 } from "lucide-react";
 import Image from "next/image";
+import { loginAdminAction } from "@/app/actions/auth";
 
-export default function UGateLoginPage() {
+function UGateLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get("redirect") || "/admin";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [gatewayKey, setGatewayKey] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
-    // Kredensial Resmi Administrator UPITRA
-    const validEmail = "admin@upitra.ac.id";
-    const validPass = "upitra2026";
-    const validKey = "UPITRA-2026";
+    // Verifikasi Gateway Key instansi (UPITRA-2026)
+    if (gatewayKey.trim() !== "UPITRA-2026") {
+      setError("Security Gateway Key instansi tidak valid. Akses ditolak.");
+      return;
+    }
 
-    setTimeout(() => {
-      if (email.trim().toLowerCase() === validEmail && password === validPass && gatewayKey.trim() === validKey) {
-        // Simpan sesi terenkripsi di localStorage dan cookie
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.set("email", email);
+      formData.set("password", password);
+
+      const result = await loginAdminAction({ success: false, message: "" }, formData);
+
+      if (result.success) {
+        // Simpan sesi display di localStorage untuk kompatibilitas tampilan antarmuka
         const sessionData = {
-          email: validEmail,
-          name: "Administrator Utama UPITRA",
+          email: email.trim().toLowerCase(),
+          name: "Administrator UPITRA",
           role: "SUPERADMIN",
           loginAt: new Date().toISOString(),
         };
         localStorage.setItem("upitra_admin_session", JSON.stringify(sessionData));
-        document.cookie = `upitra_admin_auth=authenticated; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
 
-        // Alihkan langsung ke dashboard admin
-        router.push("/admin");
+        // Alihkan ke rute admin yang dituju
+        router.push(redirectTarget);
+        router.refresh();
       } else {
-        setError("Kredensial atau Security Gateway Key tidak valid. Akses ditolak.");
-        setLoading(false);
+        setError(result.message);
       }
-    }, 600);
+    });
   };
 
   const handleQuickDemoFill = () => {
@@ -99,18 +108,19 @@ export default function UGateLoginPage() {
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-xs text-rose-700 animate-in fade-in duration-200">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-            <span>{error}</span>
+          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-700 text-xs font-medium animate-shake">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <span className="leading-relaxed">{error}</span>
           </div>
         )}
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          
           {/* Email Field */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Email Resmi Akun
+              Alamat Email Resmi
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -177,10 +187,10 @@ export default function UGateLoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={isPending}
             className="w-full mt-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition-all cursor-pointer disabled:opacity-50"
           >
-            {loading ? (
+            {isPending ? (
               <span className="flex items-center gap-2">
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 Memverifikasi...
@@ -212,5 +222,17 @@ export default function UGateLoginPage() {
         <p className="text-[10px] text-slate-400">Akses terbatas hanya untuk staf berwenang.</p>
       </div>
     </div>
+  );
+}
+
+export default function UGateLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center text-xs text-slate-500">
+        Memuat Portal Otentikasi...
+      </div>
+    }>
+      <UGateLoginForm />
+    </Suspense>
   );
 }

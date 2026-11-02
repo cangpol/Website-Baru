@@ -6,19 +6,21 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Starting UPITRA (Universitas Pignatelli Triputra) database seed...");
 
-  // 1. Superadmin User
-  const hashedPassword = await bcrypt.hash("upitra2026", 10);
+  // 1. Superadmin User (Harden with bcrypt cost 12 & env variables)
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@upitra.ac.id";
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || "upitra2026";
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
   const admin = await prisma.user.upsert({
-    where: { email: "admin@upitra.ac.id" },
+    where: { email: adminEmail },
     update: {},
     create: {
-      name: "Administrator UPITRA",
-      email: "admin@upitra.ac.id",
+      name: "Administrator Utama UPITRA",
+      email: adminEmail,
       password: hashedPassword,
       role: Role.SUPERADMIN,
     },
   });
-  console.log(`👤 Admin created: ${admin.email}`);
+  console.log(`👤 Admin created/verified: ${admin.email}`);
 
   // 2. 3 Fakultas & Program Studi S1
   const facultiesData = [

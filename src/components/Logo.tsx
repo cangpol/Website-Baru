@@ -39,3 +39,4 @@ export default function Logo({ className = "", showText = true }: LogoProps) {
     </Link>
   );
 }
+

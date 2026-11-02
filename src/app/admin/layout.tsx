@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { 
-  BarChart3, 
   LayoutDashboard,
   ShieldCheck, 
   LogOut, 
@@ -18,8 +17,16 @@ import {
   Microscope,
   Bot,
   ChevronRight,
+  Handshake,
+  Award,
+  HelpCircle,
+  Users,
+  UserCheck,
+  Building2,
+  FileDown
 } from "lucide-react";
 import Image from "next/image";
+import { logoutAdminAction } from "@/app/actions/auth";
 
 interface AdminUserSession {
   email: string;
@@ -27,6 +34,109 @@ interface AdminUserSession {
   role: string;
   loginAt: string;
 }
+
+interface SidebarItem {
+  id: string;
+  groupTitle: string;
+  label: string;
+  href: string;
+  icon: any;
+  badge: string;
+  badgeColor: string;
+}
+
+const sidebarNavigation: SidebarItem[] = [
+  {
+    id: "beranda",
+    groupTitle: "BERANDA",
+    label: "Hero & Banner",
+    href: "/admin/banner-hero",
+    icon: LayoutDashboard,
+    badge: "1440x810",
+    badgeColor: "bg-blue-500/20 text-sky-200 border-blue-400/30",
+  },
+  {
+    id: "profil",
+    groupTitle: "PROFIL",
+    label: "Profil & Pimpinan",
+    href: "/admin/profil",
+    icon: ShieldCheck,
+    badge: "Info",
+    badgeColor: "bg-emerald-500/20 text-emerald-200 border-emerald-400/30",
+  },
+  {
+    id: "akademik",
+    groupTitle: "AKADEMIK",
+    label: "Kalender & Prodi",
+    href: "/admin/akademik",
+    icon: GraduationCap,
+    badge: "Kurikulum",
+    badgeColor: "bg-blue-500/20 text-sky-200 border-blue-400/30",
+  },
+  {
+    id: "riset",
+    groupTitle: "RISET",
+    label: "Berita & Riset",
+    href: "/admin/riset",
+    icon: Newspaper,
+    badge: "Publikasi",
+    badgeColor: "bg-indigo-500/20 text-indigo-200 border-indigo-400/30",
+  },
+  {
+    id: "kemahasiswaan",
+    groupTitle: "KEMAHASISWAAN",
+    label: "Ormawa & Prestasi",
+    href: "/admin/kemahasiswaan",
+    icon: Award,
+    badge: "Kegiatan",
+    badgeColor: "bg-amber-500/20 text-amber-200 border-amber-400/30",
+  },
+  {
+    id: "kerjasama",
+    groupTitle: "KERJASAMA",
+    label: "Mitra & MoU",
+    href: "/admin/kerjasama",
+    icon: Handshake,
+    badge: "43+ Mitra",
+    badgeColor: "bg-cyan-500/20 text-cyan-200 border-cyan-400/30",
+  },
+  {
+    id: "layanan",
+    groupTitle: "LAYANAN",
+    label: "Katalog & Unduhan",
+    href: "/admin/layanan",
+    icon: HelpCircle,
+    badge: "Download",
+    badgeColor: "bg-teal-500/20 text-teal-200 border-teal-400/30",
+  },
+  {
+    id: "pmb",
+    groupTitle: "PMB & TOUR",
+    label: "Data Leads & Tour",
+    href: "/admin/pmb-leads",
+    icon: Users,
+    badge: "Leads",
+    badgeColor: "bg-rose-500/20 text-rose-200 border-rose-400/30",
+  },
+  {
+    id: "ai-dataset",
+    groupTitle: "AI ASSISTANT",
+    label: "AI Dataset Q&A",
+    href: "/admin/ai-dataset",
+    icon: Bot,
+    badge: "Dataset",
+    badgeColor: "bg-sky-500/20 text-sky-200 border-sky-400/30",
+  },
+  {
+    id: "users",
+    groupTitle: "SISTEM",
+    label: "Manajemen Staf",
+    href: "/admin/users",
+    icon: UserCheck,
+    badge: "Role",
+    badgeColor: "bg-purple-500/20 text-purple-200 border-purple-400/30",
+  },
+];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -72,25 +182,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === "/admin") {
       return { group: "Pusat Kendali", page: "Dashboard Utama" };
     }
-    if (pathname.startsWith("/admin/akademik")) {
-      return { group: "Akademik", page: "Calender Academic" };
-    }
-    if (pathname.startsWith("/admin/riset")) {
-      return { group: "Riset", page: "Berita & Publikasi" };
-    }
-    if (pathname.startsWith("/admin/ai-dataset")) {
-      return { group: "AI Assistant", page: "AI Dataset" };
+    const match = sidebarNavigation.find((item) => pathname.startsWith(item.href));
+    if (match) {
+      return { group: match.groupTitle, page: match.label };
     }
     return { group: "Administrator", page: "Portal UPITRA" };
   };
   const breadcrumb = getBreadcrumb();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("upitra_admin_session");
       document.cookie = "upitra_admin_auth=; path=/; max-age=0";
     }
-    router.push("/u-gate");
+    await logoutAdminAction();
   };
 
   if (!mounted || !session) {
@@ -99,143 +204,92 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-200 flex items-center justify-center text-blue-600 animate-spin mb-4">
           <ShieldCheck className="w-6 h-6" />
         </div>
-        <p className="text-xs font-bold tracking-wider text-slate-600 uppercase">
-          Memverifikasi Akses Gateway UPITRA...
-        </p>
+        <p className="text-xs font-semibold text-slate-500">Memuat Portal Administrator UPITRA...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex text-slate-800 font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen flex bg-slate-50 font-sans text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
       
-      {/* 1. DESKTOP PERMANENT SIDEBAR - Executive Imperial Navy UPITRA */}
-      <aside className="hidden lg:flex lg:flex-col w-72 shrink-0 bg-[#06172e] border-r border-blue-950 shadow-2xl z-30">
+      {/* 1. SIDEBAR (Navy Blue #06172e matching UPITRA Branding) */}
+      <aside className="hidden lg:flex lg:w-64 xl:w-72 flex-col shrink-0 bg-[#06172e] text-white border-r border-blue-950 z-30 select-none shadow-xl">
         
         {/* Brand Header */}
-        <div className="p-4 border-b border-blue-950/80 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-white p-1.5 shadow-md border border-slate-100 ring-1 ring-blue-50 flex items-center justify-center shrink-0">
+        <div className="h-16 flex items-center px-5 border-b border-blue-950 bg-[#040e1e]/60">
+          <Link href="/admin" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md border border-white/20 shrink-0 group-hover:scale-105 transition-transform">
               <Image
                 src="/images/logo.png"
                 alt="Logo UPITRA"
-                width={32}
-                height={32}
+                width={28}
+                height={28}
                 className="object-contain"
+                priority
               />
             </div>
-            <div>
-              <div className="text-sm font-black text-white tracking-tight flex items-center gap-1.5">
-                <span>UPITRA</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-600 text-white font-bold uppercase tracking-wider">
-                  Admin
-                </span>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 leading-none">
+                <span className="text-sm font-black tracking-wider text-white uppercase">UPITRA</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500 text-white font-extrabold uppercase tracking-wide">CMS</span>
               </div>
-              <div className="text-[10px] text-sky-200/70 font-medium">
-                Pusat Kendali Institusi
-              </div>
+              <span className="text-[9.5px] text-sky-300/80 font-medium tracking-tight mt-1 truncate">
+                Admin Control Center
+              </span>
             </div>
           </Link>
         </div>
 
-        {/* Navigation Groups - Clean & Focused Dashboard */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 custom-scrollbar">
-          
-          {/* Group 1: Pusat Kendali */}
-          <div>
-            <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1.5">
-              PUSAT KENDALI
+        {/* Dashboard Quick Switcher */}
+        <div className="px-3 pt-3">
+          <Link
+            href="/admin"
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              pathname === "/admin"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                : "text-slate-300 hover:bg-white/10 hover:text-white"
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <LayoutDashboard className={`w-4 h-4 shrink-0 ${pathname === "/admin" ? "text-white" : "text-sky-400"}`} />
+              <span className="truncate">Dashboard Utama</span>
             </div>
-            <Link
-              href="/admin"
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                pathname === "/admin"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <LayoutDashboard className={`w-4 h-4 shrink-0 ${pathname === "/admin" ? "text-white" : "text-sky-400"}`} />
-                <span className="truncate">Dashboard Utama</span>
-              </div>
-              <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-blue-500/20 text-sky-200 border border-blue-400/30">
-                Sistem
-              </span>
-            </Link>
-          </div>
+            <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-blue-500/20 text-sky-200 border border-blue-400/30">
+              Home
+            </span>
+          </Link>
+        </div>
 
-          {/* Group 2: Akademik */}
-          <div>
-            <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1.5 flex items-center justify-between">
-              <span>AKADEMIK</span>
-              <GraduationCap className="w-3.5 h-3.5 text-sky-400/50" />
-            </div>
-            <Link
-              href="/admin/akademik"
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                pathname.startsWith("/admin/akademik")
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <CalendarDays className={`w-4 h-4 shrink-0 ${pathname.startsWith("/admin/akademik") ? "text-white" : "text-sky-400"}`} />
-                <span className="truncate">Calender Academic</span>
-              </div>
-              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-blue-500/20 text-sky-200 border border-blue-400/30">
-                Event
-              </span>
-            </Link>
-          </div>
+        {/* Navigation Groups - Clean, Complete & Mapped 1-to-1 to Navbar */}
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 custom-scrollbar">
+          {sidebarNavigation.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname.startsWith(item.href);
 
-          {/* Group 3: Riset */}
-          <div>
-            <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1.5 flex items-center justify-between">
-              <span>RISET</span>
-              <Microscope className="w-3.5 h-3.5 text-sky-400/50" />
-            </div>
-            <Link
-              href="/admin/riset"
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                pathname.startsWith("/admin/riset")
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Newspaper className={`w-4 h-4 shrink-0 ${pathname.startsWith("/admin/riset") ? "text-white" : "text-sky-400"}`} />
-                <span className="truncate">Berita</span>
+            return (
+              <div key={item.id}>
+                <div className="px-3 text-[9.5px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1 flex items-center justify-between">
+                  <span>{item.groupTitle}</span>
+                </div>
+                <Link
+                  href={item.href}
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    isActive
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                      : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-sky-400"}`} />
+                    <span className="truncate">{item.label}</span>
+                  </div>
+                  <span className={`text-[8.5px] px-1.5 py-0.5 rounded font-bold uppercase border ${item.badgeColor}`}>
+                    {item.badge}
+                  </span>
+                </Link>
               </div>
-              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">
-                Media
-              </span>
-            </Link>
-          </div>
-
-          {/* Group 4: AI Assistant */}
-          <div>
-            <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1.5 flex items-center justify-between">
-              <span>AI ASSISTANT</span>
-              <Bot className="w-3.5 h-3.5 text-sky-400/50" />
-            </div>
-            <Link
-              href="/admin/ai-dataset"
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                pathname.startsWith("/admin/ai-dataset")
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Bot className={`w-4 h-4 shrink-0 ${pathname.startsWith("/admin/ai-dataset") ? "text-white" : "text-sky-400"}`} />
-                <span className="truncate">AI Dataset</span>
-              </div>
-              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-sky-500/20 text-sky-200 border border-sky-400/30">
-                Q&amp;A
-              </span>
-            </Link>
-          </div>
-
+            );
+          })}
         </div>
 
         {/* User Card in Sidebar Footer */}
@@ -297,151 +351,107 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Right: Live Status, Quick Links & Logout */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Clock Widget */}
-            <div className="hidden xl:flex items-center gap-2 text-xs font-semibold text-[#06172e] bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80">
-              <Clock className="w-3.5 h-3.5 text-blue-600" />
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold">
+              <Clock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
               <span>{currentTime || "Sinkronisasi waktu..."}</span>
             </div>
 
-            {/* Gateway Status Indicator */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Gateway Terhubung</span>
-            </div>
-
-            {/* Direct Link to Live Site */}
-            <a
+            {/* Website Preview Link */}
+            <Link
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-200 text-xs font-bold transition-all"
             >
-              <span>Website Live</span>
+              <span className="hidden sm:inline">Pratinjau Web</span>
               <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            </Link>
 
-            {/* Logout Mobile/Tablet */}
+            {/* Logout Button in Header */}
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors lg:hidden cursor-pointer"
-              title="Logout ke /u-gate"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all cursor-pointer"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Keluar</span>
             </button>
           </div>
 
         </header>
 
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div 
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs" 
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            <div className="fixed top-0 bottom-0 left-0 w-80 bg-[#06172e] p-4 flex flex-col justify-between shadow-2xl z-50">
-              <div>
-                <div className="flex items-center justify-between pb-3 border-b border-blue-950">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
-                      <ShieldCheck className="w-4 h-4" />
-                    </div>
-                    <span className="font-black text-sm text-white">UPITRA Admin</span>
-                  </div>
-                  <button onClick={() => setMobileMenuOpen(false)} className="p-1 text-slate-400 hover:text-white">
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <div className="py-3 space-y-2 overflow-y-auto max-h-[75vh] custom-scrollbar">
-                  <div className="text-[10px] font-bold text-sky-400/60 uppercase tracking-wider px-3 pt-1">
-                    PUSAT KENDALI
-                  </div>
-                  <Link
-                    href="/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
-                      pathname === "/admin" ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <LayoutDashboard className="w-4 h-4 text-sky-400" />
-                      <span>Dashboard Utama</span>
-                    </div>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-sky-200 font-bold">Sistem</span>
-                  </Link>
-
-                  <div className="text-[10px] font-bold text-sky-400/60 uppercase tracking-wider px-3 pt-2">
-                    AKADEMIK
-                  </div>
-                  <Link
-                    href="/admin/akademik"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
-                      pathname.startsWith("/admin/akademik") ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <CalendarDays className="w-4 h-4 text-sky-400" />
-                      <span>Calender Academic</span>
-                    </div>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-sky-200 font-bold">Event</span>
-                  </Link>
-
-                  <div className="text-[10px] font-bold text-sky-400/60 uppercase tracking-wider px-3 pt-2">
-                    RISET
-                  </div>
-                  <Link
-                    href="/admin/riset"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
-                      pathname.startsWith("/admin/riset") ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Newspaper className="w-4 h-4 text-sky-400" />
-                      <span>Berita</span>
-                    </div>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-200 font-bold">Media</span>
-                  </Link>
-
-                  <div className="text-[10px] font-bold text-sky-400/60 uppercase tracking-wider px-3 pt-2">
-                    AI ASSISTANT
-                  </div>
-                  <Link
-                    href="/admin/ai-dataset"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
-                      pathname.startsWith("/admin/ai-dataset") ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Bot className="w-4 h-4 text-sky-400" />
-                      <span>AI Dataset</span>
-                    </div>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-200 font-bold">Q&amp;A</span>
-                  </Link>
-                </div>
-              </div>
-
-              <button
-                onClick={handleLogout}
-                className="w-full py-2.5 rounded-xl bg-rose-600/20 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-2 mt-4"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Keluar dari Sesi (/u-gate)</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Scrollable Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto w-full">
-            {children}
-          </div>
+        {/* Dynamic Content Viewport */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar">
+          {children}
         </main>
 
       </div>
+
+      {/* 3. MOBILE SLIDE-OVER DRAWER */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div 
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="relative w-72 max-w-xs bg-[#06172e] text-white flex flex-col p-4 z-10 shadow-2xl">
+            <div className="flex items-center justify-between pb-4 border-b border-blue-950">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-white p-1 flex items-center justify-center shrink-0">
+                  <Image src="/images/logo.png" alt="Logo" width={24} height={24} />
+                </div>
+                <span className="font-black text-sm text-white">UPITRA CMS</span>
+              </div>
+              <button 
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto py-4 space-y-2">
+              <Link
+                href="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold ${
+                  pathname === "/admin" ? "bg-blue-600 text-white" : "text-slate-300"
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Dashboard Utama</span>
+              </Link>
+
+              {sidebarNavigation.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
+                      isActive ? "bg-blue-600 text-white" : "text-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Icon className="w-4 h-4" />
+                      <span>{item.label}</span>
+                    </div>
+                    <span className="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase bg-white/10 text-slate-200">
+                      {item.badge}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="pt-3 border-t border-blue-950 flex items-center justify-between text-xs">
+              <span className="text-slate-400">{session.name}</span>
+              <button onClick={handleLogout} className="text-rose-400 font-bold">Keluar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
