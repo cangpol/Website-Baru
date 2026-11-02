@@ -27,18 +27,18 @@ export default function UpitraDalamAngka() {
       <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-16 lg:px-[120px]">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* Left Column: Student Image Looking Up Towards Metrics */}
+          {/* Left Column: Student Image Looking Up Towards Metrics (Transparent Cutout) */}
           <motion.div 
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="lg:col-span-5 flex justify-center lg:justify-start"
+            className="lg:col-span-5 flex justify-center lg:justify-start items-end"
           >
-            <div className="relative w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px] aspect-[720/824] drop-shadow-sm">
+            <div className="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[340px] h-[400px] sm:h-[460px] lg:h-[500px] drop-shadow-[0_10px_25px_rgba(0,107,189,0.15)]">
               <Image
-                src="/images/upitra-student-achiever.jpg"
-                alt="Mahasiswi Universitas Pignatelli Triputra Berprestasi"
+                src="/images/upitra-student-achiever.png"
+                alt="Mahasiswi Berprestasi Universitas Pignatelli Triputra"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 40vw"
