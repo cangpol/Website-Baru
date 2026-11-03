@@ -7,6 +7,14 @@ import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
 
+function isHttpUrl(value: string) {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
 // ── 1. Organisasi Mahasiswa & UKM ──────────────────────────────────────────
 const studentOrgInputSchema = z.object({
   name: z.string().min(2, "Nama organisasi minimal 2 karakter").max(150),
@@ -133,7 +141,7 @@ const scholarshipInputSchema = z.object({
   provider: z.string().min(2, "Penyelenggara beasiswa wajib diisi"),
   requirements: z.string().optional().nullable(),
   deadline: z.string().optional().nullable(),
-  linkUrl: z.string().url("Format link tidak valid").optional().nullable().or(z.literal("")),
+  linkUrl: z.string().max(2048).url("Format link tidak valid").refine(isHttpUrl).optional().nullable().or(z.literal("")),
   isActive: z.boolean().default(true),
   version: z.number().int().default(1),
 });
@@ -377,6 +385,27 @@ export interface KemahasiswaanSectionItem {
   updatedAt?: string;
 }
 
+function isSafeContentUrl(value: string) {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
+const kemahasiswaanSectionsSchema = z.array(z.object({
+  id: z.string().trim().min(1).max(100),
+  type: z.enum(["ormawa", "beasiswa", "prestasi", "kegiatan", "tugas_fungsi", "pengembangan", "galeri", "kalender"]),
+  title: z.string().trim().min(1).max(300),
+  category: z.string().max(200).optional(),
+  description: z.string().max(10000),
+  dateOrSemester: z.string().max(200).optional(),
+  image: z.string().max(2048).refine(isSafeContentUrl).optional(),
+  link: z.string().max(2048).refine(isSafeContentUrl).optional(),
+  updatedAt: z.string().max(100).optional(),
+})).max(500);
+
 const DEFAULT_KEMAHASISWAAN_SECTIONS: KemahasiswaanSectionItem[] = [
   {
     id: "kmh-01",
@@ -408,14 +437,24 @@ export async function getKemahasiswaanSections(): Promise<KemahasiswaanSectionIt
     if (!setting || !Array.isArray(setting.value)) {
       return DEFAULT_KEMAHASISWAAN_SECTIONS;
     }
-    return (setting.value as unknown) as KemahasiswaanSectionItem[];
+    const parsed = kemahasiswaanSectionsSchema.safeParse(setting.value);
+    return parsed.success ? parsed.data : DEFAULT_KEMAHASISWAAN_SECTIONS;
   } catch {
     return DEFAULT_KEMAHASISWAAN_SECTIONS;
   }
 }
 
-export async function saveKemahasiswaanSectionsAction(items: KemahasiswaanSectionItem[]) {
+export async function saveKemahasiswaanSectionsAction(rawItems: unknown) {
   const session = await requirePermission("kemahasiswaan", "update");
+  const validated = kemahasiswaanSectionsSchema.safeParse(rawItems);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Format seksi kemahasiswaan tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
+  }
+  const items = validated.data;
 
   try {
     await prisma.siteSetting.upsert({

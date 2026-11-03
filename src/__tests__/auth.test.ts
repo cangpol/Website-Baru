@@ -1,10 +1,26 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { signSessionToken, verifySessionToken } from "@/lib/auth";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { getSession, signSessionToken, verifySessionToken } from "@/lib/auth";
 import { Role } from "@prisma/client";
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(),
+}));
+
+vi.mock("@/lib/prisma", () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+    },
+  },
+}));
 
 describe("Auth Token & Session Verification", () => {
   beforeEach(() => {
     process.env.ADMIN_SESSION_SECRET = "test-secret-key-that-is-at-least-32-chars-long";
+    vi.mocked(cookies).mockReset();
+    vi.mocked(prisma.user.findUnique).mockReset();
   });
 
   it("signs and verifies a valid session token", () => {
@@ -77,5 +93,41 @@ describe("Auth Token & Session Verification", () => {
     expect(verifySessionToken("a.b.c")).toBeNull();
     expect(verifySessionToken("invalidBase64.invalidSig")).toBeNull();
   });
-});
 
+  it("only accepts a session for an active user whose role and email still match", async () => {
+    const raw = {
+      userId: "user-123",
+      email: "admin@upitra.ac.id",
+      name: "Old Admin Name",
+      role: Role.SUPERADMIN,
+    };
+    const token = signSessionToken(raw);
+    vi.mocked(cookies).mockResolvedValue({
+      get: vi.fn().mockReturnValue({ value: token }),
+    } as never);
+
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      email: raw.email,
+      name: "Updated Admin Name",
+      role: raw.role,
+      isActive: true,
+    } as never);
+    await expect(getSession()).resolves.toMatchObject({ name: "Updated Admin Name" });
+
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      email: raw.email,
+      name: raw.name,
+      role: raw.role,
+      isActive: false,
+    } as never);
+    await expect(getSession()).resolves.toBeNull();
+
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      email: raw.email,
+      name: raw.name,
+      role: Role.CONTENT_WRITER,
+      isActive: true,
+    } as never);
+    await expect(getSession()).resolves.toBeNull();
+  });
+});

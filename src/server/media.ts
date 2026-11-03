@@ -1,10 +1,19 @@
 "use server";
 
-import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { recordAuditLog } from "@/server/audit";
 import { getStorageDriver } from "@/server/storage";
+
+function containsExactValue(value: unknown, target: string): boolean {
+  if (value === target) return true;
+  if (Array.isArray(value)) return value.some((entry) => containsExactValue(entry, target));
+  if (value && typeof value === "object") {
+    return Object.values(value).some((entry) => containsExactValue(entry, target));
+  }
+  return false;
+}
 
 export async function getMediaAssets(params?: {
   page?: number;
@@ -12,17 +21,26 @@ export async function getMediaAssets(params?: {
   search?: string;
   type?: "ALL" | "IMAGE" | "DOCUMENT";
 }) {
+  await requirePermission("media", "read");
+
   try {
-    const page = params?.page || 1;
-    const limit = params?.limit || 24;
+    const page =
+      typeof params?.page === "number" && Number.isSafeInteger(params.page)
+        ? Math.max(1, params.page)
+        : 1;
+    const limit =
+      typeof params?.limit === "number" && Number.isSafeInteger(params.limit)
+        ? Math.max(1, Math.min(100, params.limit))
+        : 24;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Prisma.MediaAssetWhereInput = {};
 
-    if (params?.search) {
+    const search = params?.search?.trim().slice(0, 200);
+    if (search) {
       where.OR = [
-        { filename: { contains: params.search, mode: "insensitive" } },
-        { altText: { contains: params.search, mode: "insensitive" } },
+        { filename: { contains: search, mode: "insensitive" } },
+        { altText: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -99,11 +117,34 @@ export async function deleteMediaAssetAction(id: string) {
     }
 
     // Check if asset path is in use by articles, programs, staff, or hero slides
-    const [usedByArticle, usedByHero, usedByProgram, usedByStaff] = await Promise.all([
+    const [
+      usedByArticle,
+      usedByHero,
+      usedByProgram,
+      usedByStaff,
+      usedByEvent,
+      usedByStudentOrg,
+      usedByAchievement,
+      usedByPartner,
+      usedByService,
+      usedByDownload,
+      settings,
+      pages,
+    ] = await Promise.all([
       prisma.article.findFirst({ where: { coverImage: asset.path, deletedAt: null } }),
       prisma.heroSlide.findFirst({ where: { imageUrl: asset.path, deletedAt: null } }),
       prisma.program.findFirst({ where: { coverImage: asset.path, deletedAt: null } }),
       prisma.staffMember.findFirst({ where: { photoUrl: asset.path, deletedAt: null } }),
+      prisma.event.findFirst({ where: { bannerImage: asset.path, deletedAt: null } }),
+      prisma.studentOrg.findFirst({ where: { logoUrl: asset.path, deletedAt: null } }),
+      prisma.achievement.findFirst({ where: { photoUrl: asset.path, deletedAt: null } }),
+      prisma.partner.findFirst({ where: { logoUrl: asset.path, deletedAt: null } }),
+      prisma.serviceItem.findFirst({
+        where: { OR: [{ icon: asset.path }, { description: { contains: asset.path } }], deletedAt: null },
+      }),
+      prisma.downloadDoc.findFirst({ where: { fileUrl: asset.path, deletedAt: null } }),
+      prisma.siteSetting.findMany({ select: { key: true, value: true } }),
+      prisma.page.findMany({ select: { title: true, blocks: true, draftBlocks: true }, where: { deletedAt: null } }),
     ]);
 
     const activeReferences: string[] = [];
@@ -111,6 +152,18 @@ export async function deleteMediaAssetAction(id: string) {
     if (usedByHero) activeReferences.push(`Hero Slide: "${usedByHero.title}"`);
     if (usedByProgram) activeReferences.push(`Prodi: "${usedByProgram.name}"`);
     if (usedByStaff) activeReferences.push(`Staf: "${usedByStaff.name}"`);
+    if (usedByEvent) activeReferences.push(`Event: "${usedByEvent.title}"`);
+    if (usedByStudentOrg) activeReferences.push(`Organisasi mahasiswa: "${usedByStudentOrg.name}"`);
+    if (usedByAchievement) activeReferences.push(`Prestasi: "${usedByAchievement.title}"`);
+    if (usedByPartner) activeReferences.push(`Mitra: "${usedByPartner.name}"`);
+    if (usedByService) activeReferences.push(`Layanan: "${usedByService.name}"`);
+    if (usedByDownload) activeReferences.push(`Dokumen unduhan: "${usedByDownload.title}"`);
+    const settingReferences = settings.filter((setting) => containsExactValue(setting.value, asset.path));
+    activeReferences.push(...settingReferences.map((setting) => `Pengaturan konten: "${setting.key}"`));
+    const pageReferences = pages.filter((page) =>
+      containsExactValue(page.blocks, asset.path) || containsExactValue(page.draftBlocks, asset.path)
+    );
+    activeReferences.push(...pageReferences.map((page) => `Halaman: "${page.title}"`));
 
     if (activeReferences.length > 0) {
       return {

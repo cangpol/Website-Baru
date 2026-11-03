@@ -37,5 +37,16 @@ describe("sanitizeRichText - XSS Prevention", () => {
     const output = sanitizeRichText(input);
     expect(output).toBe('<h2>Judul</h2><p>Paragraf <strong>tebal</strong> dan <em>miring</em>.</p>');
   });
-});
 
+  it("only allows video embeds from the approved YouTube hosts", () => {
+    const youtube = sanitizeRichText(
+      '<iframe src="https://www.youtube.com/embed/video-id"></iframe>'
+    );
+    const arbitraryHost = sanitizeRichText(
+      '<iframe src="https://attacker.example/embed/page"></iframe>'
+    );
+
+    expect(youtube).toContain('src="https://www.youtube.com/embed/video-id"');
+    expect(arbitraryHost).not.toContain("attacker.example");
+  });
+});

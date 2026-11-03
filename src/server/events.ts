@@ -1,10 +1,19 @@
 "use server";
 
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
+
+function isHttpUrl(value: string) {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
 
 const eventInputSchema = z.object({
   title: z.string().min(3, "Judul event minimal 3 karakter").max(200),
@@ -15,7 +24,7 @@ const eventInputSchema = z.object({
   bannerImage: z.string().optional().nullable(),
   isOnline: z.boolean().default(false),
   type: z.string().default("Akademik"), // Akademik, Ujian, Libur, Wisuda, PMB, Kemahasiswaan, Seminar, Workshop, dll
-  registrationUrl: z.string().url("Format URL pendaftaran tidak valid").optional().nullable().or(z.literal("")),
+  registrationUrl: z.string().max(2048).url("Format URL pendaftaran tidak valid").refine(isHttpUrl).optional().nullable().or(z.literal("")),
   academicYear: z.string().optional().nullable(), // e.g. "2025/2026", "2026/2027"
   semester: z.string().optional().nullable(), // e.g. "Gasal", "Genap", "Antara"
   version: z.number().int().default(1),
@@ -30,6 +39,30 @@ export interface AcademicCalendarDoc {
   academicYear: string;
   updatedAt?: string;
 }
+
+function isSafeCalendarUrl(value: string) {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
+const academicCalendarDocSchema = z.object({
+  fileUrl: z.string().trim().min(1).max(2048).refine(isSafeCalendarUrl),
+  fileName: z.string().trim().min(1).max(255),
+  fileSize: z.string().trim().max(100).optional(),
+  academicYear: z.string().trim().min(1).max(20),
+  updatedAt: z.string().max(100).optional(),
+});
+
+const academicCalendarInputSchema = z.object({
+  fileUrl: z.string().trim().min(1).max(2048).refine(isSafeCalendarUrl),
+  fileName: z.string().max(255).optional(),
+  fileSize: z.string().max(100).optional(),
+  academicYear: z.string().max(20).optional(),
+});
 
 // Helper untuk mengekstrak metadata dari deskripsi event
 function extractEventMetadata(rawDesc: string) {
@@ -247,24 +280,25 @@ export async function getAcademicCalendarDoc(): Promise<AcademicCalendarDoc | nu
       where: { key: "academic_calendar_document" },
     });
     if (!setting || !setting.value) return null;
-    return setting.value as unknown as AcademicCalendarDoc;
+    const parsed = academicCalendarDocSchema.safeParse(setting.value);
+    return parsed.success ? parsed.data : null;
   } catch (err) {
     console.error("Error fetching academic calendar doc:", err);
     return null;
   }
 }
 
-export async function saveAcademicCalendarDocAction(data: {
-  fileUrl: string;
-  fileName: string;
-  fileSize?: string;
-  academicYear?: string;
-}) {
+export async function saveAcademicCalendarDocAction(rawData: unknown) {
   const session = await requirePermission("akademik", "update");
-
-  if (!data.fileUrl) {
-    return { ok: false, message: "URL berkas PDF wajib diisi." };
+  const validated = academicCalendarInputSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Data dokumen kalender akademik tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
   }
+  const data = validated.data;
 
   try {
     const payload: AcademicCalendarDoc = {
@@ -279,25 +313,24 @@ export async function saveAcademicCalendarDocAction(data: {
       }),
     };
 
-    await prisma.siteSetting.upsert({
-      where: { key: "academic_calendar_document" },
-      create: {
-        key: "academic_calendar_document",
-        value: payload as any,
-        description: "Dokumen PDF Resmi Kalender Akademik UPITRA",
-      },
-      update: {
-        value: payload as any,
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      await tx.siteSetting.upsert({
+        where: { key: "academic_calendar_document" },
+        create: {
+          key: "academic_calendar_document",
+          value: payload as unknown as Prisma.InputJsonValue,
+          description: "Dokumen PDF Resmi Kalender Akademik UPITRA",
+        },
+        update: {
+          value: payload as unknown as Prisma.InputJsonValue,
+        },
+      });
 
-    // Sinkronkan ke DownloadDoc kategori Kalender Akademik agar muncul juga di Download Center
-    try {
-      const existingDoc = await prisma.downloadDoc.findFirst({
+      const existingDoc = await tx.downloadDoc.findFirst({
         where: { category: "Kalender Akademik", deletedAt: null },
       });
       if (existingDoc) {
-        await prisma.downloadDoc.update({
+        await tx.downloadDoc.update({
           where: { id: existingDoc.id },
           data: {
             title: `Kalender Akademik Resmi TA ${payload.academicYear}`,
@@ -306,7 +339,7 @@ export async function saveAcademicCalendarDocAction(data: {
           },
         });
       } else {
-        await prisma.downloadDoc.create({
+        await tx.downloadDoc.create({
           data: {
             title: `Kalender Akademik Resmi TA ${payload.academicYear}`,
             category: "Kalender Akademik",
@@ -315,9 +348,7 @@ export async function saveAcademicCalendarDocAction(data: {
           },
         });
       }
-    } catch (e) {
-      console.warn("Could not sync to downloadDoc:", e);
-    }
+    });
 
     await recordAuditLog({
       userId: session.userId,
@@ -329,6 +360,7 @@ export async function saveAcademicCalendarDocAction(data: {
     });
 
     await invalidateEntity(CACHE_TAGS.EVENTS, "/akademik");
+    await invalidateEntity(CACHE_TAGS.DOWNLOADS, "/layanan");
     return { ok: true, data: payload, message: "Dokumen PDF kalender akademik resmi berhasil disimpan." };
   } catch (err) {
     console.error("Error saving academic calendar doc:", err);
@@ -340,18 +372,15 @@ export async function deleteAcademicCalendarDocAction() {
   const session = await requirePermission("akademik", "delete");
 
   try {
-    await prisma.siteSetting.deleteMany({
-      where: { key: "academic_calendar_document" },
-    });
-
-    try {
-      await prisma.downloadDoc.updateMany({
+    await prisma.$transaction(async (tx) => {
+      await tx.siteSetting.deleteMany({
+        where: { key: "academic_calendar_document" },
+      });
+      await tx.downloadDoc.updateMany({
         where: { category: "Kalender Akademik", deletedAt: null },
         data: { deletedAt: new Date() },
       });
-    } catch (e) {
-      console.warn("Could not soft delete downloadDoc:", e);
-    }
+    });
 
     await recordAuditLog({
       userId: session.userId,
@@ -363,6 +392,7 @@ export async function deleteAcademicCalendarDocAction() {
     });
 
     await invalidateEntity(CACHE_TAGS.EVENTS, "/akademik");
+    await invalidateEntity(CACHE_TAGS.DOWNLOADS, "/layanan");
     return { ok: true, message: "Dokumen PDF kalender akademik resmi berhasil dihapus." };
   } catch (err) {
     console.error("Error deleting academic calendar doc:", err);

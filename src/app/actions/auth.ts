@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { setSessionCookie, clearSessionCookie, getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-// Rate limiting in-memory per IP / email (5 percobaan per 15 menit)
+// Supplemental per-process limit; account lockout is also persisted in the database.
 const loginAttempts = new Map<string, { count: number; lockedUntil: number }>();
 
 function checkRateLimit(key: string): { allowed: boolean; remainingSeconds?: number } {
@@ -96,31 +96,9 @@ export async function loginAdminAction(
   }
 
   try {
-    // 2. Cari user di Database
-    let user = null;
-    try {
-      user = await prisma.user.findUnique({
-        where: { email: rateLimitKey },
-      });
-    } catch {
-      // Fallback jika database belum aktif atau error
-      console.warn("Database offline during admin login, checking emergency admin fallback");
-      const emergencyPass = process.env.SEED_ADMIN_PASSWORD;
-      const emergencyEmail = process.env.SEED_ADMIN_EMAIL || "admin@upitra.ac.id";
-      if (emergencyPass && rateLimitKey === emergencyEmail && password === emergencyPass) {
-        clearFailedAttempts(rateLimitKey);
-        await setSessionCookie({
-          userId: "emergency-superadmin",
-          email: emergencyEmail,
-          name: "Administrator Utama UPITRA",
-          role: "SUPERADMIN",
-        });
-        return {
-          success: true,
-          message: "Login berhasil.",
-        };
-      }
-    }
+    const user = await prisma.user.findUnique({
+      where: { email: rateLimitKey },
+    });
 
     if (!user) {
       recordFailedAttempt(rateLimitKey);
@@ -130,10 +108,31 @@ export async function loginAdminAction(
       };
     }
 
-    // 3. Verifikasi Password dengan bcrypt
+    const now = new Date();
+    if (user.lockedUntil && user.lockedUntil > now) {
+      return {
+        success: false,
+        message: "Kredensial email atau kata sandi tidak valid.",
+      };
+    }
+
+    // Verify the password before checking account state to avoid revealing disabled accounts.
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    if (!isMatch || !user.isActive) {
       recordFailedAttempt(rateLimitKey);
+      const previousAttempts =
+        user.lockedUntil && user.lockedUntil <= now ? 0 : user.failedLoginCount;
+      const failedLoginCount = previousAttempts + 1;
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginCount,
+          lockedUntil:
+            failedLoginCount >= 5
+              ? new Date(now.getTime() + 15 * 60 * 1000)
+              : null,
+        },
+      });
       return {
         success: false,
         message: "Kredensial email atau kata sandi tidak valid.",
@@ -142,6 +141,14 @@ export async function loginAdminAction(
 
     // 4. Reset percobaan gagal setelah berhasil
     clearFailedAttempts(rateLimitKey);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginCount: 0,
+        lockedUntil: null,
+        lastLoginAt: now,
+      },
+    });
 
     // 5. Terbitkan Session Cookie Terproteksi
     await setSessionCookie({

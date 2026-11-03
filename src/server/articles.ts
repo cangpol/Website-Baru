@@ -7,7 +7,16 @@ import { requirePermission } from "@/lib/auth";
 import { sanitizeRichText } from "@/lib/sanitize";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
-import { deleteUploadedFile } from "@/server/storage/cleanup";
+import { deleteUploadedFileIfUnused } from "@/server/storage/cleanup-if-unused";
+
+function isSafeArticleUrl(value: string) {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
 
 const articleInputSchema = z.object({
   title: z.string().min(5, "Judul artikel minimal 5 karakter").max(200),
@@ -15,8 +24,8 @@ const articleInputSchema = z.object({
   category: z.string().min(2, "Kategori wajib dipilih"),
   summary: z.string().max(1000, "Ringkasan maksimal 1000 karakter").optional().nullable(),
   content: z.string().min(10, "Isi artikel minimal 10 karakter"),
-  coverImage: z.string().optional().nullable(),
-  attachmentUrl: z.string().optional().nullable(),
+  coverImage: z.string().max(2048).refine(isSafeArticleUrl).optional().nullable(),
+  attachmentUrl: z.string().max(2048).refine(isSafeArticleUrl).optional().nullable(),
   attachmentName: z.string().optional().nullable(),
   attachmentSize: z.string().optional().nullable(),
   published: z.boolean().default(false),
@@ -88,6 +97,14 @@ function generateSlug(title: string): string {
   return `${base}-${suffix}`;
 }
 
+function isHttpUrl(value: string) {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
 export async function getPublishedArticles(limit = 10, category?: string) {
   try {
     const where: any = {
@@ -139,6 +156,7 @@ export async function getArticleBySlug(slug: string) {
     const article = await prisma.article.findFirst({
       where: {
         slug,
+        published: true,
         deletedAt: null,
       },
       include: {
@@ -279,18 +297,7 @@ export async function saveArticleAction(id: string | null, rawInput: ArticleInpu
         };
       }
 
-      // Pembersihan berkas yatim (orphan file cleanup) jika cover diganti
-      if (existing.coverImage && data.coverImage && existing.coverImage !== data.coverImage) {
-        await deleteUploadedFile(existing.coverImage);
-      }
-
-      // Pembersihan berkas yatim jika lampiran diganti
       const existingMeta = extractArticleMetadata(existing.summary);
-      if (existingMeta.attachmentUrl && data.attachmentUrl && existingMeta.attachmentUrl !== data.attachmentUrl) {
-        await deleteUploadedFile(existingMeta.attachmentUrl);
-      } else if (existingMeta.attachmentUrl && !data.attachmentUrl) {
-        await deleteUploadedFile(existingMeta.attachmentUrl);
-      }
 
       const updated = await prisma.article.update({
         where: { id },
@@ -310,6 +317,13 @@ export async function saveArticleAction(id: string | null, rawInput: ArticleInpu
           version: { increment: 1 },
         },
       });
+
+      if (existing.coverImage && existing.coverImage !== data.coverImage) {
+        await deleteUploadedFileIfUnused(existing.coverImage);
+      }
+      if (existingMeta.attachmentUrl && existingMeta.attachmentUrl !== data.attachmentUrl) {
+        await deleteUploadedFileIfUnused(existingMeta.attachmentUrl);
+      }
 
       await recordAuditLog({
         userId: session.userId,
@@ -409,6 +423,18 @@ export interface RisetPublicationItem {
   abstractText: string;
 }
 
+const risetPublicationListSchema = z.array(z.object({
+  id: z.string().trim().min(1).max(100),
+  title: z.string().trim().min(1).max(300),
+  researcher: z.string().trim().min(1).max(300),
+  faculty: z.string().trim().min(1).max(200),
+  journalName: z.string().trim().min(1).max(300),
+  indexedIn: z.string().trim().min(1).max(100),
+  year: z.number().int().min(1900).max(2200),
+  doiOrUrl: z.string().trim().max(2048).refine((value) => !value || isHttpUrl(value)),
+  abstractText: z.string().max(5000),
+})).max(500);
+
 const DEFAULT_RIS_PUBS: RisetPublicationItem[] = [
   {
     id: "rst-01",
@@ -442,14 +468,24 @@ export async function getRisetPublications(): Promise<RisetPublicationItem[]> {
     if (!setting || !Array.isArray(setting.value)) {
       return DEFAULT_RIS_PUBS;
     }
-    return (setting.value as unknown) as RisetPublicationItem[];
+    const parsed = risetPublicationListSchema.safeParse(setting.value);
+    return parsed.success ? parsed.data : DEFAULT_RIS_PUBS;
   } catch {
     return DEFAULT_RIS_PUBS;
   }
 }
 
-export async function saveRisetPublicationsAction(items: RisetPublicationItem[]) {
+export async function saveRisetPublicationsAction(rawItems: unknown) {
   const session = await requirePermission("articles", "update");
+  const validated = risetPublicationListSchema.safeParse(rawItems);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Format publikasi riset tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
+  }
+  const items = validated.data;
 
   try {
     await prisma.siteSetting.upsert({
@@ -488,6 +524,12 @@ export interface RisetPortalsConfig {
   description: string;
 }
 
+const risetPortalsSchema = z.object({
+  lppmUrl: z.string().max(2048).url().refine(isHttpUrl),
+  jurnalUrl: z.string().max(2048).url().refine(isHttpUrl),
+  description: z.string().max(5000),
+});
+
 const DEFAULT_RIS_PORTALS: RisetPortalsConfig = {
   lppmUrl: "https://lppm.upitra.ac.id",
   jurnalUrl: "https://jurnal.upitra.ac.id",
@@ -499,17 +541,27 @@ export async function getRisetPortals(): Promise<RisetPortalsConfig> {
     const setting = await prisma.siteSetting.findUnique({
       where: { key: "riset_portals_config" },
     });
-    if (!setting || typeof setting.value !== "object") {
+    if (!setting || typeof setting.value !== "object" || setting.value === null || Array.isArray(setting.value)) {
       return DEFAULT_RIS_PORTALS;
     }
-    return setting.value as unknown as RisetPortalsConfig;
+    const parsed = risetPortalsSchema.safeParse(setting.value);
+    return parsed.success ? parsed.data : DEFAULT_RIS_PORTALS;
   } catch {
     return DEFAULT_RIS_PORTALS;
   }
 }
 
-export async function saveRisetPortalsAction(data: RisetPortalsConfig) {
+export async function saveRisetPortalsAction(rawData: unknown) {
   const session = await requirePermission("articles", "update");
+  const validated = risetPortalsSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Format portal riset tidak valid.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
 
   try {
     await prisma.siteSetting.upsert({

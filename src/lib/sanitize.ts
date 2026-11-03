@@ -20,8 +20,12 @@ export function sanitizeRichText(dirtyHtml: string): string {
     },
     allowedSchemes: ["http", "https", "mailto", "tel"],
     allowedSchemesByTag: {
-      img: ["http", "https", "data"]
+      img: ["http", "https"]
     },
+    allowedIframeHostnames: [
+      "www.youtube.com",
+      "www.youtube-nocookie.com",
+    ],
     // Force rel="noopener noreferrer" on external links
     transformTags: {
       a: (tagName, attribs) => {
@@ -36,4 +40,3 @@ export function sanitizeRichText(dirtyHtml: string): string {
     }
   });
 }
-

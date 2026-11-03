@@ -10,8 +10,8 @@ const heroSlideInputSchema = z.object({
   title: z.string().min(2, "Judul slide minimal 2 karakter").max(200),
   subtitle: z.string().max(500).optional().nullable(),
   ctaLabel: z.string().max(50).optional().nullable(),
-  ctaHref: z.string().max(200).optional().nullable(),
-  imageUrl: z.string().min(1, "Gambar banner wajib diisi"),
+  ctaHref: z.string().max(2048).optional().nullable().refine((value) => !value || isSafeBannerUrl(value)),
+  imageUrl: z.string().min(1, "Gambar banner wajib diisi").max(2048).refine(isSafeBannerUrl),
   order: z.number().int().default(0),
   isActive: z.boolean().default(true),
   version: z.number().int().default(1),
@@ -19,7 +19,26 @@ const heroSlideInputSchema = z.object({
 
 export type HeroSlideInput = z.infer<typeof heroSlideInputSchema>;
 
+function isSafeBannerUrl(value: string) {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
+const pageHeaderKeys = new Set(["akademik", "layanan", "riset"]);
+const pageHeaderBannerSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  description: z.string().max(2000),
+  imageUrl: z.string().max(2048).refine(isSafeBannerUrl).optional(),
+  updatedAt: z.string().max(100).optional(),
+});
+
 export async function getHeroSlides() {
+  await requirePermission("beranda", "read");
+
   try {
     const slides = await prisma.heroSlide.findMany({
       where: { deletedAt: null },
@@ -162,7 +181,7 @@ export async function toggleHeroSlideActiveAction(id: string, currentState: bool
   const session = await requirePermission("beranda", "update");
 
   try {
-    const updated = await prisma.heroSlide.update({
+    await prisma.heroSlide.update({
       where: { id },
       data: {
         isActive: !currentState,
@@ -189,12 +208,14 @@ export async function toggleHeroSlideActiveAction(id: string, currentState: bool
 
 // ── Header Banners per Halaman (Akademik, Riset, Kerjasama, dll.) ───────────
 export async function getPageHeaderBanner(pageKey: string) {
+  if (!pageHeaderKeys.has(pageKey)) return null;
   try {
     const setting = await prisma.siteSetting.findUnique({
       where: { key: `banner_${pageKey}` },
     });
     if (!setting) return null;
-    return setting.value as { title: string; description: string; imageUrl?: string; updatedAt?: string };
+    const parsed = pageHeaderBannerSchema.safeParse(setting.value);
+    return parsed.success ? parsed.data : null;
   } catch {
     return null;
   }
@@ -205,6 +226,18 @@ export async function savePageHeaderBannerAction(
   data: { title: string; description: string; imageUrl?: string }
 ) {
   const session = await requirePermission("beranda", "update");
+  if (!pageHeaderKeys.has(pageKey)) {
+    return { ok: false, message: "Halaman banner tidak valid." };
+  }
+  const validated = pageHeaderBannerSchema.safeParse(data);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Data banner tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
+  }
+  const banner = validated.data;
 
   try {
     const updated = await prisma.siteSetting.upsert({
@@ -212,14 +245,14 @@ export async function savePageHeaderBannerAction(
       create: {
         key: `banner_${pageKey}`,
         value: {
-          ...data,
+          ...banner,
           updatedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
         },
         description: `Header banner untuk halaman /${pageKey}`,
       },
       update: {
         value: {
-          ...data,
+          ...banner,
           updatedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
         },
       },
@@ -231,7 +264,7 @@ export async function savePageHeaderBannerAction(
       action: "UPDATE",
       entity: "SiteSetting",
       entityId: updated.id,
-      details: JSON.stringify({ pageKey, title: data.title }),
+      details: JSON.stringify({ pageKey, title: banner.title }),
     });
 
     await invalidateEntity(CACHE_TAGS.SETTINGS, `/${pageKey}`);

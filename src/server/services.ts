@@ -1,12 +1,13 @@
 "use server";
 
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { sanitizeRichText } from "@/lib/sanitize";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
-import { deleteUploadedFile } from "@/server/storage/cleanup";
+import { deleteUploadedFileIfUnused } from "@/server/storage/cleanup-if-unused";
 import {
   ServiceMetadata,
   FaqItem,
@@ -14,6 +15,34 @@ import {
   PmbBrochureSetting,
   defaultPmbBrochure,
 } from "@/lib/servicesTypes";
+
+const faqItemSchema = z.object({
+  id: z.string().trim().min(1).max(100),
+  q: z.string().trim().min(1).max(1000),
+  a: z.string().min(1).max(20000),
+  category: z.string().trim().max(100).optional(),
+  order: z.number().int().min(0).optional(),
+});
+const faqListSchema = z.array(faqItemSchema).max(500);
+const pmbBrochureSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  subTitle: z.string().trim().max(500),
+  fileName: z.string().trim().min(1).max(255),
+  fileSize: z.string().trim().max(100),
+  coverImage: z.string().trim().min(1).max(2048).refine(isLocalOrHttpUrl),
+  pdfUrl: z.string().trim().min(1).max(2048).refine(isLocalOrHttpUrl),
+  description: z.string().max(5000),
+  highlights: z.array(z.string().trim().min(1).max(500)).max(100),
+});
+
+function isLocalOrHttpUrl(value: string) {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
 
 // ── Helper Metadata Packing untuk ServiceItem ──────────────────────────────
 function extractServiceMetadata(rawDescription: string | null): ServiceMetadata {
@@ -84,12 +113,12 @@ function packServiceMetadata(
 // ── 1. ServiceItem ──────────────────────────────────────────────────────────
 const serviceItemInputSchema = z.object({
   name: z.string().min(2, "Nama layanan minimal 2 karakter").max(150),
-  description: z.string().optional().nullable(),
+  description: z.string().max(20000).optional().nullable(),
   icon: z.string().optional().nullable(),
-  url: z.string().url("Format URL tidak valid").optional().nullable().or(z.literal("")),
+  url: z.string().max(2048).refine(isLocalOrHttpUrl, "Format URL tidak valid").optional().nullable().or(z.literal("")),
   order: z.number().int().default(0),
   isActive: z.boolean().default(true),
-  attachmentUrl: z.string().optional().nullable(),
+  attachmentUrl: z.string().max(2048).refine(isLocalOrHttpUrl).optional().nullable(),
   attachmentName: z.string().optional().nullable(),
   attachmentSize: z.string().optional().nullable(),
   tag: z.string().optional().nullable(),
@@ -157,18 +186,7 @@ export async function saveServiceItemAction(id: string | null, rawInput: Service
         return { ok: false, message: "Data tidak ditemukan atau telah diubah pengguna lain." };
       }
 
-      // Pembersihan file fisik yatim jika icon atau attachment diganti
-      if (existing.icon && existing.icon !== data.icon && existing.icon.startsWith("/uploads/")) {
-        await deleteUploadedFile(existing.icon);
-      }
       const oldMeta = extractServiceMetadata(existing.description);
-      if (
-        oldMeta.attachmentUrl &&
-        oldMeta.attachmentUrl !== data.attachmentUrl &&
-        oldMeta.attachmentUrl.startsWith("/uploads/")
-      ) {
-        await deleteUploadedFile(oldMeta.attachmentUrl);
-      }
 
       const updated = await prisma.serviceItem.update({
         where: { id },
@@ -182,6 +200,16 @@ export async function saveServiceItemAction(id: string | null, rawInput: Service
           version: { increment: 1 },
         },
       });
+      if (existing.icon && existing.icon !== data.icon && existing.icon.startsWith("/uploads/")) {
+        await deleteUploadedFileIfUnused(existing.icon);
+      }
+      if (
+        oldMeta.attachmentUrl &&
+        oldMeta.attachmentUrl !== data.attachmentUrl &&
+        oldMeta.attachmentUrl.startsWith("/uploads/")
+      ) {
+        await deleteUploadedFileIfUnused(oldMeta.attachmentUrl);
+      }
       await recordAuditLog({
         userId: session.userId,
         userEmail: session.email,
@@ -222,17 +250,11 @@ export async function deleteServiceItemAction(id: string) {
   const session = await requirePermission("layanan", "delete");
   try {
     const existing = await prisma.serviceItem.findUnique({ where: { id } });
-    if (existing) {
-      if (existing.icon && existing.icon.startsWith("/uploads/")) {
-        await deleteUploadedFile(existing.icon);
-      }
-      const meta = extractServiceMetadata(existing.description);
-      if (meta.attachmentUrl && meta.attachmentUrl.startsWith("/uploads/")) {
-        await deleteUploadedFile(meta.attachmentUrl);
-      }
-    }
-
+    if (!existing) return { ok: false, message: "Layanan tidak ditemukan." };
     await prisma.serviceItem.update({ where: { id }, data: { deletedAt: new Date() } });
+    if (existing.icon?.startsWith("/uploads/")) await deleteUploadedFileIfUnused(existing.icon);
+    const meta = extractServiceMetadata(existing.description);
+    if (meta.attachmentUrl?.startsWith("/uploads/")) await deleteUploadedFileIfUnused(meta.attachmentUrl);
     await recordAuditLog({
       userId: session.userId,
       userEmail: session.email,
@@ -252,7 +274,7 @@ export async function deleteServiceItemAction(id: string) {
 const downloadDocInputSchema = z.object({
   title: z.string().min(2, "Judul dokumen minimal 2 karakter").max(200),
   category: z.string().min(2, "Kategori dokumen wajib diisi"),
-  fileUrl: z.string().min(1, "URL file dokumen wajib diisi"),
+  fileUrl: z.string().min(1, "URL file dokumen wajib diisi").max(2048).refine(isLocalOrHttpUrl),
   fileSize: z.string().optional().nullable(),
   version: z.number().int().default(1),
 });
@@ -299,10 +321,6 @@ export async function saveDownloadDocAction(id: string | null, rawInput: Downloa
         return { ok: false, message: "Dokumen tidak ditemukan atau telah diubah pengguna lain." };
       }
 
-      if (existing.fileUrl !== data.fileUrl && existing.fileUrl.startsWith("/uploads/")) {
-        await deleteUploadedFile(existing.fileUrl);
-      }
-
       const updated = await prisma.downloadDoc.update({
         where: { id },
         data: {
@@ -313,6 +331,9 @@ export async function saveDownloadDocAction(id: string | null, rawInput: Downloa
           version: { increment: 1 },
         },
       });
+      if (existing.fileUrl !== data.fileUrl && existing.fileUrl.startsWith("/uploads/")) {
+        await deleteUploadedFileIfUnused(existing.fileUrl);
+      }
       await recordAuditLog({
         userId: session.userId,
         userEmail: session.email,
@@ -351,11 +372,11 @@ export async function deleteDownloadDocAction(id: string) {
   const session = await requirePermission("layanan", "delete");
   try {
     const existing = await prisma.downloadDoc.findUnique({ where: { id } });
-    if (existing && existing.fileUrl.startsWith("/uploads/")) {
-      await deleteUploadedFile(existing.fileUrl);
-    }
-
+    if (!existing) return { ok: false, message: "Dokumen tidak ditemukan." };
     await prisma.downloadDoc.update({ where: { id }, data: { deletedAt: new Date() } });
+    if (existing.fileUrl.startsWith("/uploads/")) {
+      await deleteUploadedFileIfUnused(existing.fileUrl);
+    }
     await recordAuditLog({
       userId: session.userId,
       userEmail: session.email,
@@ -378,7 +399,10 @@ export async function getLayananFaqs(): Promise<FaqItem[]> {
       where: { key: "layanan_faqs" },
     });
     if (setting?.value && Array.isArray(setting.value)) {
-      return setting.value as unknown as FaqItem[];
+      const parsed = faqListSchema.safeParse(setting.value);
+      if (parsed.success) {
+        return parsed.data.map((faq) => ({ ...faq, a: sanitizeRichText(faq.a) }));
+      }
     }
   } catch (err) {
     console.error("Error getLayananFaqs:", err);
@@ -386,9 +410,18 @@ export async function getLayananFaqs(): Promise<FaqItem[]> {
   return defaultLayananFaqs;
 }
 
-export async function saveLayananFaqsAction(faqs: FaqItem[]) {
+export async function saveLayananFaqsAction(rawFaqs: unknown) {
   const session = await requirePermission("layanan", "update");
+  const validated = faqListSchema.safeParse(rawFaqs);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Format FAQ tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
+  }
   try {
+    const faqs = validated.data;
     const sanitized = faqs.map((f, idx) => ({
       id: f.id || `faq-${Date.now()}-${idx}`,
       q: f.q.trim(),
@@ -401,11 +434,11 @@ export async function saveLayananFaqsAction(faqs: FaqItem[]) {
       where: { key: "layanan_faqs" },
       create: {
         key: "layanan_faqs",
-        value: sanitized as any,
+        value: sanitized as Prisma.InputJsonValue,
         description: "Daftar FAQ Layanan Terpadu Kampus UPITRA",
       },
       update: {
-        value: sanitized as any,
+        value: sanitized as Prisma.InputJsonValue,
       },
     });
 
@@ -430,8 +463,9 @@ export async function getPmbBrochureSetting(): Promise<PmbBrochureSetting> {
     const setting = await prisma.siteSetting.findUnique({
       where: { key: "pmb_brochure_setting" },
     });
-    if (setting?.value) {
-      return setting.value as unknown as PmbBrochureSetting;
+    if (setting?.value && typeof setting.value === "object" && !Array.isArray(setting.value)) {
+      const parsed = pmbBrochureSchema.safeParse(setting.value);
+      if (parsed.success) return parsed.data;
     }
   } catch (err) {
     console.error("Error getPmbBrochureSetting:", err);
@@ -439,34 +473,47 @@ export async function getPmbBrochureSetting(): Promise<PmbBrochureSetting> {
   return defaultPmbBrochure;
 }
 
-export async function savePmbBrochureSettingAction(data: PmbBrochureSetting) {
+export async function savePmbBrochureSettingAction(rawData: unknown) {
   const session = await requirePermission("layanan", "update");
+  const validated = pmbBrochureSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Format brosur PMB tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
+  }
+  const data = validated.data;
   try {
     const existing = await prisma.siteSetting.findUnique({
       where: { key: "pmb_brochure_setting" },
     });
 
-    if (existing?.value) {
-      const oldVal = existing.value as unknown as PmbBrochureSetting;
-      if (oldVal.pdfUrl && oldVal.pdfUrl !== data.pdfUrl && oldVal.pdfUrl.startsWith("/uploads/")) {
-        await deleteUploadedFile(oldVal.pdfUrl);
-      }
-      if (oldVal.coverImage && oldVal.coverImage !== data.coverImage && oldVal.coverImage.startsWith("/uploads/")) {
-        await deleteUploadedFile(oldVal.coverImage);
-      }
-    }
+    const parsedOldVal = existing?.value && typeof existing.value === "object" && !Array.isArray(existing.value)
+      ? pmbBrochureSchema.safeParse(existing.value)
+      : undefined;
+    const oldVal = parsedOldVal?.success ? parsedOldVal.data : undefined;
 
     await prisma.siteSetting.upsert({
       where: { key: "pmb_brochure_setting" },
       create: {
         key: "pmb_brochure_setting",
-        value: data as any,
+        value: data as Prisma.InputJsonValue,
         description: "Pengaturan Brosur Resmi PMB UPITRA",
       },
       update: {
-        value: data as any,
+        value: data as Prisma.InputJsonValue,
       },
     });
+
+    if (oldVal) {
+      if (oldVal.pdfUrl && oldVal.pdfUrl !== data.pdfUrl && oldVal.pdfUrl.startsWith("/uploads/")) {
+        await deleteUploadedFileIfUnused(oldVal.pdfUrl);
+      }
+      if (oldVal.coverImage && oldVal.coverImage !== data.coverImage && oldVal.coverImage.startsWith("/uploads/")) {
+        await deleteUploadedFileIfUnused(oldVal.coverImage);
+      }
+    }
 
     await recordAuditLog({
       userId: session.userId,

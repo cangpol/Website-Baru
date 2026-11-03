@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { Role } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { recordAuditLog } from "@/server/audit";
 
 const userInputSchema = z.object({
@@ -68,7 +69,11 @@ export async function saveUserAction(id: string | null, rawInput: UserInput) {
       }
 
       // Cegah penurunan peran SUPERADMIN terakhir
-      if (existing.role === Role.SUPERADMIN && data.role !== Role.SUPERADMIN) {
+      if (
+        existing.role === Role.SUPERADMIN &&
+        existing.isActive &&
+        (data.role !== Role.SUPERADMIN || !data.isActive)
+      ) {
         const superadminCount = await prisma.user.count({
           where: { role: Role.SUPERADMIN, isActive: true },
         });
@@ -80,7 +85,7 @@ export async function saveUserAction(id: string | null, rawInput: UserInput) {
         }
       }
 
-      const updateData: any = {
+      const updateData: Prisma.UserUpdateInput = {
         name: data.name,
         email: data.email,
         role: data.role,

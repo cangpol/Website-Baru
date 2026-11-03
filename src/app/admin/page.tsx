@@ -11,7 +11,6 @@ import {
   ArrowRight, 
   ExternalLink, 
   Clock, 
-  CheckCircle2, 
   FileText, 
   Layers,
   Sparkles,
@@ -24,14 +23,13 @@ import {
   Activity,
   Globe,
   SlidersHorizontal,
-  ChevronRight,
   HelpCircle,
   Check
 } from "lucide-react";
 import { getAllAdminArticles, getRisetPublications } from "@/server/articles";
 import { getEvents } from "@/server/events";
 import { getAIDataset } from "@/server/ai-dataset";
-import { getAdmissionLeads } from "@/server/leads";
+import { getHomepageContent } from "@/server/homepage";
 
 export interface AdminCalendarEvent {
   id: string;
@@ -73,18 +71,21 @@ interface AdminUserSession {
   email: string;
   name: string;
   role: string;
-  loginAt: string;
 }
 
 export default function AdminDashboardPage() {
   const [events, setEvents] = useState<AdminCalendarEvent[]>([]);
   const [articles, setArticles] = useState<AdminArticleItem[]>([]);
   const [risetItems, setRisetItems] = useState<AdminRisetSection[]>([]);
-  const [aiDatasetCount, setAiDatasetCount] = useState<number>(105);
-  const [aiCategoryCount, setAiCategoryCount] = useState<number>(8);
+  const [aiDatasetCount, setAiDatasetCount] = useState<number>(0);
+  const [aiCategoryCount, setAiCategoryCount] = useState<number>(0);
   const [session, setSession] = useState<AdminUserSession | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastSynced, setLastSynced] = useState<string>("");
+  const [dashboardStatus, setDashboardStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
+  const [canReadAllArticles, setCanReadAllArticles] = useState(false);
+  const [homepageContent, setHomepageContent] = useState<Awaited<ReturnType<typeof getHomepageContent>> | null>(null);
 
   // Activity Feed States
   const [feedTab, setFeedTab] = useState<"all" | "news" | "events">("all");
@@ -92,15 +93,35 @@ export default function AdminDashboardPage() {
 
   // Load institutional data from Database
   const loadData = async () => {
+    setDashboardStatus("loading");
+    setDashboardError(null);
     try {
-      const [allArticles, allEvents, allRiset, allDataset] = await Promise.all([
-        getAllAdminArticles(),
+      const [healthResponse, adminResponse] = await Promise.all([
+        fetch("/api/health", { cache: "no-store" }),
+        fetch("/api/auth/me", { cache: "no-store" }),
+      ]);
+      if (!healthResponse.ok) {
+        throw new Error("Koneksi basis data tidak tersedia.");
+      }
+
+      const adminData = await adminResponse.json();
+      if (!adminResponse.ok || !adminData?.ok || !adminData.user) {
+        throw new Error("Sesi administrator tidak valid.");
+      }
+      const currentSession = adminData.user as AdminUserSession;
+      setSession(currentSession);
+      const canReadArticles = currentSession.role === "SUPERADMIN" || currentSession.role === "CONTENT_WRITER";
+      setCanReadAllArticles(canReadArticles);
+
+      const [allArticles, allEvents, allRiset, allDataset, homepage] = await Promise.all([
+        canReadArticles ? getAllAdminArticles() : Promise.resolve([]),
         getEvents(),
         getRisetPublications(),
         getAIDataset(),
+        getHomepageContent(),
       ]);
 
-      setArticles(allArticles as any);
+      setArticles(canReadArticles ? allArticles : []);
       setEvents(
         allEvents.map((e) => ({
           id: e.id,
@@ -114,28 +135,29 @@ export default function AdminDashboardPage() {
           status: new Date(e.endDate) < new Date() ? "Selesai" : new Date(e.startDate) <= new Date() ? "Berlangsung" : "Mendatang",
         }))
       );
-      setRisetItems(allRiset as any);
+      setRisetItems(allRiset);
       setAiDatasetCount(allDataset.length);
       const uniqueCats = new Set(allDataset.map((item) => item.category || "Umum"));
       setAiCategoryCount(uniqueCats.size);
+      setHomepageContent(homepage);
+      setDashboardStatus("ready");
+      const now = new Date();
+      setLastSynced(now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB");
     } catch (err) {
       console.error("Error loading dashboard data:", err);
+      setDashboardStatus("error");
+      setDashboardError("Data dashboard gagal dimuat. Periksa koneksi basis data dan sesi admin.");
     }
-
-    const now = new Date();
-    setLastSynced(now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB");
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => {
-      loadData();
-      setIsRefreshing(false);
-    }, 450);
+    await loadData();
+    setIsRefreshing(false);
   };
 
   // Dynamic greeting based on time of day
@@ -235,30 +257,48 @@ export default function AdminDashboardPage() {
                 <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
                 <span>Portal Eksekutif Administrator</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Sistem Terhubung</span>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${
+                dashboardStatus === "error"
+                  ? "bg-rose-500/20 border-rose-400/30 text-rose-300"
+                  : dashboardStatus === "loading"
+                    ? "bg-amber-500/20 border-amber-400/30 text-amber-200"
+                    : "bg-emerald-500/20 border-emerald-400/30 text-emerald-300"
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${
+                  dashboardStatus === "error"
+                    ? "bg-rose-400"
+                    : dashboardStatus === "loading"
+                      ? "bg-amber-400 animate-pulse"
+                      : "bg-emerald-400 animate-pulse"
+                }`} />
+                <span>
+                  {dashboardStatus === "error"
+                    ? "Koneksi Bermasalah"
+                    : dashboardStatus === "loading"
+                      ? "Memuat Data"
+                      : "Sistem Terhubung"}
+                </span>
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-              {getGreeting()}, {session?.name || "Administrator"}
+              {getGreeting()}, {session?.name || (dashboardStatus === "loading" ? "Memuat profil..." : "Administrator")}
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Selamat datang di pusat kendali terpadu Universitas Putra Indonesia Cianjur. Kelola agenda akademik, warta berita terkini, dan latih asisten AI secara real-time.
+              Selamat datang di pusat kendali terpadu Universitas Pignatelli Triputra Surakarta. Kelola agenda akademik, warta berita terkini, dan basis pengetahuan asisten AI.
             </p>
 
             {/* Quick Metadata Chips */}
             <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-400 font-medium">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
-                <strong className="text-slate-200">Peran:</strong> {session?.role || "Super Administrator"}
+                <strong className="text-slate-200">Peran:</strong> {session?.role || "—"}
               </span>
               <span className="text-slate-600">•</span>
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-sky-400" />
-                <strong className="text-slate-200">Sinkron:</strong> {lastSynced || "Baru saja"}
+                <strong className="text-slate-200">Sinkron:</strong> {lastSynced || "Belum tersinkron"}
               </span>
               <span className="text-slate-600">•</span>
               <span className="flex items-center gap-1.5">
@@ -292,6 +332,12 @@ export default function AdminDashboardPage() {
 
         </div>
       </div>
+
+      {dashboardError && (
+        <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          {dashboardError}
+        </div>
+      )}
 
       {/* ── 2. EMPAT PILAR UTAMA (BALANCED 4-COLUMN KPI CARDS) ───────────────── */}
       <div>
@@ -354,12 +400,16 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
               <div className="text-3xl font-black text-[#06172e] tracking-tight">
-                {articles.length}
+                {canReadAllArticles ? articles.length : "—"}
               </div>
               <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
-                <span className="text-emerald-600 font-bold">{publishedArticlesCount} Terbit</span>
+                <span className="text-emerald-600 font-bold">
+                  {canReadAllArticles ? `${publishedArticlesCount} Terbit` : "Akses terbatas"}
+                </span>
                 <span>•</span>
-                <span className="text-amber-600 font-bold">{draftArticlesCount} Draf</span>
+                <span className="text-amber-600 font-bold">
+                  {canReadAllArticles ? `${draftArticlesCount} Draf` : "Data internal"}
+                </span>
               </div>
             </div>
 
@@ -451,6 +501,67 @@ export default function AdminDashboardPage() {
 
         </div>
       </div>
+
+      {homepageContent && (
+        <section className="rounded-3xl border border-sky-200 bg-white p-5 shadow-xs sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-sky-600" />
+              <h2 className="text-sm font-bold uppercase tracking-wide text-[#06172e]">
+                Konten Beranda Publik
+              </h2>
+            </div>
+            <Link
+              href="/admin/halaman-depan"
+              className="text-xs font-bold text-sky-700 hover:text-sky-900"
+            >
+              Kelola konten beranda →
+            </Link>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="min-w-0">
+              <div className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Hero</div>
+              <p className="mt-1 truncate text-sm font-semibold text-slate-800">{homepageContent.hero.title}</p>
+            </div>
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Gelombang PMB</div>
+              <p className="mt-1 text-sm font-semibold text-slate-800">
+                {homepageContent.waves.waves.map((wave) => wave.title).join(", ") || "Tidak ada gelombang"}
+              </p>
+            </div>
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Metrik publik</div>
+              <p className="mt-1 text-sm font-semibold text-slate-800">
+                {homepageContent.stats.metrics.map((metric) => `${metric.value} ${metric.label}`).join(" · ") || "Tidak ada metrik"}
+              </p>
+            </div>
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Feed Instagram</div>
+              <p className="mt-1 text-sm font-semibold text-slate-800">
+                {homepageContent.instagram.handle} · {homepageContent.instagram.posts.length} postingan
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <div className="text-[11px] font-bold uppercase tracking-wide text-slate-400">CTA beranda</div>
+            <p className="mt-1 text-sm font-semibold text-slate-800">{homepageContent.cta.title}</p>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+            {Object.entries(homepageContent.visibility).map(([section, visible]) => (
+              <span
+                key={section}
+                className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase ${
+                  visible
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-slate-200 bg-slate-50 text-slate-500"
+                }`}
+              >
+                {section}: {visible ? "Tampil" : "Disembunyikan"}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── 3. PINTASAN CEPAT OPERASIONAL (ORGANIZED QUICK ACCESS) ───────────── */}
       <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5">

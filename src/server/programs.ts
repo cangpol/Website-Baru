@@ -70,6 +70,8 @@ export async function getFacultiesWithPrograms() {
 }
 
 export async function getAllAdminPrograms() {
+  await requirePermission("akademik", "read");
+
   try {
     const programs = await prisma.program.findMany({
       where: { deletedAt: null },
@@ -262,4 +264,3 @@ export async function softDeleteProgramAction(id: string) {
     return { ok: false, message: "Gagal menghapus program studi." };
   }
 }
-

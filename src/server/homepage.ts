@@ -1,17 +1,13 @@
 "use server";
 
+import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
-import { deleteUploadedFile } from "@/server/storage/cleanup";
+import { deleteUploadedFileIfUnused } from "@/server/storage/cleanup-if-unused";
 import {
-  HomepageHero,
-  HomepageWaves,
-  HomepageStats,
-  HomepageInstagram,
-  HomepageCta,
-  HomepageVisibility,
   defaultHomepageHero,
   defaultHomepageWaves,
   defaultHomepageStats,
@@ -19,6 +15,84 @@ import {
   defaultHomepageCta,
   defaultHomepageVisibility,
 } from "@/lib/homepageData";
+
+const safeUrlSchema = z.string().trim().min(1).max(2048).refine((value) => {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}, "URL harus berupa tautan lokal atau HTTP/HTTPS yang valid.");
+
+const imageUrlSchema = z.string().trim().min(1).max(2048).refine((value) => {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && (
+      url.hostname === "images.unsplash.com" ||
+      url.hostname === "placehold.co" ||
+      url.hostname.endsWith(".upitra.ac.id")
+    );
+  } catch {
+    return false;
+  }
+}, "Gambar harus berasal dari penyimpanan lokal atau host gambar yang diizinkan.");
+const homepageHeroSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  subtitle: z.string().max(1000),
+  ctaLabel: z.string().trim().min(1).max(80),
+  ctaHref: safeUrlSchema,
+  imageUrl: imageUrlSchema,
+});
+const homepageWavesSchema = z.object({
+  title: z.string().trim().min(1).max(150),
+  subtitle: z.string().max(500),
+  waves: z.array(z.object({
+    id: z.string().trim().min(1).max(80),
+    title: z.string().trim().min(1).max(150),
+    benefit: z.string().trim().min(1).max(300),
+    image: imageUrlSchema,
+    link: safeUrlSchema,
+  })).max(12),
+});
+const homepageStatsSchema = z.object({
+  title: z.string().trim().min(1).max(150),
+  subtitle: z.string().max(500),
+  studentCutoutImage: imageUrlSchema,
+  metrics: z.array(z.object({
+    id: z.string().trim().min(1).max(80),
+    value: z.string().trim().min(1).max(80),
+    label: z.string().trim().min(1).max(150),
+  })).max(12),
+});
+const homepageInstagramSchema = z.object({
+  title: z.string().trim().min(1).max(150),
+  subtitle: z.string().max(1000),
+  handle: z.string().trim().min(1).max(100),
+  profileUrl: safeUrlSchema,
+  posts: z.array(z.object({
+    id: z.string().trim().min(1).max(100),
+    caption: z.string().max(2200),
+    mediaUrl: imageUrlSchema,
+    permalink: safeUrlSchema,
+    timeAgo: z.string().trim().min(1).max(100),
+    category: z.string().trim().min(1).max(100),
+  })).max(12),
+});
+const homepageCtaSchema = z.object({
+  eyebrow: z.string().trim().min(1).max(150),
+  title: z.string().trim().min(1).max(500),
+  ctaLabel: z.string().trim().min(1).max(80),
+  ctaHref: safeUrlSchema,
+});
+const homepageVisibilitySchema = z.object({
+  hero: z.boolean(),
+  waves: z.boolean(),
+  stats: z.boolean(),
+  instagram: z.boolean(),
+  cta: z.boolean(),
+});
 
 // ── GET COMPLETE HOMEPAGE CONTENT ───────────────────────────────────────────
 export async function getHomepageContent() {
@@ -33,13 +107,20 @@ export async function getHomepageContent() {
         prisma.siteSetting.findUnique({ where: { key: "homepage_visibility" } }),
       ]);
 
+    const hero = homepageHeroSchema.safeParse(heroSetting?.value);
+    const waves = homepageWavesSchema.safeParse(wavesSetting?.value);
+    const stats = homepageStatsSchema.safeParse(statsSetting?.value);
+    const instagram = homepageInstagramSchema.safeParse(igSetting?.value);
+    const cta = homepageCtaSchema.safeParse(ctaSetting?.value);
+    const visibility = homepageVisibilitySchema.safeParse(visSetting?.value);
+
     return {
-      hero: (heroSetting?.value as unknown as HomepageHero) || defaultHomepageHero,
-      waves: (wavesSetting?.value as unknown as HomepageWaves) || defaultHomepageWaves,
-      stats: (statsSetting?.value as unknown as HomepageStats) || defaultHomepageStats,
-      instagram: (igSetting?.value as unknown as HomepageInstagram) || defaultHomepageInstagram,
-      cta: (ctaSetting?.value as unknown as HomepageCta) || defaultHomepageCta,
-      visibility: (visSetting?.value as unknown as HomepageVisibility) || defaultHomepageVisibility,
+      hero: hero.success ? hero.data : defaultHomepageHero,
+      waves: waves.success ? waves.data : defaultHomepageWaves,
+      stats: stats.success ? stats.data : defaultHomepageStats,
+      instagram: instagram.success ? instagram.data : defaultHomepageInstagram,
+      cta: cta.success ? cta.data : defaultHomepageCta,
+      visibility: visibility.success ? visibility.data : defaultHomepageVisibility,
     };
   } catch (err) {
     console.error("Error getHomepageContent:", err);
@@ -56,28 +137,39 @@ export async function getHomepageContent() {
 
 // ── SAVE ACTIONS WITH SECURITY & ORPHAN FILE CLEANUP ────────────────────────
 
-export async function saveHomepageHeroAction(data: HomepageHero) {
+export async function saveHomepageHeroAction(rawData: unknown) {
   const session = await requirePermission("beranda", "update");
+  const validated = homepageHeroSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Validasi data hero beranda gagal.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
+
   try {
     const existing = await prisma.siteSetting.findUnique({ where: { key: "homepage_hero" } });
-    if (existing?.value) {
-      const oldVal = existing.value as unknown as HomepageHero;
-      if (oldVal.imageUrl && oldVal.imageUrl !== data.imageUrl && oldVal.imageUrl.startsWith("/uploads/")) {
-        await deleteUploadedFile(oldVal.imageUrl);
-      }
-    }
 
     await prisma.siteSetting.upsert({
       where: { key: "homepage_hero" },
       create: {
         key: "homepage_hero",
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
         description: "Konten Hero Banner Utama Beranda",
       },
       update: {
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
       },
     });
+
+    const oldHero = existing?.value
+      ? homepageHeroSchema.safeParse(existing.value).data
+      : undefined;
+    if (oldHero?.imageUrl && oldHero.imageUrl !== data.imageUrl) {
+      await deleteUploadedFileIfUnused(oldHero.imageUrl);
+    }
 
     await recordAuditLog({
       userId: session.userId,
@@ -94,33 +186,40 @@ export async function saveHomepageHeroAction(data: HomepageHero) {
   }
 }
 
-export async function saveHomepageWavesAction(data: HomepageWaves) {
+export async function saveHomepageWavesAction(rawData: unknown) {
   const session = await requirePermission("beranda", "update");
+  const validated = homepageWavesSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Validasi data gelombang PMB gagal.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
+
   try {
     const existing = await prisma.siteSetting.findUnique({ where: { key: "homepage_waves" } });
-    if (existing?.value) {
-      const oldVal = existing.value as unknown as HomepageWaves;
-      if (Array.isArray(oldVal.waves)) {
-        for (const oldWave of oldVal.waves) {
-          const stillUsed = data.waves.some((nw) => nw.image === oldWave.image);
-          if (!stillUsed && oldWave.image?.startsWith("/uploads/")) {
-            await deleteUploadedFile(oldWave.image);
-          }
-        }
-      }
-    }
 
     await prisma.siteSetting.upsert({
       where: { key: "homepage_waves" },
       create: {
         key: "homepage_waves",
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
         description: "Gelombang Pendaftaran Mahasiswa Baru (Welcome Waves)",
       },
       update: {
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
       },
     });
+
+    const oldWaves = existing?.value
+      ? homepageWavesSchema.safeParse(existing.value).data?.waves
+      : undefined;
+    for (const oldWave of oldWaves || []) {
+      const stillUsed = data.waves.some((newWave) => newWave.image === oldWave.image);
+      if (!stillUsed) await deleteUploadedFileIfUnused(oldWave.image);
+    }
 
     await recordAuditLog({
       userId: session.userId,
@@ -137,32 +236,42 @@ export async function saveHomepageWavesAction(data: HomepageWaves) {
   }
 }
 
-export async function saveHomepageStatsAction(data: HomepageStats) {
+export async function saveHomepageStatsAction(rawData: unknown) {
   const session = await requirePermission("beranda", "update");
+  const validated = homepageStatsSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Validasi data statistik beranda gagal.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
+
   try {
     const existing = await prisma.siteSetting.findUnique({ where: { key: "homepage_stats" } });
-    if (existing?.value) {
-      const oldVal = existing.value as unknown as HomepageStats;
-      if (
-        oldVal.studentCutoutImage &&
-        oldVal.studentCutoutImage !== data.studentCutoutImage &&
-        oldVal.studentCutoutImage.startsWith("/uploads/")
-      ) {
-        await deleteUploadedFile(oldVal.studentCutoutImage);
-      }
-    }
 
     await prisma.siteSetting.upsert({
       where: { key: "homepage_stats" },
       create: {
         key: "homepage_stats",
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
         description: "UPITRA Dalam Angka & Foto Mahasiswi Cutout",
       },
       update: {
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
       },
     });
+
+    const oldStats = existing?.value
+      ? homepageStatsSchema.safeParse(existing.value).data
+      : undefined;
+    if (
+      oldStats?.studentCutoutImage &&
+      oldStats.studentCutoutImage !== data.studentCutoutImage
+    ) {
+      await deleteUploadedFileIfUnused(oldStats.studentCutoutImage);
+    }
 
     await recordAuditLog({
       userId: session.userId,
@@ -179,33 +288,40 @@ export async function saveHomepageStatsAction(data: HomepageStats) {
   }
 }
 
-export async function saveHomepageInstagramAction(data: HomepageInstagram) {
+export async function saveHomepageInstagramAction(rawData: unknown) {
   const session = await requirePermission("beranda", "update");
+  const validated = homepageInstagramSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Validasi data Instagram beranda gagal.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
+
   try {
     const existing = await prisma.siteSetting.findUnique({ where: { key: "homepage_instagram" } });
-    if (existing?.value) {
-      const oldVal = existing.value as unknown as HomepageInstagram;
-      if (Array.isArray(oldVal.posts)) {
-        for (const oldPost of oldVal.posts) {
-          const stillUsed = data.posts.some((np) => np.mediaUrl === oldPost.mediaUrl);
-          if (!stillUsed && oldPost.mediaUrl?.startsWith("/uploads/")) {
-            await deleteUploadedFile(oldPost.mediaUrl);
-          }
-        }
-      }
-    }
 
     await prisma.siteSetting.upsert({
       where: { key: "homepage_instagram" },
       create: {
         key: "homepage_instagram",
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
         description: "Kabar & Cerita Kampus Instagram Feed",
       },
       update: {
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
       },
     });
+
+    const oldPosts = existing?.value
+      ? homepageInstagramSchema.safeParse(existing.value).data?.posts
+      : undefined;
+    for (const oldPost of oldPosts || []) {
+      const stillUsed = data.posts.some((newPost) => newPost.mediaUrl === oldPost.mediaUrl);
+      if (!stillUsed) await deleteUploadedFileIfUnused(oldPost.mediaUrl);
+    }
 
     await recordAuditLog({
       userId: session.userId,
@@ -222,18 +338,28 @@ export async function saveHomepageInstagramAction(data: HomepageInstagram) {
   }
 }
 
-export async function saveHomepageCtaAction(data: HomepageCta) {
+export async function saveHomepageCtaAction(rawData: unknown) {
   const session = await requirePermission("beranda", "update");
+  const validated = homepageCtaSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Validasi data CTA beranda gagal.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
+
   try {
     await prisma.siteSetting.upsert({
       where: { key: "homepage_cta" },
       create: {
         key: "homepage_cta",
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
         description: "Ajakan Bergabung CTA Ready Family",
       },
       update: {
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
       },
     });
 
@@ -252,18 +378,28 @@ export async function saveHomepageCtaAction(data: HomepageCta) {
   }
 }
 
-export async function saveHomepageVisibilityAction(data: HomepageVisibility) {
+export async function saveHomepageVisibilityAction(rawData: unknown) {
   const session = await requirePermission("beranda", "update");
+  const validated = homepageVisibilitySchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Validasi visibilitas beranda gagal.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
+
   try {
     await prisma.siteSetting.upsert({
       where: { key: "homepage_visibility" },
       create: {
         key: "homepage_visibility",
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
         description: "Pengaturan Visibilitas Section Beranda",
       },
       update: {
-        value: data as any,
+        value: data as unknown as Prisma.InputJsonValue,
       },
     });
 

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "crypto";
 import { Role } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 export interface SessionPayload {
   userId: string;
@@ -56,7 +57,15 @@ export function verifySessionToken(token: string): SessionPayload | null {
     const payload = JSON.parse(jsonStr) as SessionPayload;
 
     const now = Math.floor(Date.now() / 1000);
-    if (payload.exp < now) {
+    if (
+      typeof payload.userId !== "string" ||
+      !payload.userId ||
+      typeof payload.email !== "string" ||
+      typeof payload.name !== "string" ||
+      !Object.values(Role).includes(payload.role) ||
+      !Number.isSafeInteger(payload.exp) ||
+      payload.exp <= now
+    ) {
       return null;
     }
 
@@ -71,7 +80,24 @@ export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return null;
-  return verifySessionToken(token);
+  const session = verifySessionToken(token);
+  if (!session) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { email: true, name: true, role: true, isActive: true },
+  });
+
+  if (
+    !user ||
+    !user.isActive ||
+    user.email !== session.email ||
+    user.role !== session.role
+  ) {
+    return null;
+  }
+
+  return { ...session, name: user.name };
 }
 
 // Menetapkan cookie sesi httpOnly aman
@@ -155,4 +181,3 @@ export async function requirePermission(
 
   throw new Error("Akses ditolak: Hak akses tidak mencukupi.");
 }
-

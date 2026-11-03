@@ -7,11 +7,19 @@ import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
 
+function isHttpUrl(value: string) {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
 const partnerInputSchema = z.object({
   name: z.string().min(2, "Nama mitra minimal 2 karakter").max(150),
   category: z.string().min(2, "Kategori mitra wajib diisi"),
   logoUrl: z.string().optional().nullable(),
-  websiteUrl: z.string().url("Format website URL tidak valid").optional().nullable().or(z.literal("")),
+  websiteUrl: z.string().max(2048).url("Format website URL tidak valid").refine(isHttpUrl).optional().nullable().or(z.literal("")),
   description: z.string().max(500).optional().nullable(),
   startYear: z.number().int().min(1950).max(2100).optional().nullable(),
   mouStatus: z.string().default("Aktif"),
@@ -182,6 +190,27 @@ export interface KerjasamaMouItem {
   fileUrl?: string;
 }
 
+function isSafeMouUrl(value: string) {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
+const mouListSchema = z.array(z.object({
+  id: z.string().trim().min(1).max(100),
+  partnerName: z.string().trim().min(1).max(300),
+  documentType: z.enum(["MoU", "MoA", "IA", "Surat Tugas"]),
+  scope: z.string().max(5000),
+  startYear: z.string().max(20),
+  endYear: z.string().max(20),
+  signatory: z.string().max(300),
+  status: z.enum(["Aktif", "Perpanjangan", "Selesai"]),
+  fileUrl: z.string().max(2048).refine(isSafeMouUrl).optional(),
+})).max(1000);
+
 const DEFAULT_MOU_LIST: KerjasamaMouItem[] = [
   {
     id: "mou-01",
@@ -215,14 +244,24 @@ export async function getMouList(): Promise<KerjasamaMouItem[]> {
     if (!setting || !Array.isArray(setting.value)) {
       return DEFAULT_MOU_LIST;
     }
-    return (setting.value as unknown) as KerjasamaMouItem[];
+    const parsed = mouListSchema.safeParse(setting.value);
+    return parsed.success ? parsed.data : DEFAULT_MOU_LIST;
   } catch {
     return DEFAULT_MOU_LIST;
   }
 }
 
-export async function saveMouListAction(items: KerjasamaMouItem[]) {
+export async function saveMouListAction(rawItems: unknown) {
   const session = await requirePermission("kerjasama", "update");
+  const validated = mouListSchema.safeParse(rawItems);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Format daftar dokumen kerja sama tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
+  }
+  const items = validated.data;
 
   try {
     await prisma.siteSetting.upsert({
@@ -253,4 +292,3 @@ export async function saveMouListAction(items: KerjasamaMouItem[]) {
     return { ok: false, message: "Gagal menyimpan daftar MoU." };
   }
 }
-

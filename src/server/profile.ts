@@ -181,6 +181,18 @@ export interface ProfilSectionItem {
   updatedAt?: string;
 }
 
+const profileSectionsSchema = z.array(z.object({
+  id: z.string().trim().min(1).max(100),
+  category: z.string().max(100).optional(),
+  type: z.string().max(100).optional(),
+  title: z.string().trim().min(1).max(300),
+  subtitle: z.string().max(1000).optional(),
+  content: z.string().max(20000),
+  image: z.string().max(2048).optional(),
+  extraMeta: z.string().max(1000).optional(),
+  updatedAt: z.string().max(100).optional(),
+})).max(500);
+
 const DEFAULT_PROFIL_SECTIONS: ProfilSectionItem[] = [
   {
     id: "prf-01",
@@ -219,14 +231,24 @@ export async function getProfilSections(): Promise<ProfilSectionItem[]> {
     if (!setting || !Array.isArray(setting.value)) {
       return DEFAULT_PROFIL_SECTIONS;
     }
-    return (setting.value as unknown) as ProfilSectionItem[];
+    const parsed = profileSectionsSchema.safeParse(setting.value);
+    return parsed.success ? parsed.data : DEFAULT_PROFIL_SECTIONS;
   } catch {
     return DEFAULT_PROFIL_SECTIONS;
   }
 }
 
-export async function saveProfilSectionsAction(items: ProfilSectionItem[]) {
+export async function saveProfilSectionsAction(rawItems: unknown) {
   const session = await requirePermission("profil", "update");
+  const validated = profileSectionsSchema.safeParse(rawItems);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Format seksi profil tidak valid.",
+      fieldErrors: validated.error.flatten(),
+    };
+  }
+  const items = validated.data;
 
   try {
     await prisma.siteSetting.upsert({
