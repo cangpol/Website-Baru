@@ -23,11 +23,11 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
 
   return (
     <section 
-      className="w-full bg-[#cce1f2] py-12 sm:py-16 lg:py-18 overflow-hidden select-none"
+      className="w-full bg-[#cce1f2] py-8 sm:py-10 md:py-5 overflow-hidden"
       aria-label="UPITRA Dalam Angka"
     >
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-16 lg:px-[120px]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-[clamp(32px,8vw,120px)]">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] gap-6 md:gap-7 items-center">
           
           {/* Left Column: Student Image Looking Up Towards Metrics (Transparent Cutout) */}
           <motion.div 
@@ -35,22 +35,22 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="lg:col-span-5 flex justify-center lg:justify-start items-end"
+            className="flex justify-center md:justify-start items-end"
           >
-            <div className="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[340px] h-[400px] sm:h-[460px] lg:h-[500px] drop-shadow-[0_10px_25px_rgba(0,107,189,0.15)]">
+            <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[280px] lg:max-w-[340px] h-[360px] sm:h-[400px] md:h-[400px] lg:h-[400px]">
               <Image
                 src={statsData.studentCutoutImage || "/images/upitra-student-achiever.png"}
                 alt="Mahasiswi Berprestasi Universitas Pignatelli Triputra"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-contain object-bottom pointer-events-none"
+                className="object-contain object-bottom md:object-cover md:object-top md:translate-x-5 md:scale-[1.08] md:origin-top-left pointer-events-none"
               />
             </div>
           </motion.div>
 
           {/* Right Column: Title + 3x2 Grid of Metric Cards */}
-          <div className="lg:col-span-7 flex flex-col justify-center space-y-6 sm:space-y-8">
+          <div className="flex flex-col justify-center space-y-5">
             
             {/* Header: Right-aligned matching Figma 1440x642 reference */}
             <motion.div 
@@ -58,18 +58,18 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="text-center lg:text-right space-y-1.5"
+              className="text-center md:text-right space-y-1"
             >
-              <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-black text-[#006bbd] tracking-tight font-sans">
+              <h2 className="text-2xl sm:text-3xl lg:text-[30px] font-black text-[#006bbd] tracking-tight leading-tight font-sans">
                 {statsData.title}
               </h2>
-              <p className="text-xs sm:text-sm lg:text-[14.5px] text-slate-600 font-medium font-sans">
+              <p className="text-xs sm:text-sm lg:text-[14px] text-slate-600 font-medium font-sans">
                 {statsData.subtitle}
               </p>
             </motion.div>
 
             {/* 6 Cards Grid (3 Columns x 2 Rows) */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3.5">
               {statsData.metrics.map((item, index) => (
                 <motion.div
                   key={item.id || index}
@@ -77,7 +77,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.45, delay: index * 0.08 }}
-                  className="bg-white rounded-2xl p-5 sm:p-6 lg:p-7 flex flex-col items-center justify-center text-center shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 border border-white/60 min-h-[120px] sm:min-h-[135px]"
+                  className="bg-white rounded-xl p-4 sm:p-5 md:p-3 lg:p-4 flex flex-col items-center justify-center text-center shadow-[0_2px_4px_rgba(15,23,42,0.12)] hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 border border-white/60 min-h-[112px] md:min-h-[108px]"
                 >
                   <span className="text-2xl sm:text-3xl lg:text-[32px] font-black text-slate-900 tracking-tight font-sans leading-none mb-2">
                     {item.value}
@@ -96,4 +96,3 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
     </section>
   );
 }
-
