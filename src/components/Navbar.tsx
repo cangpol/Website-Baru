@@ -62,20 +62,20 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ── MAIN STICKY NAVBAR (~64px height, crisp pure white, 1440px container) ── */}
+      {/* ── MAIN STICKY NAVBAR ── */}
       <header 
         className={`sticky top-0 z-50 w-full bg-white transition-shadow duration-300 border-b border-slate-100 ${
           isScrolled ? "shadow-sm" : ""
         }`}
       >
-        <div className="w-full h-[64px] flex items-center">
-          <div className="w-full max-w-[1440px] mx-auto h-[64px] px-6 sm:px-12 md:px-16 lg:px-[120px] flex items-center justify-between gap-4">
+        <div className="w-full h-16 flex items-center">
+          <div className="w-full max-w-[1440px] mx-auto h-16 px-[clamp(24px,8.8vw,120px)] flex items-center justify-between gap-4">
             
             {/* Logo Sisi Kiri (UPITRA Hexagon Icon + 3 Baris Teks) */}
             <Logo />
 
-            {/* Desktop Navigation Links (Visible >= 1024px) */}
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 h-[64px] text-[14px] font-medium text-slate-800 tracking-normal">
+            {/* Desktop Navigation Links */}
+            <nav className="hidden min-[900px]:flex items-center gap-4 lg:gap-6 xl:gap-8 h-16 text-[12px] lg:text-[13px] font-semibold text-slate-800 tracking-normal">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
                 return (
@@ -103,7 +103,7 @@ export default function Navbar() {
                 href="https://pmb.upitra.ac.id"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-[36px] px-5 ml-2 inline-flex items-center justify-center rounded-full bg-[#FCCB0C] hover:bg-[#F2C900] text-slate-900 font-bold text-xs sm:text-[13px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+                className="h-6 px-3.5 ml-1 inline-flex items-center justify-center rounded-lg bg-[#FCCB0C] hover:bg-[#F2C900] text-slate-900 font-bold text-[10px] lg:text-[11px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Daftar Sekarang</span>
               </Link>
@@ -114,7 +114,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Navigation Menu"
               aria-expanded={mobileMenuOpen}
-              className="cursor-pointer lg:hidden p-2 rounded-xl text-slate-700 hover:text-[#006bbd] hover:bg-slate-50 transition-colors"
+              className="cursor-pointer min-[900px]:hidden p-2 rounded-xl text-slate-700 hover:text-[#006bbd] hover:bg-slate-50 transition-colors"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -130,7 +130,7 @@ export default function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="lg:hidden bg-white border-b border-slate-200 shadow-xl overflow-hidden px-6 py-5 space-y-4 max-h-[calc(100vh-64px)] overflow-y-auto"
+              className="min-[900px]:hidden bg-white border-b border-slate-200 shadow-xl overflow-hidden px-6 py-5 space-y-4 max-h-[calc(100vh-64px)] overflow-y-auto"
             >
               <div className="space-y-1">
                 {navLinks.map((link) => (
