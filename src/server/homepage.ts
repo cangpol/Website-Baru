@@ -52,6 +52,7 @@ const homepageWavesSchema = z.object({
     id: z.string().trim().min(1).max(80),
     title: z.string().trim().min(1).max(150),
     benefit: z.string().trim().min(1).max(300),
+    badge: z.string().trim().max(80).optional(),
     image: imageUrlSchema,
     link: safeUrlSchema,
   })).max(12),
@@ -116,7 +117,15 @@ export async function getHomepageContent() {
 
     return {
       hero: hero.success ? hero.data : defaultHomepageHero,
-      waves: waves.success ? waves.data : defaultHomepageWaves,
+      waves: waves.success
+        ? {
+            ...waves.data,
+            waves: waves.data.waves.map((wave, index) => ({
+              ...wave,
+              badge: wave.badge ?? (index === 0 ? "Limited" : ""),
+            })),
+          }
+        : defaultHomepageWaves,
       stats: stats.success ? stats.data : defaultHomepageStats,
       instagram: instagram.success ? instagram.data : defaultHomepageInstagram,
       cta: cta.success ? cta.data : defaultHomepageCta,

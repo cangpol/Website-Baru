@@ -443,6 +443,21 @@ export default function AdminHalamanDepanPage() {
                   </div>
 
                   <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Label Kartu (opsional)</label>
+                    <input
+                      type="text"
+                      value={wave.badge ?? ""}
+                      onChange={(e) => {
+                        const updated = [...waves.waves];
+                        updated[index].badge = e.target.value;
+                        setWaves({ ...waves, waves: updated });
+                      }}
+                      placeholder="Contoh: Limited"
+                      className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white"
+                    />
+                  </div>
+
+                  <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">Tautan Pendaftaran</label>
                     <input
                       type="text"

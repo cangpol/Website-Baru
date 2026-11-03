@@ -21,6 +21,7 @@ export interface AdmissionWaveItem {
   id: string;
   title: string;
   benefit: string;
+  badge?: string;
   image: string;
   link: string;
 }
@@ -39,6 +40,7 @@ export const defaultHomepageWaves: HomepageWaves = {
       id: "ready-early",
       title: "Ready Early",
       benefit: "Beasiswa 100% DPP & SKS",
+      badge: "Limited",
       image: "/images/pmb/wave-ready-early-hq.jpg",
       link: "https://pmb.upitra.ac.id",
     },
@@ -182,4 +184,3 @@ export const defaultHomepageVisibility: HomepageVisibility = {
   instagram: true,
   cta: true,
 };
-

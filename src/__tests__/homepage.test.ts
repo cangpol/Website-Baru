@@ -90,4 +90,33 @@ describe("Homepage content", () => {
 
     expect(content.waves).toEqual(expect.objectContaining({ waves: expect.any(Array) }));
   });
+
+  it("adds the default card badge to legacy homepage data without changing explicit edits", async () => {
+    const storedWaves = {
+      title: "Selamat Datang di UPITRA",
+      subtitle: "Gelombang pendaftaran yang sedang kami buka.",
+      waves: [{
+        id: "ready-early",
+        title: "Ready Early",
+        benefit: "Beasiswa 100% DPP & SKS",
+        image: "/images/pmb/wave-ready-early-hq.jpg",
+        link: "https://pmb.upitra.ac.id",
+      }],
+    };
+    const mockStoredWaves = (value: unknown) => {
+      vi.mocked(prisma.siteSetting.findUnique)
+        .mockReset()
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ value } as never)
+        .mockResolvedValue(null);
+    };
+
+    mockStoredWaves(storedWaves);
+    const legacyContent = await getHomepageContent();
+    expect(legacyContent.waves.waves[0].badge).toBe("Limited");
+
+    mockStoredWaves({ ...storedWaves, waves: [{ ...storedWaves.waves[0], badge: "" }] });
+    const editedContent = await getHomepageContent();
+    expect(editedContent.waves.waves[0].badge).toBe("");
+  });
 });
