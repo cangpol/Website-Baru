@@ -1,24 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { HomepageStats, defaultHomepageStats } from "@/lib/homepageData";
 
-interface MetricItem {
-  id: string;
-  value: string;
-  label: string;
-}
+export default function UpitraDalamAngka({ initialData }: { initialData?: HomepageStats }) {
+  const [statsData, setStatsData] = useState<HomepageStats>(initialData || defaultHomepageStats);
 
-const metrics: MetricItem[] = [
-  { id: "mahasiswa", value: "600+", label: "Mahasiswa Aktif" },
-  { id: "fakultas", value: "4", label: "Fakultas" },
-  { id: "prodi", value: "10", label: "Program Studi" },
-  { id: "dosen", value: "65+", label: "Dosen & Peneliti" },
-  { id: "riset", value: "1200+", label: "Riset & Publikasi" },
-  { id: "lulusan", value: "85%", label: "Lulusan Bekerja dalam 6 Bulan" },
-];
+  useEffect(() => {
+    if (!initialData) {
+      fetch("/api/homepage")
+        .then((res) => res.json())
+        .then((json) => {
+          if (json?.ok && json.data?.stats) {
+            setStatsData(json.data.stats);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialData]);
 
-export default function UpitraDalamAngka() {
   return (
     <section 
       className="w-full bg-[#cce1f2] py-12 sm:py-16 lg:py-18 overflow-hidden select-none"
@@ -37,7 +39,7 @@ export default function UpitraDalamAngka() {
           >
             <div className="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[340px] h-[400px] sm:h-[460px] lg:h-[500px] drop-shadow-[0_10px_25px_rgba(0,107,189,0.15)]">
               <Image
-                src="/images/upitra-student-achiever.png"
+                src={statsData.studentCutoutImage || "/images/upitra-student-achiever.png"}
                 alt="Mahasiswi Berprestasi Universitas Pignatelli Triputra"
                 fill
                 priority
@@ -59,18 +61,18 @@ export default function UpitraDalamAngka() {
               className="text-center lg:text-right space-y-1.5"
             >
               <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-black text-[#006bbd] tracking-tight font-sans">
-                UPITRA Dalam Angka
+                {statsData.title}
               </h2>
               <p className="text-xs sm:text-sm lg:text-[14.5px] text-slate-600 font-medium font-sans">
-                Beberapa prestasi & capaian kami dalam 4 tahun terakhir.
+                {statsData.subtitle}
               </p>
             </motion.div>
 
             {/* 6 Cards Grid (3 Columns x 2 Rows) */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-5">
-              {metrics.map((item, index) => (
+              {statsData.metrics.map((item, index) => (
                 <motion.div
-                  key={item.id}
+                  key={item.id || index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}

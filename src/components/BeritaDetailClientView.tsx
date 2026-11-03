@@ -18,7 +18,9 @@ import {
   MessageCircle,
   GraduationCap,
   Eye,
-  AlertCircle
+  AlertCircle,
+  Download,
+  FileText
 } from "lucide-react";
 
 interface BeritaDetailClientViewProps {
@@ -249,6 +251,39 @@ export default function BeritaDetailClientView({
                 className="prose prose-slate max-w-none text-sm sm:text-base text-slate-700 leading-relaxed [&>p]:mb-4 [&>p]:leading-relaxed [&>p]:text-justify [&>p:first-child]:font-medium [&>p:first-child]:text-slate-900 [&>p:first-child]:text-base sm:[&>p:first-child]:text-lg [&_img]:rounded-2xl [&_img]:shadow-md [&_img]:my-6 [&_img]:mx-auto [&_img]:w-full [&_img]:max-w-2xl [&_img]:object-cover [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-2xl [&_iframe]:my-6 [&_table]:w-full [&_table]:my-6 [&_table]:border-collapse [&_td]:p-2"
                 dangerouslySetInnerHTML={{ __html: String(article.content || "") }}
               />
+            )}
+
+            {/* Attachment Box if article has attachment */}
+            {article.attachmentUrl && (
+              <div className="rounded-2xl bg-gradient-to-r from-blue-50/90 to-sky-50/70 border border-blue-200/90 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-blue-600/10 text-blue-700 flex items-center justify-center shrink-0 border border-blue-300/60">
+                    <FileText className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-600 text-white inline-block mb-1">
+                      Lampiran Dokumen Resmi
+                    </span>
+                    <h4 className="text-sm font-bold text-slate-900 leading-tight">
+                      {article.attachmentName || "Berkas Lampiran Publikasi Riset"}
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Ukuran berkas: {article.attachmentSize || "Dokumen PDF"} • Dokumen pendukung publikasi UPITRA
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={article.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={article.attachmentName || "Lampiran-Riset.pdf"}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 transition-all shrink-0 cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Unduh Dokumen</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
             )}
 
             {/* Pull Quote */}

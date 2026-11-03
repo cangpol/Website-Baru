@@ -9,6 +9,9 @@ export interface NewsArticle {
   categoryLabel: string;
   coverImage: string;
   imageCaption?: string;
+  attachmentUrl?: string;
+  attachmentName?: string;
+  attachmentSize?: string;
   publishedDate: string; // ISO standard format: "YYYY-MM-DD" untuk pengurutan presisi
   publishedAt: string;   // Label ramah pengguna: "15 Oktober 2026"
   readTime: string;

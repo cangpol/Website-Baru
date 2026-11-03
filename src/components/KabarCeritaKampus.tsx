@@ -4,87 +4,29 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ExternalLink, CheckCircle2 } from "lucide-react";
-import type { InstagramPost } from "@/app/api/instagram/route";
+import { CheckCircle2 } from "lucide-react";
+import { HomepageInstagram, defaultHomepageInstagram } from "@/lib/homepageData";
 
-const initialPosts: InstagramPost[] = [
-  {
-    id: "ig_post_01",
-    caption: "✨ Prestasi Mahasiswa UPITRA dalam ajang kompetisi nasional 2026.",
-    mediaUrl: "/images/instagram/ig-1.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-28T10:30:00Z",
-    timeAgo: "1 hari yang lalu",
-    likeCount: 384,
-    commentCount: 42,
-    category: "PRESTASI MAHASISWA",
-  },
-  {
-    id: "ig_post_02",
-    caption: "🎓 Kegiatan kampus dan perkuliahan interaktif mahasiswa UPITRA.",
-    mediaUrl: "/images/instagram/ig-2.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-25T14:15:00Z",
-    timeAgo: "4 hari yang lalu",
-    likeCount: 512,
-    commentCount: 39,
-    category: "KEGIATAN KAMPUS",
-  },
-  {
-    id: "ig_post_03",
-    caption: "🔥 Info Beasiswa PMB UPITRA 2026 potongan UKT & DPP hingga 100%.",
-    mediaUrl: "/images/instagram/ig-3.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-22T09:00:00Z",
-    timeAgo: "6 hari yang lalu",
-    likeCount: 890,
-    commentCount: 95,
-    category: "INFO BEASISWA PMB",
-  },
-  {
-    id: "ig_post_04",
-    caption: "📚 Fasilitas kampus modern, laboratorium komputer, dan perpustakaan digital.",
-    mediaUrl: "/images/instagram/ig-4.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-20T08:20:00Z",
-    timeAgo: "1 minggu yang lalu",
-    likeCount: 256,
-    commentCount: 15,
-    category: "FASILITAS KAMPUS",
-  },
-  {
-    id: "ig_post_05",
-    caption: "🤝 Kemitraan industri strategis dengan puluhan unit bisnis Triputra Group.",
-    mediaUrl: "/images/instagram/ig-5.jpg",
-    permalink: "https://www.instagram.com/upitra_campus/",
-    timestamp: "2026-10-15T13:45:00Z",
-    timeAgo: "2 minggu yang lalu",
-    likeCount: 420,
-    commentCount: 28,
-    category: "KEMITRAAN INDUSTRI",
-  },
-];
+export default function KabarCeritaKampus({ initialData }: { initialData?: HomepageInstagram }) {
+  const [igData, setIgData] = useState<HomepageInstagram>(initialData || defaultHomepageInstagram);
+  const [posts, setPosts] = useState<any[]>(() => (initialData?.posts ? initialData.posts : defaultHomepageInstagram.posts));
 
-export default function KabarCeritaKampus() {
-  const [posts, setPosts] = useState<InstagramPost[]>(initialPosts);
-
-  // Connect dynamically to Instagram Basic Display API endpoint
+  // Connect dynamically to Instagram data via homepage API
   useEffect(() => {
-    async function loadFeed() {
-      try {
-        const res = await fetch("/api/instagram");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.posts && Array.isArray(data.posts) && data.posts.length > 0) {
-            setPosts(data.posts.slice(0, 5));
+    if (!initialData) {
+      fetch("/api/homepage")
+        .then((res) => res.json())
+        .then((json) => {
+          if (json?.ok && json.data?.instagram) {
+            setIgData(json.data.instagram);
+            if (Array.isArray(json.data.instagram.posts) && json.data.instagram.posts.length > 0) {
+              setPosts(json.data.instagram.posts);
+            }
           }
-        }
-      } catch {
-        // Graceful fallback to initial posts
-      }
+        })
+        .catch(() => {});
     }
-    loadFeed();
-  }, []);
+  }, [initialData]);
 
   return (
     <section 
@@ -102,10 +44,10 @@ export default function KabarCeritaKampus() {
           className="text-center space-y-2 mb-10 sm:mb-12"
         >
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-black text-[#006bbd] tracking-tight font-sans uppercase">
-            KABAR & CERITA KAMPUS
+            {igData.title}
           </h2>
           <p className="text-xs sm:text-sm lg:text-[14.5px] text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-            Ikuti dinamika kehidupan mahasiswa, pengumuman beasiswa, serta sivitas akademika langsung dari postingan terbaru Instagram @upitra_campus.
+            {igData.subtitle}
           </p>
         </motion.div>
 
@@ -120,42 +62,45 @@ export default function KabarCeritaKampus() {
               transition={{ duration: 0.45, delay: idx * 0.08 }}
             >
               <Link
-                href={post.permalink || "https://www.instagram.com/upitra_campus/"}
+                href={post.permalink || igData.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative block aspect-[125/171] w-full rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 border border-white/60 bg-slate-900"
+                className="group block relative aspect-square rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-slate-900 border border-white/60"
               >
-                {/* Background Post Photo */}
+                {/* Background Image */}
                 <Image
                   src={post.mediaUrl}
-                  alt={post.caption || "Instagram post UPITRA"}
+                  alt={post.caption || post.category}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                  className="object-cover group-hover:scale-108 transition-transform duration-500 pointer-events-none"
                 />
 
-                {/* Top-Left Category Badge */}
-                <span className="absolute top-2.5 left-2.5 bg-slate-900/80 backdrop-blur-xs text-white text-[9px] sm:text-[9.5px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider z-10 shadow-xs">
-                  {post.category || "UPITRA"}
-                </span>
+                {/* Dark Gradient Overlay for readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent pointer-events-none" />
 
-                {/* Bottom-Right Time Ago Badge */}
-                <span className="absolute bottom-2.5 right-2.5 bg-slate-900/80 backdrop-blur-xs text-white text-[8.5px] sm:text-[9px] font-medium px-2 py-0.5 rounded-md z-10 shadow-xs">
-                  {post.timeAgo || "Terbaru"}
-                </span>
+                {/* Top Category Tag (Figma 1440x662 Spec: Rounded pill, black translucent background) */}
+                <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex justify-start">
+                  <span className="px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-xs text-[9px] sm:text-[10px] font-bold text-white uppercase tracking-wider font-sans border border-white/10">
+                    {post.category}
+                  </span>
+                </div>
 
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-blue-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-[#006bbd] shadow-md transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                    <ExternalLink className="w-4 h-4" />
-                  </div>
+                {/* Bottom Timestamp & External Arrow Icon on hover */}
+                <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex items-center justify-between text-white/90">
+                  <span className="text-[10px] sm:text-[11px] font-medium text-slate-200">
+                    {post.timeAgo}
+                  </span>
+                  <span className="text-white/60 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-xs">
+                    ↗
+                  </span>
                 </div>
               </Link>
             </motion.div>
           ))}
         </div>
 
-        {/* Bottom Card: Official Instagram Account Banner */}
+        {/* Bottom Banner Card: Direct Profile Link to @upitra_campus */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -177,7 +122,7 @@ export default function KabarCeritaKampus() {
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-sm sm:text-base text-slate-900 font-sans">
-                  @upitra_campus
+                  {igData.handle}
                 </span>
                 <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500 text-white shrink-0" />
               </div>
@@ -189,7 +134,7 @@ export default function KabarCeritaKampus() {
 
           {/* Right: Direct Profile Link */}
           <Link
-            href="https://www.instagram.com/upitra_campus/"
+            href={igData.profileUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#006bbd] hover:underline hover:text-blue-700 transition-colors shrink-0"
@@ -203,4 +148,3 @@ export default function KabarCeritaKampus() {
     </section>
   );
 }
-

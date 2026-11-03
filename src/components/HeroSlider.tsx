@@ -1,10 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { HomepageHero, defaultHomepageHero } from "@/lib/homepageData";
 
-export default function HeroSlider() {
+export default function HeroSlider({ initialData }: { initialData?: HomepageHero }) {
+  const [hero, setHero] = useState<HomepageHero>(initialData || defaultHomepageHero);
+
+  useEffect(() => {
+    if (!initialData) {
+      fetch("/api/homepage")
+        .then((res) => res.json())
+        .then((json) => {
+          if (json?.ok && json.data?.hero) {
+            setHero(json.data.hero);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialData]);
+
   return (
     <section 
       className="relative w-full bg-slate-950 flex justify-center overflow-hidden select-none" 
@@ -20,7 +37,7 @@ export default function HeroSlider() {
         {/* Background Campus Photo with next/image priority */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <Image
-            src="/images/hero-campus.jpg"
+            src={hero.imageUrl || "/images/hero-campus.jpg"}
             alt="Empat Mahasiswa Universitas Pignatelli Triputra di Kampus - Campus to Career"
             fill
             priority
@@ -57,11 +74,9 @@ export default function HeroSlider() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-              className="text-3xl sm:text-5xl lg:text-[56px] font-black text-white tracking-tight leading-[1.12] drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)] font-sans"
+              className="text-3xl sm:text-5xl lg:text-[56px] font-black text-white tracking-tight leading-[1.12] drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)] font-sans whitespace-pre-line"
             >
-              Universitas<br />
-              Pignatelli Triputra<br />
-              Campus to Career
+              {hero.title}
             </motion.h1>
 
             <motion.p 
@@ -70,7 +85,7 @@ export default function HeroSlider() {
               transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
               className="text-sm sm:text-base lg:text-[15.5px] text-white leading-relaxed font-normal max-w-[430px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]"
             >
-              Temukan program studi, kembangkan potensimu, dan dapatkan pekerjaan sebelum lulus kuliah di Universitas Pignatelli Triputra.
+              {hero.subtitle}
             </motion.p>
           </div>
 
@@ -81,12 +96,12 @@ export default function HeroSlider() {
             transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
           >
             <Link
-              href="https://pmb.upitra.ac.id"
+              href={hero.ctaHref || "https://pmb.upitra.ac.id"}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-[#FED406] hover:bg-[#F2C900] text-slate-900 font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
             >
-              Daftar Sekarang
+              {hero.ctaLabel || "Daftar Sekarang"}
             </Link>
           </motion.div>
         </motion.div>

@@ -47,6 +47,15 @@ interface SidebarItem {
 
 const sidebarNavigation: SidebarItem[] = [
   {
+    id: "halaman-depan",
+    groupTitle: "BERANDA",
+    label: "Halaman Depan",
+    href: "/admin/halaman-depan",
+    icon: LayoutDashboard,
+    badge: "Utama",
+    badgeColor: "bg-blue-500/20 text-sky-200 border-blue-400/30",
+  },
+  {
     id: "beranda",
     groupTitle: "BERANDA",
     label: "Hero & Banner",

@@ -1,42 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { HomepageWaves, defaultHomepageWaves } from "@/lib/homepageData";
 
-interface AdmissionWave {
-  id: string;
-  title: string;
-  benefit: string;
-  image: string;
-  link: string;
-}
+export default function WelcomeAdmissionWaves({ initialData }: { initialData?: HomepageWaves }) {
+  const [wavesData, setWavesData] = useState<HomepageWaves>(initialData || defaultHomepageWaves);
 
-const admissionWaves: AdmissionWave[] = [
-  {
-    id: "ready-early",
-    title: "Ready Early",
-    benefit: "Beasiswa 100% DPP & SKS",
-    image: "/images/pmb/wave-ready-early-hq.jpg",
-    link: "https://pmb.upitra.ac.id",
-  },
-  {
-    id: "ready-achievement",
-    title: "Ready Achievement",
-    benefit: "Beasiswa hingga 100% DPP & SKS",
-    image: "/images/pmb/wave-ready-achievement-hq.jpg",
-    link: "https://pmb.upitra.ac.id",
-  },
-  {
-    id: "ready-admission",
-    title: "Ready Admission",
-    benefit: "Beasiswa hingga 100% Uang DPP",
-    image: "/images/pmb/wave-ready-admission-hq.jpg",
-    link: "https://pmb.upitra.ac.id",
-  },
-];
+  useEffect(() => {
+    if (!initialData) {
+      fetch("/api/homepage")
+        .then((res) => res.json())
+        .then((json) => {
+          if (json?.ok && json.data?.waves) {
+            setWavesData(json.data.waves);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialData]);
 
-export default function WelcomeAdmissionWaves() {
   return (
     <section 
       className="w-full bg-white py-14 sm:py-18 lg:py-20 select-none border-b border-slate-100" 
@@ -53,25 +38,25 @@ export default function WelcomeAdmissionWaves() {
           className="text-center space-y-2 mb-10 sm:mb-12 lg:mb-14"
         >
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-black text-[#006bbd] tracking-tight font-sans">
-            Selamat Datang di UPITRA
+            {wavesData.title}
           </h2>
           <p className="text-sm sm:text-base text-slate-500 font-medium">
-            Gelombang pendaftaran yang sedang kami buka.
+            {wavesData.subtitle}
           </p>
         </motion.div>
 
         {/* 3 Admission Wave Cards (1440x679 Frame Specification) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {admissionWaves.map((wave, index) => (
+          {wavesData.waves.map((wave, index) => (
             <motion.div
-              key={wave.id}
+              key={wave.id || index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <Link
-                href={wave.link}
+                href={wave.link || "https://pmb.upitra.ac.id"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group block bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden hover:-translate-y-1 cursor-pointer"
@@ -79,7 +64,7 @@ export default function WelcomeAdmissionWaves() {
                 {/* Photo Header */}
                 <div className="relative aspect-[16/10.5] w-full overflow-hidden bg-slate-100">
                   <Image
-                    src={wave.image}
+                    src={wave.image || "/images/pmb/wave-ready-early-hq.jpg"}
                     alt={`${wave.title} - ${wave.benefit}`}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"

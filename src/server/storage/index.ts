@@ -20,3 +20,4 @@ export function getStorageDriver(): StorageDriver {
 export * from "./types";
 export * from "./local";
 export * from "./vercel-blob";
+export * from "./cleanup";

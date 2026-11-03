@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { 
   Newspaper, 
   Microscope, 
@@ -13,28 +15,31 @@ import {
   X, 
   ExternalLink,
   Calendar,
-  User,
-  Share2,
   AlertCircle,
   FileText,
-  Award,
   BookOpen,
-  ImagePlus,
-  UploadCloud,
-  ImageIcon,
-  Upload,
-  Globe
+  Globe,
+  Sparkles,
+  Download,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
-import Image from "next/image";
 import RichEditor from "@/components/admin/RichEditor";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { FileUploadField } from "@/components/admin/FileUploadField";
 import { 
   getAllAdminArticles,
   saveArticleAction,
   softDeleteArticleAction,
   getRisetPublications,
   saveRisetPublicationsAction,
-  RisetPublicationItem
+  getRisetPortals,
+  saveRisetPortalsAction,
+  RisetPublicationItem,
+  RisetPortalsConfig,
+  ArticleInput
 } from "@/server/articles";
+import { getPageHeaderBanner, savePageHeaderBannerAction } from "@/server/hero";
 
 export interface AdminArticleItem {
   id: string;
@@ -42,24 +47,24 @@ export interface AdminArticleItem {
   slug: string;
   category: string;
   authorName: string;
-  author?: string;
   publishedAt: string | null;
   createdAt: string;
   summary: string;
   content: string;
   coverImage: string;
+  attachmentUrl?: string | null;
+  attachmentName?: string | null;
+  attachmentSize?: string | null;
   published: boolean;
-  viewCount?: number;
   version: number;
 }
 
-export type AdminRisetSection = RisetPublicationItem;
-
 const newsCategories = [
   "Semua",
+  "Riset",
   "Berita Kampus",
   "Prestasi",
-  "Inovasi & Riset",
+  "Inovasi",
   "Pengumuman",
   "Kegiatan",
   "Akademik",
@@ -71,563 +76,595 @@ const emptyNewsForm: AdminArticleItem = {
   id: "",
   title: "",
   slug: "",
-  category: "Berita Kampus",
+  category: "Riset",
   summary: "",
   content: "",
-  coverImage: "/images/ar-vr.jpg",
-  authorName: "Humas UPITRA",
-  author: "Humas UPITRA",
+  coverImage: "/images/kegiatan.jpg",
+  attachmentUrl: null,
+  attachmentName: null,
+  attachmentSize: null,
+  authorName: "Humas & LPPM UPITRA",
   published: true,
-  publishedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+  publishedAt: new Date().toISOString().split("T")[0],
   createdAt: new Date().toISOString(),
-  viewCount: 1,
   version: 1,
 };
 
 export default function AdminRisetPage() {
-  const [activeTab, setActiveTab] = useState<"berita" | "publikasi">("berita");
+  const [activeTab, setActiveTab] = useState<"berita" | "banner_profil" | "publikasi">("berita");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "error" | "info">("info");
 
-  // ── 1. BERITA STATE & LOGIC ────────────────────────────────────────────────
+  const showToast = (msg: string, type: "success" | "error" | "info" = "info") => {
+    setToastMessage(msg);
+    setToastType(type);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // ── 1. BERITA & ARTIKEL STATE ──────────────────────────────────────────────
   const [articles, setArticles] = useState<AdminArticleItem[]>([]);
   const [newsSearch, setNewsSearch] = useState("");
   const [newsCategoryFilter, setNewsCategoryFilter] = useState("Semua");
   const [newsStatusFilter, setNewsStatusFilter] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
   const [newsModalOpen, setNewsModalOpen] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<AdminArticleItem | null>(null);
   const [newsForm, setNewsForm] = useState<AdminArticleItem>(emptyNewsForm);
   const [deleteNewsId, setDeleteNewsId] = useState<string | null>(null);
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [showManualCoverUrl, setShowManualCoverUrl] = useState(false);
+  const [isSubmittingArticle, setIsSubmittingArticle] = useState(false);
+  const [manualSlugMode, setManualSlugMode] = useState(false);
 
-  const handleCoverFileUpload = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      alert("Berkas yang dipilih harus berupa foto/gambar (JPG, PNG, WebP).");
-      return;
-    }
-    setCoverFile(file);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      if (result) {
-        setNewsForm((prev) => ({ ...prev, coverImage: result }));
-      }
-    };
-    reader.readAsDataURL(file);
-  };
+  // ── 2. HEADER BANNER & PROFIL LPPM STATE ───────────────────────────────────
+  const [bannerForm, setBannerForm] = useState({
+    title: "Riset & Publikasi",
+    description: "LPPM Lembaga Penelitian & Pengabdian Universitas Pignatelli Triputra sebagai tempat keilmuan dan riset terapan untuk menjawab kebutuhan nyata industri modern.",
+    imageUrl: "/images/kegiatan.jpg",
+  });
+  const [portalsForm, setPortalsForm] = useState<RisetPortalsConfig>({
+    lppmUrl: "https://lppm.upitra.ac.id",
+    jurnalUrl: "https://jurnal.upitra.ac.id",
+    description: "LPPM UPITRA memfasilitasi penelitian berorientasi hilirisasi industri bersama ekosistem Triputra Group serta pengabdian masyarakat berbasis teknologi tepat guna di wilayah Surakarta dan sekitarnya.",
+  });
+  const [isSavingBanner, setIsSavingBanner] = useState(false);
+  const [isSavingPortals, setIsSavingPortals] = useState(false);
 
-  const handleRemoveCover = () => {
-    setCoverFile(null);
-    setNewsForm((prev) => ({ ...prev, coverImage: "" }));
-  };
-
-  // ── 2. PUBLIKASI RISET STATE & LOGIC ──────────────────────────────────────
-  const [risetItems, setRisetItems] = useState<AdminRisetSection[]>([]);
-  const [risetSearch, setRisetSearch] = useState("");
-  const [risetFacultyFilter, setRisetFacultyFilter] = useState("ALL");
-  const [risetModalOpen, setRisetModalOpen] = useState(false);
-  const [editingRiset, setEditingRiset] = useState<AdminRisetSection | null>(null);
-  const [risetFormData, setRisetFormData] = useState({
+  // ── 3. PUBLIKASI JURNAL STATE ──────────────────────────────────────────────
+  const [publications, setPublications] = useState<RisetPublicationItem[]>([]);
+  const [pubModalOpen, setPubModalOpen] = useState(false);
+  const [editingPub, setEditingPub] = useState<RisetPublicationItem | null>(null);
+  const [pubForm, setPubForm] = useState<RisetPublicationItem>({
+    id: "",
     title: "",
     researcher: "",
     faculty: "Fakultas Sains & Teknologi",
     journalName: "",
-    indexedIn: "Scopus" as AdminRisetSection["indexedIn"],
+    indexedIn: "Scopus",
     year: 2026,
     doiOrUrl: "",
     abstractText: "",
   });
-  const [deleteRisetId, setDeleteRisetId] = useState<string | null>(null);
 
-  // ── Load from Database ───────────────────────────────────────────────────
+  // Load Data
   const loadData = async () => {
     try {
-      const [news, riset] = await Promise.all([
+      const [articlesData, bannerData, portalsData, pubsData] = await Promise.all([
         getAllAdminArticles(),
+        getPageHeaderBanner("riset"),
+        getRisetPortals(),
         getRisetPublications(),
       ]);
-      setArticles(news);
-      setRisetItems(riset);
+
+      setArticles(articlesData as AdminArticleItem[]);
+
+      if (bannerData) {
+        setBannerForm({
+          title: bannerData.title || "Riset & Publikasi",
+          description: bannerData.description || "",
+          imageUrl: bannerData.imageUrl || "/images/kegiatan.jpg",
+        });
+      }
+
+      if (portalsData) {
+        setPortalsForm(portalsData);
+      }
+
+      if (pubsData) {
+        setPublications(pubsData);
+      }
     } catch (err) {
-      console.error("Error loading articles from DB:", err);
+      console.error("Error loading riset admin data:", err);
+      showToast("Gagal memuat data riset.", "error");
     }
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const tab = params.get("tab");
-      if (tab === "publikasi" || tab === "jurnal") {
-        setActiveTab("publikasi");
-      }
-    }
     loadData();
   }, []);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+  // Filtered & Paginated Articles
+  const filteredArticles = useMemo(() => {
+    return articles.filter((a) => {
+      const matchSearch =
+        a.title.toLowerCase().includes(newsSearch.toLowerCase()) ||
+        a.slug.toLowerCase().includes(newsSearch.toLowerCase()) ||
+        (a.summary && a.summary.toLowerCase().includes(newsSearch.toLowerCase()));
+
+      const matchCategory =
+        newsCategoryFilter === "Semua" || a.category.toLowerCase() === newsCategoryFilter.toLowerCase();
+
+      const matchStatus =
+        newsStatusFilter === "ALL"
+          ? true
+          : newsStatusFilter === "PUBLISHED"
+          ? a.published === true
+          : a.published === false;
+
+      return matchSearch && matchCategory && matchStatus;
+    });
+  }, [articles, newsSearch, newsCategoryFilter, newsStatusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / pageSize));
+  const paginatedArticles = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredArticles.slice(start, start + pageSize);
+  }, [filteredArticles, currentPage, pageSize]);
+
+  // Reset to page 1 on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [newsSearch, newsCategoryFilter, newsStatusFilter]);
+
+  // Handle Open Create Article
+  const handleOpenCreateArticle = () => {
+    setNewsForm(emptyNewsForm);
+    setManualSlugMode(false);
+    setNewsModalOpen(true);
   };
 
-  const saveRisetToStorage = async (updated: AdminRisetSection[]) => {
-    setRisetItems(updated);
-    try {
-      const res = await saveRisetPublicationsAction(updated);
-      if (res.ok) {
-        showToast(res.message);
-      } else {
-        alert(res.message);
-      }
-    } catch {
-      alert("Gagal menyimpan publikasi riset.");
+  // Handle Open Edit Article
+  const handleOpenEditArticle = (art: AdminArticleItem) => {
+    setNewsForm({
+      ...art,
+      publishedAt: art.publishedAt ? art.publishedAt.split("T")[0] : new Date().toISOString().split("T")[0],
+    });
+    setManualSlugMode(true);
+    setNewsModalOpen(true);
+  };
+
+  // Handle Title Change with Auto-Slug
+  const handleTitleChange = (newTitle: string) => {
+    if (!manualSlugMode && !newsForm.id) {
+      const generatedSlug = newTitle
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/[\s_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      setNewsForm((prev) => ({ ...prev, title: newTitle, slug: generatedSlug }));
+    } else {
+      setNewsForm((prev) => ({ ...prev, title: newTitle }));
     }
   };
 
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
-  };
-
-  // ── BERITA HANDLERS ────────────────────────────────────────────────────────
-  const handleOpenCreateNews = () => {
-    setEditingArticle(null);
-    setCoverFile(null);
-    setShowManualCoverUrl(false);
-    setNewsForm({
-      ...emptyNewsForm,
-      publishedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
-    });
-    setNewsModalOpen(true);
-  };
-
-  const handleOpenEditNews = (art: AdminArticleItem) => {
-    setEditingArticle(art);
-    setCoverFile(null);
-    setShowManualCoverUrl(false);
-    setNewsForm({ ...art });
-    setNewsModalOpen(true);
-  };
-
-  const handleSaveNews = async (e: React.FormEvent) => {
+  // Handle Save Article
+  const handleSaveArticle = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsForm.title.trim()) {
-      alert("Judul berita wajib diisi.");
+      showToast("Judul artikel wajib diisi.", "error");
+      return;
+    }
+    if (!newsForm.content.trim()) {
+      showToast("Konten isi artikel tidak boleh kosong.", "error");
       return;
     }
 
+    setIsSubmittingArticle(true);
     try {
-      const res = await saveArticleAction(editingArticle?.id || null, {
+      const payload: ArticleInput = {
         title: newsForm.title,
+        slug: newsForm.slug ? newsForm.slug.trim() : null,
         category: newsForm.category,
-        summary: newsForm.summary,
+        summary: newsForm.summary || null,
         content: newsForm.content,
-        coverImage: newsForm.coverImage,
+        coverImage: newsForm.coverImage || "/images/kegiatan.jpg",
+        attachmentUrl: newsForm.attachmentUrl || null,
+        attachmentName: newsForm.attachmentName || null,
+        attachmentSize: newsForm.attachmentSize || null,
         published: newsForm.published,
+        publishedAt: newsForm.publishedAt ? new Date(newsForm.publishedAt).toISOString() : null,
         version: newsForm.version || 1,
-      });
+      };
 
-      if (res.ok) {
+      const result = await saveArticleAction(newsForm.id ? newsForm.id : null, payload);
+      if (result.ok) {
+        showToast(result.message || "Artikel berhasil disimpan.", "success");
         setNewsModalOpen(false);
-        showToast(res.message || "Artikel berhasil disimpan ke database!");
         await loadData();
       } else {
-        alert(res.message || "Gagal menyimpan artikel.");
+        showToast(result.message || "Gagal menyimpan artikel.", "error");
       }
-    } catch (err) {
-      alert("Terjadi kesalahan sistem saat menyimpan artikel.");
+    } catch (err: any) {
+      showToast(err?.message || "Terjadi kesalahan saat menyimpan artikel.", "error");
+    } finally {
+      setIsSubmittingArticle(false);
     }
   };
 
-  const handleDeleteNews = async (id: string) => {
+  // Handle Delete Article
+  const handleDeleteArticle = async (id: string) => {
     try {
-      const res = await softDeleteArticleAction(id);
-      if (res.ok) {
+      const result = await softDeleteArticleAction(id);
+      if (result.ok) {
+        showToast(result.message || "Artikel berhasil dihapus.", "success");
         setDeleteNewsId(null);
-        showToast(res.message);
         await loadData();
       } else {
-        alert(res.message);
+        showToast(result.message || "Gagal menghapus artikel.", "error");
       }
-    } catch {
-      alert("Gagal menghapus artikel.");
+    } catch (err: any) {
+      showToast(err?.message || "Terjadi kesalahan saat menghapus artikel.", "error");
     }
   };
 
-  const togglePublishNews = async (id: string) => {
-    const art = articles.find((a) => a.id === id);
-    if (!art) return;
+  // Save Banner
+  const handleSaveBanner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingBanner(true);
     try {
-      const res = await saveArticleAction(id, {
-        title: art.title,
-        category: art.category,
-        summary: art.summary,
-        content: art.content,
-        coverImage: art.coverImage,
-        published: !art.published,
-        version: art.version || 1,
+      const res = await savePageHeaderBannerAction("riset", {
+        title: bannerForm.title,
+        description: bannerForm.description,
+        imageUrl: bannerForm.imageUrl,
       });
       if (res.ok) {
-        showToast("Status publikasi diperbarui.");
-        await loadData();
+        showToast(res.message || "Banner header riset berhasil diperbarui.", "success");
+      } else {
+        showToast(res.message || "Gagal menyimpan banner header.", "error");
       }
-    } catch {
-      showToast("Gagal memperbarui status publikasi.");
+    } catch (err: any) {
+      showToast(err?.message || "Gagal menyimpan banner header.", "error");
+    } finally {
+      setIsSavingBanner(false);
     }
   };
 
-  // ── PUBLIKASI RISET HANDLERS ──────────────────────────────────────────────
-  const handleOpenCreateRiset = () => {
-    setEditingRiset(null);
-    setRisetFormData({
+  // Save Portals
+  const handleSavePortals = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingPortals(true);
+    try {
+      const res = await saveRisetPortalsAction(portalsForm);
+      if (res.ok) {
+        showToast(res.message || "Pengaturan portal riset berhasil disimpan.", "success");
+      } else {
+        showToast(res.message || "Gagal menyimpan portal riset.", "error");
+      }
+    } catch (err: any) {
+      showToast(err?.message || "Gagal menyimpan portal riset.", "error");
+    } finally {
+      setIsSavingPortals(false);
+    }
+  };
+
+  // Publications Handlers
+  const handleOpenCreatePub = () => {
+    setEditingPub(null);
+    setPubForm({
+      id: `rst-${Date.now().toString().slice(-4)}`,
       title: "",
       researcher: "",
       faculty: "Fakultas Sains & Teknologi",
       journalName: "",
       indexedIn: "Scopus",
-      year: 2026,
+      year: new Date().getFullYear(),
       doiOrUrl: "",
       abstractText: "",
     });
-    setRisetModalOpen(true);
+    setPubModalOpen(true);
   };
 
-  const handleOpenEditRiset = (item: AdminRisetSection) => {
-    setEditingRiset(item);
-    setRisetFormData({
-      title: item.title,
-      researcher: item.researcher,
-      faculty: item.faculty,
-      journalName: item.journalName,
-      indexedIn: item.indexedIn,
-      year: item.year,
-      doiOrUrl: item.doiOrUrl,
-      abstractText: item.abstractText,
-    });
-    setRisetModalOpen(true);
+  const handleOpenEditPub = (item: RisetPublicationItem) => {
+    setEditingPub(item);
+    setPubForm(item);
+    setPubModalOpen(true);
   };
 
-  const handleSaveRiset = (e: React.FormEvent) => {
+  const handleSavePub = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!risetFormData.title.trim()) {
-      alert("Judul publikasi riset wajib diisi.");
-      return;
-    }
-
-    if (editingRiset) {
-      const updated = risetItems.map((r) =>
-        r.id === editingRiset.id ? { ...r, ...risetFormData } : r
-      );
-      saveRisetToStorage(updated);
-      showToast("Publikasi riset berhasil diperbarui!");
+    let updated: RisetPublicationItem[];
+    if (editingPub) {
+      updated = publications.map((p) => (p.id === editingPub.id ? pubForm : p));
     } else {
-      const newItem: AdminRisetSection = {
-        id: `rst-${Date.now()}`,
-        ...risetFormData,
-      };
-      saveRisetToStorage([newItem, ...risetItems]);
-      showToast("Publikasi riset baru berhasil ditambahkan!");
+      updated = [pubForm, ...publications];
     }
-    setRisetModalOpen(false);
+    const res = await saveRisetPublicationsAction(updated);
+    if (res.ok) {
+      setPublications(updated);
+      setPubModalOpen(false);
+      showToast(res.message || "Publikasi berhasil disimpan.", "success");
+    } else {
+      showToast(res.message || "Gagal menyimpan publikasi.", "error");
+    }
   };
 
-  const handleDeleteRiset = (id: string) => {
-    const updated = risetItems.filter((r) => r.id !== id);
-    saveRisetToStorage(updated);
-    setDeleteRisetId(null);
-    showToast("Publikasi riset berhasil dihapus.");
+  const handleDeletePub = async (id: string) => {
+    const updated = publications.filter((p) => p.id !== id);
+    const res = await saveRisetPublicationsAction(updated);
+    if (res.ok) {
+      setPublications(updated);
+      showToast("Publikasi berhasil dihapus.", "success");
+    } else {
+      showToast("Gagal menghapus publikasi.", "error");
+    }
   };
-
-  // ── Filtered Articles ─────────────────────────────────────────────────────
-  const filteredArticles = useMemo(() => {
-    return articles.filter((a) => {
-      const matchSearch =
-        a.title.toLowerCase().includes(newsSearch.toLowerCase()) ||
-        a.summary.toLowerCase().includes(newsSearch.toLowerCase());
-      const matchCat = newsCategoryFilter === "Semua" || a.category === newsCategoryFilter;
-      const matchStatus =
-        newsStatusFilter === "ALL" ||
-        (newsStatusFilter === "Published" && a.published) ||
-        (newsStatusFilter === "Draft" && !a.published);
-      return matchSearch && matchCat && matchStatus;
-    });
-  }, [articles, newsSearch, newsCategoryFilter, newsStatusFilter]);
-
-  const totalViews = useMemo(() => {
-    return articles.reduce((acc, curr) => acc + (curr.viewCount || 0), 0);
-  }, [articles]);
-
-  // ── Filtered Riset Items ──────────────────────────────────────────────────
-  const filteredRisetItems = useMemo(() => {
-    return risetItems.filter((item) => {
-      const matchFaculty = risetFacultyFilter === "ALL" || item.faculty.includes(risetFacultyFilter);
-      const matchSearch =
-        item.title.toLowerCase().includes(risetSearch.toLowerCase()) ||
-        item.researcher.toLowerCase().includes(risetSearch.toLowerCase()) ||
-        item.journalName.toLowerCase().includes(risetSearch.toLowerCase());
-      return matchFaculty && matchSearch;
-    });
-  }, [risetItems, risetSearch, risetFacultyFilter]);
 
   return (
-    <div className="space-y-6">
-      
+    <div className="space-y-8 max-w-7xl mx-auto pb-16 font-sans">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-950/30 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+        <div
+          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold transition-all animate-in slide-in-from-top-4 ${
+            toastType === "success"
+              ? "bg-emerald-600 text-white"
+              : toastType === "error"
+              ? "bg-rose-600 text-white"
+              : "bg-[#0b2545] text-white"
+          }`}
+        >
+          {toastType === "success" ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-rose-200" />
+          )}
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Banner: Executive Blue & White UPITRA */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-3 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200/80 uppercase tracking-wider">
-              Pusat Publikasi &amp; Riset
+      {/* Header Halaman */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+              CMS Riset &amp; Inovasi
             </span>
-            <span className="text-xs text-slate-500 font-medium">
-              {activeTab === "berita" ? `${articles.length} Berita Kampus` : `${risetItems.length} Publikasi Riset`}
-            </span>
+            <span className="text-xs text-slate-400 font-medium">|</span>
+            <span className="text-xs text-slate-500 font-semibold">LPPM UPITRA</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight flex items-center gap-2.5">
-            {activeTab === "berita" ? (
-              <>
-                <Newspaper className="w-7 h-7 text-blue-600" />
-                Manajemen Berita Kampus
-              </>
-            ) : (
-              <>
-                <Microscope className="w-7 h-7 text-blue-600" />
-                Publikasi &amp; Jurnal Ilmiah
-              </>
-            )}
+          <h1 className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
+            Manajemen Riset, Artikel &amp; Publikasi
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
-            {activeTab === "berita"
-              ? "Kelola publikasi siaran pers, prestasi mahasiswa, rilis kemitraan, kegiatan fakultas, dan artikel edukasi resmi UPITRA."
-              : "Arsip dan indeksasi jurnal ilmiah bereputasi Scopus, SINTA, IEEE, dan prosiding hasil penelitian sivitas akademika UPITRA."}
+          <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
+            Kelola publikasi ilmiah, artikel riset sivitas akademika, berkas lampiran resmi, pengaturan banner LPPM, serta tautan portal jurnal.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {activeTab === "berita" ? (
+        <div className="flex items-center gap-3">
+          <Link
+            href="/riset"
+            target="_blank"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+          >
+            <Eye className="w-4 h-4 text-slate-500" />
+            <span>Lihat Halaman Publik</span>
+            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+          </Link>
+
+          {activeTab === "berita" && (
             <button
-              onClick={handleOpenCreateNews}
-              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+              onClick={handleOpenCreateArticle}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Tulis Berita Baru</span>
+              <span>Tulis Artikel / Riset Baru</span>
             </button>
-          ) : (
+          )}
+
+          {activeTab === "publikasi" && (
             <button
-              onClick={handleOpenCreateRiset}
-              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+              onClick={handleOpenCreatePub}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Tambah Jurnal Riset</span>
+              <span>Tambah Publikasi Jurnal</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Navigation Submenu Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      {/* Navigasi Tab */}
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
         <button
           onClick={() => setActiveTab("berita")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === "berita"
-              ? "bg-blue-600 text-white shadow-xs"
-              : "text-slate-600 hover:text-[#06172e] hover:bg-slate-100"
+              ? "bg-[#0b2545] text-white shadow-md"
+              : "text-slate-600 hover:bg-slate-100"
           }`}
         >
           <Newspaper className="w-4 h-4" />
-          <span>Berita</span>
-          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === "berita" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
+          <span>Berita &amp; Artikel Riset</span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white">
             {articles.length}
           </span>
         </button>
 
         <button
-          onClick={() => setActiveTab("publikasi")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-            activeTab === "publikasi"
-              ? "bg-blue-600 text-white shadow-xs"
-              : "text-slate-600 hover:text-[#06172e] hover:bg-slate-100"
+          onClick={() => setActiveTab("banner_profil")}
+          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
+            activeTab === "banner_profil"
+              ? "bg-[#0b2545] text-white shadow-md"
+              : "text-slate-600 hover:bg-slate-100"
           }`}
         >
-          <Microscope className="w-4 h-4" />
-          <span>Publikasi Riset &amp; Jurnal</span>
-          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === "publikasi" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
-            {risetItems.length}
+          <Sparkles className="w-4 h-4" />
+          <span>Header Banner &amp; Portal LPPM</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("publikasi")}
+          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
+            activeTab === "publikasi"
+              ? "bg-[#0b2545] text-white shadow-md"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <BookOpen className="w-4 h-4" />
+          <span>Publikasi Jurnal &amp; Riset Terapan</span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700">
+            {publications.length}
           </span>
         </button>
       </div>
 
-      {/* ──────────────── TAB 1: BERITA KAMPUS CRUD ──────────────── */}
+      {/* ========================================================================= */}
+      {/* TAB 1: BERITA & ARTIKEL RISET */}
+      {/* ========================================================================= */}
       {activeTab === "berita" && (
-        <div className="space-y-5">
-          {/* KPI Counters */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Berita</div>
-              <div className="text-2xl font-black text-[#06172e] mt-1">{articles.length}</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">Seluruh artikel tercatat</div>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Terbit (Live)</div>
-              <div className="text-2xl font-black text-emerald-600 mt-1">
-                {articles.filter((a) => a.published).length}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">Dapat dibaca publik</div>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-amber-600">Draf / Simpan</div>
-              <div className="text-2xl font-black text-amber-600 mt-1">
-                {articles.filter((a) => !a.published).length}
-              </div>
-              <div className="text-[10px] text-slate-400 mt-0.5">Belum dipublikasikan</div>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Total Pembaca</div>
-              <div className="text-2xl font-black text-blue-600 mt-1">{totalViews.toLocaleString("id-ID")}</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">Akumulasi views artikel</div>
-            </div>
-          </div>
-
-          {/* Search & Filter Toolbar */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="space-y-6">
+          {/* Filter & Pencarian Bar */}
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="relative flex-1 w-full sm:w-auto">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Cari judul berita atau ringkasan topik..."
+                placeholder="Cari berdasarkan judul, slug, atau ringkasan riset..."
                 value={newsSearch}
                 onChange={(e) => setNewsSearch(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 pl-9 pr-4 py-2 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
               />
             </div>
 
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto shrink-0">
+              {/* Filter Kategori */}
               <select
                 value={newsCategoryFilter}
                 onChange={(e) => setNewsCategoryFilter(e.target.value)}
-                className="w-full sm:w-44 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-500 focus:bg-white"
+                className="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs text-slate-700 font-semibold focus:outline-none focus:border-blue-500"
               >
                 {newsCategories.map((c) => (
-                  <option key={c} value={c}>{c === "Semua" ? "Semua Kategori" : c}</option>
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
 
+              {/* Filter Status */}
               <select
                 value={newsStatusFilter}
                 onChange={(e) => setNewsStatusFilter(e.target.value)}
-                className="w-full sm:w-36 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-500 focus:bg-white"
+                className="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs text-slate-700 font-semibold focus:outline-none focus:border-blue-500"
               >
                 <option value="ALL">Semua Status</option>
-                <option value="Published">Published (Live)</option>
-                <option value="Draft">Draft</option>
+                <option value="PUBLISHED">Diterbitkan (Published)</option>
+                <option value="DRAFT">Draf (Draft)</option>
               </select>
             </div>
           </div>
 
-          {/* Table List of Articles */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+          {/* Tabel Artikel */}
+          <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+              <table className="w-full text-left text-xs text-slate-600">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 uppercase tracking-wider text-[11px] font-bold">
                   <tr>
-                    <th className="py-3.5 px-4 w-12 text-center">No</th>
-                    <th className="py-3.5 px-4">Artikel &amp; Ringkasan</th>
-                    <th className="py-3.5 px-4">Kategori</th>
-                    <th className="py-3.5 px-4">Penulis &amp; Tanggal</th>
-                    <th className="py-3.5 px-4 text-center">Views</th>
-                    <th className="py-3.5 px-4 text-center">Status</th>
-                    <th className="py-3.5 px-4 text-right">Aksi</th>
+                    <th className="py-4 px-5">Artikel &amp; Cover</th>
+                    <th className="py-4 px-4">Kategori</th>
+                    <th className="py-4 px-4">Lampiran Berkas</th>
+                    <th className="py-4 px-4">Tanggal Terbit</th>
+                    <th className="py-4 px-4 text-center">Status</th>
+                    <th className="py-4 px-5 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {filteredArticles.length === 0 ? (
+                <tbody className="divide-y divide-slate-100">
+                  {paginatedArticles.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-12 text-center text-slate-400">
-                        Tidak ada artikel berita yang cocok dengan kriteria pencarian.
+                      <td colSpan={6} className="py-12 text-center text-slate-400">
+                        Tidak ada artikel riset yang sesuai dengan kriteria pencarian.
                       </td>
                     </tr>
                   ) : (
-                    filteredArticles.map((art, idx) => (
-                      <tr key={art.id} className="hover:bg-blue-50/40 transition-colors">
-                        <td className="py-3.5 px-4 text-center font-bold text-slate-400">
-                          {idx + 1}
+                    paginatedArticles.map((art) => (
+                      <tr key={art.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-4 px-5">
+                          <div className="flex items-start gap-3.5">
+                            <div className="relative w-16 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                              <Image
+                                src={art.coverImage || "/images/kegiatan.jpg"}
+                                alt={art.title}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                            <div className="space-y-0.5">
+                              <div className="font-bold text-slate-900 text-sm line-clamp-1 hover:text-blue-600">
+                                {art.title}
+                              </div>
+                              <div className="text-[11px] text-slate-400 font-mono">
+                                /riset/{art.slug}
+                              </div>
+                              {art.summary && (
+                                <p className="text-xs text-slate-500 line-clamp-1">
+                                  {art.summary}
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         </td>
-                        <td className="py-3.5 px-4 max-w-sm">
-                          <div className="font-bold text-[#06172e] flex items-center gap-1.5 line-clamp-1">
-                            <span>{art.title}</span>
-                          </div>
-                          <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">
-                            {art.summary}
-                          </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              /{art.slug}
-                            </span>
-                            <a
-                              href={`/riset/${art.slug}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[10px] text-blue-600 hover:underline inline-flex items-center gap-0.5 font-semibold"
-                            >
-                              <span>Lihat</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-4">
+                        <td className="py-4 px-4">
                           <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                             {art.category}
                           </span>
                         </td>
-                        <td className="py-3.5 px-4">
-                          <div className="text-xs font-semibold text-slate-800 flex items-center gap-1">
-                            <User className="w-3 h-3 text-blue-600" />
-                            <span>{art.author || "Humas UPITRA"}</span>
-                          </div>
-                          <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
-                            <Calendar className="w-3 h-3" />
-                            <span>{art.publishedAt}</span>
-                          </div>
+                        <td className="py-4 px-4">
+                          {art.attachmentUrl ? (
+                            <a
+                              href={art.attachmentUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold hover:bg-emerald-100 transition-colors"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                              <span className="truncate max-w-[120px]">
+                                {art.attachmentName || "Berkas"}
+                              </span>
+                            </a>
+                          ) : (
+                            <span className="text-slate-400 text-[11px] italic">Tidak ada lampiran</span>
+                          )}
                         </td>
-                        <td className="py-3.5 px-4 text-center">
-                          <span className="text-xs font-bold text-slate-700">
-                            {art.viewCount ?? 0}
-                          </span>
+                        <td className="py-4 px-4 font-medium text-slate-700">
+                          {art.publishedAt ? art.publishedAt.split("T")[0] : art.createdAt.split("T")[0]}
                         </td>
-                        <td className="py-3.5 px-4 text-center">
-                          <button
-                            onClick={() => togglePublishNews(art.id)}
-                            title="Klik untuk ubah status"
-                            className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-colors cursor-pointer ${
+                        <td className="py-4 px-4 text-center">
+                          <span
+                            className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
                               art.published
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
-                                : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-amber-50 text-amber-700 border-amber-200"
                             }`}
                           >
                             {art.published ? "Published" : "Draft"}
-                          </button>
+                          </span>
                         </td>
-                        <td className="py-3.5 px-4 text-right">
+                        <td className="py-4 px-5 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            <Link
+                              href={`/riset/${art.slug}`}
+                              target="_blank"
+                              title="Lihat Halaman Publik"
+                              className="p-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Link>
                             <button
-                              onClick={() => handleOpenEditNews(art)}
-                              title="Edit Berita"
+                              onClick={() => handleOpenEditArticle(art)}
+                              title="Edit Artikel"
                               className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
                             >
                               <Edit3 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => setDeleteNewsId(art.id)}
-                              title="Hapus Berita"
+                              title="Hapus Artikel"
                               className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -640,101 +677,235 @@ export default function AdminRisetPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 bg-slate-50/50">
+                <div>
+                  Menampilkan {Math.min(filteredArticles.length, (currentPage - 1) * pageSize + 1)} -{" "}
+                  {Math.min(filteredArticles.length, currentPage * pageSize)} dari total{" "}
+                  <strong>{filteredArticles.length}</strong> artikel
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentPage(idx + 1)}
+                      className={`w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        currentPage === idx + 1
+                          ? "bg-blue-600 text-white shadow-xs"
+                          : "hover:bg-slate-100 text-slate-700"
+                      }`}
+                    >
+                      {idx + 1}
+                    </button>
+                  ))}
+                  <button
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* ──────────────── TAB 2: PUBLIKASI RISET & JURNAL ──────────────── */}
-      {activeTab === "publikasi" && (
-        <div className="space-y-5">
-          {/* Search & Faculty Filter */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Cari judul riset, nama peneliti, atau nama jurnal..."
-                value={risetSearch}
-                onChange={(e) => setRisetSearch(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 pl-9 pr-4 py-2 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-              />
+      {/* ========================================================================= */}
+      {/* TAB 2: HEADER BANNER & PORTAL LPPM */}
+      {/* ========================================================================= */}
+      {activeTab === "banner_profil" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Form Banner Header */}
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+            <div className="border-b border-slate-100 pb-4">
+              <h2 className="text-xl font-black text-[#06172e]">
+                Header Banner Halaman /riset
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Atur judul, deskripsi pengantar, dan foto cover latar belakang header riset.
+              </p>
             </div>
 
-            <select
-              value={risetFacultyFilter}
-              onChange={(e) => setRisetFacultyFilter(e.target.value)}
-              className="w-full sm:w-56 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-500 focus:bg-white"
-            >
-              <option value="ALL">Semua Fakultas</option>
-              <option value="Sains & Teknologi">Fakultas Sains &amp; Teknologi</option>
-              <option value="Ekonomi & Bisnis">Fakultas Ekonomi &amp; Bisnis</option>
-              <option value="Sosial Humaniora">Fakultas Sosial Humaniora</option>
-              <option value="Kesehatan">Fakultas Kesehatan</option>
-            </select>
+            <form onSubmit={handleSaveBanner} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Judul Utama Banner
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={bannerForm.title}
+                  onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-slate-800 text-sm font-bold focus:outline-none focus:border-blue-500 focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Deskripsi / Subjudul Banner
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={bannerForm.description}
+                  onChange={(e) => setBannerForm({ ...bannerForm, description: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 text-xs focus:outline-none focus:border-blue-500 focus:bg-white"
+                />
+              </div>
+
+              <ImageUploadField
+                label="Foto Cover Latar Belakang (1440 x 480 px)"
+                value={bannerForm.imageUrl}
+                onChange={(url) => setBannerForm({ ...bannerForm, imageUrl: url })}
+                recommendedSize="1440 x 480 piksel"
+              />
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isSavingBanner}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingBanner ? "Menyimpan..." : "Simpan Banner Header"}
+                </button>
+              </div>
+            </form>
           </div>
 
-          {/* Cards List for Research Publications */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredRisetItems.map((item) => (
+          {/* Form Portal Eksternal LPPM & Jurnal */}
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+            <div className="border-b border-slate-100 pb-4">
+              <h2 className="text-xl font-black text-[#06172e]">
+                Pengaturan Portal LPPM &amp; Jurnal Ilmiah
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Atur tautan menuju situs resmi LPPM dan OJS Jurnal Ilmiah UPITRA.
+              </p>
+            </div>
+
+            <form onSubmit={handleSavePortals} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  URL Website Portal LPPM
+                </label>
+                <input
+                  type="url"
+                  required
+                  value={portalsForm.lppmUrl}
+                  onChange={(e) => setPortalsForm({ ...portalsForm, lppmUrl: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-slate-800 text-xs font-mono focus:outline-none focus:border-blue-500 focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  URL Portal Jurnal Ilmiah (OJS)
+                </label>
+                <input
+                  type="url"
+                  required
+                  value={portalsForm.jurnalUrl}
+                  onChange={(e) => setPortalsForm({ ...portalsForm, jurnalUrl: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-slate-800 text-xs font-mono focus:outline-none focus:border-blue-500 focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Deskripsi Profil Riset LPPM
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={portalsForm.description}
+                  onChange={(e) => setPortalsForm({ ...portalsForm, description: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 text-xs focus:outline-none focus:border-blue-500 focus:bg-white leading-relaxed"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isSavingPortals}
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingPortals ? "Menyimpan..." : "Simpan Tautan Portal"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 3: PUBLIKASI JURNAL & RISET TERAPAN */}
+      {/* ========================================================================= */}
+      {activeTab === "publikasi" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {publications.map((item) => (
               <div
                 key={item.id}
-                className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow"
+                className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xs flex flex-col justify-between space-y-4 hover:shadow-md transition-all"
               >
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                      {item.faculty}
+                  <div className="flex items-center justify-between">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      {item.indexedIn}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                      {item.indexedIn} • {item.year}
-                    </span>
+                    <span className="text-xs text-slate-400 font-bold">Tahun {item.year}</span>
                   </div>
 
-                  <h3 className="font-bold text-[#06172e] text-sm leading-snug">
+                  <h3 className="text-base font-bold text-[#0b2545] leading-snug">
                     {item.title}
                   </h3>
 
-                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                    {item.abstractText}
-                  </p>
-
-                  <div className="pt-2 border-t border-slate-100 text-xs text-slate-500 space-y-1">
-                    <div className="flex items-center gap-1 font-medium text-slate-700">
-                      <User className="w-3.5 h-3.5 text-blue-600" />
-                      <span>{item.researcher}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px]">
-                      <BookOpen className="w-3.5 h-3.5 text-slate-400" />
-                      <span className="italic">{item.journalName}</span>
-                    </div>
+                  <div className="text-xs text-slate-600 space-y-1">
+                    <p><strong>Peneliti:</strong> {item.researcher}</p>
+                    <p><strong>Fakultas:</strong> {item.faculty}</p>
+                    <p><strong>Jurnal:</strong> {item.journalName}</p>
                   </div>
+
+                  {item.abstractText && (
+                    <p className="text-xs text-slate-500 leading-relaxed italic line-clamp-3">
+                      &ldquo;{item.abstractText}&rdquo;
+                    </p>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between pt-4 mt-4 border-t border-slate-100">
-                  {item.doiOrUrl ? (
-                    <a
-                      href={item.doiOrUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 font-bold hover:underline inline-flex items-center gap-1"
-                    >
-                      <span>Buka DOI / URL</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  ) : <span />}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <a
+                    href={item.doiOrUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-700 font-bold inline-flex items-center gap-1"
+                  >
+                    <span>Buka DOI / Jurnal</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
 
                   <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => handleOpenEditRiset(item)}
+                      onClick={() => handleOpenEditPub(item)}
                       className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
-                      title="Edit Jurnal"
                     >
                       <Edit3 className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => setDeleteRisetId(item.id)}
+                      onClick={() => handleDeletePub(item.id)}
                       className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
-                      title="Hapus Jurnal"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -746,66 +917,83 @@ export default function AdminRisetPage() {
         </div>
       )}
 
-      {/* ──────────────── MODAL FORM TAMBAH / EDIT BERITA ──────────────── */}
+      {/* ========================================================================= */}
+      {/* MODAL TAMBAH / EDIT ARTIKEL */}
+      {/* ========================================================================= */}
       {newsModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl p-6 sm:p-7">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#06172e] flex items-center gap-2">
-                  <Newspaper className="w-5 h-5 text-blue-600" />
-                  <span>{editingArticle ? "Edit Berita Kampus" : "Tulis Berita Baru"}</span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Publikasikan informasi, kabar gembira, atau rilis pers resmi Universitas Pignatelli Triputra.
-                </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200 shrink-0">
+                  <Newspaper className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-[#06172e]">
+                    {newsForm.id ? "Edit Artikel / Riset" : "Tulis Artikel / Riset Baru"}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Lengkapi judul, slug, cover, lampiran dokumen, dan isi artikel dengan rich text editor.
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setNewsModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveNews} className="space-y-4 pt-4 text-xs sm:text-sm">
+            <form onSubmit={handleSaveArticle} className="p-6 overflow-y-auto space-y-4 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Judul Berita *</label>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Judul Artikel / Riset *
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="Misal: Lulusan UPITRA Sukses Raih Karir Global di Triputra Group"
+                  placeholder="Misal: Inovasi Pemanfaatan Artificial Intelligence pada Industri Manufaktur"
                   value={newsForm.title}
-                  onChange={(e) => {
-                    const title = e.target.value;
-                    setNewsForm({
-                      ...newsForm,
-                      title,
-                      slug: editingArticle ? newsForm.slug : generateSlug(title),
-                    });
-                  }}
-                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white"
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-slate-800 text-xs font-semibold focus:outline-none focus:border-blue-500 focus:bg-white"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Slug URL (SEO)</label>
+              {/* Slug Field dengan Toggle Otomatis / Manual */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-bold text-slate-700">
+                    Slug URL Halaman *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setManualSlugMode(!manualSlugMode)}
+                    className="text-[11px] text-blue-600 hover:underline font-semibold cursor-pointer"
+                  >
+                    {manualSlugMode ? "Beralih ke Auto-Slug" : "Ubah Manual Slug"}
+                  </button>
+                </div>
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 focus-within:border-blue-500 focus-within:bg-white">
+                  <span className="text-slate-400 font-mono text-[11px] shrink-0">/riset/</span>
                   <input
                     type="text"
                     required
-                    placeholder="lulusan-upitra-sukses-raih-karir"
+                    readOnly={!manualSlugMode}
+                    placeholder="slug-artikel-otomatis"
                     value={newsForm.slug}
-                    onChange={(e) => setNewsForm({ ...newsForm, slug: generateSlug(e.target.value) })}
-                    className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 font-mono text-xs focus:outline-none focus:border-blue-500 focus:bg-white"
+                    onChange={(e) => setNewsForm({ ...newsForm, slug: e.target.value })}
+                    className="w-full bg-transparent border-0 px-1 py-2 rounded-xl text-slate-800 font-mono text-xs focus:outline-none"
                   />
                 </div>
+              </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Kategori Berita *</label>
+                  <label className="block font-bold text-slate-700 mb-1">Kategori *</label>
                   <select
                     value={newsForm.category}
-                    onChange={(e) => setNewsForm({ ...newsForm, category: e.target.value as any })}
+                    onChange={(e) => setNewsForm({ ...newsForm, category: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
                   >
                     {newsCategories.filter((c) => c !== "Semua").map((c) => (
@@ -813,188 +1001,75 @@ export default function AdminRisetPage() {
                     ))}
                   </select>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Tanggal Rilis</label>
+                  <label className="block font-bold text-slate-700 mb-1">Status Publikasi *</label>
+                  <select
+                    value={newsForm.published ? "true" : "false"}
+                    onChange={(e) => setNewsForm({ ...newsForm, published: e.target.value === "true" })}
+                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-bold"
+                  >
+                    <option value="true">Diterbitkan (Published)</option>
+                    <option value="false">Simpan sebagai Draf (Draft)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Tanggal Terbit</label>
                   <input
-                    type="text"
-                    placeholder="28 Okt 2026"
+                    type="date"
                     value={newsForm.publishedAt || ""}
                     onChange={(e) => setNewsForm({ ...newsForm, publishedAt: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
                   />
                 </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Penulis / Sumber</label>
-                  <input
-                    type="text"
-                    placeholder="Humas UPITRA"
-                    value={newsForm.author}
-                    onChange={(e) => setNewsForm({ ...newsForm, author: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Status Publikasi</label>
-                  <select
-                    value={newsForm.published ? "1" : "0"}
-                    onChange={(e) => setNewsForm({ ...newsForm, published: e.target.value === "1" })}
-                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
-                  >
-                    <option value="1">Published (Terbit Live)</option>
-                    <option value="0">Draft (Tersimpan Saja)</option>
-                  </select>
-                </div>
               </div>
 
-              {/* ── COVER IMAGE DIRECT PHOTO UPLOAD WITH INSTANT PREVIEW ── */}
+              {/* Cover Image Upload */}
+              <ImageUploadField
+                label="Foto Sampul Artikel (Cover Image)"
+                value={newsForm.coverImage}
+                onChange={(url) => setNewsForm({ ...newsForm, coverImage: url })}
+                recommendedSize="1200 x 675 piksel (16:9)"
+                helperText="Format gambar JPEG, PNG, atau WebP. Maksimal 5 MB."
+              />
+
+              {/* File Upload Lampiran */}
+              <FileUploadField
+                label="Lampiran Berkas Resmi / Dokumen Riset (Opsional)"
+                value={newsForm.attachmentUrl}
+                onChange={(url) => setNewsForm({ ...newsForm, attachmentUrl: url })}
+                fileName={newsForm.attachmentName || ""}
+                onFileNameChange={(name) => setNewsForm({ ...newsForm, attachmentName: name })}
+                fileSize={newsForm.attachmentSize || ""}
+                onFileSizeChange={(size) => setNewsForm({ ...newsForm, attachmentSize: size })}
+                helperText="Format PDF atau dokumen resmi. Maksimal 20 MB."
+              />
+
+              {/* Ringkasan Singkat */}
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block font-bold text-slate-700">
-                    Foto Cover / Gambar Thumbnail *
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowManualCoverUrl(!showManualCoverUrl)}
-                    className="text-xs text-blue-600 hover:underline font-semibold cursor-pointer"
-                  >
-                    {showManualCoverUrl ? "← Upload Berkas Foto" : "Atau masukkan URL gambar"}
-                  </button>
-                </div>
-
-                {showManualCoverUrl ? (
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      placeholder="https://... atau /images/ar-vr.jpg"
-                      value={newsForm.coverImage}
-                      onChange={(e) => setNewsForm({ ...newsForm, coverImage: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white text-xs sm:text-sm"
-                    />
-                    {newsForm.coverImage && (
-                      <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-blue-50/60 border border-blue-200/80">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={newsForm.coverImage}
-                          alt="Pratinjau Cover"
-                          className="h-16 w-24 rounded-xl object-cover border border-blue-300 shadow-2xs"
-                          onError={(e) => { (e.target as HTMLImageElement).src = "/images/ar-vr.jpg"; }}
-                        />
-                        <div className="text-xs">
-                          <span className="font-bold text-[#06172e] block">Pratinjau Foto URL:</span>
-                          <span className="text-slate-500 text-[11px] truncate block max-w-md">{newsForm.coverImage}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="space-y-2.5">
-                    {newsForm.coverImage ? (
-                      <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-blue-50/50 border border-blue-200/80 shadow-2xs">
-                        <div className="flex items-center gap-3 min-w-0">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={newsForm.coverImage}
-                            alt="Pratinjau Cover"
-                            className="h-16 w-24 rounded-xl object-cover border border-blue-300 shrink-0 shadow-2xs"
-                            onError={(e) => { (e.target as HTMLImageElement).src = "/images/ar-vr.jpg"; }}
-                          />
-                          <div className="text-xs min-w-0">
-                            <span className="font-bold text-[#06172e] block truncate">
-                              {coverFile ? coverFile.name : "Foto Cover Aktif"}
-                            </span>
-                            <span className="text-slate-500 text-[11px]">
-                              {coverFile
-                                ? `${(coverFile.size / 1024 / 1024).toFixed(2)} MB • Siap disimpan`
-                                : "Gambar sampul yang akan ditampilkan di artikel dan beranda"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <label className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-blue-600 border border-slate-200 hover:bg-blue-50 transition-colors cursor-pointer shadow-2xs">
-                            <Upload className="w-3.5 h-3.5" />
-                            <span>Ganti</span>
-                            <input
-                              type="file"
-                              accept="image/jpeg,image/png,image/jpg,image/webp"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) handleCoverFileUpload(file);
-                                e.target.value = "";
-                              }}
-                            />
-                          </label>
-                          <button
-                            type="button"
-                            onClick={handleRemoveCover}
-                            className="p-1.5 rounded-xl text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors cursor-pointer"
-                            title="Hapus Foto"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-blue-200 hover:border-blue-400 bg-blue-50/30 hover:bg-blue-50/60 rounded-2xl cursor-pointer transition-all group">
-                        <div className="w-10 h-10 rounded-xl bg-blue-100/80 text-blue-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-                          <UploadCloud className="w-5 h-5" />
-                        </div>
-                        <span className="text-xs font-bold text-[#06172e] mt-2">
-                          Klik untuk upload foto cover berita
-                        </span>
-                        <span className="text-[11px] text-slate-500 mt-0.5">
-                          Format PNG, JPG, JPEG, atau WebP (Maksimal 10MB)
-                        </span>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/jpg,image/webp"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleCoverFileUpload(file);
-                            e.target.value = "";
-                          }}
-                        />
-                      </label>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Ringkasan Singkat (Excerpt) *</label>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Ringkasan Eksekutif (Excerpt / Summary)
+                </label>
                 <textarea
                   rows={2}
-                  required
-                  placeholder="Ringkasan 1-2 kalimat pengantar berita untuk ditampilkan di kartu cuplikan..."
+                  placeholder="Ringkasan 1-2 kalimat pengantar artikel yang tampil pada kartu pratinjau..."
                   value={newsForm.summary}
                   onChange={(e) => setNewsForm({ ...newsForm, summary: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white leading-relaxed"
                 />
               </div>
 
-              {/* ── KONTEN LENGKAP BERITA DENGAN RICH TEXT EDITOR (FOTO UTUH) ── */}
+              {/* Rich Text Editor Konten */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block font-bold text-slate-700">
-                    Konten Lengkap Berita
-                  </label>
-                  <span className="text-[11px] text-blue-600 font-semibold flex items-center gap-1">
-                    <ImageIcon className="w-3.5 h-3.5" />
-                    <span>Dapat menyisipkan foto utuh via tombol &quot;Upload Foto&quot;</span>
-                  </span>
-                </div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Isi Konten Lengkap Artikel (Rich Text Editor) *
+                </label>
                 <RichEditor
                   value={newsForm.content}
                   onChange={(content) => setNewsForm({ ...newsForm, content })}
-                  height={380}
-                  placeholder="Tuliskan isi berita selengkapnya di sini. Gunakan tombol 'Upload Foto' di toolbar atas untuk menambahkan foto utuh ke dalam artikel..."
+                  height={240}
+                  placeholder="Tuliskan naskah lengkap artikel, metodologi riset, temuan inovasi, atau liputan kegiatan kampus..."
                 />
               </div>
 
@@ -1008,9 +1083,10 @@ export default function AdminRisetPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xs transition-colors cursor-pointer"
+                  disabled={isSubmittingArticle}
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  Simpan Berita
+                  {isSubmittingArticle ? "Menyimpan Artikel..." : "Simpan Artikel"}
                 </button>
               </div>
             </form>
@@ -1018,54 +1094,51 @@ export default function AdminRisetPage() {
         </div>
       )}
 
-      {/* ──────────────── MODAL FORM TAMBAH / EDIT RISET ──────────────── */}
-      {risetModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl p-6">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <h3 className="text-lg font-bold text-[#06172e] flex items-center gap-2">
-                <Microscope className="w-5 h-5 text-blue-600" />
-                <span>{editingRiset ? "Edit Jurnal Riset" : "Tambah Jurnal Riset Baru"}</span>
+      {/* MODAL TAMBAH / EDIT PUBLIKASI JURNAL */}
+      {pubModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-lg font-black text-[#06172e]">
+                {editingPub ? "Edit Publikasi Jurnal" : "Tambah Publikasi Jurnal"}
               </h3>
               <button
-                onClick={() => setRisetModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                onClick={() => setPubModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveRiset} className="space-y-4 pt-4 text-xs sm:text-sm">
+            <form onSubmit={handleSavePub} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Judul Riset Ilmiah *</label>
+                <label className="block font-bold text-slate-700 mb-1">Judul Karya / Publikasi *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Judul paper penelitian..."
-                  value={risetFormData.title}
-                  onChange={(e) => setRisetFormData({ ...risetFormData, title: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white"
+                  value={pubForm.title}
+                  onChange={(e) => setPubForm({ ...pubForm, title: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 font-semibold focus:outline-none focus:border-blue-500 focus:bg-white"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Nama Peneliti</label>
+                  <label className="block font-bold text-slate-700 mb-1">Nama Peneliti *</label>
                   <input
                     type="text"
                     required
-                    placeholder="Nama dosen & tim peneliti..."
-                    value={risetFormData.researcher}
-                    onChange={(e) => setRisetFormData({ ...risetFormData, researcher: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
+                    value={pubForm.researcher}
+                    onChange={(e) => setPubForm({ ...pubForm, researcher: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Fakultas</label>
+                  <label className="block font-bold text-slate-700 mb-1">Fakultas *</label>
                   <select
-                    value={risetFormData.faculty}
-                    onChange={(e) => setRisetFormData({ ...risetFormData, faculty: e.target.value })}
+                    value={pubForm.faculty}
+                    onChange={(e) => setPubForm({ ...pubForm, faculty: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
                   >
                     <option value="Fakultas Sains & Teknologi">Fakultas Sains &amp; Teknologi</option>
@@ -1076,79 +1149,83 @@ export default function AdminRisetPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Nama Jurnal</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block font-bold text-slate-700 mb-1">Nama Jurnal Ilmiah *</label>
                   <input
                     type="text"
-                    placeholder="IEEE, JRMBT, dll"
-                    value={risetFormData.journalName}
-                    onChange={(e) => setRisetFormData({ ...risetFormData, journalName: e.target.value })}
+                    required
+                    value={pubForm.journalName}
+                    onChange={(e) => setPubForm({ ...pubForm, journalName: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Indeksasi</label>
+                  <label className="block font-bold text-slate-700 mb-1">Indeksasi *</label>
                   <select
-                    value={risetFormData.indexedIn}
-                    onChange={(e) => setRisetFormData({ ...risetFormData, indexedIn: e.target.value as any })}
+                    value={pubForm.indexedIn}
+                    onChange={(e) => setPubForm({ ...pubForm, indexedIn: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
                   >
                     <option value="Scopus">Scopus</option>
                     <option value="SINTA 1">SINTA 1</option>
                     <option value="SINTA 2">SINTA 2</option>
-                    <option value="IEEE">IEEE</option>
-                    <option value="Prosiding">Prosiding</option>
+                    <option value="SINTA 3">SINTA 3</option>
+                    <option value="Internasional">Internasional</option>
+                    <option value="Nasional Terakreditasi">Nasional Terakreditasi</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Tahun Publikasi *</label>
+                  <input
+                    type="number"
+                    required
+                    value={pubForm.year}
+                    onChange={(e) => setPubForm({ ...pubForm, year: Number(e.target.value) })}
+                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
+                  />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Tahun Terbit</label>
+                  <label className="block font-bold text-slate-700 mb-1">DOI / Tautan Artikel *</label>
                   <input
-                    type="number"
-                    value={risetFormData.year}
-                    onChange={(e) => setRisetFormData({ ...risetFormData, year: parseInt(e.target.value) || 2026 })}
-                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
+                    type="url"
+                    required
+                    placeholder="https://doi.org/..."
+                    value={pubForm.doiOrUrl}
+                    onChange={(e) => setPubForm({ ...pubForm, doiOrUrl: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 font-mono text-[11px] focus:outline-none focus:border-blue-500 focus:bg-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">DOI / Link Tautan Paper</label>
-                <input
-                  type="text"
-                  placeholder="https://doi.org/..."
-                  value={risetFormData.doiOrUrl}
-                  onChange={(e) => setRisetFormData({ ...risetFormData, doiOrUrl: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Abstrak Singkat</label>
+                <label className="block font-bold text-slate-700 mb-1">Abstrak / Rincian Riset</label>
                 <textarea
                   rows={3}
-                  placeholder="Ringkasan abstrak riset..."
-                  value={risetFormData.abstractText}
-                  onChange={(e) => setRisetFormData({ ...risetFormData, abstractText: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
+                  value={pubForm.abstractText}
+                  onChange={(e) => setPubForm({ ...pubForm, abstractText: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white leading-relaxed"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setRisetModalOpen(false)}
+                  onClick={() => setPubModalOpen(false)}
                   className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xs transition-colors cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-xs transition-colors cursor-pointer"
                 >
-                  Simpan Jurnal
+                  Simpan Publikasi
                 </button>
               </div>
             </form>
@@ -1156,36 +1233,28 @@ export default function AdminRisetPage() {
         </div>
       )}
 
-      {/* ──────────────── MODAL KONFIRMASI HAPUS ──────────────── */}
-      {(deleteNewsId || deleteRisetId) && (
+      {/* MODAL KONFIRMASI HAPUS ARTIKEL */}
+      {deleteNewsId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md shadow-2xl p-6 text-center space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 mx-auto flex items-center justify-center">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#06172e]">
-                {deleteNewsId ? "Hapus Berita Kampus?" : "Hapus Publikasi Riset?"}
-              </h3>
+              <h3 className="text-lg font-bold text-[#06172e]">Hapus Artikel Riset?</h3>
               <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Tindakan ini tidak dapat dibatalkan. Data yang dihapus akan hilang dari sistem dan website.
+                Artikel ini akan dipindahkan ke kotak sampah dan tidak lagi tampil di halaman publik /riset.
               </p>
             </div>
             <div className="flex items-center justify-center gap-2.5 pt-2">
               <button
-                onClick={() => {
-                  setDeleteNewsId(null);
-                  setDeleteRisetId(null);
-                }}
+                onClick={() => setDeleteNewsId(null)}
                 className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
               >
                 Batal
               </button>
               <button
-                onClick={() => {
-                  if (deleteNewsId) handleDeleteNews(deleteNewsId);
-                  if (deleteRisetId) handleDeleteRiset(deleteRisetId);
-                }}
+                onClick={() => handleDeleteArticle(deleteNewsId)}
                 className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
               >
                 Hapus Sekarang
@@ -1194,7 +1263,6 @@ export default function AdminRisetPage() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

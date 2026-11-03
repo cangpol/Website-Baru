@@ -1,9 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { HomepageCta, defaultHomepageCta } from "@/lib/homepageData";
 
-export default function CtaReadyFamily() {
+export default function CtaReadyFamily({ initialData }: { initialData?: HomepageCta }) {
+  const [ctaData, setCtaData] = useState<HomepageCta>(initialData || defaultHomepageCta);
+
+  useEffect(() => {
+    if (!initialData) {
+      fetch("/api/homepage")
+        .then((res) => res.json())
+        .then((json) => {
+          if (json?.ok && json.data?.cta) {
+            setCtaData(json.data.cta);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialData]);
+
   return (
     <section 
       className="w-full bg-white py-16 sm:py-20 lg:py-24 select-none border-b border-slate-100" 
@@ -19,7 +36,7 @@ export default function CtaReadyFamily() {
           transition={{ duration: 0.45 }}
           className="text-xs sm:text-[13px] font-bold text-[#006bbd] uppercase tracking-[0.12em] font-sans mb-3 sm:mb-4"
         >
-          SIAP JADI KELUARGA UPITRA?
+          {ctaData.eyebrow}
         </motion.span>
 
         {/* Main Headline */}
@@ -28,10 +45,9 @@ export default function CtaReadyFamily() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-2xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.25] font-sans max-w-3xl mx-auto mb-7 sm:mb-8"
+          className="text-2xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.25] font-sans max-w-3xl mx-auto mb-7 sm:mb-8 whitespace-pre-line"
         >
-          Temukan potensi diri kamu dan<br className="hidden sm:inline" />
-          {" "}mulai perjalanan karirmu bersama UPITRA
+          {ctaData.title}
         </motion.h2>
 
         {/* CTA Button: Yellow #FFD400, dark text, rounded-xl */}
@@ -42,12 +58,12 @@ export default function CtaReadyFamily() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Link
-            href="https://pmb.upitra.ac.id"
+            href={ctaData.ctaHref || "https://pmb.upitra.ac.id"}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-[#FFD400] hover:bg-[#F2C900] text-slate-900 font-bold text-sm sm:text-base shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer"
           >
-            Daftar Sekarang
+            {ctaData.ctaLabel || "Daftar Sekarang"}
           </Link>
         </motion.div>
 
@@ -55,4 +71,3 @@ export default function CtaReadyFamily() {
     </section>
   );
 }
-

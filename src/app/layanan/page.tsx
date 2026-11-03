@@ -222,10 +222,13 @@ const socialMediaList = [
 
 export default function LayananIndexPage() {
   const [banner, setBanner] = useState<LayananBanner>(defaultLayananBanner);
+  const [servicesList, setServicesList] = useState<any[]>([]);
+  const [pmbBrochure, setPmbBrochure] = useState(pmbBrochureData);
+  const [faqsList, setFaqsList] = useState<any[]>(layananFaqs);
   const [isPmbExpanded, setIsPmbExpanded] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  // Load dynamic banner from database via API
+  // Load dynamic banner, services, brochure, and FAQs from database via API
   useEffect(() => {
     fetch("/api/banner?page=layanan")
       .then((res) => res.json())
@@ -239,6 +242,46 @@ export default function LayananIndexPage() {
         }
       })
       .catch((err) => console.warn("Failed to load banner:", err));
+
+    fetch("/api/services")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
+          setServicesList(json.data);
+        }
+      })
+      .catch((err) => console.warn("Failed to load services:", err));
+
+    fetch("/api/layanan/brochure")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && json.data) {
+          setPmbBrochure({
+            title: json.data.title || pmbBrochureData.title,
+            subTitle: json.data.subTitle || pmbBrochureData.subTitle,
+            fileName: json.data.fileName || pmbBrochureData.fileName,
+            facultyName: pmbBrochureData.facultyName,
+            degree: pmbBrochureData.degree,
+            fileSize: json.data.fileSize || pmbBrochureData.fileSize,
+            coverImage: json.data.coverImage || pmbBrochureData.coverImage,
+            pdfUrl: json.data.pdfUrl || pmbBrochureData.pdfUrl,
+            description: json.data.description || pmbBrochureData.description,
+            highlights: Array.isArray(json.data.highlights) && json.data.highlights.length > 0
+              ? json.data.highlights
+              : pmbBrochureData.highlights,
+          });
+        }
+      })
+      .catch((err) => console.warn("Failed to load brochure:", err));
+
+    fetch("/api/layanan/faqs")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
+          setFaqsList(json.data);
+        }
+      })
+      .catch((err) => console.warn("Failed to load faqs:", err));
   }, []);
 
   return (
@@ -292,36 +335,83 @@ export default function LayananIndexPage() {
 
           {/* 4 Kotak Layanan: Dimuat Tepat 1 Baris di Layar Desktop (lg:grid-cols-4) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {empatKotakLayanan.map((item, idx) => {
-              const Icon = item.icon;
+            {(servicesList.length > 0
+              ? servicesList
+              : empatKotakLayanan.map((item) => ({
+                  name: item.title,
+                  url: item.href,
+                  icon: item.title.includes("Perpus")
+                    ? "BookOpen"
+                    : item.title.includes("LMS")
+                    ? "Laptop"
+                    : item.title.includes("Immersion")
+                    ? "Sparkles"
+                    : "Briefcase",
+                  description: item.desc,
+                  tag: item.tag,
+                  attachmentUrl: null,
+                  attachmentName: null,
+                }))
+            ).map((item, idx) => {
+              const isBuiltInIcon = !item.icon || !item.icon.startsWith("/");
+              const IconComponent =
+                item.icon === "Laptop"
+                  ? Laptop
+                  : item.icon === "Sparkles"
+                  ? Sparkles
+                  : item.icon === "Briefcase"
+                  ? Briefcase
+                  : BookOpen;
+
               return (
                 <div
-                  key={idx}
+                  key={item.id || idx}
                   className="group bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs hover:border-blue-400 hover:shadow-xl transition-all flex flex-col justify-between space-y-6"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-xs">
-                        <Icon className="w-6 h-6" />
+                      <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-xs overflow-hidden">
+                        {isBuiltInIcon ? (
+                          <IconComponent className="w-6 h-6" />
+                        ) : (
+                          <img src={item.icon} alt={item.name} className="w-full h-full object-cover" />
+                        )}
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 group-hover:bg-blue-100 group-hover:text-blue-800 transition-colors">
-                        {item.tag}
+                        {item.tag || "Layanan Kampus"}
                       </span>
                     </div>
 
                     <h3 className="text-lg font-black text-[#0b2545] group-hover:text-blue-700 transition-colors leading-snug">
-                      {item.title}
+                      {item.name}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                      {item.desc}
-                    </p>
+                    <div
+                      className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3 prose prose-xs max-w-none"
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
+
+                    {item.attachmentUrl && (
+                      <div className="pt-1">
+                        <a
+                          href={item.attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold transition-colors"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span className="truncate max-w-[150px]">
+                            {item.attachmentName || "Unduh Formulir"}
+                          </span>
+                        </a>
+                      </div>
+                    )}
                   </div>
 
                   <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={item.url || "/layanan"}
+                    target={item.url?.startsWith("http") ? "_blank" : undefined}
+                    rel={item.url?.startsWith("http") ? "noopener noreferrer" : undefined}
                     className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 group-hover:text-blue-800 transition-colors"
                   >
                     <span>Akses Layanan</span>
@@ -347,10 +437,10 @@ export default function LayananIndexPage() {
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-base sm:text-lg font-black text-[#0b2545] truncate">
-                    {pmbBrochureData.title}
+                    {pmbBrochure.title}
                   </h3>
                   <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
-                    {pmbBrochureData.subTitle}
+                    {pmbBrochure.subTitle}
                   </p>
                 </div>
               </div>
@@ -359,7 +449,7 @@ export default function LayananIndexPage() {
               <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                 {/* Tombol Unduh Langsung */}
                 <a
-                  href={pmbBrochureData.pdfUrl}
+                  href={pmbBrochure.pdfUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
@@ -399,15 +489,15 @@ export default function LayananIndexPage() {
                       <div className="md:col-span-5 lg:col-span-4 flex justify-center">
                         <div className="relative w-full max-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900 group">
                           <Image
-                            src={pmbBrochureData.coverImage}
-                            alt={pmbBrochureData.fileName}
+                            src={pmbBrochure.coverImage || "/images/brochures/1788939036_6aa10b1c44527.jpg"}
+                            alt={pmbBrochure.fileName}
                             fill
                             className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                           <div className="absolute bottom-3 left-3 right-3 text-white text-[11px] font-bold flex items-center justify-between">
                             <span className="px-2 py-0.5 rounded-md bg-blue-600/90 backdrop-blur-xs">Pratinjau Brosur</span>
-                            <span className="text-slate-200">{pmbBrochureData.fileSize}</span>
+                            <span className="text-slate-200">{pmbBrochure.fileSize}</span>
                           </div>
                         </div>
                       </div>
@@ -417,10 +507,10 @@ export default function LayananIndexPage() {
                         
                         <div className="space-y-1.5">
                           <h4 className="text-xl sm:text-2xl font-black text-[#0b2545] tracking-tight">
-                            {pmbBrochureData.fileName}
+                            {pmbBrochure.fileName}
                           </h4>
                           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pt-1">
-                            {pmbBrochureData.description}
+                            {pmbBrochure.description}
                           </p>
                         </div>
 
@@ -430,7 +520,7 @@ export default function LayananIndexPage() {
                             Fokus &amp; Informasi Utama:
                           </span>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {pmbBrochureData.highlights.map((item, idx) => (
+                            {pmbBrochure.highlights.map((item: string, idx: number) => (
                               <div key={idx} className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-blue-100 text-xs text-slate-700 font-medium shadow-2xs">
                                 <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
                                 <span className="truncate">{item}</span>
@@ -442,7 +532,7 @@ export default function LayananIndexPage() {
                         {/* Tombol Aksi Lanjutan (Seluruhnya Palet Biru) */}
                         <div className="pt-2 flex flex-wrap items-center gap-3">
                           <a
-                            href={pmbBrochureData.pdfUrl}
+                            href={pmbBrochure.pdfUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all"
@@ -483,11 +573,11 @@ export default function LayananIndexPage() {
 
           {/* Accordion List FAQ */}
           <div className="space-y-3">
-            {layananFaqs.map((faq, idx) => {
+            {faqsList.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
                 <div
-                  key={idx}
+                  key={faq.id || idx}
                   className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs hover:border-blue-300 transition-colors"
                 >
                   <button
@@ -515,9 +605,10 @@ export default function LayananIndexPage() {
                         transition={{ duration: 0.28, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pl-12.5">
-                          {faq.a}
-                        </div>
+                        <div
+                          className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pl-12.5 prose prose-xs max-w-none"
+                          dangerouslySetInnerHTML={{ __html: faq.a }}
+                        />
                       </motion.div>
                     )}
                   </AnimatePresence>
