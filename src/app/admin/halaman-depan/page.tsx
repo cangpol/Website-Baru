@@ -296,7 +296,7 @@ export default function AdminHalamanDepanPage() {
       {activeTab === "hero" && (
         <form onSubmit={handleSaveHero} className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 max-w-4xl shadow-xs">
           <div>
-            <h2 className="text-base font-bold text-slate-900">Pengaturan Hero Banner "Campus to Career"</h2>
+            <h2 className="text-base font-bold text-slate-900">Pengaturan Hero Banner &quot;Campus to Career&quot;</h2>
             <p className="text-xs text-slate-500 mt-0.5">
               Banner sinematik utama berukuran frame 1440x810 pada bagian teratas beranda website.
             </p>
@@ -788,7 +788,7 @@ export default function AdminHalamanDepanPage() {
             <div className="py-4 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">1. Hero Banner Slider</h3>
-                <p className="text-xs text-slate-500">Banner besar "Campus to Career" di posisi paling atas.</p>
+                <p className="text-xs text-slate-500">Banner besar &quot;Campus to Career&quot; di posisi paling atas.</p>
               </div>
               <input
                 type="checkbox"

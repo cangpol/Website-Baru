@@ -11,8 +11,9 @@ export interface MagicBytesValidationResult {
   sanitizedBuffer?: Buffer;
 }
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
-const MAX_DOC_SIZE = 20 * 1024 * 1024; // 20 MB
+export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+export const MAX_DOCUMENT_SIZE_BYTES = 20 * 1024 * 1024;
+export const MAX_UPLOAD_FILE_SIZE_BYTES = MAX_DOCUMENT_SIZE_BYTES;
 
 export async function validateAndSanitizeFile(
   buffer: Buffer,
@@ -100,7 +101,7 @@ export async function validateAndSanitizeFile(
   }
 
   if (isJpeg || isPng || isWebp || isGif) {
-    if (buffer.length > MAX_IMAGE_SIZE) {
+    if (buffer.length > MAX_IMAGE_SIZE_BYTES) {
       return {
         valid: false,
         error: `Ukuran gambar melebihi batas maksimum 5 MB (${(buffer.length / (1024 * 1024)).toFixed(2)} MB).`,
@@ -166,7 +167,7 @@ export async function validateAndSanitizeFile(
   }
 
   if (isPdf) {
-    if (buffer.length > MAX_DOC_SIZE) {
+    if (buffer.length > MAX_DOCUMENT_SIZE_BYTES) {
       return {
         valid: false,
         error: `Ukuran dokumen melebihi batas maksimum 20 MB (${(buffer.length / (1024 * 1024)).toFixed(2)} MB).`,

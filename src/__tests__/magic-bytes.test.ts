@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { validateAndSanitizeFile } from "@/server/storage/magic-bytes";
+import {
+  MAX_DOCUMENT_SIZE_BYTES,
+  MAX_IMAGE_SIZE_BYTES,
+  validateAndSanitizeFile,
+} from "@/server/storage/magic-bytes";
 
 describe("validateAndSanitizeFile - Upload Security & MIME Validation", () => {
   it("rejects SVG files containing <svg or XML headers", async () => {
@@ -56,5 +60,24 @@ describe("validateAndSanitizeFile - Upload Security & MIME Validation", () => {
     expect(res.height).toBe(1);
     expect(res.isImage).toBe(true);
   });
-});
 
+  it("rejects images larger than 5 MB", async () => {
+    const oversizedImage = Buffer.alloc(MAX_IMAGE_SIZE_BYTES + 1);
+    oversizedImage.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
+    const res = await validateAndSanitizeFile(oversizedImage, "large.png");
+
+    expect(res.valid).toBe(false);
+    expect(res.error).toContain("batas maksimum 5 MB");
+  });
+
+  it("rejects PDF documents larger than 20 MB", async () => {
+    const oversizedPdf = Buffer.alloc(MAX_DOCUMENT_SIZE_BYTES + 1);
+    oversizedPdf.set(Buffer.from("%PDF-1.4"));
+
+    const res = await validateAndSanitizeFile(oversizedPdf, "large.pdf");
+
+    expect(res.valid).toBe(false);
+    expect(res.error).toContain("batas maksimum 20 MB");
+  });
+});

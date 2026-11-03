@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Upload, X, Loader2, Image as ImageIcon, AlertCircle } from "lucide-react";
+import { Upload, X, Loader2, AlertCircle } from "lucide-react";
 
 interface ImageUploadFieldProps {
   label: string;
@@ -39,12 +39,14 @@ export function ImageUploadField({
     // Client-side quick check
     if (file.size > 5 * 1024 * 1024) {
       setErrorMessage("Ukuran file melebihi batas maksimum 5 MB.");
+      e.target.value = "";
       return;
     }
 
     const lowerName = file.name.toLowerCase();
     if (lowerName.endsWith(".svg")) {
       setErrorMessage("Format SVG tidak diizinkan demi keamanan. Harap gunakan format JPEG, PNG, atau WebP.");
+      e.target.value = "";
       return;
     }
 
@@ -184,9 +186,9 @@ export function ImageUploadField({
         type="file"
         accept="image/jpeg,image/png,image/webp,image/gif"
         className="hidden"
+        disabled={isUploading}
         onChange={handleFileSelect}
       />
     </div>
   );
 }
-

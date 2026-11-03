@@ -39,11 +39,13 @@ export function FileUploadField({
     // Client-side quick check
     if (file.size > 20 * 1024 * 1024) {
       setErrorMessage("Ukuran dokumen melebihi batas maksimum 20 MB.");
+      e.target.value = "";
       return;
     }
 
     if (!file.name.toLowerCase().endsWith(".pdf")) {
       setErrorMessage("Hanya berkas format dokumen PDF yang diizinkan.");
+      e.target.value = "";
       return;
     }
 
@@ -178,9 +180,9 @@ export function FileUploadField({
         type="file"
         accept="application/pdf"
         className="hidden"
+        disabled={isUploading}
         onChange={handleFileSelect}
       />
     </div>
   );
 }
-
