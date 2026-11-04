@@ -24,7 +24,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
 
   return (
     <section 
-      className="relative w-full bg-slate-950 flex justify-center overflow-hidden select-none" 
+      className="relative w-full bg-blue-950 flex justify-center overflow-hidden select-none"
       aria-label="Grand Gateway UPITRA"
     >
       <div 
@@ -37,7 +37,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
             fill
             priority
             sizes="100vw"
-            className="pointer-events-none origin-[left_bottom] scale-[1.25] object-cover object-[58%_center]"
+            className="pointer-events-none object-cover object-[58%_center]"
           />
 
           <div 
@@ -85,7 +85,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
               href={hero.ctaHref || "https://pmb.upitra.ac.id"}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#FED406] hover:bg-[#F2C900] text-slate-900 font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
+              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
             >
               {hero.ctaLabel || "Daftar Sekarang"}
             </Link>

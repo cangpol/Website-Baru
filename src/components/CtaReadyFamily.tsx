@@ -50,7 +50,7 @@ export default function CtaReadyFamily({ initialData }: { initialData?: Homepage
           {ctaData.title}
         </motion.h2>
 
-        {/* CTA Button: Yellow #FFD400, dark text, rounded-xl */}
+        {/* CTA Button */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -61,7 +61,7 @@ export default function CtaReadyFamily({ initialData }: { initialData?: Homepage
             href={ctaData.ctaHref || "https://pmb.upitra.ac.id"}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-[#FFD400] hover:bg-[#F2C900] text-slate-900 font-bold text-sm sm:text-base shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-sm sm:text-base shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer"
           >
             {ctaData.ctaLabel || "Daftar Sekarang"}
           </Link>

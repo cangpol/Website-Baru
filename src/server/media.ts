@@ -78,7 +78,7 @@ export async function getMediaAssets(params?: {
     };
   } catch (err) {
     console.error("Error fetching media assets:", err);
-    return { assets: [], total: 0, page: 1, totalPages: 1 };
+    throw new Error("Gagal memuat pustaka media. Periksa koneksi lalu coba lagi.");
   }
 }
 
@@ -174,7 +174,13 @@ export async function deleteMediaAssetAction(id: string) {
 
     // Delete physically from storage
     const storage = getStorageDriver();
-    await storage.deleteFile(asset.path);
+    const deleted = await storage.deleteFile(asset.path);
+    if (!deleted) {
+      return {
+        ok: false,
+        message: "Berkas fisik gagal dihapus. Data pustaka media tetap dipertahankan.",
+      };
+    }
 
     // Delete record from DB
     await prisma.mediaAsset.delete({ where: { id } });

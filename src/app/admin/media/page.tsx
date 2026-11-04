@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import Image from "next/image";
 import {
   Image as ImageIcon,
@@ -11,10 +11,8 @@ import {
   Copy,
   Check,
   Edit2,
-  ExternalLink,
   Loader2,
   AlertCircle,
-  RefreshCw,
   FolderOpen
 } from "lucide-react";
 import { getMediaAssets, updateMediaAltAction, deleteMediaAssetAction } from "@/server/media";
@@ -39,6 +37,7 @@ export default function AdminMediaPage() {
   const [typeFilter, setTypeFilter] = useState<"ALL" | "IMAGE" | "DOCUMENT">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Uploading state
@@ -56,8 +55,9 @@ export default function AdminMediaPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const loadMedia = async () => {
+  const loadMedia = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const res = await getMediaAssets({
         page,
@@ -69,15 +69,16 @@ export default function AdminMediaPage() {
       setTotal(res.total);
       setTotalPages(res.totalPages);
     } catch (err) {
-      console.error(err);
+      console.error("Error loading media library:", err);
+      setLoadError(err instanceof Error ? err.message : "Gagal memuat pustaka media.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, searchQuery, typeFilter]);
 
   useEffect(() => {
-    loadMedia();
-  }, [page, typeFilter, searchQuery]);
+    void loadMedia();
+  }, [loadMedia]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -186,6 +187,23 @@ export default function AdminMediaPage() {
         </div>
       )}
 
+      {loadError && (
+        <div role="alert" className="flex items-center justify-between gap-3 text-sm text-red-300 bg-red-950/40 border border-red-800/40 p-4 rounded-xl">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <span>{loadError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => void loadMedia()}
+            disabled={loading}
+            className="shrink-0 px-3 py-1.5 rounded-lg border border-red-800/60 hover:bg-red-900/40 disabled:opacity-50"
+          >
+            Coba lagi
+          </button>
+        </div>
+      )}
+
       {/* Filter & Search Bar */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
         <div className="flex items-center gap-2 w-full md:w-auto">
@@ -244,7 +262,7 @@ export default function AdminMediaPage() {
             {uploading ? "Memvalidasi biner & mengunggah berkas..." : "Memuat berkas media..."}
           </p>
         </div>
-      ) : items.length === 0 ? (
+      ) : loadError && items.length === 0 ? null : items.length === 0 ? (
         <div className="py-16 text-center border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/30">
           <ImageIcon className="w-12 h-12 text-slate-600 mx-auto mb-3" />
           <p className="text-sm font-medium text-slate-300">Belum ada berkas media</p>

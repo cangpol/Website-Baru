@@ -98,12 +98,12 @@ export default function Navbar() {
                 );
               })}
 
-              {/* CTA Button: Yellow background, dark text, rounded pill (rounded-full) */}
+              {/* CTA Button */}
               <Link
                 href="https://pmb.upitra.ac.id"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-6 px-3.5 ml-1 inline-flex items-center justify-center rounded-lg bg-[#FCCB0C] hover:bg-[#F2C900] text-slate-900 font-bold text-[10px] lg:text-[11px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+                className="h-6 px-3.5 ml-1 inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-[10px] lg:text-[11px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Daftar Sekarang</span>
               </Link>
@@ -152,7 +152,7 @@ export default function Navbar() {
                   href="https://pmb.upitra.ac.id"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-[#FCCB0C] text-slate-900 font-bold text-xs shadow-sm hover:bg-[#F2C900] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-blue-950 font-bold text-xs shadow-sm hover:from-amber-500 hover:to-orange-600 transition-colors"
                 >
                   <span>Daftar Sekarang (PMB Online)</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -162,7 +162,7 @@ export default function Navbar() {
                   href="https://wa.me/628112907500?text=Halo%20Admisi%20UPITRA%2C%20saya%20ingin%20konsultasi%20informasi%20kampus"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-200 hover:bg-slate-100 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-blue-50 text-blue-800 font-semibold text-xs border border-blue-100 hover:bg-blue-100 transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5 text-[#006bbd]" />
                   <span>Konsultasi WhatsApp Admisi</span>

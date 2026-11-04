@@ -23,7 +23,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
 
   return (
     <section 
-      className="w-full bg-[#cce1f2] py-8 sm:py-10 md:py-5 overflow-hidden"
+      className="w-full bg-blue-50 py-8 sm:py-10 md:py-5 overflow-hidden"
       aria-label="UPITRA Dalam Angka"
     >
       <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-[clamp(32px,8vw,120px)]">
@@ -44,7 +44,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-contain object-bottom md:object-cover md:object-top md:translate-x-5 md:scale-[1.08] md:origin-top-left pointer-events-none"
+                className="object-contain object-bottom md:object-cover md:object-top md:translate-x-5 pointer-events-none"
               />
             </div>
           </motion.div>

@@ -59,7 +59,7 @@ export default function WelcomeAdmissionWaves({ initialData }: { initialData?: H
                 href={wave.link || "https://pmb.upitra.ac.id"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block bg-white rounded-xl border border-slate-100 shadow-[0_3px_8px_rgba(15,118,110,0.12)] hover:shadow-[0_8px_20px_rgba(15,118,110,0.18)] hover:border-blue-200 transition-all duration-300 overflow-hidden hover:-translate-y-1 cursor-pointer"
+                className="group block bg-white rounded-xl border border-blue-100 shadow-[0_3px_8px_rgba(0,107,189,0.12)] hover:shadow-[0_8px_20px_rgba(0,107,189,0.18)] hover:border-blue-300 transition-all duration-300 overflow-hidden hover:-translate-y-1 cursor-pointer"
               >
                 {/* Photo Header */}
                 <div className="relative aspect-[3/2] w-full overflow-hidden bg-slate-100">
@@ -71,7 +71,7 @@ export default function WelcomeAdmissionWaves({ initialData }: { initialData?: H
                     className="object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
                   />
                   {wave.badge && (
-                    <span className="absolute left-0 top-7 rounded-r-md bg-[#FED406] px-3 py-1 text-xs font-semibold text-slate-900">
+                    <span className="absolute left-0 top-7 rounded-r-md bg-blue-700 px-3 py-1 text-xs font-semibold text-white">
                       {wave.badge}
                     </span>
                   )}

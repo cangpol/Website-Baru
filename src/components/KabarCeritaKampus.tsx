@@ -30,7 +30,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
 
   return (
     <section 
-      className="w-full bg-[#cce1f2] py-14 sm:py-16 lg:py-20 select-none overflow-hidden" 
+      className="w-full bg-blue-50 py-14 sm:py-16 lg:py-20 select-none overflow-hidden"
       aria-label="Kabar & Cerita Kampus Instagram Feed"
     >
       <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-16 lg:px-[120px]">
@@ -65,7 +65,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
                 href={post.permalink || igData.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block relative aspect-square rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-slate-900 border border-white/60"
+                className="group block relative aspect-square rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-blue-950 border border-white/60"
               >
                 {/* Background Image */}
                 <Image
@@ -77,11 +77,11 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
                 />
 
                 {/* Dark Gradient Overlay for readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-950/85 via-blue-950/20 to-transparent pointer-events-none" />
 
                 {/* Top Category Tag (Figma 1440x662 Spec: Rounded pill, black translucent background) */}
                 <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex justify-start">
-                  <span className="px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-xs text-[9px] sm:text-[10px] font-bold text-white uppercase tracking-wider font-sans border border-white/10">
+                  <span className="px-2.5 py-1 rounded-md bg-blue-950/80 backdrop-blur-xs text-[9px] sm:text-[10px] font-bold text-white uppercase tracking-wider font-sans border border-white/10">
                     {post.category}
                   </span>
                 </div>

@@ -71,7 +71,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/profil",
     icon: ShieldCheck,
     badge: "Info",
-    badgeColor: "bg-emerald-500/20 text-emerald-200 border-emerald-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "akademik",
@@ -89,7 +89,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/riset",
     icon: Newspaper,
     badge: "Publikasi",
-    badgeColor: "bg-indigo-500/20 text-indigo-200 border-indigo-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "kemahasiswaan",
@@ -98,7 +98,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/kemahasiswaan",
     icon: Award,
     badge: "Kegiatan",
-    badgeColor: "bg-amber-500/20 text-amber-200 border-amber-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "kerjasama",
@@ -107,7 +107,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/kerjasama",
     icon: Handshake,
     badge: "43+ Mitra",
-    badgeColor: "bg-cyan-500/20 text-cyan-200 border-cyan-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "layanan",
@@ -116,7 +116,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/layanan",
     icon: HelpCircle,
     badge: "Download",
-    badgeColor: "bg-teal-500/20 text-teal-200 border-teal-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "pmb",
@@ -125,7 +125,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/pmb-leads",
     icon: Users,
     badge: "Leads",
-    badgeColor: "bg-rose-500/20 text-rose-200 border-rose-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "ai-dataset",
@@ -134,7 +134,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/ai-dataset",
     icon: Bot,
     badge: "Dataset",
-    badgeColor: "bg-sky-500/20 text-sky-200 border-sky-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "media",
@@ -143,7 +143,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/media",
     icon: Building2,
     badge: "Aset",
-    badgeColor: "bg-emerald-500/20 text-emerald-200 border-emerald-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
     id: "users",
@@ -152,7 +152,7 @@ const sidebarNavigation: SidebarItem[] = [
     href: "/admin/users",
     icon: UserCheck,
     badge: "Role",
-    badgeColor: "bg-purple-500/20 text-purple-200 border-purple-400/30",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
 ];
 
@@ -324,8 +324,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="text-xs font-bold text-white truncate">
                   {session.name}
                 </div>
-                <div className="text-[9.5px] text-emerald-400 flex items-center gap-1 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div className="text-[9.5px] text-blue-300 flex items-center gap-1 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse"></span>
                   <span>{session.role}</span>
                 </div>
               </div>
@@ -334,7 +334,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button
               onClick={handleLogout}
               title="Keluar dari sesi admin (/u-gate)"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-blue-800 transition-colors cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -391,7 +391,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Logout Button in Header */}
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold transition-all cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Keluar</span>
@@ -468,7 +468,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <div className="pt-3 border-t border-blue-950 flex items-center justify-between text-xs">
               <span className="text-slate-400">{session.name}</span>
-              <button onClick={handleLogout} className="text-rose-400 font-bold">Keluar</button>
+              <button onClick={handleLogout} className="text-blue-200 hover:text-white font-bold">Keluar</button>
             </div>
           </div>
         </div>

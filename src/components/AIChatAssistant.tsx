@@ -241,7 +241,7 @@ export default function AIChatAssistant() {
                 transition={{ duration: 0.3 }}
                 className="hidden md:flex items-center gap-2.5 mr-4 px-4 py-2.5 rounded-2xl bg-white/95 backdrop-blur-md border border-sky-200/80 shadow-xl shadow-sky-900/10 text-slate-800"
               >
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 <div className="text-left">
                   <p className="text-[11px] font-bold text-[#0b2545] leading-none flex items-center gap-1">
                     <span>AI Assistant UPITRA</span>
@@ -296,8 +296,8 @@ export default function AIChatAssistant() {
 
               {/* Active Status Badge (Dekat Headset) */}
               <span className="absolute top-1 right-2 z-20 flex h-4 w-4">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white shadow-xs"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500 border-2 border-white shadow-xs"></span>
               </span>
             </motion.button>
           </motion.div>
@@ -330,7 +330,7 @@ export default function AIChatAssistant() {
                       alt="AI Chat Assistant UPITRA"
                       className="w-12 h-12 object-contain drop-shadow-md"
                     />
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#06172e] rounded-full"></span>
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-blue-400 border-2 border-[#06172e] rounded-full"></span>
                   </div>
 
                   <div>
@@ -339,7 +339,7 @@ export default function AIChatAssistant() {
                       <Sparkles className="w-3.5 h-3.5 text-sky-300" />
                     </h3>
                     <p className="text-[11px] text-sky-100 font-medium flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300"></span>
                       <span>Layanan Informasi Kampus 24/7</span>
                     </p>
                   </div>
@@ -354,7 +354,7 @@ export default function AIChatAssistant() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Hubungi Admin WhatsApp"
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold shadow-xs transition-all hover:scale-105 active:scale-95"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold shadow-xs transition-all hover:scale-105 active:scale-95"
                   >
                     <MessageSquare className="w-3 h-3" />
                     <span className="hidden xs:inline">WhatsApp</span>

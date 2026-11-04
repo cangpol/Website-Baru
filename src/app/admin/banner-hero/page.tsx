@@ -84,8 +84,8 @@ export default function AdminBannerHeroPage() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-blue-700 text-white shadow-xl shadow-blue-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
+          <CheckCircle2 className="w-4 h-4 text-blue-200" />
           <span>{toastMessage}</span>
         </div>
       )}

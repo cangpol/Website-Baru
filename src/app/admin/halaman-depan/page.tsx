@@ -11,7 +11,6 @@ import {
   Layers, 
   Plus, 
   Trash2, 
-  ExternalLink,
   Camera,
   BarChart3,
   Flame,
@@ -180,14 +179,14 @@ export default function AdminHalamanDepanPage() {
         <div
           className={`fixed top-5 right-5 z-50 px-4 py-3 rounded-xl shadow-lg border flex items-center gap-2.5 text-sm font-semibold transition-all ${
             toast.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-              : "bg-rose-50 text-rose-800 border-rose-200"
+              ? "bg-blue-50 text-blue-800 border-blue-200"
+              : "bg-blue-950 text-white border-blue-900"
           }`}
         >
           {toast.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-blue-700" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <AlertCircle className="w-4 h-4 text-white" />
           )}
           <span>{toast.message}</span>
         </div>
@@ -378,7 +377,7 @@ export default function AdminHalamanDepanPage() {
           <div>
             <h2 className="text-base font-bold text-slate-900">Pengaturan Gelombang Pendaftaran (Welcome Waves)</h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Kelola judul section dan 3 kartu jalur penerimaan mahasiswa baru (Ready Early, Achievement, Admission).
+              Kelola judul section dan kartu jalur penerimaan yang tampil di beranda (maksimal 12 kartu).
             </p>
           </div>
 
@@ -411,6 +410,19 @@ export default function AdminHalamanDepanPage() {
                   <span className="text-xs font-black text-blue-700 uppercase tracking-wider">
                     Kartu Gelombang #{index + 1}
                   </span>
+                  <button
+                    type="button"
+                    disabled={waves.waves.length <= 1}
+                    onClick={() => setWaves({
+                      ...waves,
+                      waves: waves.waves.filter((_, waveIndex) => waveIndex !== index),
+                    })}
+                    aria-label={`Hapus kartu ${wave.title}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Hapus
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -486,6 +498,24 @@ export default function AdminHalamanDepanPage() {
                 </div>
               </div>
             ))}
+            <button
+              type="button"
+              disabled={waves.waves.length >= 12}
+              onClick={() => setWaves({
+                ...waves,
+                waves: [...waves.waves, {
+                  id: crypto.randomUUID(),
+                  title: "Gelombang baru",
+                  benefit: "Informasi benefit pendaftaran",
+                  image: "/images/pmb/wave-ready-early-hq.jpg",
+                  link: "https://pmb.upitra.ac.id",
+                }],
+              })}
+              className="inline-flex items-center gap-2 rounded-xl border border-blue-200 px-4 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah Gelombang
+            </button>
           </div>
 
           <div className="pt-2">
@@ -507,7 +537,7 @@ export default function AdminHalamanDepanPage() {
           <div>
             <h2 className="text-base font-bold text-slate-900">Pengaturan UPITRA Dalam Angka</h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Sesuaikan 6 metrik capaian prestasi universitas dan upload/ganti foto mahasiswi cutout transparan.
+              Sesuaikan metrik capaian prestasi universitas dan upload/ganti foto mahasiswi cutout transparan (maksimal 12 metrik).
             </p>
           </div>
 
@@ -542,14 +572,29 @@ export default function AdminHalamanDepanPage() {
             />
           </div>
 
-          {/* Grid 6 Metrik Capaian */}
+          {/* Grid Metrik Capaian */}
           <div className="space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              6 Metrik Capaian Prestasi:
+              Metrik Capaian Prestasi ({stats.metrics.length}/12):
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {stats.metrics.map((metric, index) => (
                 <div key={metric.id || index} className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      disabled={stats.metrics.length <= 1}
+                      onClick={() => setStats({
+                        ...stats,
+                        metrics: stats.metrics.filter((_, metricIndex) => metricIndex !== index),
+                      })}
+                      aria-label={`Hapus metrik ${metric.label}`}
+                      className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Hapus
+                    </button>
+                  </div>
                   <div>
                     <label className="block text-[11px] font-bold text-slate-500 mb-0.5">Nilai / Angka</label>
                     <input
@@ -579,6 +624,22 @@ export default function AdminHalamanDepanPage() {
                 </div>
               ))}
             </div>
+            <button
+              type="button"
+              disabled={stats.metrics.length >= 12}
+              onClick={() => setStats({
+                ...stats,
+                metrics: [...stats.metrics, {
+                  id: crypto.randomUUID(),
+                  value: "0",
+                  label: "Metrik baru",
+                }],
+              })}
+              className="inline-flex items-center gap-2 rounded-xl border border-blue-200 px-4 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah Metrik
+            </button>
           </div>
 
           <div className="pt-2">
@@ -600,7 +661,7 @@ export default function AdminHalamanDepanPage() {
           <div>
             <h2 className="text-base font-bold text-slate-900">Pengaturan Kabar &amp; Cerita Kampus (Instagram Feed)</h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Sesuaikan judul, akun Instagram resmi (@upitra_campus), dan 5 kartu cuplikan postingan di beranda.
+              Sesuaikan judul, akun Instagram, tautan profil, serta kartu postingan yang tampil di beranda (maksimal 12).
             </p>
           </div>
 
@@ -624,6 +685,15 @@ export default function AdminHalamanDepanPage() {
               />
             </div>
             <div className="sm:col-span-2">
+              <label className="block text-xs font-bold text-slate-700 mb-1">Tautan Profil Instagram</label>
+              <input
+                type="text"
+                value={instagram.profileUrl}
+                onChange={(e) => setInstagram({ ...instagram, profileUrl: e.target.value })}
+                className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl"
+              />
+            </div>
+            <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi Bagian</label>
               <textarea
                 rows={2}
@@ -634,10 +704,10 @@ export default function AdminHalamanDepanPage() {
             </div>
           </div>
 
-          {/* 5 Postingan Instagram */}
+          {/* Postingan Instagram */}
           <div className="space-y-4">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              5 Postingan Terpilih Instagram:
+              Postingan Instagram ({instagram.posts.length}/12):
             </span>
             <div className="space-y-4">
               {instagram.posts.map((post, index) => (
@@ -646,6 +716,19 @@ export default function AdminHalamanDepanPage() {
                     <span className="text-xs font-bold text-blue-700 uppercase">
                       Post #{index + 1}
                     </span>
+                    <button
+                      type="button"
+                      disabled={instagram.posts.length <= 1}
+                      onClick={() => setInstagram({
+                        ...instagram,
+                        posts: instagram.posts.filter((_, postIndex) => postIndex !== index),
+                      })}
+                      aria-label={`Hapus postingan ${index + 1}`}
+                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Hapus
+                    </button>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -692,6 +775,20 @@ export default function AdminHalamanDepanPage() {
                     </div>
 
                     <div className="sm:col-span-3">
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">Teks Alternatif Foto</label>
+                      <textarea
+                        rows={2}
+                        value={post.caption}
+                        onChange={(e) => {
+                          const updated = [...instagram.posts];
+                          updated[index].caption = e.target.value;
+                          setInstagram({ ...instagram, posts: updated });
+                        }}
+                        className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg bg-white"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3">
                       <ImageUploadField
                         label={`Foto Post #${index + 1}`}
                         value={post.mediaUrl}
@@ -707,6 +804,25 @@ export default function AdminHalamanDepanPage() {
                 </div>
               ))}
             </div>
+            <button
+              type="button"
+              disabled={instagram.posts.length >= 12}
+              onClick={() => setInstagram({
+                ...instagram,
+                posts: [...instagram.posts, {
+                  id: crypto.randomUUID(),
+                  caption: "",
+                  mediaUrl: "/images/instagram/ig-1.jpg",
+                  permalink: instagram.profileUrl,
+                  timeAgo: "Baru saja",
+                  category: "POSTINGAN BARU",
+                }],
+              })}
+              className="inline-flex items-center gap-2 rounded-xl border border-blue-200 px-4 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah Postingan
+            </button>
           </div>
 
           <div className="pt-2">

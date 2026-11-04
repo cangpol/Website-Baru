@@ -3,11 +3,9 @@
 @theme {
   --color-brand-blue: #006bbd;
   --color-brand-blue-dark: #072b61;
-  --color-accent-yellow: #FFD400;
-  --color-accent-yellow-hover: #F2C900;
   --color-ink: #06172e;
   --color-ink-muted: #475569;
-  --font-montserrat: var(--font-montserrat);
+  --font-montserrat: "Montserrat", system-ui, sans-serif;
 }
 
 :root {
@@ -17,7 +15,7 @@
   --primary-dark: #072b61;
   --secondary: #0284c7;
   --secondary-hover: #0369a1;
-  --accent-light: #f0f7ff;
+  --accent-light: #eff6ff;
   --card-bg: #ffffff;
   --border-color: #e2e8f0;
 }
@@ -29,7 +27,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Custom Scrollbar - Blue & Clean Slate */
+/* Custom Scrollbar - Blue & White */
 ::-webkit-scrollbar {
   width: 8px;
 }

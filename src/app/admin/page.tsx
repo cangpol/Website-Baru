@@ -189,7 +189,7 @@ export default function AdminDashboardPage() {
         status: art.published !== false ? "Terbit" : "Draf",
         link: "/admin/riset",
         badgeColor: "bg-sky-50 text-sky-700 border-sky-200",
-        statusColor: art.published !== false ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200",
+        statusColor: art.published !== false ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-blue-100 text-blue-800 border-blue-300",
         rawDate: art.publishedAt ? new Date(art.publishedAt).getTime() : 0,
       })),
       ...events.map((ev) => ({
@@ -204,8 +204,8 @@ export default function AdminDashboardPage() {
         statusColor: ev.status === "Berlangsung" 
           ? "bg-blue-50 text-blue-700 border-blue-200" 
           : ev.status === "Selesai" 
-          ? "bg-slate-100 text-slate-700 border-slate-200"
-          : "bg-emerald-50 text-emerald-700 border-emerald-200",
+          ? "bg-blue-100 text-blue-800 border-blue-300"
+          : "bg-blue-50 text-blue-700 border-blue-200",
         rawDate: ev.start_date ? new Date(ev.start_date).getTime() : 0,
       }))
     ];
@@ -259,17 +259,17 @@ export default function AdminDashboardPage() {
               </span>
               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${
                 dashboardStatus === "error"
-                  ? "bg-rose-500/20 border-rose-400/30 text-rose-300"
+                  ? "bg-blue-900/30 border-blue-400/30 text-blue-100"
                   : dashboardStatus === "loading"
-                    ? "bg-amber-500/20 border-amber-400/30 text-amber-200"
-                    : "bg-emerald-500/20 border-emerald-400/30 text-emerald-300"
+                    ? "bg-blue-500/20 border-blue-300/30 text-blue-100"
+                    : "bg-blue-400/20 border-blue-200/30 text-white"
               }`}>
                 <span className={`w-2 h-2 rounded-full ${
                   dashboardStatus === "error"
-                    ? "bg-rose-400"
+                    ? "bg-blue-200"
                     : dashboardStatus === "loading"
-                      ? "bg-amber-400 animate-pulse"
-                      : "bg-emerald-400 animate-pulse"
+                      ? "bg-blue-300 animate-pulse"
+                      : "bg-white animate-pulse"
                 }`} />
                 <span>
                   {dashboardStatus === "error"
@@ -334,7 +334,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {dashboardError && (
-        <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+        <div role="alert" className="rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm text-blue-900">
           {dashboardError}
         </div>
       )}
@@ -369,7 +369,7 @@ export default function AdminDashboardPage() {
               <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
                 <span className="text-blue-600 font-bold">{upcomingEventsCount} Mendatang</span>
                 <span>•</span>
-                <span className="text-emerald-600 font-bold">{ongoingEventsCount} Berlangsung</span>
+                <span className="text-blue-700 font-bold">{ongoingEventsCount} Berlangsung</span>
               </div>
             </div>
 
@@ -403,11 +403,11 @@ export default function AdminDashboardPage() {
                 {canReadAllArticles ? articles.length : "—"}
               </div>
               <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
-                <span className="text-emerald-600 font-bold">
+                <span className="text-blue-700 font-bold">
                   {canReadAllArticles ? `${publishedArticlesCount} Terbit` : "Akses terbatas"}
                 </span>
                 <span>•</span>
-                <span className="text-amber-600 font-bold">
+                <span className="text-blue-500 font-bold">
                   {canReadAllArticles ? `${draftArticlesCount} Draf` : "Data internal"}
                 </span>
               </div>
@@ -428,14 +428,14 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Pilar 3: Riset Dosen */}
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between overflow-hidden relative group">
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-blue-600" />
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-blue-700" />
             <div>
               <div className="flex items-center justify-between text-slate-500 mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   Riset &amp; Jurnal Dosen
                 </span>
-                <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                   <Microscope className="w-4 h-4" />
                 </div>
               </div>
@@ -443,7 +443,7 @@ export default function AdminDashboardPage() {
                 {risetItems.length}
               </div>
               <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
-                <span className="text-indigo-600 font-bold">{scopusCount} Scopus</span>
+                <span className="text-blue-600 font-bold">{scopusCount} Scopus</span>
                 <span>•</span>
                 <span className="text-slate-600 font-medium">Terakreditasi</span>
               </div>
@@ -452,26 +452,26 @@ export default function AdminDashboardPage() {
             <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
               <Link
                 href="/admin/riset?tab=publikasi"
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 group-hover:underline"
+                className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 group-hover:underline"
               >
                 <span>Daftar Riset</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 Repository
               </span>
             </div>
           </div>
 
           {/* Pilar 4: AI Knowledge Base */}
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-purple-300 transition-all flex flex-col justify-between overflow-hidden relative group">
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-600" />
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden relative group">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-400 to-blue-700" />
             <div>
               <div className="flex items-center justify-between text-slate-500 mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   AI Knowledge Base
                 </span>
-                <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                   <Bot className="w-4 h-4" />
                 </div>
               </div>
@@ -479,21 +479,21 @@ export default function AdminDashboardPage() {
                 {aiDatasetCount}
               </div>
               <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 font-medium">
-                <span className="text-purple-600 font-bold">{aiCategoryCount} Kategori Topik</span>
+                <span className="text-blue-600 font-bold">{aiCategoryCount} Kategori Topik</span>
                 <span>•</span>
-                <span className="text-emerald-600 font-bold">Aktif 24/7</span>
+                <span className="text-blue-700 font-bold">Aktif 24/7</span>
               </div>
             </div>
 
             <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
               <Link
                 href="/admin/ai-dataset"
-                className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 group-hover:underline"
+                className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 group-hover:underline"
               >
                 <span>Kelola AI Dataset</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 Chatbot AI
               </span>
             </div>
@@ -552,8 +552,8 @@ export default function AdminDashboardPage() {
                 key={section}
                 className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase ${
                   visible
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-slate-200 bg-slate-50 text-slate-500"
+                    ? "border-blue-200 bg-blue-50 text-blue-700"
+                    : "border-blue-100 bg-white text-blue-400"
                 }`}
               >
                 {section}: {visible ? "Tampil" : "Disembunyikan"}
@@ -623,13 +623,13 @@ export default function AdminDashboardPage() {
 
               <Link
                 href="/admin/ai-dataset"
-                className="flex items-center gap-3.5 p-4 rounded-2xl bg-purple-50/60 border border-purple-200/80 hover:bg-purple-100/60 hover:border-purple-300 transition-all group cursor-pointer shadow-2xs hover:shadow-xs"
+                className="flex items-center gap-3.5 p-4 rounded-2xl bg-blue-50/60 border border-blue-200/80 hover:bg-blue-100/60 hover:border-blue-300 transition-all group cursor-pointer shadow-2xs hover:shadow-xs"
               >
-                <div className="p-2.5 rounded-xl bg-purple-600 text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                <div className="p-2.5 rounded-xl bg-blue-600 text-white shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                   <Bot className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-xs font-bold text-[#06172e] group-hover:text-purple-700 transition-colors">
+                  <div className="text-xs font-bold text-[#06172e] group-hover:text-blue-700 transition-colors">
                     Kelola AI Knowledge Base
                   </div>
                   <div className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
@@ -883,13 +883,23 @@ export default function AdminDashboardPage() {
           <div className="bg-white rounded-3xl border border-slate-200/90 p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-emerald-600" />
+                <Activity className="w-4 h-4 text-blue-600" />
                 <h3 className="text-xs font-bold text-[#06172e] uppercase tracking-wide">
                   Status Sistem &amp; Mesin
                 </h3>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Normal
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                dashboardStatus === "error"
+                  ? "bg-blue-950 text-white border-blue-900"
+                  : dashboardStatus === "loading"
+                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                    : "bg-blue-100 text-blue-800 border-blue-300"
+              }`}>
+                {dashboardStatus === "error"
+                  ? "Perlu Pemeriksaan"
+                  : dashboardStatus === "loading"
+                    ? "Memeriksa"
+                    : "Normal"}
               </span>
             </div>
 
@@ -897,10 +907,10 @@ export default function AdminDashboardPage() {
               
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                   <span className="font-semibold text-slate-700">AI Chatbot Engine</span>
                 </div>
-                <span className="text-[11px] font-bold text-emerald-600">Siap 24/7</span>
+                <span className="text-[11px] font-bold text-blue-600">Siap 24/7</span>
               </div>
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
@@ -921,10 +931,10 @@ export default function AdminDashboardPage() {
 
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-purple-500" />
+                  <div className="w-2 h-2 rounded-full bg-blue-600" />
                   <span className="font-semibold text-slate-700">Portal Publik Live</span>
                 </div>
-                <span className="text-[11px] font-bold text-purple-600">Terkoneksi</span>
+                <span className="text-[11px] font-bold text-blue-600">Terkoneksi</span>
               </div>
 
             </div>
@@ -950,8 +960,8 @@ export default function AdminDashboardPage() {
               </div>
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
                 <span className="text-slate-500">Status Kuliah:</span>
-                <span className="inline-flex items-center gap-1 font-bold text-emerald-600">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="inline-flex items-center gap-1 font-bold text-blue-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
                   <span>Aktif Berjalan</span>
                 </span>
               </div>
