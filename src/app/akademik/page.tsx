@@ -39,7 +39,7 @@ const fakultasData: FakultasItem[] = [
     code: "FEB",
     name: "Fakultas Ekonomi dan Bisnis",
     slug: "/feb",
-    cover: "/images/feb-full.jpg",
+    cover: "/images/akademik/fakultas-feb.jpg",
     prodiTags: ["S1 Manajemen", "S1 Akuntansi"],
     desc: "Mencetak profesional bisnis, akuntan korporasi, dan entrepreneur tangguh berkarakter Triputra DNA yang adaptif di era transformasi ekonomi digital.",
   },
@@ -48,7 +48,7 @@ const fakultasData: FakultasItem[] = [
     code: "FSH",
     name: "Fakultas Sosial dan Humaniora",
     slug: "/fsh",
-    cover: "/images/fsh-full.jpg",
+    cover: "/images/akademik/fakultas-fsh.jpg",
     prodiTags: ["S1 Pariwisata", "S1 Bahasa Inggris"],
     desc: "Mengembangkan kepemimpinan humanis, kompetensi komunikasi internasional, dan keahlian manajemen hospitaliti & pariwisata berkelanjutan.",
   },
@@ -57,7 +57,7 @@ const fakultasData: FakultasItem[] = [
     code: "FST",
     name: "Fakultas Sains dan Teknologi",
     slug: "/fst",
-    cover: "/images/ar-vr.jpg",
+    cover: "/images/akademik/fakultas-fst.jpg",
     prodiTags: ["S1 Informatika", "S1 Sistem Informasi", "S1 Rekayasa Perangkat Lunak"],
     desc: "Membekali mahasiswa dengan keahlian kecerdasan buatan, rekayasa perangkat lunak skala industri, analitika data, dan komputasi modern.",
   },
@@ -66,7 +66,7 @@ const fakultasData: FakultasItem[] = [
     code: "FKes",
     name: "Fakultas Kesehatan",
     slug: "/fkes",
-    cover: "/images/kuliah-1.jpeg",
+    cover: "/images/akademik/fakultas-fkes.jpg",
     prodiTags: [
       "S1 Fisioterapi",
       "S1 Kesehatan dan Keselamatan Kerja (K3)",
@@ -89,6 +89,20 @@ const prodiOrder = [
   "kesehatan-dan-keselamatan-kerja",
   "keperawatan",
 ];
+
+// Foto contoh (dummy) yang disesuaikan dengan tema tiap program studi.
+const prodiImages: Record<string, string> = {
+  manajemen: "/images/akademik/prodi-manajemen.jpg",
+  akuntansi: "/images/akademik/prodi-akuntansi.jpg",
+  informatika: "/images/akademik/prodi-informatika.jpg",
+  "sistem-informasi": "/images/akademik/prodi-sistem-informasi.jpg",
+  "rekayasa-perangkat-lunak": "/images/akademik/prodi-rpl.jpg",
+  pariwisata: "/images/akademik/prodi-pariwisata.jpg",
+  "bahasa-inggris": "/images/akademik/prodi-bahasa-inggris.jpg",
+  fisioterapi: "/images/akademik/prodi-fisioterapi.jpg",
+  "kesehatan-dan-keselamatan-kerja": "/images/akademik/prodi-k3.jpg",
+  keperawatan: "/images/akademik/prodi-keperawatan.jpg",
+};
 
 const shortRole = (role: string) => role.split(" / ")[0].replace(/\s*\(.*?\)\s*/g, " ").trim();
 
@@ -232,7 +246,7 @@ export default function AkademikOverviewPage() {
                 >
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
                     <Image
-                      src={p.heroImage}
+                      src={prodiImages[p.slug] ?? p.heroImage}
                       alt={p.name}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
