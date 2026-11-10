@@ -19,7 +19,7 @@ const defaultBanner: AkademikBanner = {
   title: "Beragam Jalur\nAkademik, Satu Tujuan",
   description:
     "Kenali berbagai fakultas dan program studi di UPITRA dan\npilih kesempatan yang paling sesuai dengan prestasi, kualifikasi, dan potensimu.",
-  imageUrl: "/images/banners/hero-campus-students-optimized.jpg",
+  imageUrl: "/images/banners/akademik-banner.jpg",
 };
 
 interface FakultasItem {
@@ -151,9 +151,9 @@ export default function AkademikOverviewPage() {
             sizes="100vw"
             className="-z-20 object-cover object-center"
           />
-          {/* Tint biru kebiruan: lebih pekat di kiri (area teks), foto tetap terlihat jelas di kanan */}
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#3a6bb5]/60 via-[#3a6bb5]/35 to-[#3a6bb5]/10" />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/25 to-transparent" />
+          {/* Foto sudah memiliki tint biru di sisi kiri; overlay tipis hanya menjaga keterbacaan teks */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#1f4f94]/30 via-[#1f4f94]/10 to-transparent" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
 
           <div className="mx-auto flex min-h-[320px] w-full max-w-[1440px] flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[400px] sm:px-12 lg:min-h-[485px] lg:px-[120px] lg:pb-20">
             <h1 className="max-w-4xl whitespace-pre-line text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.35)] sm:text-5xl lg:text-[60px]">
