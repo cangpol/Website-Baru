@@ -100,7 +100,7 @@ export default function TentangUpitraPage() {
         </section>
 
         {/* 4 Nilai Utama Karakter (Triputra DNA & Nilai Ignasian) */}
-        <section className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xs space-y-8">
+        <section id="upitra-dna" className="scroll-mt-24 bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xs space-y-8">
           <div className="max-w-2xl">
             <span className="text-xs font-bold text-blue-700 tracking-wider uppercase">Falsafah Pendidikan</span>
             <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] mt-1">
