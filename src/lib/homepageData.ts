@@ -76,7 +76,7 @@ export interface HomepageStats {
 export const defaultHomepageStats: HomepageStats = {
   title: "UPITRA Dalam Angka",
   subtitle: "Beberapa prestasi & capaian kami dalam 4 tahun terakhir.",
-  studentCutoutImage: "/images/upitra-student-achiever.png",
+  studentCutoutImage: "/images/upitra-student-stats.webp",
   metrics: [
     { id: "mahasiswa", value: "600+", label: "Mahasiswa Aktif" },
     { id: "fakultas", value: "4", label: "Fakultas" },

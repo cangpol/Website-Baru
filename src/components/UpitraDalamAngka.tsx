@@ -23,7 +23,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
 
   return (
     <section className="relative w-full overflow-hidden bg-[#006bbd] text-white" aria-label="UPITRA Dalam Angka">
-      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center lg:min-h-[642px] lg:grid-cols-[minmax(0,61fr)_minmax(0,39fr)]">
+      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center lg:min-h-[642px] lg:grid-cols-[minmax(0,864fr)_minmax(0,576fr)]">
         {/* Left: centered title + 3 × 2 metric cards */}
         <div className="flex flex-col items-center justify-center gap-6 px-4 pt-10 sm:px-12 lg:gap-7 lg:px-10 lg:py-16">
           <motion.div
@@ -81,14 +81,14 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative mx-auto h-[360px] w-full max-w-[340px] overflow-hidden sm:h-[420px] lg:mx-0 lg:h-full lg:max-w-none lg:self-stretch"
+          className="relative mx-auto aspect-[576/642] w-full max-w-[340px] sm:max-w-[400px] lg:mx-0 lg:max-w-none lg:self-end"
         >
           <Image
-            src={statsData.studentCutoutImage || "/images/upitra-student-achiever.png"}
+            src={statsData.studentCutoutImage || "/images/upitra-student-stats.webp"}
             alt="Mahasiswi Berprestasi Universitas Pignatelli Triputra"
             fill
-            sizes="(max-width: 1024px) 340px, 40vw"
-            className="pointer-events-none object-contain object-bottom lg:object-right-bottom"
+            sizes="(max-width: 1024px) 400px, 576px"
+            className="pointer-events-none object-cover object-bottom"
           />
         </motion.div>
       </div>
