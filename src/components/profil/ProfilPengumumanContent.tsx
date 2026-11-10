@@ -1,9 +1,4 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import PageHeader from "@/components/PageHeader";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { 
   Bell, 
   Calendar, 
@@ -15,10 +10,7 @@ import {
   Pin 
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Pengumuman Resmi - Profil UPITRA Surakarta",
-  description: "Papan pengumuman resmi akademik, jadwal registrasi semester, informasi beasiswa, dan edaran universitas bagi mahasiswa UPITRA.",
-};
+
 
 const pengumumanList = [
   {
@@ -78,22 +70,10 @@ const pengumumanList = [
   },
 ];
 
-export default function PengumumanPage() {
+export default function ProfilPengumumanContent() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <Navbar />
+    <div className="space-y-10">
 
-      <PageHeader 
-        badge="Papan Informasi Resmi"
-        title="Pengumuman"
-        description="Surat edaran, jadwal kegiatan akademik penting, pengumuman beasiswa, dan pemberitahuan resmi rektorat bagi sivitas akademika UPITRA."
-        breadcrumbs={[
-          { label: "Profil", href: "/profil" },
-          { label: "Pengumuman" }
-        ]}
-      />
-
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-10">
         
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -184,11 +164,7 @@ export default function PengumumanPage() {
           </a>
         </div>
 
-      </main>
-
-      <Footer />
-      <FloatingWhatsApp />
+      
     </div>
   );
 }
-

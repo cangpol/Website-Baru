@@ -226,7 +226,7 @@ export default function RisetPortalPage() {
             </div>
 
             <Link
-              href="/profil/berita-kampus"
+              href="/profil?tab=berita"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-800 transition-colors shrink-0 group"
             >
               <span>Lihat Semua Berita</span>

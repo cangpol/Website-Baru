@@ -1,9 +1,4 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import PageHeader from "@/components/PageHeader";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { 
   Users, 
   GraduationCap, 
@@ -17,10 +12,7 @@ import {
   Briefcase
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Pimpinan Universitas - Rektorat & Dekanat UPITRA",
-  description: "Profil jajaran eksekutif Universitas Pignatelli Triputra Surakarta: Rektor Neil Semuel Rupidara, Ph.D, para Wakil Rektor, dan Dekanat 4 Fakultas Unggulan.",
-};
+
 
 interface PimpinanItem {
   nama: string;
@@ -150,22 +142,10 @@ const dekanatList: DekanItem[] = [
   },
 ];
 
-export default function PimpinanUniversitasPage() {
+export default function ProfilPimpinanContent() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <Navbar />
+    <div className="space-y-16">
 
-      <PageHeader 
-        badge="Struktur Kepemimpinan Institusi"
-        title="Pimpinan Universitas"
-        description="Jajaran Rektorat dan Dekanat yang mendedikasikan keahlian dan komitmen untuk mengantarkan UPITRA menjadi mercusuar pendidikan tinggi berkarakter unggul."
-        breadcrumbs={[
-          { label: "Profil", href: "/profil" },
-          { label: "Pimpinan Universitas" }
-        ]}
-      />
-
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16">
         
         {/* REKTORAT */}
         <section className="space-y-8">
@@ -340,10 +320,7 @@ export default function PimpinanUniversitasPage() {
           </div>
         </section>
 
-      </main>
-
-      <Footer />
-      <FloatingWhatsApp />
+      
     </div>
   );
 }

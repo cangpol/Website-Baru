@@ -68,13 +68,13 @@ export default function Footer() {
             </div>
 
             <div className="space-y-1.5 pt-2 border-t border-blue-950/80 text-xs">
-              <Link href="/profil/tentang-upitra" className="block text-slate-300 hover:text-sky-300 transition-colors">
+              <Link href="/profil" className="block text-slate-300 hover:text-sky-300 transition-colors">
                 • Tentang UPITRA
               </Link>
-              <Link href="/profil/visi-misi-tujuan" className="block text-slate-300 hover:text-sky-300 transition-colors">
+              <Link href="/profil?tab=visi-misi" className="block text-slate-300 hover:text-sky-300 transition-colors">
                 • Visi Misi Tujuan
               </Link>
-              <Link href="/profil/pimpinan-universitas" className="block text-slate-300 hover:text-sky-300 transition-colors">
+              <Link href="/profil?tab=pimpinan" className="block text-slate-300 hover:text-sky-300 transition-colors">
                 • Pimpinan Universitas
               </Link>
               <Link href="/profil/prestasi-dan-capaian" className="block text-slate-300 hover:text-sky-300 transition-colors">

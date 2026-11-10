@@ -1,9 +1,4 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import PageHeader from "@/components/PageHeader";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { 
   Target, 
   Compass, 
@@ -19,10 +14,7 @@ import {
   BookOpen
 } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Visi, Misi & 7 Tujuan Strategis - Profil UPITRA",
-  description: "Visi transformatif, 6 Misi institusi, dan 7 Tujuan Strategis Universitas Pignatelli Triputra Surakarta dalam mencetak lulusan unggul berkarakter Triputra DNA.",
-};
+
 
 const misiList = [
   {
@@ -67,22 +59,10 @@ const tujuanList = [
   "Menyediakan sarana dan prasarana kampus yang modern, aman, inklusif, dan ramah lingkungan guna menunjang ekosistem belajar yang inspiratif dan berdaya guna."
 ];
 
-export default function VisiMisiTujuanPage() {
+export default function ProfilVisiMisiContent() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <Navbar />
+    <div className="space-y-16">
 
-      <PageHeader 
-        badge="Landasan Strategis Institusi"
-        title="Visi, Misi & Tujuan"
-        description="Arah kiblat dan komitmen fundamental Universitas Pignatelli Triputra dalam mewujudkan pendidikan berintegritas tinggi dan berdampak nyata bagi bangsa."
-        breadcrumbs={[
-          { label: "Profil", href: "/profil" },
-          { label: "Visi Misi Tujuan" }
-        ]}
-      />
-
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16">
         
         {/* VISI BESAR UPITRA */}
         <section className="bg-gradient-to-br from-[#06172e] via-[#092244] to-[#0b2b54] rounded-3xl p-8 sm:p-14 text-white shadow-xl border border-blue-900/60 relative overflow-hidden">
@@ -172,7 +152,7 @@ export default function VisiMisiTujuanPage() {
             <p className="text-xs text-slate-600">Pelajari rekam jejak akademisi dan pimpinan yang memajukan UPITRA.</p>
           </div>
           <Link
-            href="/profil/pimpinan-universitas"
+            href="/profil?tab=pimpinan"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors shadow-xs"
           >
             <span>Lihat Pimpinan Universitas</span>
@@ -180,11 +160,7 @@ export default function VisiMisiTujuanPage() {
           </Link>
         </div>
 
-      </main>
-
-      <Footer />
-      <FloatingWhatsApp />
+      
     </div>
   );
 }
-

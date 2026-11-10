@@ -61,6 +61,12 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Menu Profil kini berjalan di dalam /profil (tab), halaman lama dialihkan.
+      { source: "/profil/tentang-upitra", destination: "/profil", permanent: true },
+      { source: "/profil/visi-misi-tujuan", destination: "/profil?tab=visi-misi", permanent: true },
+      { source: "/profil/pimpinan-universitas", destination: "/profil?tab=pimpinan", permanent: true },
+      { source: "/profil/berita-kampus", destination: "/profil?tab=berita", permanent: true },
+      { source: "/profil/pengumuman", destination: "/profil?tab=pengumuman", permanent: true },
       {
         source: "/berita",
         destination: "/riset",
