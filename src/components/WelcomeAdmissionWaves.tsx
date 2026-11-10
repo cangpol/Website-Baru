@@ -91,6 +91,17 @@ export default function WelcomeAdmissionWaves({ initialData }: { initialData?: H
           ))}
         </div>
 
+        <div className="mt-5 flex justify-end">
+          <Link
+            href="https://pmb.upitra.ac.id"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs sm:text-sm font-bold text-[#006bbd] hover:underline"
+          >
+            Selengkapnya →
+          </Link>
+        </div>
+
       </div>
     </section>
   );

@@ -39,7 +39,7 @@ export interface ConnectedInstagramAccount {
   recentPosts: InstagramFeedCard[];
 }
 
-export const initialConnectedInstagramAccount: ConnectedInstagramAccount = {
+const initialConnectedInstagramAccount: ConnectedInstagramAccount = {
   isConnected: false,
   username: "upitra_campus",
   displayName: "Universitas Pignatelli Triputra",

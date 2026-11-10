@@ -5,11 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { HomepageInstagram, defaultHomepageInstagram } from "@/lib/homepageData";
+import { HomepageInstagram, HomepageInstagramPost, defaultHomepageInstagram } from "@/lib/homepageData";
 
 export default function KabarCeritaKampus({ initialData }: { initialData?: HomepageInstagram }) {
   const [igData, setIgData] = useState<HomepageInstagram>(initialData || defaultHomepageInstagram);
-  const [posts, setPosts] = useState<any[]>(() => (initialData?.posts ? initialData.posts : defaultHomepageInstagram.posts));
+  const [posts, setPosts] = useState<HomepageInstagramPost[]>(() => (initialData?.posts ? initialData.posts : defaultHomepageInstagram.posts));
 
   // Connect dynamically to Instagram data via homepage API
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
 
   return (
     <section 
-      className="w-full bg-blue-50 py-14 sm:py-16 lg:py-20 select-none overflow-hidden"
+      className="w-full bg-white py-14 sm:py-16 lg:py-20 select-none overflow-hidden"
       aria-label="Kabar & Cerita Kampus Instagram Feed"
     >
       <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-16 lg:px-[120px]">
@@ -65,7 +65,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
                 href={post.permalink || igData.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block relative aspect-square rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-blue-950 border border-white/60"
+                className="group block relative aspect-[5/4] rounded-lg overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-blue-950 border border-slate-100"
               >
                 {/* Background Image */}
                 <Image
@@ -106,7 +106,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white rounded-2xl p-4 sm:p-5 border border-white/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 lg:mt-10"
+          className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 lg:mt-10"
         >
           {/* Left: Account Identity */}
           <div className="flex items-center gap-3.5">
