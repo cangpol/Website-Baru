@@ -27,7 +27,7 @@ export default function WelcomeAdmissionWaves({ initialData }: { initialData?: H
       className="w-full bg-white py-14 sm:py-18 lg:py-20 border-b border-slate-100"
       aria-label="Gelombang Pendaftaran UPITRA"
     >
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-[clamp(24px,8.5vw,120px)]">
+      <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-12 md:px-[clamp(24px,8.5vw,120px)]">
         
         {/* Section Header */}
         <motion.div 
@@ -35,7 +35,7 @@ export default function WelcomeAdmissionWaves({ initialData }: { initialData?: H
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center space-y-1.5 mb-2"
+          className="text-center space-y-1.5 mb-5 sm:mb-6"
         >
           <h2 className="text-2xl sm:text-[26px] lg:text-[30px] font-black text-[#006bbd] tracking-tight leading-tight font-sans">
             {wavesData.title}
@@ -46,7 +46,7 @@ export default function WelcomeAdmissionWaves({ initialData }: { initialData?: H
         </motion.div>
 
         {/* 3 Admission Wave Cards (1440x679 Frame Specification) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-md sm:max-w-none mx-auto">
           {wavesData.waves.map((wave, index) => (
             <motion.div
               key={wave.id || index}

@@ -26,7 +26,7 @@ export default function CtaReadyFamily({ initialData }: { initialData?: Homepage
       className="w-full bg-white py-16 sm:py-20 lg:py-24 select-none border-b border-slate-100" 
       aria-label="Ajakan Bergabung UPITRA"
     >
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-16 lg:px-[120px] text-center flex flex-col items-center justify-center">
+      <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-12 md:px-16 lg:px-[120px] text-center flex flex-col items-center justify-center">
         
         {/* Eyebrow / Overline */}
         <motion.span 

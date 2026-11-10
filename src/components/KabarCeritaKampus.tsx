@@ -33,7 +33,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
       className="w-full bg-white py-14 sm:py-16 lg:py-20 select-none overflow-hidden"
       aria-label="Kabar & Cerita Kampus Instagram Feed"
     >
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-16 lg:px-[120px]">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-12 md:px-16 lg:px-[120px]">
         
         {/* Section Header */}
         <motion.div 
@@ -106,10 +106,10 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 lg:mt-10"
+          className="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left mt-8 lg:mt-10"
         >
           {/* Left: Account Identity */}
-          <div className="flex items-center gap-3.5">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3.5">
             <div className="relative w-10 h-10 shrink-0">
               <Image
                 src="/images/logo-upitra.png"

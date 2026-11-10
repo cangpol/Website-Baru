@@ -28,7 +28,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
       aria-label="Grand Gateway UPITRA"
     >
       <div 
-        className="relative w-full max-w-[1440px] h-[70vw] min-h-[460px] max-h-[680px] sm:h-[min(50.5vw,680px)] sm:min-h-[420px] mx-auto overflow-hidden flex items-start pt-[72px] sm:pt-[clamp(72px,10.5vw,110px)] pb-12 px-[clamp(32px,8.8vw,120px)]"
+        className="relative w-full max-w-[1440px] h-[70vw] min-h-[460px] max-h-[680px] sm:h-[min(50.5vw,680px)] sm:min-h-[420px] mx-auto overflow-hidden flex items-start pt-[72px] sm:pt-[clamp(72px,10.5vw,110px)] pb-12 px-[clamp(20px,8.8vw,120px)]"
       >
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <Image
@@ -70,7 +70,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-              className="text-xs sm:text-[11px] text-white leading-[1.35] font-medium max-w-[320px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]"
+              className="text-sm sm:text-xs lg:text-sm text-white leading-snug font-medium max-w-[340px] sm:max-w-[320px] lg:max-w-[380px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]"
             >
               {hero.subtitle}
             </motion.p>
@@ -85,7 +85,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
               href={hero.ctaHref || "https://pmb.upitra.ac.id"}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
+              className="inline-flex items-center justify-center px-6 py-3 sm:py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-sm sm:text-xs shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
             >
               {hero.ctaLabel || "Daftar Sekarang"}
             </Link>

@@ -26,7 +26,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
       className="w-full bg-gradient-to-br from-[#2f6fcb] to-[#1f55b0] py-10 sm:py-12 md:py-10 overflow-hidden"
       aria-label="UPITRA Dalam Angka"
     >
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 md:px-[clamp(32px,8vw,120px)]">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-12 md:px-[clamp(32px,8vw,120px)]">
         <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,0.62fr)] gap-6 md:gap-7 items-center">
           
           {/* Left Column: Student Image Looking Up Towards Metrics (Transparent Cutout) */}

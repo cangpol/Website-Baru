@@ -140,7 +140,7 @@ export default function AIChatAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
-      text: "Halo! Saya **AI Chat Assistant UPITRA** ✨\n\nSelamat datang di Universitas Pignatelli Triputra! Saya siap membantu menjawab pertanyaan Anda seputar:\n• **Pendaftaran Mahasiswa Baru (PMB)**\n• **Program Studi & 4 Fakultas Unggulan**\n• **Beasiswa (KIP-K, Triputra, Mitra)**\n• **Kurikulum 3+1 (Kuliah + Immersion)**\n\nApa yang ingin Anda tanyakan hari ini?",
+      text: "Halo! Saya **Veronica** ✨\n\nSelamat datang di Universitas Pignatelli Triputra! Saya siap membantu menjawab pertanyaan Anda seputar:\n• **Pendaftaran Mahasiswa Baru (PMB)**\n• **Program Studi & 4 Fakultas Unggulan**\n• **Beasiswa (KIP-K, Triputra, Mitra)**\n• **Kurikulum 3+1 (Kuliah + Immersion)**\n\nApa yang ingin Anda tanyakan hari ini?",
       time: "Baru saja"
     }
   ]);
@@ -244,10 +244,9 @@ export default function AIChatAssistant() {
                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 <div className="text-left">
                   <p className="text-[11px] font-bold text-[#0b2545] leading-none flex items-center gap-1">
-                    <span>AI Assistant UPITRA</span>
+                    <span>Veronica</span>
                     <Sparkles className="w-3 h-3 text-sky-500 inline" />
                   </p>
-                  <p className="text-[10px] text-slate-500 leading-tight mt-0.5">Asisten Virtual Online 24/7</p>
                 </div>
                 <button
                   onClick={(e) => {
@@ -284,13 +283,13 @@ export default function AIChatAssistant() {
               }}
               whileHover={{ scale: 1.1, y: -4 }}
               whileTap={{ scale: 0.94 }}
-              aria-label="Buka AI Chat Assistant UPITRA"
+              aria-label="Buka chat Veronica"
               className="relative cursor-pointer group flex items-center justify-center select-none"
             >
               {/* Character Avatar Image (Natural Cutout Tanpa Round) */}
               <img
                 src="/images/ai/upitra-ai-assistant.png"
-                alt="AI Chat Assistant UPITRA"
+                alt="Veronica"
                 className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_12px_24px_rgba(2,132,199,0.35)] group-hover:drop-shadow-[0_16px_32px_rgba(2,132,199,0.5)] transition-all duration-300"
               />
 
@@ -327,7 +326,7 @@ export default function AIChatAssistant() {
                   <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
                     <img
                       src="/images/ai/upitra-ai-assistant.png"
-                      alt="AI Chat Assistant UPITRA"
+                      alt="Veronica"
                       className="w-12 h-12 object-contain drop-shadow-md"
                     />
                     <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-blue-400 border-2 border-[#06172e] rounded-full"></span>
@@ -335,13 +334,9 @@ export default function AIChatAssistant() {
 
                   <div>
                     <h3 className="font-black text-white text-sm sm:text-base leading-tight flex items-center gap-1.5">
-                      <span>AI Assistant UPITRA</span>
+                      <span>Veronica</span>
                       <Sparkles className="w-3.5 h-3.5 text-sky-300" />
                     </h3>
-                    <p className="text-[11px] text-sky-100 font-medium flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300"></span>
-                      <span>Layanan Informasi Kampus 24/7</span>
-                    </p>
                   </div>
                 </div>
 
@@ -492,8 +487,7 @@ export default function AIChatAssistant() {
               </form>
 
               {/* Footer Note with WhatsApp fallback link */}
-              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5 px-1">
-                <span>AI Chat Assistant UPITRA • Online 24/7</span>
+              <div className="flex items-center justify-end text-[10px] text-slate-400 pt-0.5 px-1">
                 <a
                   href={WA_ADMISI_URL}
                   target="_blank"
