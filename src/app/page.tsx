@@ -25,7 +25,7 @@ export default async function HomePage() {
         {content.visibility.waves && <WelcomeAdmissionWaves initialData={content.waves} />}
 
         {/* Program Immersion 3+1 */}
-        {content.visibility.waves && <HomepageImmersion />}
+        {content.visibility.immersion && <HomepageImmersion initialData={content.immersion} />}
 
         {/* 5. Kabar & Cerita Kampus (Feed Terhubung Instagram Basic Display API 1440x662) */}
         {content.visibility.instagram && <KabarCeritaKampus initialData={content.instagram} />}

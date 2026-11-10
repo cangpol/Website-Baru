@@ -33,7 +33,8 @@ export async function POST(request: Request) {
     }
 
     // Field customDataset dari klien diabaikan demi keamanan (baca langsung dari DB)
-    const dbDataset = await getAIDataset();
+    // Hanya entri aktif yang boleh dijawab chatbot.
+    const dbDataset = (await getAIDataset()).filter((item) => item.active !== false);
     const result = searchAiKnowledge(message, dbDataset);
     return NextResponse.json(result);
   } catch (error) {

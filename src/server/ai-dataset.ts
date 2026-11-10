@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
+import officialKnowledge from "@/data/upitraAiKnowledge.json";
 
 const aiDatasetItemSchema = z.object({
   id: z.string(),
@@ -20,40 +21,21 @@ const aiDatasetListSchema = z.array(aiDatasetItemSchema);
 
 export type AIDatasetItem = z.infer<typeof aiDatasetItemSchema>;
 
-const DEFAULT_AI_DATASET: AIDatasetItem[] = [
-  {
-    id: "ds-pmb-01",
-    category: "PMB & Beasiswa",
-    question: "Bagaimana cara mendaftar PMB UPITRA 2026?",
-    answer: "Pendaftaran dapat dilakukan secara online melalui website resmi upitra.ac.id pada formulir pendaftaran cepat atau menghubungi WhatsApp Hotline PMB di 0811-2658-884.",
-    keywords: ["daftar", "pmb", "cara daftar", "biaya pendaftaran", "gelombang"],
+// Basis pengetahuan resmi (214 entri) menjadi default agar dashboard admin dan chatbot publik selaras
+// sebelum ada dataset kustom yang disimpan ke database.
+const DEFAULT_AI_DATASET: AIDatasetItem[] = (
+  officialKnowledge as Array<{ id?: string; category?: string; question?: string; answer?: string; keywords?: string[] }>
+)
+  .filter((item) => item.question && item.answer)
+  .map((item, index) => ({
+    id: item.id || `ds-default-${index + 1}`,
+    category: item.category || "umum",
+    question: item.question as string,
+    answer: item.answer as string,
+    keywords: Array.isArray(item.keywords) ? item.keywords : [],
     active: true,
-  },
-  {
-    id: "ds-pmb-02",
-    category: "PMB & Beasiswa",
-    question: "Apa saja jalur beasiswa yang tersedia di UPITRA?",
-    answer: "UPITRA menyediakan Jalur Ready Early (Beasiswa hingga 100% DPP & SKS), Ready Achievement (Prestasi Akademik/Non-Akademik), dan Ready Admission (Keringanan DPP).",
-    keywords: ["beasiswa", "potongan", "keringanan", "ready early", "gratis"],
-    active: true,
-  },
-  {
-    id: "ds-akd-01",
-    category: "Akademik & Fakultas",
-    question: "Apa saja program studi yang ada di UPITRA?",
-    answer: "UPITRA memiliki 4 Fakultas dan 10 Program Studi, antara lain S1 Informatika, S1 Sistem Informasi, S1 Rekayasa Perangkat Lunak, S1 Pariwisata, S1 Bahasa Inggris, S1 Manajemen, S1 Akuntansi, S1 Hukum, D3 Keperawatan, dan D3 Kebidanan.",
-    keywords: ["prodi", "jurusan", "fakultas", "studi", "s1", "d3"],
-    active: true,
-  },
-  {
-    id: "ds-ind-01",
-    category: "Kerjasama Industri",
-    question: "Apa keunggulan program magang Triputra Group?",
-    answer: "UPITRA memiliki program immersion 3+1 (3 tahun kuliah kampus, 1 tahun magang industri terarah di anak perusahaan Triputra Group) dengan peluang direkrut langsung sebelum wisuda.",
-    keywords: ["triputra", "magang", "kerja", "lulusan", "penyerapan"],
-    active: true,
-  },
-];
+    updatedAt: "Bawaan Sistem",
+  }));
 
 export async function getAIDataset(): Promise<AIDatasetItem[]> {
   try {
@@ -92,7 +74,7 @@ export async function saveAIDatasetAction(dataset: AIDatasetItem[]) {
       create: {
         key: "ai_dataset",
         value: validated.data,
-        description: "Basis pengetahuan Q&A untuk chatbot AI Assistant UPITRA",
+        description: "Basis pengetahuan Q&A untuk Veronica",
       },
       update: {
         value: validated.data,

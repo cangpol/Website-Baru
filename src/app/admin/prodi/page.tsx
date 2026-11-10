@@ -395,7 +395,7 @@ export default function AdminProdiCrudPage() {
 
       {/* MODAL CREATE / EDIT PRODI */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4">
           <div className="fixed inset-0 bg-black/80 backdrop-blur-xs" onClick={() => setModalOpen(false)} />
           <div className="relative w-full max-w-xl bg-[#071a33] border border-blue-900/80 rounded-3xl p-6 shadow-2xl z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
             
@@ -568,7 +568,7 @@ export default function AdminProdiCrudPage() {
 
       {/* MODAL KONFIRMASI DELETE */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4">
           <div className="fixed inset-0 bg-black/80 backdrop-blur-xs" onClick={() => setDeleteConfirmId(null)} />
           <div className="relative w-full max-w-sm bg-[#071a33] border border-rose-500/40 rounded-3xl p-6 shadow-2xl z-10 text-center space-y-4">
             <div className="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto border border-rose-500/40">

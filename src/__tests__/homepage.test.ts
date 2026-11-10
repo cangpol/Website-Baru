@@ -120,3 +120,12 @@ describe("Homepage content", () => {
     expect(editedContent.waves.waves[0].badge).toBe("");
   });
 });
+
+describe("homepage immersion defaults", () => {
+  it("includes immersion content and visibility by default", async () => {
+    const { defaultHomepageImmersion, defaultHomepageVisibility } = await import("@/lib/homepageData");
+    expect(defaultHomepageVisibility.immersion).toBe(true);
+    expect(defaultHomepageImmersion.pillars.length).toBeGreaterThanOrEqual(4);
+    expect(defaultHomepageImmersion.concepts[0].note).toContain("Semester");
+  });
+});

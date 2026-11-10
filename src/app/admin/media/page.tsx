@@ -373,7 +373,7 @@ export default function AdminMediaPage() {
 
       {/* Modal Edit Alt Text */}
       {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-xs p-4">
           <div className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Edit Deskripsi Alternatif (Alt Text)</h3>
             <p className="text-xs text-slate-400">
@@ -410,7 +410,7 @@ export default function AdminMediaPage() {
 
       {/* Modal Delete Confirm */}
       {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-xs p-4">
           <div className="w-full max-w-md bg-slate-900 border border-red-900/50 rounded-2xl p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-red-400 flex items-center gap-2">
               <AlertCircle className="w-5 h-5" />

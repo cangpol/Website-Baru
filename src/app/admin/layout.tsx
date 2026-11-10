@@ -23,7 +23,9 @@ import {
   Users,
   UserCheck,
   Building2,
-  FileDown
+  FileDown,
+  Camera,
+  BookOpen
 } from "lucide-react";
 import Image from "next/image";
 import { logoutAdminAction } from "@/app/actions/auth";
@@ -43,11 +45,14 @@ interface SidebarItem {
   icon: any;
   badge: string;
   badgeColor: string;
+  /** Peran yang boleh melihat menu ini. Kosong = semua peran. Harus selaras dengan requirePermission di server. */
+  roles?: string[];
 }
 
 const sidebarNavigation: SidebarItem[] = [
   {
     id: "halaman-depan",
+    roles: ["SUPERADMIN"],
     groupTitle: "BERANDA",
     label: "Halaman Depan",
     href: "/admin/halaman-depan",
@@ -57,6 +62,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "beranda",
+    roles: ["SUPERADMIN"],
     groupTitle: "BERANDA",
     label: "Hero & Banner",
     href: "/admin/banner-hero",
@@ -66,6 +72,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "profil",
+    roles: ["SUPERADMIN"],
     groupTitle: "PROFIL",
     label: "Profil & Pimpinan",
     href: "/admin/profil",
@@ -75,6 +82,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "akademik",
+    roles: ["SUPERADMIN", "STAFF_PMB"],
     groupTitle: "AKADEMIK",
     label: "Kalender & Prodi",
     href: "/admin/akademik",
@@ -84,6 +92,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "riset",
+    roles: ["SUPERADMIN", "CONTENT_WRITER"],
     groupTitle: "RISET",
     label: "Berita & Riset",
     href: "/admin/riset",
@@ -93,6 +102,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "kemahasiswaan",
+    roles: ["SUPERADMIN"],
     groupTitle: "KEMAHASISWAAN",
     label: "Ormawa & Prestasi",
     href: "/admin/kemahasiswaan",
@@ -102,6 +112,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "kerjasama",
+    roles: ["SUPERADMIN"],
     groupTitle: "KERJASAMA",
     label: "Mitra & MoU",
     href: "/admin/kerjasama",
@@ -111,6 +122,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "layanan",
+    roles: ["SUPERADMIN"],
     groupTitle: "LAYANAN",
     label: "Katalog & Unduhan",
     href: "/admin/layanan",
@@ -120,6 +132,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "pmb",
+    roles: ["SUPERADMIN", "STAFF_PMB"],
     groupTitle: "PMB & TOUR",
     label: "Data Leads & Tour",
     href: "/admin/pmb-leads",
@@ -129,6 +142,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "ai-dataset",
+    roles: ["SUPERADMIN"],
     groupTitle: "AI ASSISTANT",
     label: "AI Dataset Q&A",
     href: "/admin/ai-dataset",
@@ -137,7 +151,48 @@ const sidebarNavigation: SidebarItem[] = [
     badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
+    id: "instagram-sync",
+    roles: ["SUPERADMIN"],
+    groupTitle: "BERANDA",
+    label: "Feed Instagram",
+    href: "/admin/instagram-sync",
+    icon: Camera,
+    badge: "Sinkron",
+    badgeColor: "bg-blue-500/20 text-sky-200 border-blue-400/30",
+  },
+  {
+    id: "prodi",
+    roles: ["SUPERADMIN", "STAFF_PMB"],
+    groupTitle: "AKADEMIK",
+    label: "Program Studi",
+    href: "/admin/prodi",
+    icon: BookOpen,
+    badge: "Prodi",
+    badgeColor: "bg-blue-500/20 text-sky-200 border-blue-400/30",
+  },
+  {
+    id: "mitra",
+    roles: ["SUPERADMIN"],
+    groupTitle: "KERJASAMA",
+    label: "Logo Mitra",
+    href: "/admin/mitra",
+    icon: Handshake,
+    badge: "Mitra",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
+  },
+  {
+    id: "download-center",
+    roles: ["SUPERADMIN"],
+    groupTitle: "LAYANAN",
+    label: "Pusat Unduhan",
+    href: "/admin/download-center",
+    icon: FileDown,
+    badge: "Berkas",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
+  },
+  {
     id: "media",
+    roles: ["SUPERADMIN", "CONTENT_WRITER"],
     groupTitle: "PENDUKUNG",
     label: "Pustaka Media",
     href: "/admin/media",
@@ -147,6 +202,7 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "users",
+    roles: ["SUPERADMIN"],
     groupTitle: "SISTEM",
     label: "Manajemen Staf",
     href: "/admin/users",
@@ -213,6 +269,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return { group: "Administrator", page: "Portal UPITRA" };
   };
   const breadcrumb = getBreadcrumb();
+  const visibleNavigation = sidebarNavigation.filter(
+    (item) => !item.roles || (session && item.roles.includes(session.role))
+  );
 
   const handleLogout = async () => {
     await logoutAdminAction();
@@ -283,7 +342,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Navigation Groups - Clean, Complete & Mapped 1-to-1 to Navbar */}
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 custom-scrollbar">
-          {sidebarNavigation.map((item) => {
+          {visibleNavigation.map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.href);
 
@@ -442,7 +501,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <span>Dashboard Utama</span>
               </Link>
 
-              {sidebarNavigation.map((item) => {
+              {visibleNavigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname.startsWith(item.href);
                 return (

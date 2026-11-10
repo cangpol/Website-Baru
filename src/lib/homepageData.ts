@@ -155,6 +155,49 @@ export const defaultHomepageInstagram: HomepageInstagram = {
   ],
 };
 
+export interface ImmersionPillar {
+  id: string;
+  label: string;
+  image: string;
+}
+
+export interface ImmersionConcept {
+  id: string;
+  title: string;
+  note: string;
+}
+
+export interface HomepageImmersion {
+  titleLine1: string;
+  titleLine2: string;
+  badge: string;
+  description: string;
+  conceptTitle: string;
+  studentImage: string;
+  concepts: ImmersionConcept[];
+  pillars: ImmersionPillar[];
+}
+
+export const defaultHomepageImmersion: HomepageImmersion = {
+  titleLine1: "Program",
+  titleLine2: "Immersion",
+  badge: "3 Tahun Kuliah + 1 Tahun Internship",
+  description:
+    "3 tahun pembelajaran teori di kampus dan 1 tahun pengalaman nyata di dunia kerja maupun masyarakat. Program ini dirancang untuk menjembatani akademik dengan kebutuhan industri serta pemberdayaan wilayah.",
+  conceptTitle: "Konsep Utama",
+  studentImage: "/images/immersion/student.png",
+  concepts: [
+    { id: "belajar", title: "3 Tahun Belajar di Kampus", note: "(Semester 1–5)" },
+    { id: "praktik", title: "1 Tahun Praktik Lapangan", note: "(Semester 6–7)" },
+  ],
+  pillars: [
+    { id: "internship", label: "Internship", image: "/images/immersion/internship.jpg" },
+    { id: "community", label: "Community Development", image: "/images/immersion/community.jpg" },
+    { id: "entrepreneurship", label: "Entrepreneurship", image: "/images/immersion/entrepreneurship.jpg" },
+    { id: "independent", label: "Independent Study", image: "/images/immersion/independent.jpg" },
+  ],
+};
+
 export interface HomepageCta {
   eyebrow: string;
   title: string;
@@ -172,6 +215,7 @@ export const defaultHomepageCta: HomepageCta = {
 export interface HomepageVisibility {
   hero: boolean;
   waves: boolean;
+  immersion: boolean;
   stats: boolean;
   instagram: boolean;
   cta: boolean;
@@ -180,6 +224,7 @@ export interface HomepageVisibility {
 export const defaultHomepageVisibility: HomepageVisibility = {
   hero: true,
   waves: true,
+  immersion: true,
   stats: true,
   instagram: true,
   cta: true,

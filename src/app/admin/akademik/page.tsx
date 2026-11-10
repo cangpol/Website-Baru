@@ -1173,7 +1173,7 @@ export default function AdminAkademikCalendarPage() {
       {/* MODAL TAMBAH / EDIT EVENT */}
       {/* ========================================================================= */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in overflow-y-auto">
           <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
             <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50 shrink-0">
               <div className="flex items-center gap-2.5">
@@ -1379,7 +1379,7 @@ export default function AdminAkademikCalendarPage() {
 
       {/* MODAL KONFIRMASI HAPUS EVENT */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md shadow-2xl p-6 text-center space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 mx-auto flex items-center justify-center">
               <AlertCircle className="w-6 h-6" />
@@ -1410,7 +1410,7 @@ export default function AdminAkademikCalendarPage() {
 
       {/* MODAL KONFIRMASI HAPUS PDF KALENDER */}
       {deletePdfConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md shadow-2xl p-6 text-center space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 mx-auto flex items-center justify-center">
               <AlertCircle className="w-6 h-6" />

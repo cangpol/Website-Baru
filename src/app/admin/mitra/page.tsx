@@ -315,7 +315,7 @@ export default function AdminMitraPage() {
 
       {/* Modal Create / Edit */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-950/80 backdrop-blur-sm">
           <div className="bg-[#0a192f] border border-blue-900/60 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-900/40 bg-[#071322]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
@@ -430,7 +430,7 @@ export default function AdminMitraPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-950/80 backdrop-blur-sm">
           <div className="bg-[#0a192f] border border-rose-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
               <Trash2 className="w-5 h-5 text-rose-400" />

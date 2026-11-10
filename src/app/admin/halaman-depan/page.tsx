@@ -14,12 +14,14 @@ import {
   Camera,
   BarChart3,
   Flame,
+  GraduationCap,
   ArrowRight
 } from "lucide-react";
 import { 
   getHomepageContent, 
   saveHomepageHeroAction, 
   saveHomepageWavesAction, 
+  saveHomepageImmersionAction,
   saveHomepageStatsAction, 
   saveHomepageInstagramAction, 
   saveHomepageCtaAction, 
@@ -28,12 +30,14 @@ import {
 import {
   HomepageHero,
   HomepageWaves,
+  HomepageImmersion,
   HomepageStats,
   HomepageInstagram,
   HomepageCta,
   HomepageVisibility,
   defaultHomepageHero,
   defaultHomepageWaves,
+  defaultHomepageImmersion,
   defaultHomepageStats,
   defaultHomepageInstagram,
   defaultHomepageCta,
@@ -42,7 +46,7 @@ import {
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 export default function AdminHalamanDepanPage() {
-  const [activeTab, setActiveTab] = useState<"hero" | "waves" | "stats" | "instagram" | "cta" | "visibility">("hero");
+  const [activeTab, setActiveTab] = useState<"hero" | "waves" | "immersion" | "stats" | "instagram" | "cta" | "visibility">("hero");
 
   // Notification Toast
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -57,6 +61,9 @@ export default function AdminHalamanDepanPage() {
 
   const [waves, setWaves] = useState<HomepageWaves>(defaultHomepageWaves);
   const [isSavingWaves, setIsSavingWaves] = useState(false);
+
+  const [immersion, setImmersion] = useState<HomepageImmersion>(defaultHomepageImmersion);
+  const [isSavingImmersion, setIsSavingImmersion] = useState(false);
 
   const [stats, setStats] = useState<HomepageStats>(defaultHomepageStats);
   const [isSavingStats, setIsSavingStats] = useState(false);
@@ -77,6 +84,7 @@ export default function AdminHalamanDepanPage() {
         const data = await getHomepageContent();
         setHero(data.hero);
         setWaves(data.waves);
+        setImmersion(data.immersion);
         setStats(data.stats);
         setInstagram(data.instagram);
         setCta(data.cta);
@@ -114,6 +122,20 @@ export default function AdminHalamanDepanPage() {
       showToast("Gagal menyimpan gelombang PMB.", "error");
     } finally {
       setIsSavingWaves(false);
+    }
+  };
+
+  const handleSaveImmersion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingImmersion(true);
+    try {
+      const res = await saveHomepageImmersionAction(immersion);
+      if (res.ok) showToast(res.message);
+      else showToast(res.message, "error");
+    } catch {
+      showToast("Gagal menyimpan Program Immersion.", "error");
+    } finally {
+      setIsSavingImmersion(false);
     }
   };
 
@@ -243,6 +265,18 @@ export default function AdminHalamanDepanPage() {
         </button>
 
         <button
+          onClick={() => setActiveTab("immersion")}
+          className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${
+            activeTab === "immersion"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          <GraduationCap className="w-4 h-4" />
+          <span>3. Program Immersion</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab("stats")}
           className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "stats"
@@ -251,7 +285,7 @@ export default function AdminHalamanDepanPage() {
           }`}
         >
           <BarChart3 className="w-4 h-4" />
-          <span>3. UPITRA Dalam Angka</span>
+          <span>4. UPITRA Dalam Angka</span>
         </button>
 
         <button
@@ -263,7 +297,7 @@ export default function AdminHalamanDepanPage() {
           }`}
         >
           <Camera className="w-4 h-4" />
-          <span>4. Kabar &amp; Cerita Kampus</span>
+          <span>5. Kabar &amp; Cerita Kampus</span>
         </button>
 
         <button
@@ -275,7 +309,7 @@ export default function AdminHalamanDepanPage() {
           }`}
         >
           <ArrowRight className="w-4 h-4" />
-          <span>5. Ajakan Bergabung (CTA)</span>
+          <span>6. Ajakan Bergabung (CTA)</span>
         </button>
 
         <button
@@ -287,7 +321,7 @@ export default function AdminHalamanDepanPage() {
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>6. Visibilitas Section</span>
+          <span>7. Visibilitas Section</span>
         </button>
       </div>
 
@@ -532,6 +566,203 @@ export default function AdminHalamanDepanPage() {
       )}
 
       {/* ── TAB 3: UPITRA DALAM ANGKA ── */}
+      {/* ── TAB: PROGRAM IMMERSION ── */}
+      {activeTab === "immersion" && (
+        <form onSubmit={handleSaveImmersion} className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 max-w-4xl shadow-xs">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">Pengaturan Program Immersion (3+1)</h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Section biru &quot;Program Immersion&quot; di antara Gelombang PMB dan Kabar &amp; Cerita Kampus.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Judul Baris 1</label>
+              <input
+                type="text"
+                value={immersion.titleLine1}
+                onChange={(e) => setImmersion({ ...immersion, titleLine1: e.target.value })}
+                className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl font-bold"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Judul Baris 2 (cetak tebal)</label>
+              <input
+                type="text"
+                value={immersion.titleLine2}
+                onChange={(e) => setImmersion({ ...immersion, titleLine2: e.target.value })}
+                className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl font-bold"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Label Badge Kuning</label>
+            <input
+              type="text"
+              value={immersion.badge}
+              onChange={(e) => setImmersion({ ...immersion, badge: e.target.value })}
+              className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi</label>
+            <textarea
+              rows={4}
+              value={immersion.description}
+              onChange={(e) => setImmersion({ ...immersion, description: e.target.value })}
+              className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl"
+            />
+          </div>
+
+          <ImageUploadField
+            label="Foto Mahasiswi Cutout"
+            value={immersion.studentImage}
+            onChange={(url: string) => setImmersion({ ...immersion, studentImage: url })}
+            helperText="PNG transparan, rasio potret (contoh 1080x1350)."
+          />
+
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Judul Konsep</label>
+              <input
+                type="text"
+                value={immersion.conceptTitle}
+                onChange={(e) => setImmersion({ ...immersion, conceptTitle: e.target.value })}
+                className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl font-bold"
+              />
+            </div>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Kartu Konsep ({immersion.concepts.length}/4):
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {immersion.concepts.map((concept, index) => (
+                <div key={concept.id || index} className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      disabled={immersion.concepts.length <= 1}
+                      onClick={() => setImmersion({
+                        ...immersion,
+                        concepts: immersion.concepts.filter((_, i) => i !== index),
+                      })}
+                      aria-label={`Hapus konsep ${concept.title}`}
+                      className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Hapus
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={concept.title}
+                    onChange={(e) => setImmersion({
+                      ...immersion,
+                      concepts: immersion.concepts.map((c, i) => (i === index ? { ...c, title: e.target.value } : c)),
+                    })}
+                    placeholder="Judul konsep"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg font-semibold"
+                  />
+                  <input
+                    type="text"
+                    value={concept.note}
+                    onChange={(e) => setImmersion({
+                      ...immersion,
+                      concepts: immersion.concepts.map((c, i) => (i === index ? { ...c, note: e.target.value } : c)),
+                    })}
+                    placeholder="Keterangan, mis. (Semester 1–5)"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg"
+                  />
+                </div>
+              ))}
+            </div>
+            {immersion.concepts.length < 4 && (
+              <button
+                type="button"
+                onClick={() => setImmersion({
+                  ...immersion,
+                  concepts: [...immersion.concepts, { id: `concept-${Date.now()}`, title: "", note: "" }],
+                })}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold hover:bg-blue-100"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Tambah Konsep
+              </button>
+            )}
+          </div>
+
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Kartu Pilar Foto ({immersion.pillars.length}/6):
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {immersion.pillars.map((pillar, index) => (
+                <div key={pillar.id || index} className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <input
+                      type="text"
+                      value={pillar.label}
+                      onChange={(e) => setImmersion({
+                        ...immersion,
+                        pillars: immersion.pillars.map((p, i) => (i === index ? { ...p, label: e.target.value } : p)),
+                      })}
+                      placeholder="Label pilar"
+                      className="flex-1 px-3 py-1.5 text-xs border border-slate-200 rounded-lg font-semibold"
+                    />
+                    <button
+                      type="button"
+                      disabled={immersion.pillars.length <= 1}
+                      onClick={() => setImmersion({
+                        ...immersion,
+                        pillars: immersion.pillars.filter((_, i) => i !== index),
+                      })}
+                      aria-label={`Hapus pilar ${pillar.label}`}
+                      className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <ImageUploadField
+                    label="Foto"
+                    value={pillar.image}
+                    onChange={(url: string) => setImmersion({
+                      ...immersion,
+                      pillars: immersion.pillars.map((p, i) => (i === index ? { ...p, image: url } : p)),
+                    })}
+                  />
+                </div>
+              ))}
+            </div>
+            {immersion.pillars.length < 6 && (
+              <button
+                type="button"
+                onClick={() => setImmersion({
+                  ...immersion,
+                  pillars: [...immersion.pillars, { id: `pillar-${Date.now()}`, label: "", image: "/images/kegiatan.jpg" }],
+                })}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold hover:bg-blue-100"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Tambah Pilar
+              </button>
+            )}
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isSavingImmersion}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-bold text-xs shadow-sm transition-all"
+            >
+              <Save className="w-4 h-4" />
+              <span>{isSavingImmersion ? "Menyimpan..." : "Simpan Program Immersion"}</span>
+            </button>
+          </div>
+        </form>
+      )}
+
       {activeTab === "stats" && (
         <form onSubmit={handleSaveStats} className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 max-w-4xl shadow-xs">
           <div>
@@ -944,7 +1175,20 @@ export default function AdminHalamanDepanPage() {
 
             <div className="py-4 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">3. UPITRA Dalam Angka</h3>
+                <h3 className="text-sm font-bold text-slate-900">3. Program Immersion (3+1)</h3>
+                <p className="text-xs text-slate-500">Section biru Program Immersion beserta empat pilar kegiatan.</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={visibility.immersion}
+                onChange={(e) => setVisibility({ ...visibility, immersion: e.target.checked })}
+                className="w-5 h-5 text-blue-600 rounded-md cursor-pointer"
+              />
+            </div>
+
+            <div className="py-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">4. UPITRA Dalam Angka</h3>
                 <p className="text-xs text-slate-500">6 kartu metrik capaian prestasi dan foto mahasiswi cutout.</p>
               </div>
               <input
@@ -957,7 +1201,7 @@ export default function AdminHalamanDepanPage() {
 
             <div className="py-4 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">4. Kabar &amp; Cerita Kampus</h3>
+                <h3 className="text-sm font-bold text-slate-900">5. Kabar &amp; Cerita Kampus</h3>
                 <p className="text-xs text-slate-500">Feed Instagram @upitra_campus dengan 5 kartu postingan.</p>
               </div>
               <input
@@ -970,7 +1214,7 @@ export default function AdminHalamanDepanPage() {
 
             <div className="py-4 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">5. Ajakan Bergabung (CTA Ready Family)</h3>
+                <h3 className="text-sm font-bold text-slate-900">6. Ajakan Bergabung (CTA Ready Family)</h3>
                 <p className="text-xs text-slate-500">Bagian tombol ajakan pendaftaran di atas footer.</p>
               </div>
               <input

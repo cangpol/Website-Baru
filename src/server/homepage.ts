@@ -10,6 +10,7 @@ import { deleteUploadedFileIfUnused } from "@/server/storage/cleanup-if-unused";
 import {
   defaultHomepageHero,
   defaultHomepageWaves,
+  defaultHomepageImmersion,
   defaultHomepageStats,
   defaultHomepageInstagram,
   defaultHomepageCta,
@@ -57,6 +58,24 @@ const homepageWavesSchema = z.object({
     link: safeUrlSchema,
   })).max(12),
 });
+const homepageImmersionSchema = z.object({
+  titleLine1: z.string().trim().min(1).max(60),
+  titleLine2: z.string().trim().min(1).max(60),
+  badge: z.string().trim().min(1).max(120),
+  description: z.string().trim().max(1000),
+  conceptTitle: z.string().trim().min(1).max(80),
+  studentImage: imageUrlSchema,
+  concepts: z.array(z.object({
+    id: z.string().trim().min(1).max(80),
+    title: z.string().trim().min(1).max(120),
+    note: z.string().trim().max(80),
+  })).min(1).max(4),
+  pillars: z.array(z.object({
+    id: z.string().trim().min(1).max(80),
+    label: z.string().trim().min(1).max(60),
+    image: imageUrlSchema,
+  })).min(1).max(6),
+});
 const homepageStatsSchema = z.object({
   title: z.string().trim().min(1).max(150),
   subtitle: z.string().max(500),
@@ -90,6 +109,8 @@ const homepageCtaSchema = z.object({
 const homepageVisibilitySchema = z.object({
   hero: z.boolean(),
   waves: z.boolean(),
+  // default(true): data visibilitas lama (tanpa kunci ini) tetap valid.
+  immersion: z.boolean().default(true),
   stats: z.boolean(),
   instagram: z.boolean(),
   cta: z.boolean(),
@@ -98,10 +119,11 @@ const homepageVisibilitySchema = z.object({
 // ── GET COMPLETE HOMEPAGE CONTENT ───────────────────────────────────────────
 export async function getHomepageContent() {
   try {
-    const [heroSetting, wavesSetting, statsSetting, igSetting, ctaSetting, visSetting] =
+    const [heroSetting, wavesSetting, immersionSetting, statsSetting, igSetting, ctaSetting, visSetting] =
       await Promise.all([
         prisma.siteSetting.findUnique({ where: { key: "homepage_hero" } }),
         prisma.siteSetting.findUnique({ where: { key: "homepage_waves" } }),
+        prisma.siteSetting.findUnique({ where: { key: "homepage_immersion" } }),
         prisma.siteSetting.findUnique({ where: { key: "homepage_stats" } }),
         prisma.siteSetting.findUnique({ where: { key: "homepage_instagram" } }),
         prisma.siteSetting.findUnique({ where: { key: "homepage_cta" } }),
@@ -110,6 +132,7 @@ export async function getHomepageContent() {
 
     const hero = homepageHeroSchema.safeParse(heroSetting?.value);
     const waves = homepageWavesSchema.safeParse(wavesSetting?.value);
+    const immersion = homepageImmersionSchema.safeParse(immersionSetting?.value);
     const stats = homepageStatsSchema.safeParse(statsSetting?.value);
     const instagram = homepageInstagramSchema.safeParse(igSetting?.value);
     const cta = homepageCtaSchema.safeParse(ctaSetting?.value);
@@ -126,6 +149,7 @@ export async function getHomepageContent() {
             })),
           }
         : defaultHomepageWaves,
+      immersion: immersion.success ? immersion.data : defaultHomepageImmersion,
       stats: stats.success ? stats.data : defaultHomepageStats,
       instagram: instagram.success ? instagram.data : defaultHomepageInstagram,
       cta: cta.success ? cta.data : defaultHomepageCta,
@@ -136,6 +160,7 @@ export async function getHomepageContent() {
     return {
       hero: defaultHomepageHero,
       waves: defaultHomepageWaves,
+      immersion: defaultHomepageImmersion,
       stats: defaultHomepageStats,
       instagram: defaultHomepageInstagram,
       cta: defaultHomepageCta,
@@ -242,6 +267,57 @@ export async function saveHomepageWavesAction(rawData: unknown) {
   } catch (err) {
     console.error("Error saveHomepageWavesAction:", err);
     return { ok: false, message: "Gagal menyimpan gelombang PMB." };
+  }
+}
+
+export async function saveHomepageImmersionAction(rawData: unknown) {
+  const session = await requirePermission("beranda", "update");
+  const validated = homepageImmersionSchema.safeParse(rawData);
+  if (!validated.success) {
+    return {
+      ok: false,
+      message: "Validasi data Program Immersion gagal.",
+      fieldErrors: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = validated.data;
+
+  try {
+    const existing = await prisma.siteSetting.findUnique({ where: { key: "homepage_immersion" } });
+
+    await prisma.siteSetting.upsert({
+      where: { key: "homepage_immersion" },
+      create: {
+        key: "homepage_immersion",
+        value: data as unknown as Prisma.InputJsonValue,
+        description: "Section Program Immersion 3+1 Beranda",
+      },
+      update: {
+        value: data as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    const old = existing?.value ? homepageImmersionSchema.safeParse(existing.value).data : undefined;
+    if (old) {
+      const stillUsed = (url: string) =>
+        data.studentImage === url || data.pillars.some((pillar) => pillar.image === url);
+      for (const url of [old.studentImage, ...old.pillars.map((pillar) => pillar.image)]) {
+        if (!stillUsed(url)) await deleteUploadedFileIfUnused(url);
+      }
+    }
+
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: "UPDATE",
+      entity: "SiteSetting",
+      entityId: "homepage_immersion",
+    });
+    await invalidateEntity(CACHE_TAGS.SETTINGS, "/");
+    return { ok: true, data, message: "Section Program Immersion berhasil diperbarui." };
+  } catch (err) {
+    console.error("Error saveHomepageImmersionAction:", err);
+    return { ok: false, message: "Gagal menyimpan Program Immersion." };
   }
 }
 
