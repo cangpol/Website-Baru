@@ -16,10 +16,10 @@ interface AkademikBanner {
 }
 
 const defaultBanner: AkademikBanner = {
-  title: "Beragam Jalur Akademik, Satu Tujuan",
+  title: "Beragam Jalur\nAkademik, Satu Tujuan",
   description:
-    "Kenali berbagai fakultas dan program studi di UPITRA dan pilih kesempatan yang paling sesuai dengan passion, kompetensi, dan potensimu.",
-  imageUrl: "/images/pmb/wave-ready-achievement-hq.jpg",
+    "Kenali berbagai fakultas dan program studi di UPITRA dan\npilih kesempatan yang paling sesuai dengan prestasi, kualifikasi, dan potensimu.",
+  imageUrl: "/images/banners/hero-campus-students-optimized.jpg",
 };
 
 interface FakultasItem {
@@ -151,14 +151,15 @@ export default function AkademikOverviewPage() {
             sizes="100vw"
             className="-z-20 object-cover object-center"
           />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#006bbd]/85 via-[#006bbd]/45 to-[#006bbd]/10" />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#006bbd]/45 to-transparent" />
+          {/* Tint biru kebiruan: lebih pekat di kiri (area teks), foto tetap terlihat jelas di kanan */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#3a6bb5]/60 via-[#3a6bb5]/35 to-[#3a6bb5]/10" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/25 to-transparent" />
 
-          <div className="mx-auto flex min-h-[300px] w-full max-w-[1440px] flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[380px] sm:px-12 lg:min-h-[475px] lg:px-[120px] lg:pb-16">
-            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
+          <div className="mx-auto flex min-h-[320px] w-full max-w-[1440px] flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[400px] sm:px-12 lg:min-h-[485px] lg:px-[120px] lg:pb-20">
+            <h1 className="max-w-4xl whitespace-pre-line text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.35)] sm:text-5xl lg:text-[60px]">
               {banner.title}
             </h1>
-            <p className="mt-3 max-w-xl whitespace-pre-line text-xs font-medium leading-snug text-white sm:text-sm">
+            <p className="mt-4 max-w-2xl whitespace-pre-line text-sm font-medium leading-snug text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.4)] sm:text-base">
               {banner.description}
             </p>
           </div>
