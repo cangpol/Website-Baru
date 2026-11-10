@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import AcademicCalendar from "@/components/AcademicCalendar";
-import Link from "next/link";
-import Image from "next/image";
-import { 
-  ArrowRight 
-} from "lucide-react";
+import AkademikCalendar from "@/components/AkademikCalendar";
+import { prodiList } from "@/lib/prodiData";
+
 interface AkademikBanner {
   title: string;
   description: string;
@@ -17,38 +16,50 @@ interface AkademikBanner {
 }
 
 const defaultBanner: AkademikBanner = {
-  title: "Akademik",
-  description: "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan",
-  imageUrl: "/images/kuliah-1.jpeg",
+  title: "Beragam Jalur Akademik, Satu Tujuan",
+  description:
+    "Kenali berbagai fakultas dan program studi di UPITRA dan pilih kesempatan yang paling sesuai dengan passion, kompetensi, dan potensimu.",
+  imageUrl: "/images/pmb/wave-ready-achievement-hq.jpg",
 };
 
-const fakultasData = [
-  {
-    id: "fst",
-    code: "FST",
-    name: "Fakultas Sains & Teknologi",
-    slug: "/fst",
-    cover: "/images/ar-vr.jpg",
-    prodiTags: ["Informatika", "Sistem Informasi", "Rekayasa Perangkat Lunak"],
-    desc: "Membekali mahasiswa dengan keahlian kecerdasan buatan, rekayasa perangkat lunak skala industri, analitika data, dan komputasi modern.",
-  },
+interface FakultasItem {
+  id: string;
+  code: string;
+  name: string;
+  slug: string;
+  cover: string;
+  prodiTags: string[];
+  desc: string;
+}
+
+// Urutan mengikuti desain: FEB, FSH (baris 1) lalu FST, FKes (baris 2).
+const fakultasData: FakultasItem[] = [
   {
     id: "feb",
     code: "FEB",
-    name: "Fakultas Ekonomi & Bisnis",
+    name: "Fakultas Ekonomi dan Bisnis",
     slug: "/feb",
     cover: "/images/feb-full.jpg",
-    prodiTags: ["Manajemen", "Akuntansi", "Bisnis Digital"],
+    prodiTags: ["S1 Manajemen", "S1 Akuntansi"],
     desc: "Mencetak profesional bisnis, akuntan korporasi, dan entrepreneur tangguh berkarakter Triputra DNA yang adaptif di era transformasi ekonomi digital.",
   },
   {
     id: "fsh",
     code: "FSH",
-    name: "Fakultas Sosial Humaniora",
+    name: "Fakultas Sosial dan Humaniora",
     slug: "/fsh",
-    cover: "/images/pariwisata/par-1.jpg",
-    prodiTags: ["Pariwisata", "Bahasa Inggris"],
+    cover: "/images/fsh-full.jpg",
+    prodiTags: ["S1 Pariwisata", "S1 Bahasa Inggris"],
     desc: "Mengembangkan kepemimpinan humanis, kompetensi komunikasi internasional, dan keahlian manajemen hospitaliti & pariwisata berkelanjutan.",
+  },
+  {
+    id: "fst",
+    code: "FST",
+    name: "Fakultas Sains dan Teknologi",
+    slug: "/fst",
+    cover: "/images/ar-vr.jpg",
+    prodiTags: ["S1 Informatika", "S1 Sistem Informasi", "S1 Rekayasa Perangkat Lunak"],
+    desc: "Membekali mahasiswa dengan keahlian kecerdasan buatan, rekayasa perangkat lunak skala industri, analitika data, dan komputasi modern.",
   },
   {
     id: "fkes",
@@ -56,16 +67,35 @@ const fakultasData = [
     name: "Fakultas Kesehatan",
     slug: "/fkes",
     cover: "/images/kuliah-1.jpeg",
-    prodiTags: ["Keselamatan & Kesehatan Kerja", "Fisioterapi", "Keperawatan"],
+    prodiTags: [
+      "S1 Fisioterapi",
+      "S1 Kesehatan dan Keselamatan Kerja (K3)",
+      "D3 Keperawatan (Managed by TEN)",
+    ],
     desc: "Menghasilkan tenaga kesehatan profesional, ahli keselamatan kerja industri (K3), dan fisioterapis kompeten dengan dedikasi kemanusiaan tinggi.",
   },
 ];
 
+// Urutan program studi mengikuti desain.
+const prodiOrder = [
+  "manajemen",
+  "akuntansi",
+  "informatika",
+  "sistem-informasi",
+  "rekayasa-perangkat-lunak",
+  "pariwisata",
+  "bahasa-inggris",
+  "fisioterapi",
+  "kesehatan-dan-keselamatan-kerja",
+  "keperawatan",
+];
+
+const shortRole = (role: string) => role.split(" / ")[0].replace(/\s*\(.*?\)\s*/g, " ").trim();
+
 export default function AkademikOverviewPage() {
   const [banner, setBanner] = useState<AkademikBanner>(defaultBanner);
-  const [faculties, setFaculties] = useState(fakultasData);
+  const [faculties, setFaculties] = useState<FakultasItem[]>(fakultasData);
 
-  // Load dynamic banner and faculties from database via API
   useEffect(() => {
     fetch("/api/banner?page=akademik")
       .then((res) => res.json())
@@ -78,161 +108,171 @@ export default function AkademikOverviewPage() {
           });
         }
       })
-      .catch((err) => console.warn("Failed to load banner:", err));
+      .catch(() => {});
 
+    // Deskripsi & foto fakultas dapat diubah dari admin; daftar prodi mengikuti desain.
     fetch("/api/faculties")
       .then((res) => res.json())
       .then((json) => {
         if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
-          const mapped = json.data.map((f: any) => {
-            const fallback = fakultasData.find((fd) => fd.code.toLowerCase() === f.code.toLowerCase()) || fakultasData[0];
-            return {
-              id: f.id || fallback.id,
-              code: f.code || fallback.code,
-              name: f.name || fallback.name,
-              slug: f.slug?.startsWith("/") ? f.slug : `/${f.slug}` || fallback.slug,
-              cover: f.icon || fallback.cover,
-              prodiTags: Array.isArray(f.programs) && f.programs.length > 0
-                ? f.programs.map((p: any) => p.name)
-                : fallback.prodiTags,
-              desc: f.description || fallback.desc,
-            };
-          });
-          setFaculties(mapped);
+          setFaculties((prev) =>
+            prev.map((f) => {
+              const match = json.data.find((d: { code?: string }) => d.code?.toLowerCase() === f.code.toLowerCase());
+              if (!match) return f;
+              return {
+                ...f,
+                cover: match.icon || f.cover,
+                desc: match.description || f.desc,
+              };
+            })
+          );
         }
       })
-      .catch((err) => console.warn("Failed to load faculties:", err));
+      .catch(() => {});
   }, []);
 
+  const programs = useMemo(
+    () => prodiOrder.map((slug) => prodiList.find((p) => p.slug === slug)).filter((p): p is NonNullable<typeof p> => Boolean(p)),
+    []
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="flex min-h-screen flex-col bg-white font-sans text-slate-800">
       <Navbar />
 
-      {/* 1. HEADER BANNER AKADEMIK (Full Width 1440px x 480px, Tanpa Border Melengkung, Full Gambar Edge-to-Edge) */}
-      <header className="w-full h-[420px] sm:h-[460px] lg:h-[480px] relative overflow-hidden group bg-[#06172e]">
-        {/* Background Image: Full Cover 1440x480 */}
-        <Image
-          src={banner.imageUrl || "/images/kuliah-1.jpeg"}
-          alt={banner.title}
-          fill
-          priority
-          className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
-        />
+      <main className="flex-1">
+        {/* Banner */}
+        <section className="relative isolate w-full overflow-hidden bg-[#006bbd]" aria-label="Akademik">
+          <Image
+            src={banner.imageUrl || defaultBanner.imageUrl!}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="-z-20 object-cover object-center"
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#006bbd]/85 via-[#006bbd]/45 to-[#006bbd]/10" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#006bbd]/45 to-transparent" />
 
-        {/* Executive Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/60 to-[#06172e]/30 flex flex-col justify-center text-white">
-          <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-center p-6 sm:p-10 lg:p-12">
-            {/* Center Rata Kiri Content: Title & Description */}
-            <div className="space-y-2 sm:space-y-3 max-w-3xl text-left">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight drop-shadow-md">
-                {banner.title || "Akademik"}
-              </h1>
-
-              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-sky-200/95 leading-snug drop-shadow-xs whitespace-pre-line">
-                {banner.description || "4 Fakultas, 10 Program Studi S1\n& D3 Keperawatan"}
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 2. FOUR FACULTIES GRID - SESUAI GAMBAR REFERENSI (1 BARIS PENUH / 4 KOLOM DI DESKTOP) */}
-      <section className="py-16 sm:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          
-          <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <span className="px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider">
-              Fakultas &amp; Program Studi
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-[#0b2545] tracking-tight">
-              Pilihan Fakultas Berstandar Industri
-            </h2>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Pilih rumpun keilmuan yang sesuai dengan minat dan aspirasi masa depanmu. Seluruh program studi didukung kurikulum link-and-match dengan industri.
+          <div className="mx-auto flex min-h-[300px] w-full max-w-[1440px] flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[380px] sm:px-12 lg:min-h-[475px] lg:px-[120px] lg:pb-16">
+            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
+              {banner.title}
+            </h1>
+            <p className="mt-3 max-w-xl whitespace-pre-line text-xs font-medium leading-snug text-white sm:text-sm">
+              {banner.description}
             </p>
           </div>
+        </section>
 
-          {/* Kotak Fakultas & Program Studi: Fixed Height 392px Sesuai Dimensi 335x392 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {faculties.map((fakultas) => {
-              return (
-                <div
-                  key={fakultas.id}
-                  className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group h-[392px]"
+        {/* Fakultas */}
+        <section className="w-full bg-white" aria-labelledby="fakultas-heading">
+          <div className="mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-12 lg:px-[120px] lg:py-16">
+            <h2 id="fakultas-heading" className="text-2xl font-extrabold uppercase tracking-tight text-[#2b6cc4] sm:text-3xl">
+              Fakultas
+            </h2>
+            <p className="mt-1 text-xs text-slate-600 sm:text-sm">Gelombang pendaftaran yang sedang kami buka.</p>
+
+            <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6">
+              {faculties.map((f) => (
+                <article
+                  key={f.id}
+                  className="flex flex-col overflow-hidden rounded-xl bg-white shadow-[0_3px_10px_rgba(0,107,189,0.18)] ring-1 ring-blue-50"
                 >
-                  <div className="overflow-hidden flex flex-col">
-                    {/* 1. Gambar Bagian Atas dengan Sudut Melengkung (rounded-2xl) */}
-                    <div className="relative h-36 sm:h-40 w-full rounded-2xl overflow-hidden mb-3 bg-slate-100 shrink-0">
-                      <Image
-                        src={fakultas.cover}
-                        alt={fakultas.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-
-                    {/* 2. Judul Nama Fakultas */}
-                    <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight mb-2 line-clamp-1">
-                      {fakultas.name}
-                    </h3>
-
-                    {/* 3. Tag Berwarna Biru: Daftar Program Studi Tanpa Keterangan S1/D3 */}
-                    <div className="flex flex-wrap gap-1.5 mb-2.5">
-                      {fakultas.prodiTags.map((prodi, idx) => (
+                  <div className="relative aspect-[16/7] w-full overflow-hidden bg-slate-100">
+                    <Image
+                      src={f.cover}
+                      alt={f.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-3 p-5">
+                    <h3 className="text-xl font-extrabold leading-tight text-slate-900">{f.name}</h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {f.prodiTags.map((tag) => (
                         <span
-                          key={idx}
-                          className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200/80 shadow-2xs"
+                          key={tag}
+                          className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-[#006bbd] ring-1 ring-blue-100"
                         >
-                          {prodi}
+                          {tag}
                         </span>
                       ))}
                     </div>
-
-                    {/* 4. Deskripsi Singkat Fakultas */}
-                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
-                      {fakultas.desc}
-                    </p>
+                    <p className="text-[11px] leading-relaxed text-slate-600 sm:text-xs">{f.desc}</p>
+                    <div className="mt-auto flex justify-end pt-1">
+                      <Link href={f.slug} className="text-[11px] font-bold text-[#006bbd] hover:underline">
+                        Selengkapnya ›
+                      </Link>
+                    </div>
                   </div>
-
-                  {/* 5. Tautan 'Selengkapnya ->' Berwarna Biru Mengarah ke Rute Fakultas Masing-Masing (/fst, /feb, /fsh, /fkes) */}
-                  <div className="flex justify-end pt-2.5 border-t border-slate-100 mt-2 shrink-0">
-                    <Link
-                      href={fakultas.slug}
-                      className="text-blue-700 hover:text-blue-800 font-bold text-xs inline-flex items-center gap-1 transition-colors group/link"
-                    >
-                      <span>Selengkapnya</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
+                </article>
+              ))}
+            </div>
           </div>
+        </section>
 
-        </div>
-      </section>
+        {/* Program Studi */}
+        <section className="w-full bg-[#d4e3f5]" aria-labelledby="prodi-heading">
+          <div className="mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-12 lg:px-[120px] lg:py-16">
+            <div className="text-right">
+              <h2 id="prodi-heading" className="text-2xl font-extrabold uppercase tracking-tight text-[#2b6cc4] sm:text-3xl">
+                Program Studi
+              </h2>
+              <p className="mt-1 text-xs text-slate-600 sm:text-sm">Gelombang pendaftaran yang sedang kami buka.</p>
+            </div>
 
-      {/* 3. KALENDER AKADEMIK INTERAKTIF */}
-      <section className="py-16 sm:py-20 bg-slate-50 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          
-          <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <span className="px-3.5 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-xs font-bold uppercase tracking-wider">
-              Pusat Informasi &amp; Jadwal Perkuliahan
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-[#0b2545] tracking-tight">
-              Kalender Akademik Universitas
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+              {programs.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/${p.slug}`}
+                  className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-[0_3px_10px_rgba(0,107,189,0.18)] ring-1 ring-blue-50 transition-transform hover:-translate-y-1"
+                >
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                    <Image
+                      src={p.heroImage}
+                      alt={p.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2.5 p-4">
+                    <h3 className="text-lg font-extrabold leading-tight text-slate-900">
+                      {p.name}
+                      {p.slug === "keperawatan" && (
+                        <span className="block text-sm font-bold italic text-slate-700">(Managed by TEN)</span>
+                      )}
+                    </h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {p.careerPaths.slice(0, 4).map((c) => (
+                        <span
+                          key={c.role}
+                          className="max-w-full truncate rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-[#006bbd] ring-1 ring-blue-100"
+                        >
+                          {shortRole(c.role)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Kalender Akademik */}
+        <section className="w-full bg-white" aria-labelledby="kalender-heading">
+          <div className="mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-12 lg:px-[120px] lg:py-16">
+            <h2 id="kalender-heading" className="text-2xl font-extrabold uppercase tracking-tight text-[#2b6cc4] sm:text-3xl">
+              Kalender Akademik
             </h2>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Pantau jadwal perkuliahan, rentang evaluasi UTS &amp; UAS, hari libur nasional, periode pendaftaran mahasiswa baru, dan upacara wisuda resmi UPITRA.
-            </p>
+            <p className="mb-6 mt-1 text-xs text-slate-600 sm:text-sm">Gelombang pendaftaran yang sedang kami buka.</p>
+            <AkademikCalendar />
           </div>
-
-          {/* Reusable Academic Calendar with Category Legend, Month Switcher, Grid & List Views, Event Modal, and Full-Width PDF Download Bar */}
-          <AcademicCalendar />
-
-        </div>
-      </section>
+        </section>
+      </main>
 
       <Footer />
       <FloatingWhatsApp />
