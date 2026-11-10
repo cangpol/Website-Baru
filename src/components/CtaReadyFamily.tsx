@@ -61,7 +61,7 @@ export default function CtaReadyFamily({ initialData }: { initialData?: Homepage
             href={ctaData.ctaHref || "https://pmb.upitra.ac.id"}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-sm sm:text-base shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-[#ffcc00] hover:bg-[#f2c200] text-blue-950 font-bold text-sm sm:text-base shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer"
           >
             {ctaData.ctaLabel || "Daftar Sekarang"}
           </Link>

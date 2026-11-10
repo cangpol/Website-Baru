@@ -143,9 +143,9 @@ export async function getHomepageContent() {
       waves: waves.success
         ? {
             ...waves.data,
-            waves: waves.data.waves.map((wave, index) => ({
+            waves: waves.data.waves.map((wave) => ({
               ...wave,
-              badge: wave.badge ?? (index === 0 ? "Limited" : ""),
+              badge: wave.badge ?? "",
             })),
           }
         : defaultHomepageWaves,

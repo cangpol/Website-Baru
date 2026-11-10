@@ -5,7 +5,8 @@
   --color-brand-blue-dark: #072b61;
   --color-ink: #06172e;
   --color-ink-muted: #475569;
-  --font-montserrat: "Montserrat", system-ui, sans-serif;
+  --font-montserrat: var(--font-montserrat-next), "Montserrat", system-ui, sans-serif;
+  --font-sans: var(--font-montserrat-next), "Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 :root {

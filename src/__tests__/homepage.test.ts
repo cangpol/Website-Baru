@@ -91,7 +91,7 @@ describe("Homepage content", () => {
     expect(content.waves).toEqual(expect.objectContaining({ waves: expect.any(Array) }));
   });
 
-  it("adds the default card badge to legacy homepage data without changing explicit edits", async () => {
+  it("does not inject a badge into legacy homepage data and keeps explicit edits", async () => {
     const storedWaves = {
       title: "Selamat Datang di UPITRA",
       subtitle: "Gelombang pendaftaran yang sedang kami buka.",
@@ -113,7 +113,11 @@ describe("Homepage content", () => {
 
     mockStoredWaves(storedWaves);
     const legacyContent = await getHomepageContent();
-    expect(legacyContent.waves.waves[0].badge).toBe("Limited");
+    expect(legacyContent.waves.waves[0].badge).toBe("");
+
+    mockStoredWaves({ ...storedWaves, waves: [{ ...storedWaves.waves[0], badge: "Baru" }] });
+    const badgedContent = await getHomepageContent();
+    expect(badgedContent.waves.waves[0].badge).toBe("Baru");
 
     mockStoredWaves({ ...storedWaves, waves: [{ ...storedWaves.waves[0], badge: "" }] });
     const editedContent = await getHomepageContent();

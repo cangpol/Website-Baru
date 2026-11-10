@@ -65,7 +65,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
                 href={post.permalink || igData.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block relative aspect-[5/4] rounded-lg overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-blue-950 border border-slate-100"
+                className="group block relative aspect-[11/10] rounded-lg overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-blue-950 border border-slate-100"
               >
                 {/* Background Image */}
                 <Image
@@ -77,7 +77,7 @@ export default function KabarCeritaKampus({ initialData }: { initialData?: Homep
                 />
 
                 {/* Dark Gradient Overlay for readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-950/85 via-blue-950/20 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
 
                 {/* Top Category Tag (Figma 1440x662 Spec: Rounded pill, black translucent background) */}
                 <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex justify-start">

@@ -33,14 +33,13 @@ export interface HomepageWaves {
 }
 
 export const defaultHomepageWaves: HomepageWaves = {
-  title: "Selamat Datang di UPITRA",
+  title: "SELAMAT DATANG DI UNIVERSITAS PIGNATELLI TRIPUTRA",
   subtitle: "Gelombang pendaftaran yang sedang kami buka.",
   waves: [
     {
       id: "ready-early",
       title: "Ready Early",
       benefit: "Beasiswa 100% DPP & SKS",
-      badge: "Limited",
       image: "/images/pmb/wave-ready-early-hq.jpg",
       link: "https://pmb.upitra.ac.id",
     },

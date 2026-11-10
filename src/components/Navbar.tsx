@@ -103,7 +103,7 @@ export default function Navbar() {
                 href="https://pmb.upitra.ac.id"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-6 px-3.5 ml-1 inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-[10px] lg:text-[11px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+                className="h-6 px-3.5 ml-1 inline-flex items-center justify-center rounded-lg bg-[#ffcc00] hover:bg-[#f2c200] text-blue-950 font-bold text-[10px] lg:text-[11px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>Daftar Sekarang</span>
               </Link>
@@ -152,7 +152,7 @@ export default function Navbar() {
                   href="https://pmb.upitra.ac.id"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-blue-950 font-bold text-xs shadow-sm hover:from-amber-500 hover:to-orange-600 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-[#ffcc00] hover:bg-[#f2c200] text-[#222] font-bold text-xs shadow-sm transition-colors"
                 >
                   <span>Daftar Sekarang (PMB Online)</span>
                   <ExternalLink className="w-3.5 h-3.5" />

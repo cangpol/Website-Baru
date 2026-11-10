@@ -10,7 +10,17 @@ const textShadow = "0px 2.169px 2.169px rgba(0,0,0,0.25)";
 /** Design px → rendered px. 1 design px = 1px at >=1440 wide, scales down fluidly below. */
 const u = (n: number) => `calc(var(--u) * ${n})`;
 
-function PillarCard({ label, image, fixedWidth }: { label: string; image: string; fixedWidth?: boolean }) {
+function PillarCard({
+  label,
+  image,
+  fixedWidth,
+  light,
+}: {
+  label: string;
+  image: string;
+  fixedWidth?: boolean;
+  light?: boolean;
+}) {
   return (
     <div
       className="flex flex-col bg-white/[0.18] backdrop-blur-[2px]"
@@ -20,7 +30,7 @@ function PillarCard({ label, image, fixedWidth }: { label: string; image: string
         <Image src={image} alt={label} fill sizes="185px" className="object-cover" />
       </div>
       <p
-        className="text-center font-bold text-[#006bbd]"
+        className={`text-center font-bold ${light ? "text-white" : "text-[#006bbd]"}`}
         style={{ paddingTop: u(10), fontSize: u(16), lineHeight: u(15) }}
       >
         {label}
@@ -191,7 +201,7 @@ export default function HomepageImmersion({ initialData }: { initialData?: Homep
 
           <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4">
             {pillars.map((p) => (
-              <PillarCard key={p.id} label={p.label} image={p.image} />
+              <PillarCard key={p.id} label={p.label} image={p.image} light />
             ))}
           </div>
         </div>

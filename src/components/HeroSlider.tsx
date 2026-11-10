@@ -54,14 +54,14 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="relative z-20 max-w-[520px] flex flex-col justify-start gap-5 sm:gap-6"
+          className="relative z-20 max-w-[min(680px,100%)] flex flex-col justify-start gap-5 sm:gap-6"
         >
           <div className="space-y-3 sm:space-y-3.5">
             <motion.h1 
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-              className="text-[clamp(2rem,4.6vw,3.5rem)] font-black text-white tracking-tight leading-[0.98] drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)] font-sans whitespace-pre-line"
+              className="text-[clamp(1.75rem,4vw,3.5rem)] font-black text-white tracking-tight leading-[0.98] drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)] font-sans whitespace-pre-line"
             >
               {hero.title}
             </motion.h1>
@@ -85,7 +85,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
               href={hero.ctaHref || "https://pmb.upitra.ac.id"}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 sm:py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-blue-950 font-bold text-sm sm:text-xs shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
+              className="inline-flex items-center justify-center px-6 py-3 sm:py-2.5 rounded-lg bg-[#ffcc00] hover:bg-[#f2c200] text-blue-950 font-bold text-sm sm:text-xs shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
             >
               {hero.ctaLabel || "Daftar Sekarang"}
             </Link>

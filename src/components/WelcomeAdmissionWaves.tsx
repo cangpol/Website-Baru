@@ -37,7 +37,7 @@ export default function WelcomeAdmissionWaves({ initialData }: { initialData?: H
           transition={{ duration: 0.5 }}
           className="text-center space-y-1.5 mb-5 sm:mb-6"
         >
-          <h2 className="text-2xl sm:text-[26px] lg:text-[30px] font-black text-[#006bbd] tracking-tight leading-tight font-sans">
+          <h2 className="text-xl sm:text-2xl lg:text-[28px] font-extrabold text-[#2b6cc4] tracking-tight leading-tight font-sans uppercase">
             {wavesData.title}
           </h2>
           <p className="text-xs sm:text-[13px] text-slate-500 font-medium">

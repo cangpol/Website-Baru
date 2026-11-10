@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-montserrat-next",
+});
 
 export const metadata: Metadata = {
   title: "UPITRA - Universitas Pignatelli Triputra | Campus to Career",
@@ -21,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className="h-full antialiased scroll-smooth">
+    <html lang="id" className={`${montserrat.variable} h-full antialiased scroll-smooth`}>
       <body className="min-h-full flex flex-col font-sans bg-white text-slate-800">
         {children}
       </body>
