@@ -22,27 +22,24 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
   }, [initialData]);
 
   return (
-    <section
-      className="relative w-full overflow-hidden bg-gradient-to-br from-[#2f6fcb] to-[#1f55b0] text-white"
-      aria-label="UPITRA Dalam Angka"
-    >
-      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center gap-8 px-4 pt-10 sm:px-12 lg:min-h-[642px] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-6 lg:px-[120px] lg:py-0">
-        {/* Left: title + metric cards (3 columns × 2 rows) */}
-        <div className="flex flex-col justify-center gap-6 pb-2 lg:py-16">
+    <section className="relative w-full overflow-hidden bg-[#006bbd] text-white" aria-label="UPITRA Dalam Angka">
+      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center lg:min-h-[642px] lg:grid-cols-[minmax(0,61fr)_minmax(0,39fr)]">
+        {/* Left: centered title + 3 × 2 metric cards */}
+        <div className="flex flex-col items-center justify-center gap-6 px-4 pt-10 sm:px-12 lg:gap-7 lg:px-10 lg:py-16">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="space-y-1 text-center lg:text-left"
+            className="space-y-1 text-center"
           >
             <h2 className="text-2xl font-extrabold uppercase leading-tight tracking-tight sm:text-3xl lg:text-[32px]">
               {statsData.title}
             </h2>
-            <p className="text-xs font-medium text-blue-100 sm:text-sm lg:text-base">{statsData.subtitle}</p>
+            <p className="text-xs font-medium text-white/90 sm:text-sm">{statsData.subtitle}</p>
           </motion.div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:gap-5">
+          <div className="grid w-full max-w-[692px] grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:gap-[21px]">
             {statsData.metrics.map((item, index) => {
               const highlighted = index === 2;
               return (
@@ -60,7 +57,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
                 >
                   <span
                     className={`mb-2 text-3xl font-extrabold leading-none tracking-tight lg:text-[40px] ${
-                      highlighted ? "text-white" : "text-slate-900"
+                      highlighted ? "text-white" : "text-[#222]"
                     }`}
                   >
                     {item.value}
@@ -78,19 +75,19 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
           </div>
         </div>
 
-        {/* Right: student cutout, anchored to the bottom-right edge of the section */}
+        {/* Right: student cutout, large, bleeding off the right edge and cropped at the bottom */}
         <motion.div
           initial={{ opacity: 0, x: 24 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative mx-auto h-[340px] w-full max-w-[320px] sm:h-[400px] lg:mx-0 lg:h-full lg:max-w-none lg:self-stretch"
+          className="relative mx-auto h-[360px] w-full max-w-[340px] overflow-hidden sm:h-[420px] lg:mx-0 lg:h-full lg:max-w-none lg:self-stretch"
         >
           <Image
             src={statsData.studentCutoutImage || "/images/upitra-student-achiever.png"}
             alt="Mahasiswi Berprestasi Universitas Pignatelli Triputra"
             fill
-            sizes="(max-width: 1024px) 320px, 40vw"
+            sizes="(max-width: 1024px) 340px, 40vw"
             className="pointer-events-none object-contain object-bottom lg:object-right-bottom"
           />
         </motion.div>
