@@ -2,6 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^\+?[0-9\s().-]{9,20}$/;
 
 export type CampusTourFormState = {
   success: boolean;
@@ -15,24 +19,42 @@ export async function submitCampusTourBooking(
   formData: FormData
 ): Promise<CampusTourFormState> {
   try {
-    const fullName = formData.get("fullName") as string;
-    const phoneWhatsapp = formData.get("phoneWhatsapp") as string;
-    const email = formData.get("email") as string;
-    const totalVisitorStr = formData.get("totalVisitor") as string;
-    const preferredDateStr = formData.get("preferredDate") as string;
-    const notes = formData.get("notes") as string;
+    if (String(formData.get("website") ?? "").trim() !== "") {
+      return { success: true, message: "Terima kasih! Reservasi Campus Tour Anda berhasil diajukan." };
+    }
+
+    const ip = await getClientIp();
+    const limit = rateLimit(`campus-tour:${ip}`, 5, 10 * 60 * 1000);
+    if (!limit.allowed) {
+      return {
+        success: false,
+        message: `Terlalu banyak pengiriman formulir. Silakan coba lagi dalam ${Math.ceil(limit.retryAfterSeconds / 60)} menit.`,
+      };
+    }
+
+    const text = (key: string) => {
+      const value = formData.get(key);
+      return typeof value === "string" ? value.trim() : "";
+    };
+
+    const fullName = text("fullName");
+    const phoneWhatsapp = text("phoneWhatsapp");
+    const email = text("email");
+    const totalVisitorStr = text("totalVisitor");
+    const preferredDateStr = text("preferredDate");
+    const notes = text("notes");
 
     const errors: Record<string, string> = {};
 
-    if (!fullName || fullName.trim().length < 3) {
-      errors.fullName = "Nama lengkap wajib diisi minimal 3 karakter";
+    if (fullName.length < 3 || fullName.length > 100) {
+      errors.fullName = "Nama lengkap wajib diisi (3–100 karakter)";
     }
 
-    if (!phoneWhatsapp || phoneWhatsapp.trim().length < 9) {
-      errors.phoneWhatsapp = "Nomor WhatsApp aktif wajib diisi";
+    if (!PHONE_PATTERN.test(phoneWhatsapp)) {
+      errors.phoneWhatsapp = "Nomor WhatsApp aktif tidak valid";
     }
 
-    if (!email || !email.includes("@")) {
+    if (!EMAIL_PATTERN.test(email) || email.length > 254) {
       errors.email = "Alamat email tidak valid";
     }
 
@@ -40,9 +62,13 @@ export async function submitCampusTourBooking(
       errors.preferredDate = "Pilih tanggal rencana kunjungan kampus";
     }
 
+    if (notes.length > 2000) {
+      errors.notes = "Catatan maksimal 2000 karakter";
+    }
+
     const totalVisitor = parseInt(totalVisitorStr || "1", 10);
-    if (isNaN(totalVisitor) || totalVisitor < 1) {
-      errors.totalVisitor = "Jumlah peserta minimal 1 orang";
+    if (isNaN(totalVisitor) || totalVisitor < 1 || totalVisitor > 100) {
+      errors.totalVisitor = "Jumlah peserta harus antara 1 dan 100 orang";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -54,7 +80,9 @@ export async function submitCampusTourBooking(
     }
 
     const preferredDate = new Date(preferredDateStr);
-    if (isNaN(preferredDate.getTime())) {
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + 2);
+    if (isNaN(preferredDate.getTime()) || preferredDate > maxDate) {
       return {
         success: false,
         message: "Format tanggal kunjungan tidak valid.",
@@ -64,12 +92,12 @@ export async function submitCampusTourBooking(
 
     const booking = await prisma.campusTourBooking.create({
       data: {
-        fullName: fullName.trim(),
-        phoneWhatsapp: phoneWhatsapp.trim(),
-        email: email.trim().toLowerCase(),
-        totalVisitor: totalVisitor > 0 ? totalVisitor : 1,
+        fullName,
+        phoneWhatsapp,
+        email: email.toLowerCase(),
+        totalVisitor,
         preferredDate,
-        notes: notes ? notes.trim() : null,
+        notes: notes || null,
       },
     });
 

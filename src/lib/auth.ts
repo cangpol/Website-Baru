@@ -17,10 +17,15 @@ const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 hari
 function getSecretKey(): string {
   const secret = process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET;
   if (!secret) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("ADMIN_SESSION_SECRET wajib diatur di lingkungan produksi.");
+    // Fallback key is only allowed for local development / tests, never when
+    // NODE_ENV is production or unset (an unset value must not enable a known key).
+    if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+      return "dev-signing-key-minimum-32-characters-upitra";
     }
-    return "dev-signing-key-minimum-32-characters-upitra";
+    throw new Error("ADMIN_SESSION_SECRET wajib diatur (minimal 32 karakter).");
+  }
+  if (secret.length < 32 && process.env.NODE_ENV === "production") {
+    throw new Error("ADMIN_SESSION_SECRET minimal 32 karakter di lingkungan produksi.");
   }
   return secret;
 }

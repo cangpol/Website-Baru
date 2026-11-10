@@ -106,19 +106,22 @@ function isHttpUrl(value: string) {
 }
 
 export async function getPublishedArticles(limit = 10, category?: string) {
+  // Fungsi ini dapat dipanggil publik (server action & /api/articles): batasi nilai masukan.
+  const take = Number.isFinite(limit) ? Math.min(Math.max(Math.trunc(limit), 1), 50) : 10;
+  const safeCategory = typeof category === "string" ? category.slice(0, 100) : undefined;
   try {
     const where: any = {
       published: true,
       deletedAt: null,
     };
-    if (category && category !== "Semua") {
-      where.category = category;
+    if (safeCategory && safeCategory !== "Semua") {
+      where.category = safeCategory;
     }
 
     const articles = await prisma.article.findMany({
       where,
       orderBy: { publishedAt: "desc" },
-      take: limit,
+      take,
       include: {
         author: {
           select: { name: true, email: true },
@@ -133,7 +136,7 @@ export async function getPublishedArticles(limit = 10, category?: string) {
         title: a.title,
         slug: a.slug,
         summary: cleanSummary,
-        content: a.content,
+        content: sanitizeRichText(a.content),
         category: a.category,
         coverImage: a.coverImage || "/images/kegiatan.jpg",
         attachmentUrl,
@@ -175,7 +178,7 @@ export async function getArticleBySlug(slug: string) {
       title: article.title,
       slug: article.slug,
       summary: cleanSummary,
-      content: article.content,
+      content: sanitizeRichText(article.content),
       category: article.category,
       coverImage: article.coverImage || "/images/kegiatan.jpg",
       attachmentUrl,

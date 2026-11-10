@@ -2,6 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^\+?[0-9\s().-]{9,20}$/;
 
 export type AdmissionFormState = {
   success: boolean;
@@ -15,30 +19,61 @@ export async function submitAdmissionLead(
   formData: FormData
 ): Promise<AdmissionFormState> {
   try {
-    const fullName = formData.get("fullName") as string;
-    const phoneWhatsapp = formData.get("phoneWhatsapp") as string;
-    const email = formData.get("email") as string;
-    const highSchool = formData.get("highSchool") as string;
-    const city = formData.get("city") as string;
-    const programId = formData.get("programId") as string;
-    const notes = formData.get("notes") as string;
+    // Honeypot: kolom tersembunyi yang tidak diisi manusia. Bot yang mengisinya diabaikan diam-diam.
+    if (String(formData.get("website") ?? "").trim() !== "") {
+      return { success: true, message: "Terima kasih! Pendaftaran Anda berhasil dikirim." };
+    }
+
+    const ip = await getClientIp();
+    const limit = rateLimit(`admission:${ip}`, 5, 10 * 60 * 1000);
+    if (!limit.allowed) {
+      return {
+        success: false,
+        message: `Terlalu banyak pengiriman formulir. Silakan coba lagi dalam ${Math.ceil(limit.retryAfterSeconds / 60)} menit.`,
+      };
+    }
+
+    const text = (key: string) => {
+      const value = formData.get(key);
+      return typeof value === "string" ? value.trim() : "";
+    };
+
+    const fullName = text("fullName");
+    const phoneWhatsapp = text("phoneWhatsapp");
+    const email = text("email");
+    const highSchool = text("highSchool");
+    const city = text("city");
+    const programId = text("programId");
+    const notes = text("notes");
 
     const errors: Record<string, string> = {};
 
-    if (!fullName || fullName.trim().length < 3) {
-      errors.fullName = "Nama lengkap wajib diisi minimal 3 karakter";
+    if (fullName.length < 3 || fullName.length > 100) {
+      errors.fullName = "Nama lengkap wajib diisi (3–100 karakter)";
     }
 
-    if (!phoneWhatsapp || phoneWhatsapp.trim().length < 9) {
-      errors.phoneWhatsapp = "Nomor WhatsApp aktif wajib diisi";
+    if (!PHONE_PATTERN.test(phoneWhatsapp)) {
+      errors.phoneWhatsapp = "Nomor WhatsApp aktif tidak valid";
     }
 
-    if (!email || !email.includes("@")) {
+    if (!EMAIL_PATTERN.test(email) || email.length > 254) {
       errors.email = "Alamat email tidak valid";
     }
 
-    if (!highSchool || highSchool.trim().length < 2) {
-      errors.highSchool = "Asal sekolah / SMA / SMK wajib diisi";
+    if (highSchool.length < 2 || highSchool.length > 150) {
+      errors.highSchool = "Asal sekolah / SMA / SMK wajib diisi (2–150 karakter)";
+    }
+
+    if (city.length > 100) {
+      errors.city = "Nama kota terlalu panjang";
+    }
+
+    if (notes.length > 2000) {
+      errors.notes = "Catatan maksimal 2000 karakter";
+    }
+
+    if (programId && !/^[A-Za-z0-9_-]{1,64}$/.test(programId)) {
+      errors.programId = "Program studi tidak valid";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -52,13 +87,13 @@ export async function submitAdmissionLead(
     // Save to Database
     const lead = await prisma.admissionLead.create({
       data: {
-        fullName: fullName.trim(),
-        phoneWhatsapp: phoneWhatsapp.trim(),
-        email: email.trim().toLowerCase(),
-        highSchool: highSchool.trim(),
-        city: city ? city.trim() : null,
-        programId: programId && programId !== "" ? programId : null,
-        notes: notes ? notes.trim() : null,
+        fullName,
+        phoneWhatsapp,
+        email: email.toLowerCase(),
+        highSchool,
+        city: city || null,
+        programId: programId || null,
+        notes: notes || null,
         targetYear: 2026,
       },
     });

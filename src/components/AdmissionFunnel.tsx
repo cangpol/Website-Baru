@@ -56,6 +56,7 @@ export default function AdmissionFunnel({ programs = [] }: { programs?: ProgramO
         </div>
       ) : (
         <form action={formAction} className="space-y-4">
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
           {state.message && !state.success && (
             <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />

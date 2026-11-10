@@ -5,6 +5,11 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { setSessionCookie, clearSessionCookie, getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
+
+// Hash dummy untuk menyamakan waktu respons saat email tidak terdaftar (cegah user enumeration via timing).
+const DUMMY_PASSWORD_HASH = "$2b$12$pPokwaWXR0mGNJ8GkrOB.e/LguW2EFVPk38ezl5JkgN.xTOdvt1JO";
+const MAX_TRACKED_LOGIN_KEYS = 5000;
 
 // Supplemental per-process limit; account lockout is also persisted in the database.
 const loginAttempts = new Map<string, { count: number; lockedUntil: number }>();
@@ -35,6 +40,12 @@ function checkRateLimit(key: string): { allowed: boolean; remainingSeconds?: num
 function recordFailedAttempt(key: string) {
   const now = Date.now();
   const record = loginAttempts.get(key) || { count: 0, lockedUntil: 0 };
+  if (!loginAttempts.has(key) && loginAttempts.size >= MAX_TRACKED_LOGIN_KEYS) {
+    for (const [k, v] of loginAttempts) {
+      if (v.lockedUntil <= now) loginAttempts.delete(k);
+    }
+    if (loginAttempts.size >= MAX_TRACKED_LOGIN_KEYS) loginAttempts.clear();
+  }
   record.count += 1;
 
   if (record.count >= 5) {
@@ -86,12 +97,22 @@ export async function loginAdminAction(
   const { email, password } = validated.data;
   const rateLimitKey = email.toLowerCase().trim();
 
-  // 1. Cek Rate Limit
-  const rateLimit = checkRateLimit(rateLimitKey);
-  if (!rateLimit.allowed) {
+  // 0. Batasi percobaan per alamat IP (mencegah brute-force lintas akun)
+  const ip = await getClientIp();
+  const ipLimit = rateLimit(`login:${ip}`, 20, 15 * 60 * 1000);
+  if (!ipLimit.allowed) {
     return {
       success: false,
-      message: `Terlalu banyak percobaan gagal. Akun dikunci sementara. Silakan coba lagi dalam ${rateLimit.remainingSeconds} detik.`,
+      message: `Terlalu banyak percobaan login. Silakan coba lagi dalam ${ipLimit.retryAfterSeconds} detik.`,
+    };
+  }
+
+  // 1. Cek Rate Limit per akun
+  const accountLimit = checkRateLimit(rateLimitKey);
+  if (!accountLimit.allowed) {
+    return {
+      success: false,
+      message: `Terlalu banyak percobaan gagal. Akun dikunci sementara. Silakan coba lagi dalam ${accountLimit.remainingSeconds} detik.`,
     };
   }
 
@@ -101,6 +122,7 @@ export async function loginAdminAction(
     });
 
     if (!user) {
+      await bcrypt.compare(password, DUMMY_PASSWORD_HASH);
       recordFailedAttempt(rateLimitKey);
       return {
         success: false,

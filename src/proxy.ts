@@ -6,13 +6,9 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Rute login yang dikecualikan dari pemeriksaan sesi
-  if (
-    pathname === "/admin/login" ||
-    pathname === "/u-gate" ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/_next") ||
-    pathname.includes(".")
-  ) {
+  // Catatan: matcher hanya mencakup /admin/*. Jangan mengecualikan path berdasarkan
+  // titik (".") karena dapat dipakai untuk melewati pemeriksaan sesi.
+  if (pathname === "/admin/login") {
     return NextResponse.next();
   }
 

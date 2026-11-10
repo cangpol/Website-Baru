@@ -179,6 +179,7 @@ export default function HomepageCtaTour() {
                   </div>
                 ) : (
                   <form onSubmit={handleAdmissionSubmit} className="space-y-4">
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
                     {/* Honeypot hidden input */}
                     <input type="text" name="website_hp" className="hidden" tabIndex={-1} autoComplete="off" />
 
@@ -339,6 +340,7 @@ export default function HomepageCtaTour() {
                   </div>
                 ) : (
                   <form onSubmit={handleTourSubmit} className="space-y-4">
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
                     {/* Honeypot hidden input */}
                     <input type="text" name="website_hp" className="hidden" tabIndex={-1} autoComplete="off" />
 

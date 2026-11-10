@@ -18,6 +18,17 @@ export function sanitizeRichText(dirtyHtml: string): string {
       iframe: ["src", "width", "height", "frameborder", "allow", "allowfullscreen", "class"],
       "*": ["class", "style", "id"]
     },
+    // Batasi CSS inline (cegah overlay/clickjacking via position:fixed dsb.)
+    allowedStyles: {
+      "*": {
+        "text-align": [/^(left|right|center|justify)$/],
+        color: [/^#[0-9a-fA-F]{3,8}$/, /^rgba?\([\d\s.,%]+\)$/],
+        "background-color": [/^#[0-9a-fA-F]{3,8}$/, /^rgba?\([\d\s.,%]+\)$/],
+        "font-weight": [/^(normal|bold|[1-9]00)$/],
+        "font-style": [/^(normal|italic)$/],
+        "text-decoration": [/^(none|underline|line-through)$/],
+      },
+    },
     allowedSchemes: ["http", "https", "mailto", "tel"],
     allowedSchemesByTag: {
       img: ["http", "https"]

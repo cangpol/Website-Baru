@@ -18,7 +18,12 @@ import { loginAdminAction } from "@/app/actions/auth";
 function UGateLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTarget = searchParams.get("redirect") || "/admin";
+  // Cegah open redirect: hanya izinkan path internal di bawah /admin.
+  const rawRedirect = searchParams.get("redirect") || "/admin";
+  const redirectTarget =
+    rawRedirect.startsWith("/admin") && !rawRedirect.startsWith("//") && !rawRedirect.includes("\\")
+      ? rawRedirect
+      : "/admin";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,9 +36,10 @@ function UGateLoginForm() {
     e.preventDefault();
     setError(null);
 
-    // Verifikasi Gateway Key instansi
-    const validKey = process.env.NEXT_PUBLIC_ADMIN_GATEWAY_KEY || "UPITRA-GATEWAY-2026";
-    if (gatewayKey.trim() !== validKey) {
+    // Gateway Key hanya lapisan tambahan di sisi klien (bukan kontrol keamanan utama).
+    // Tidak ada nilai bawaan: jika env tidak diatur, pemeriksaan dilewati.
+    const validKey = process.env.NEXT_PUBLIC_ADMIN_GATEWAY_KEY;
+    if (validKey && gatewayKey.trim() !== validKey) {
       setError("Security Gateway Key instansi tidak valid. Akses ditolak.");
       return;
     }
@@ -53,12 +59,6 @@ function UGateLoginForm() {
         setError(result.message);
       }
     });
-  };
-
-  const handleQuickDemoFill = () => {
-    setEmail("admin@upitra.ac.id");
-    setGatewayKey(process.env.NEXT_PUBLIC_ADMIN_GATEWAY_KEY || "UPITRA-GATEWAY-2026");
-    setError(null);
   };
 
   return (
@@ -165,11 +165,12 @@ function UGateLoginForm() {
             <div className="relative">
               <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
-                type="text"
-                required
+                type="password"
+                autoComplete="off"
+                required={Boolean(process.env.NEXT_PUBLIC_ADMIN_GATEWAY_KEY)}
                 value={gatewayKey}
                 onChange={(e) => setGatewayKey(e.target.value)}
-                placeholder="UPITRA-GATEWAY-2026"
+                placeholder="Kode instansi"
                 className="w-full bg-blue-50/40 border border-blue-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-mono text-blue-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition"
               />
             </div>
@@ -194,17 +195,6 @@ function UGateLoginForm() {
             )}
           </button>
         </form>
-
-        {/* Quick Demo Helper */}
-        <div className="pt-4 border-t border-slate-100 text-center">
-          <button
-            type="button"
-            onClick={handleQuickDemoFill}
-            className="text-xs text-blue-600 hover:text-blue-800 font-semibold underline underline-offset-4 transition cursor-pointer"
-          >
-            Isi Kredensial Default Otomatis (Klik di sini)
-          </button>
-        </div>
       </div>
 
       {/* Footer Info */}

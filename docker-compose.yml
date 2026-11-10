@@ -34,7 +34,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL:?Variabel DATABASE_URL wajib ditentukan di .env}
       ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET:-${NEXTAUTH_SECRET:?Variabel ADMIN_SESSION_SECRET atau NEXTAUTH_SECRET wajib disetel}}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-${ADMIN_SESSION_SECRET:-upitra-default-session-secret-change-me}}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-${ADMIN_SESSION_SECRET:?Variabel ADMIN_SESSION_SECRET atau NEXTAUTH_SECRET wajib disetel}}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       NODE_ENV: production
       PORT: 3000
