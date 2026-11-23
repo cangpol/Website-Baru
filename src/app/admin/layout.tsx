@@ -71,6 +71,16 @@ const sidebarNavigation: SidebarItem[] = [
     badgeColor: "bg-blue-500/20 text-sky-200 border-blue-400/30",
   },
   {
+    id: "konten-halaman",
+    roles: ["SUPERADMIN"],
+    groupTitle: "BERANDA",
+    label: "Konten Halaman",
+    href: "/admin/konten-halaman",
+    icon: LayoutDashboard,
+    badge: "Gambar & Teks",
+    badgeColor: "bg-blue-500/20 text-sky-200 border-blue-400/30",
+  },
+  {
     id: "profil",
     roles: ["SUPERADMIN"],
     groupTitle: "PROFIL",

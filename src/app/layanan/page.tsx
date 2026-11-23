@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Image from "next/image";
 import { MessageCircle } from "lucide-react";
+import { usePageContent } from "@/lib/usePageContent";
 
 // ── SVG brand icons ──
 function InstagramIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -50,8 +51,6 @@ function TiktokIcon({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
-const defaultBannerImage = "/images/perpustakaan.jpg";
-
 interface ServiceCard {
   id?: string;
   name: string;
@@ -89,27 +88,22 @@ const defaultServices: ServiceCard[] = [
   },
 ];
 
-const socials = [
-  { name: "Instagram", handle: "@upitra_campus", url: "https://www.instagram.com/upitra_campus/", icon: InstagramIcon },
-  { name: "Tiktok", handle: "@upitra_campus", url: "https://www.tiktok.com/@upitra_campus", icon: TiktokIcon },
-  { name: "Youtube", handle: "UPITRA Official", url: "https://www.youtube.com/@upitracampus", icon: YoutubeIcon },
-  { name: "Facebook", handle: "UPITRA Campus", url: "https://www.facebook.com/upitracampus", icon: FacebookIcon },
-  { name: "Threads", handle: "@upitra_campus", url: "https://www.threads.net/@upitra_campus", icon: ThreadsIcon },
-  { name: "Whatsapp", handle: "0811-290-7500", url: "https://wa.me/628112907500", icon: MessageCircle },
-];
+const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  instagram: InstagramIcon,
+  tiktok: TiktokIcon,
+  youtube: YoutubeIcon,
+  facebook: FacebookIcon,
+  threads: ThreadsIcon,
+  whatsapp: MessageCircle,
+};
 
 const pad = "mx-auto w-full max-w-[1440px] px-4 sm:px-12 lg:px-[120px]";
 
 export default function LayananIndexPage() {
-  const [bannerImage, setBannerImage] = useState(defaultBannerImage);
+  const { content, banner } = usePageContent("layanan");
   const [services, setServices] = useState<ServiceCard[]>(defaultServices);
 
   useEffect(() => {
-    fetch("/api/banner?page=layanan")
-      .then((res) => res.json())
-      .then((json) => json?.ok && json.data?.imageUrl && setBannerImage(json.data.imageUrl))
-      .catch(() => {});
-
     fetch("/api/services")
       .then((res) => res.json())
       .then((json) => {
@@ -127,17 +121,13 @@ export default function LayananIndexPage() {
       <main className="flex-1">
         {/* Banner 1440x480 */}
         <section className="relative isolate h-[320px] w-full overflow-hidden bg-[#006bbd] sm:h-[400px] lg:h-[480px]" aria-label="Portal & Ekosistem Kampus">
-          <Image src={bannerImage} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+          <Image src={banner.imageUrl} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#006bbd]/85 via-[#006bbd]/45 to-transparent" />
           <div className={`${pad} flex h-full flex-col justify-end pb-10 lg:pb-20`}>
-            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
-              Portal &amp; Ekosistem
-              <br />
-              Kampus
+            <h1 className="max-w-3xl whitespace-pre-line text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
+              {banner.title}
             </h1>
-            <p className="mt-3 max-w-[560px] text-xs font-medium leading-snug text-white">
-              Akses layanan digital, perpustakaan, pembelajaran, dan karir Universitas Pignatelli Triputra dalam satu portal.
-            </p>
+            <p className="mt-3 max-w-[560px] whitespace-pre-line text-xs font-medium leading-snug text-white">{banner.description}</p>
           </div>
         </section>
 
@@ -170,29 +160,32 @@ export default function LayananIndexPage() {
         <section className="bg-[#006bbd]">
           <div className={`${pad} grid items-end gap-6 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]`}>
             <div className="relative order-2 mx-auto h-[300px] w-[160px] self-end md:order-1 md:h-[380px] md:w-[220px]">
-              <Image src="/images/upitra-student-achiever.png" alt="" fill sizes="220px" className="object-contain object-bottom" />
+              <Image src={content.sideImage} alt="" fill sizes="220px" className="object-contain object-bottom" />
             </div>
             <div className="order-1 pb-10 md:order-2">
               <h2 className="text-2xl font-bold text-white">Media Sosial</h2>
               <p className="mt-1 text-xs text-white/90">Ikuti kabar terbaru dan kegiatan UPITRA di media sosial resmi kami.</p>
               <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {socials.map((s) => (
+                {content.socials.map((s, i) => {
+                  const Icon = socialIcons[s.name.toLowerCase()] ?? MessageCircle;
+                  return (
                   <a
-                    key={s.name}
+                    key={i}
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 transition-transform hover:-translate-y-0.5"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#006bbd] text-white">
-                      <s.icon className="h-4 w-4" />
+                      <Icon className="h-4 w-4" />
                     </span>
                     <span className="min-w-0">
                       <span className="block text-xs font-bold text-slate-900">{s.name}</span>
                       <span className="block truncate text-[10px] text-slate-500">{s.handle}</span>
                     </span>
                   </a>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

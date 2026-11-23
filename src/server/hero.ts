@@ -28,7 +28,7 @@ function isSafeBannerUrl(value: string) {
   }
 }
 
-const pageHeaderKeys = new Set(["akademik", "layanan", "riset"]);
+const pageHeaderKeys = new Set(["akademik", "layanan", "riset", "kemahasiswaan", "kerjasama"]);
 const pageHeaderBannerSchema = z.object({
   title: z.string().trim().min(1).max(200),
   description: z.string().max(2000),

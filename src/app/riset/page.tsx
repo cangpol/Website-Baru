@@ -7,25 +7,12 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { usePageContent } from "@/lib/usePageContent";
 
 const defaultPortals = {
   lppmUrl: "https://lppm.upitra.ac.id",
   jurnalUrl: "https://jurnal.upitra.ac.id",
 };
-
-const stats = [
-  { value: "625+", label: "Publikasi" },
-  { value: "2013+", label: "Pengabdian" },
-  { value: "1689", label: "Penelitian" },
-  { value: "70+", label: "Kolaborasi Penelitian" },
-];
-
-// shortcut: placeholder research cards (no research data source exists yet); wire to a CMS/API when available
-const researchCards = Array.from({ length: 8 }, (_, i) => ({
-  id: i,
-  title: "Judul Penelitian",
-  meta: "Dosen Peneliti • 2025",
-}));
 
 const portalCards = [
   {
@@ -43,15 +30,10 @@ const portalCards = [
 ];
 
 export default function RisetPortalPage() {
-  const [bannerImage, setBannerImage] = useState("/images/kegiatan.jpg");
+  const { content, banner } = usePageContent("riset");
   const [portals, setPortals] = useState(defaultPortals);
 
   useEffect(() => {
-    fetch("/api/banner?page=riset")
-      .then((res) => res.json())
-      .then((json) => json?.ok && json.data?.imageUrl && setBannerImage(json.data.imageUrl))
-      .catch(() => {});
-
     fetch("/api/riset/portals")
       .then((res) => res.json())
       .then((json) => {
@@ -74,17 +56,13 @@ export default function RisetPortalPage() {
       <main className="flex-1">
         {/* Banner 1440x480 */}
         <section className="relative isolate h-[320px] w-full overflow-hidden bg-[#006bbd] sm:h-[400px] lg:h-[480px]" aria-label="Pusat Riset, Inovasi, & Pengabdian">
-          <Image src={bannerImage} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+          <Image src={banner.imageUrl} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#006bbd]/80 via-[#006bbd]/45 to-[#006bbd]/20" />
           <div className={`${pad} flex h-full flex-col justify-end pb-10 lg:pb-20`}>
-            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
-              Pusat Riset, Inovasi,
-              <br />
-              &amp; Pengabdian
+            <h1 className="max-w-3xl whitespace-pre-line text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
+              {banner.title}
             </h1>
-            <p className="mt-3 max-w-[560px] text-xs font-medium leading-snug text-white">
-              Mendorong riset terapan, inovasi, dan pengabdian kepada masyarakat yang berdampak bagi industri dan masyarakat.
-            </p>
+            <p className="mt-3 max-w-[560px] whitespace-pre-line text-xs font-medium leading-snug text-white">{banner.description}</p>
           </div>
         </section>
 
@@ -92,7 +70,7 @@ export default function RisetPortalPage() {
         <section className={`${pad} py-10 lg:py-14`}>
           <h2 className="text-2xl font-bold text-[#006bbd]">Tentang LPPM</h2>
           <p className="mt-3 text-xs leading-relaxed text-slate-700 sm:text-[13px]">
-            LPPM (Lembaga Penelitian dan Pengabdian kepada Masyarakat) Universitas Pignatelli Triputra menjadi pusat penelitian, pengabdian, dan inovasi sivitas akademika. LPPM mengoordinasikan perencanaan, pelaksanaan, monitoring, dan evaluasi kegiatan penelitian serta pengabdian kepada masyarakat, mendorong publikasi ilmiah, perlindungan kekayaan intelektual, dan hilirisasi hasil riset melalui kolaborasi dengan mitra industri dan ekosistem Triputra Group.
+            {content.about}
           </p>
         </section>
 
@@ -102,7 +80,7 @@ export default function RisetPortalPage() {
             <h2 className="text-2xl font-bold text-[#006bbd]">Performa Akademik 2022-2026</h2>
             <p className="mt-1 text-xs text-slate-600">Ringkasan capaian penelitian dan pengabdian sivitas akademika UPITRA.</p>
             <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-              {stats.map((s) => (
+              {content.stats.map((s) => (
                 <div key={s.label} className="rounded-xl bg-white px-4 py-6 shadow-sm">
                   <div className="text-3xl font-extrabold text-[#006bbd] lg:text-4xl">{s.value}</div>
                   <div className="mt-1 text-xs font-semibold text-slate-700">{s.label}</div>
@@ -116,10 +94,10 @@ export default function RisetPortalPage() {
         <section className={`${pad} py-10 lg:py-14`}>
           <h2 className="text-2xl font-bold text-[#006bbd]">Penelitian Terbaru</h2>
           <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-            {researchCards.map((c) => (
-              <article key={c.id} className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+            {content.research.map((c, i) => (
+              <article key={i} className="overflow-hidden rounded-lg border border-slate-200 bg-white">
                 <div className="relative aspect-[16/10] w-full bg-slate-100">
-                  <Image src="/images/kegiatan.jpg" alt="" fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover" />
+                  <Image src={c.image || "/images/kegiatan.jpg"} alt={c.title} fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover" />
                 </div>
                 <div className="p-3">
                   <h3 className="text-xs font-bold text-slate-900">{c.title}</h3>
