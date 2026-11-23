@@ -350,7 +350,7 @@ export default function AdminAiDatasetPage() {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider">
               <Bot className="w-3.5 h-3.5 text-blue-600" />
-              <span>AI Chat Assistant UPITRA</span>
+              <span>Veronica</span>
             </span>
             <span className="text-xs text-slate-500 font-medium">Knowledge Base Management</span>
           </div>
@@ -358,7 +358,7 @@ export default function AdminAiDatasetPage() {
             Manajemen AI Dataset (Q&amp;A Assistant)
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Kelola basis pengetahuan, variasi kata kunci, dan jawaban otomatis untuk melayani calon mahasiswa &amp; civitas akademika 24/7.
+            Kelola basis pengetahuan, variasi kata kunci, dan jawaban Veronica untuk calon mahasiswa &amp; civitas akademika.
           </p>
         </div>
 
@@ -475,7 +475,7 @@ export default function AdminAiDatasetPage() {
           </div>
           <div className="text-xl sm:text-2xl font-black text-[#06172e] tracking-tight flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Online 24/7</span>
+            <span>Aktif</span>
           </div>
           <div className="text-[11px] text-emerald-600 font-semibold mt-1">
             Live di portal publik website
@@ -723,7 +723,7 @@ export default function AdminAiDatasetPage() {
                     {editingItem ? "Edit Pertanyaan & Jawaban AI" : "Tambah Pertanyaan AI Baru"}
                   </h3>
                   <p className="text-[11px] text-slate-500">
-                    Konfigurasikan respon cerdas untuk AI Chat Assistant UPITRA
+                    Konfigurasikan respons cerdas Veronica
                   </p>
                 </div>
               </div>
@@ -1065,7 +1065,7 @@ export default function AdminAiDatasetPage() {
             <div className="space-y-1">
               <h4 className="text-base font-bold text-[#06172e]">Hapus Pertanyaan AI?</h4>
               <p className="text-xs text-slate-500">
-                Pertanyaan ini tidak akan dapat dikenali lagi oleh AI Assistant. Tindakan ini tidak dapat dibatalkan.
+                Pertanyaan ini tidak akan dapat dikenali lagi oleh Veronica. Tindakan ini tidak dapat dibatalkan.
               </p>
             </div>
             <div className="flex items-center justify-center gap-3 pt-2">
