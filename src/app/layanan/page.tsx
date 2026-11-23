@@ -5,34 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  BookOpen, 
-  Laptop, 
-  Briefcase, 
-  Sparkles, 
-  ExternalLink,
-  Share2,
-  FileText,
-  ChevronDown,
-  Download,
-  CheckCircle2,
-  HelpCircle,
-  Play,
-} from "lucide-react";
-interface LayananBanner {
-  title: string;
-  description: string;
-  imageUrl?: string;
-}
+import { MessageCircle } from "lucide-react";
 
-const defaultLayananBanner: LayananBanner = {
-  title: "Layanan",
-  description: "Pusat Layanan Terpadu, Fasilitas Digital, Download Center & Portal Informasi Sivitas Akademika",
-  imageUrl: "/images/perpustakaan.jpg",
-};
-
-// ── SVG Brand Icons untuk Media Sosial Resmi ──
+// ── SVG brand icons ──
 function InstagramIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -75,679 +50,153 @@ function TiktokIcon({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
-function LinkedinIcon({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.68 1.68 0 1 0 0-3.36 1.68 1.68 0 0 0 0 3.36M7.85 18.5V10.13H5.06v8.37h2.79z"/>
-    </svg>
-  );
+const defaultBannerImage = "/images/perpustakaan.jpg";
+
+interface ServiceCard {
+  id?: string;
+  name: string;
+  url: string;
+  description: string;
 }
 
-// ── 4 Kotak Layanan Utama (1 Baris di Layar Desktop) ──
-const empatKotakLayanan = [
+const li = (items: string[]) => `<ul>${items.map((i) => `<li>${i}</li>`).join("")}</ul>`;
+
+const defaultServices: ServiceCard[] = [
   {
-    title: "Perpustakaan",
-    href: "https://siper.upitra.ac.id",
-    icon: BookOpen,
-    desc: "Katalog online OPAC, repositori karya ilmiah, e-book, dan langganan e-journal internasional.",
-    tag: "Sumber Belajar",
+    name: "Perpustakaan",
+    url: "https://siper.upitra.ac.id",
+    description: `<p>Layanan perpustakaan digital dan fisik untuk mendukung kegiatan belajar dan penelitian.</p>${li(["Katalog online (OPAC)", "Repositori karya ilmiah", "Koleksi e-book dan e-journal"])}`,
   },
   {
-    title: "Unity E-Learning (LMS)",
-    href: "https://unity.upitra.ac.id",
-    icon: Laptop,
-    desc: "Platform perkuliahan daring modern: akses materi kuliah 24/7, pengumpulan tugas, kuis interaktif, dan video conference.",
-    tag: "Perkuliahan Daring",
+    name: "E-Learning",
+    url: "https://unity.upitra.ac.id",
+    description: `<p>Platform perkuliahan daring Unity LMS untuk seluruh sivitas akademika.</p>${li(["Materi kuliah 24/7", "Pengumpulan tugas dan kuis", "Video conference"])}`,
   },
   {
-    title: "Immersion Program",
-    href: "https://immersion.upitra.ac.id",
-    icon: Sparkles,
-    desc: "Program penempatan praktik kerja langsung di unit-unit bisnis Triputra Group se-Indonesia dengan bimbingan mentor eksekutif.",
-    tag: "Program Unggulan",
+    name: "Career Center",
+    url: "https://ucc.upitra.ac.id",
+    description: `<p>Pusat bimbingan karir dan penyaluran lulusan bersama mitra industri.</p>${li(["Bimbingan karir", "Campus hiring", "Informasi lowongan kerja"])}`,
   },
   {
-    title: "Tracer Study & Career Center",
-    href: "https://ucc.upitra.ac.id",
-    icon: Briefcase,
-    desc: "Pusat bimbingan karir mahasiswa, campus hiring ekosistem Triputra Group, dan portal survei penelusuran lulusan alumni.",
-    tag: "Karir & Alumni",
+    name: "Tracer Studi",
+    url: "/layanan/tracer-study",
+    description: `<p>Penelusuran lulusan untuk meningkatkan mutu pendidikan dan relevansi dengan dunia kerja.</p>${li(["Survei alumni", "Data penyerapan lulusan"])}`,
+  },
+  {
+    name: "Immersion Program",
+    url: "https://immersion.upitra.ac.id",
+    description: `<p>Program praktik kerja langsung di unit bisnis Triputra Group dengan bimbingan mentor.</p>${li(["Praktik kerja 1 tahun", "Mentor industri", "Sertifikasi profesional"])}`,
   },
 ];
 
-// ── Data Brosur PMB (Diambil dari /layanan/download-center dengan Aksen Biru UPITRA) ──
-const pmbBrochureData = {
-  title: "Penerimaan Mahasiswa Baru",
-  subTitle: "Brosur PMB & Panduan Akademik TA 2026/2027 • PDF (6.2 MB)",
-  fileName: "Brosur PMB & Panduan Akademik 2026/2027",
-  facultyName: "Universitas Pignatelli Triputra",
-  degree: "Sarjana S1 & Diploma D3",
-  fileSize: "6.2 MB",
-  coverImage: "/images/brochures/1788939036_6aa10b1c44527.jpg",
-  pdfUrl: "https://www.upitra.ac.id/files/brochures/1791794242_6acc9c42b5951.pdf",
-  description: "Panduan resmi penerimaan mahasiswa baru UPITRA, skema beasiswa Triputra Peduli (potongan SPP s/d 100%), jadwal pendaftaran jalur tanpa tes, dan profil ekosistem kampus.",
-  highlights: [
-    "Jalur Rapor Bebas Tes",
-    "Beasiswa Prestasi Triputra (s/d 100%)",
-    "Estimasi Biaya Kuliah & Asrama",
-    "Fasilitas Kampus Surakarta"
-  ]
-};
-
-// ── Data FAQ (Frequently Asked Questions) Layanan & PMB ──
-const layananFaqs = [
-  {
-    q: "Bagaimana cara mendaftar sebagai mahasiswa baru di UPITRA?",
-    a: "Pendaftaran dapat dilakukan secara mandiri melalui portal resmi https://pmb.upitra.ac.id atau langsung hadir ke Kantor Admisi Kampus UPITRA di Surakarta. Tersedia Jalur Bebas Tes (Jalur Rapor) serta berbagai skema beasiswa prestasi."
-  },
-  {
-    q: "Bagaimana cara mengakses Perpustakaan Daring (SIPER UPITRA)?",
-    a: "Sivitas akademika dapat mengakses sistem perpustakaan melalui https://siper.upitra.ac.id menggunakan akun SSO (Single Sign-On) kampus untuk menelusuri katalog buku fisik, repositori karya ilmiah, dan koleksi e-journal internasional."
-  },
-  {
-    q: "Apa itu platform Unity E-Learning (LMS) dan bagaimana cara login?",
-    a: "Unity LMS (https://unity.upitra.ac.id) adalah platform manajemen perkuliahan daring resmi UPITRA. Mahasiswa dan dosen menggunakan kredensial email kampus (@upitra.ac.id) untuk mengakses materi kuliah, kuis interaktif, pengumpulan tugas, dan presensi."
-  },
-  {
-    q: "Apakah ada program beasiswa untuk mahasiswa baru?",
-    a: "Ya, UPITRA menyediakan program Beasiswa Triputra Peduli dengan potongan biaya SPP hingga 100%, Beasiswa Prestasi Akademik/Non-Akademik, serta program KIP-Kuliah Kemendikbudristek."
-  },
-  {
-    q: "Bagaimana mekanisme Immersion Program 3+1 di Triputra Group?",
-    a: "Melalui kurikulum 3+1, mahasiswa menempuh 3 tahun perkuliahan intensif di kampus dan 1 tahun program immersion (magang profesional bersertifikat dan berbayar) di unit bisnis Triputra Group dengan bimbingan mentor industri eksekutif."
-  },
-  {
-    q: "Ke mana saya dapat menghubungi jika membutuhkan bantuan layanan kampus?",
-    a: "Anda dapat menghubungi Pusat Layanan Terpadu & WhatsApp Admisi di 0811-290-7500 atau bertanya kepada Veronica melalui chat di pojok kanan bawah website."
-  }
+const socials = [
+  { name: "Instagram", handle: "@upitra_campus", url: "https://www.instagram.com/upitra_campus/", icon: InstagramIcon },
+  { name: "Tiktok", handle: "@upitra_campus", url: "https://www.tiktok.com/@upitra_campus", icon: TiktokIcon },
+  { name: "Youtube", handle: "UPITRA Official", url: "https://www.youtube.com/@upitracampus", icon: YoutubeIcon },
+  { name: "Facebook", handle: "UPITRA Campus", url: "https://www.facebook.com/upitracampus", icon: FacebookIcon },
+  { name: "Threads", handle: "@upitra_campus", url: "https://www.threads.net/@upitra_campus", icon: ThreadsIcon },
+  { name: "Whatsapp", handle: "0811-290-7500", url: "https://wa.me/628112907500", icon: MessageCircle },
 ];
 
-// ── Daftar Media Sosial Resmi UPITRA Campus ──
-const socialMediaList = [
-  {
-    name: "Instagram",
-    handle: "@upitra_campus",
-    url: "https://www.instagram.com/upitra_campus/",
-    icon: InstagramIcon,
-    accent: "bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white",
-    badge: "Foto & Reels",
-    desc: "Update foto harian kampus, info event, pengumuman beasiswa, dan prestasi mahasiswa.",
-  },
-  {
-    name: "YouTube",
-    handle: "UPITRA Official",
-    url: "https://www.youtube.com/@upitracampus",
-    icon: YoutubeIcon,
-    accent: "bg-red-600 text-white",
-    badge: "Video Resmi",
-    desc: "Dokumentasi wisuda, profil program studi, seminar nasional, dan podcast edukatif.",
-  },
-  {
-    name: "Facebook",
-    handle: "UPITRA Campus",
-    url: "https://www.facebook.com/upitracampus",
-    icon: FacebookIcon,
-    accent: "bg-blue-600 text-white",
-    badge: "Komunitas",
-    desc: "Informasi pendaftaran mahasiswa baru, agenda universitas, dan relasi sivitas.",
-  },
-  {
-    name: "Threads",
-    handle: "@upitra_campus",
-    url: "https://www.threads.net/@upitra_campus",
-    icon: ThreadsIcon,
-    accent: "bg-slate-900 text-white",
-    badge: "Diskusi Kampus",
-    desc: "Obrolan santai, kabar kilat kegiatan kampus, dan interaksi interaktif mahasiswa.",
-  },
-  {
-    name: "TikTok",
-    handle: "@upitra_campus",
-    url: "https://www.tiktok.com/@upitra_campus",
-    icon: TiktokIcon,
-    accent: "bg-slate-950 text-cyan-400",
-    badge: "Tren & Kreatif",
-    desc: "Video seru dinamika kehidupan kampus Solo, tips perkuliahan, dan konten kreatif.",
-  },
-  {
-    name: "LinkedIn",
-    handle: "Universitas Pignatelli Triputra",
-    url: "https://www.linkedin.com/school/universitas-pignatelli-triputra/",
-    icon: LinkedinIcon,
-    accent: "bg-[#0a66c2] text-white",
-    badge: "Jejaring Karir",
-    desc: "Peluang karir, kemitraan Triputra Group, dan jejaring alumni profesional.",
-  },
-];
+const pad = "mx-auto w-full max-w-[1440px] px-4 sm:px-12 lg:px-[120px]";
 
 export default function LayananIndexPage() {
-  const [banner, setBanner] = useState<LayananBanner>(defaultLayananBanner);
-  const [servicesList, setServicesList] = useState<any[]>([]);
-  const [pmbBrochure, setPmbBrochure] = useState(pmbBrochureData);
-  const [faqsList, setFaqsList] = useState<any[]>(layananFaqs);
-  const [isPmbExpanded, setIsPmbExpanded] = useState(false);
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [bannerImage, setBannerImage] = useState(defaultBannerImage);
+  const [services, setServices] = useState<ServiceCard[]>(defaultServices);
 
-  // Load dynamic banner, services, brochure, and FAQs from database via API
   useEffect(() => {
     fetch("/api/banner?page=layanan")
       .then((res) => res.json())
-      .then((json) => {
-        if (json?.ok && json.data) {
-          setBanner({
-            title: json.data.title || defaultLayananBanner.title,
-            description: json.data.description || defaultLayananBanner.description,
-            imageUrl: json.data.imageUrl || defaultLayananBanner.imageUrl,
-          });
-        }
-      })
-      .catch((err) => console.warn("Failed to load banner:", err));
+      .then((json) => json?.ok && json.data?.imageUrl && setBannerImage(json.data.imageUrl))
+      .catch(() => {});
 
     fetch("/api/services")
       .then((res) => res.json())
       .then((json) => {
         if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
-          setServicesList(json.data);
+          setServices(json.data.map((s: any) => ({ id: s.id, name: s.name, url: s.url, description: s.description || "" })));
         }
       })
-      .catch((err) => console.warn("Failed to load services:", err));
-
-    fetch("/api/layanan/brochure")
-      .then((res) => res.json())
-      .then((json) => {
-        if (json?.ok && json.data) {
-          setPmbBrochure({
-            title: json.data.title || pmbBrochureData.title,
-            subTitle: json.data.subTitle || pmbBrochureData.subTitle,
-            fileName: json.data.fileName || pmbBrochureData.fileName,
-            facultyName: pmbBrochureData.facultyName,
-            degree: pmbBrochureData.degree,
-            fileSize: json.data.fileSize || pmbBrochureData.fileSize,
-            coverImage: json.data.coverImage || pmbBrochureData.coverImage,
-            pdfUrl: json.data.pdfUrl || pmbBrochureData.pdfUrl,
-            description: json.data.description || pmbBrochureData.description,
-            highlights: Array.isArray(json.data.highlights) && json.data.highlights.length > 0
-              ? json.data.highlights
-              : pmbBrochureData.highlights,
-          });
-        }
-      })
-      .catch((err) => console.warn("Failed to load brochure:", err));
-
-    fetch("/api/layanan/faqs")
-      .then((res) => res.json())
-      .then((json) => {
-        if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
-          setFaqsList(json.data);
-        }
-      })
-      .catch((err) => console.warn("Failed to load faqs:", err));
+      .catch(() => {});
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="flex min-h-screen flex-col bg-white font-sans text-slate-800">
       <Navbar />
 
-      {/* 1. HEADER BANNER LAYANAN (Full Width 1440px x 480px, Identik dengan /kemahasiswaan, /riset & /akademik) */}
-      <header className="w-full h-[420px] sm:h-[460px] lg:h-[480px] relative overflow-hidden group bg-[#06172e]">
-        {/* Background Image: Full Cover 1440x480 */}
-        <Image
-          src={banner.imageUrl || "/images/perpustakaan.jpg"}
-          alt={banner.title}
-          fill
-          priority
-          className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
-        />
-
-        {/* Executive Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#06172e]/95 via-[#06172e]/60 to-[#06172e]/30 flex flex-col justify-center text-white">
-          <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-center p-6 sm:p-10 lg:p-12">
-            {/* Center Rata Kiri Content: Title & Description */}
-            <div className="space-y-3 sm:space-y-4 max-w-4xl text-left">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight drop-shadow-md">
-                {banner.title || "Layanan"}
-              </h1>
-
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-sky-200/95 leading-relaxed drop-shadow-xs max-w-3xl">
-                {banner.description || "Ekosistem layanan digital, perpustakaan, karir, dan pembelajaran terpadu untuk mendukung kesuksesan akademik dan profesional seluruh sivitas akademika UPITRA."}
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 2. KONTEN UTAMA HALAMAN LAYANAN */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16">
-        
-        {/* SECTION 1: TERHUBUNG DENGAN KAMI & 4 KOTAK LAYANAN DALAM 1 BARIS */}
-        <section className="space-y-8">
-          
-          {/* Header Section: Terhubung dengan Kami */}
-          <div className="space-y-2 text-center sm:text-left">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Ekosistem Layanan Terpadu</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
-              Terhubung dengan Kami
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-              Akses langsung fasilitas digital, perpustakaan daring, sistem pembelajaran, dan pusat karir Universitas Pignatelli Triputra melalui portal resmi di bawah ini:
+      <main className="flex-1">
+        {/* Banner 1440x480 */}
+        <section className="relative isolate h-[320px] w-full overflow-hidden bg-[#006bbd] sm:h-[400px] lg:h-[480px]" aria-label="Portal & Ekosistem Kampus">
+          <Image src={bannerImage} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#006bbd]/85 via-[#006bbd]/45 to-transparent" />
+          <div className={`${pad} flex h-full flex-col justify-end pb-10 lg:pb-20`}>
+            <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
+              Portal &amp; Ekosistem
+              <br />
+              Kampus
+            </h1>
+            <p className="mt-3 max-w-[560px] text-xs font-medium leading-snug text-white">
+              Akses layanan digital, perpustakaan, pembelajaran, dan karir Universitas Pignatelli Triputra dalam satu portal.
             </p>
           </div>
+        </section>
 
-          {/* 4 Kotak Layanan: Dimuat Tepat 1 Baris di Layar Desktop (lg:grid-cols-4) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {(servicesList.length > 0
-              ? servicesList
-              : empatKotakLayanan.map((item) => ({
-                  name: item.title,
-                  url: item.href,
-                  icon: item.title.includes("Perpus")
-                    ? "BookOpen"
-                    : item.title.includes("LMS")
-                    ? "Laptop"
-                    : item.title.includes("Immersion")
-                    ? "Sparkles"
-                    : "Briefcase",
-                  description: item.desc,
-                  tag: item.tag,
-                  attachmentUrl: null,
-                  attachmentName: null,
-                }))
-            ).map((item, idx) => {
-              const isBuiltInIcon = !item.icon || !item.icon.startsWith("/");
-              const IconComponent =
-                item.icon === "Laptop"
-                  ? Laptop
-                  : item.icon === "Sparkles"
-                  ? Sparkles
-                  : item.icon === "Briefcase"
-                  ? Briefcase
-                  : BookOpen;
-
-              return (
+        {/* Ekosistem Kampus */}
+        <section className={`${pad} py-10 lg:py-14`}>
+          <h2 className="text-2xl font-bold text-[#006bbd]">Ekosistem Kampus</h2>
+          <p className="mt-1 text-xs text-slate-600">Beragam layanan yang mendukung kegiatan sivitas akademika UPITRA.</p>
+          <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {services.map((s, i) => (
+              <article key={s.id ?? i} className="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 className="text-sm font-bold text-slate-900">{s.name}</h3>
                 <div
-                  key={item.id || idx}
-                  className="group bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs hover:border-blue-400 hover:shadow-xl transition-all flex flex-col justify-between space-y-6"
+                  className="mt-2 flex-1 text-xs leading-relaxed text-slate-600 [&_li]:ml-4 [&_li]:list-disc [&_p]:mb-2"
+                  dangerouslySetInnerHTML={{ __html: s.description }}
+                />
+                <a
+                  href={s.url}
+                  target={s.url.startsWith("http") ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-[#006bbd] py-2 text-xs font-bold text-white transition-colors hover:bg-[#005a9e]"
                 >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-xs overflow-hidden">
-                        {isBuiltInIcon ? (
-                          <IconComponent className="w-6 h-6" />
-                        ) : (
-                          <img src={item.icon} alt={item.name} className="w-full h-full object-cover" />
-                        )}
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 group-hover:bg-blue-100 group-hover:text-blue-800 transition-colors">
-                        {item.tag || "Layanan Kampus"}
-                      </span>
-                    </div>
+                  Akses Layanan
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
 
-                    <h3 className="text-lg font-black text-[#0b2545] group-hover:text-blue-700 transition-colors leading-snug">
-                      {item.name}
-                    </h3>
-
-                    <div
-                      className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3 prose prose-xs max-w-none"
-                      dangerouslySetInnerHTML={{ __html: item.description }}
-                    />
-
-                    {item.attachmentUrl && (
-                      <div className="pt-1">
-                        <a
-                          href={item.attachmentUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-semibold transition-colors"
-                        >
-                          <FileText className="w-3.5 h-3.5" />
-                          <span className="truncate max-w-[150px]">
-                            {item.attachmentName || "Unduh Formulir"}
-                          </span>
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
+        {/* Media Sosial */}
+        <section className="bg-[#006bbd]">
+          <div className={`${pad} grid items-end gap-6 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]`}>
+            <div className="relative order-2 mx-auto h-[300px] w-[160px] self-end md:order-1 md:h-[380px] md:w-[220px]">
+              <Image src="/images/upitra-student-achiever.png" alt="" fill sizes="220px" className="object-contain object-bottom" />
+            </div>
+            <div className="order-1 pb-10 md:order-2">
+              <h2 className="text-2xl font-bold text-white">Media Sosial</h2>
+              <p className="mt-1 text-xs text-white/90">Ikuti kabar terbaru dan kegiatan UPITRA di media sosial resmi kami.</p>
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {socials.map((s) => (
                   <a
-                    href={item.url || "/layanan"}
-                    target={item.url?.startsWith("http") ? "_blank" : undefined}
-                    rel={item.url?.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 group-hover:text-blue-800 transition-colors"
+                    key={s.name}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 transition-transform hover:-translate-y-0.5"
                   >
-                    <span>Akses Layanan</span>
-                    <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </a>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Tombol Unduh Brosur PMB (Dengan Pratinjau Interaktif, Tepat di Bawah 4 Kotak Layanan) */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:border-blue-400 hover:shadow-md transition-all overflow-hidden">
-            
-            {/* Header Baris Dokumen */}
-            <div 
-              onClick={() => setIsPmbExpanded(!isPmbExpanded)}
-              className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none bg-white hover:bg-slate-50/70 transition-colors"
-            >
-              {/* Kiri: Icon Dokumen Biru + Judul & Tanggal Update */}
-              <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
-                <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                  <FileText className="w-6 h-6" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-base sm:text-lg font-black text-[#0b2545] truncate">
-                    {pmbBrochure.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
-                    {pmbBrochure.subTitle}
-                  </p>
-                </div>
-              </div>
-
-              {/* Kanan: Tombol Unduh (Warna Biru) + Panah Bawah Interaktif */}
-              <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                {/* Tombol Unduh Langsung */}
-                <a
-                  href={pmbBrochure.pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center gap-2 cursor-pointer"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Unduh</span>
-                </a>
-
-                {/* Tombol Panah Bawah (Chevron Toggle) */}
-                <button
-                  type="button"
-                  aria-label="Tampilkan pratinjau brosur"
-                  className="p-2 rounded-full hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
-                >
-                  <ChevronDown 
-                    className={`w-5 h-5 transition-transform duration-300 ${isPmbExpanded ? "rotate-180 text-blue-600" : ""}`} 
-                  />
-                </button>
-              </div>
-            </div>
-
-            {/* Expandable Preview Accordion (Framer Motion) */}
-            <AnimatePresence initial={false}>
-              {isPmbExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.35, ease: "easeInOut" }}
-                  className="overflow-hidden border-t border-slate-100 bg-slate-50/70"
-                >
-                  <div className="p-5 sm:p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-center">
-                      
-                      {/* Kolom Kiri: Visual Pratinjau Cover Brosur */}
-                      <div className="md:col-span-5 lg:col-span-4 flex justify-center">
-                        <div className="relative w-full max-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900 group">
-                          <Image
-                            src={pmbBrochure.coverImage || "/images/brochures/1788939036_6aa10b1c44527.jpg"}
-                            alt={pmbBrochure.fileName}
-                            fill
-                            className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                          <div className="absolute bottom-3 left-3 right-3 text-white text-[11px] font-bold flex items-center justify-between">
-                            <span className="px-2 py-0.5 rounded-md bg-blue-600/90 backdrop-blur-xs">Pratinjau Brosur</span>
-                            <span className="text-slate-200">{pmbBrochure.fileSize}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Kolom Kanan: Rincian Brosur, Poin Keunggulan & Aksi */}
-                      <div className="md:col-span-7 lg:col-span-8 space-y-5">
-                        
-                        <div className="space-y-1.5">
-                          <h4 className="text-xl sm:text-2xl font-black text-[#0b2545] tracking-tight">
-                            {pmbBrochure.fileName}
-                          </h4>
-                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pt-1">
-                            {pmbBrochure.description}
-                          </p>
-                        </div>
-
-                        {/* Poin Unggulan */}
-                        <div className="space-y-2 pt-2 border-t border-slate-200/80">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                            Fokus &amp; Informasi Utama:
-                          </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {pmbBrochure.highlights.map((item: string, idx: number) => (
-                              <div key={idx} className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-blue-100 text-xs text-slate-700 font-medium shadow-2xs">
-                                <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-                                <span className="truncate">{item}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Tombol Aksi Lanjutan (Seluruhnya Palet Biru) */}
-                        <div className="pt-2 flex flex-wrap items-center gap-3">
-                          <a
-                            href={pmbBrochure.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all"
-                          >
-                            <Download className="w-4 h-4" />
-                            <span>Unduh Dokumen Lengkap (PDF)</span>
-                          </a>
-                        </div>
-
-                      </div>
-
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-          </div>
-
-        </section>
-
-        {/* SECTION 3: FREQUENTLY ASKED QUESTIONS (FAQ) */}
-        <section className="space-y-8 pt-6 border-t border-slate-200/80">
-          
-          {/* Header Section FAQ */}
-          <div className="space-y-2 text-center sm:text-left">
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center justify-center sm:justify-start gap-1.5">
-              <HelpCircle className="w-4 h-4 text-blue-600" />
-              <span>Pertanyaan Umum Seputar Layanan &amp; PMB</span>
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
-              Frequently Asked Questions (FAQ)
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-              Jawaban atas pertanyaan yang paling sering diajukan mengenai ekosistem layanan kampus, pembelajaran daring, pendaftaran mahasiswa baru, dan beasiswa UPITRA:
-            </p>
-          </div>
-
-          {/* Accordion List FAQ */}
-          <div className="space-y-3">
-            {faqsList.map((faq, idx) => {
-              const isOpen = openFaqIndex === idx;
-              return (
-                <div
-                  key={faq.id || idx}
-                  className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs hover:border-blue-300 transition-colors"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="cursor-pointer w-full flex items-center justify-between p-4 sm:p-5 text-left font-bold text-xs sm:text-sm text-slate-800 hover:text-blue-600 transition-colors gap-3"
-                  >
-                    <span className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-black shrink-0">
-                        {idx + 1}
-                      </span>
-                      <span>{faq.q}</span>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#006bbd] text-white">
+                      <s.icon className="h-4 w-4" />
                     </span>
-                    <ChevronDown 
-                      className={`w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180 text-blue-600" : ""}`} 
-                    />
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.28, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div
-                          className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pl-12.5 prose prose-xs max-w-none"
-                          dangerouslySetInnerHTML={{ __html: faq.a }}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-
-        </section>
-
-        {/* SECTION 4: MEDIA SOSIAL RESMI & MINI PREVIEW VIDEO PROFIL KAMPUS (2 KOLOM) */}
-        <section className="pt-10 border-t border-slate-200/80 space-y-8">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-            
-            {/* KOLOM KIRI: LIST TOMBOL MEDIA SOSIAL (lg:col-span-5) */}
-            <div className="lg:col-span-5 space-y-5">
-              
-              {/* Header Kolom Media Sosial */}
-              <div className="space-y-1.5 text-left">
-                <span className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Kanal Resmi Mahasiswa</span>
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
-                  Media Sosial UPITRA
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Ikuti ragam update kegiatan akademik, pengumuman beasiswa, dan dinamika kampus melalui akun resmi berikut:
-                </p>
+                    <span className="min-w-0">
+                      <span className="block text-xs font-bold text-slate-900">{s.name}</span>
+                      <span className="block truncate text-[10px] text-slate-500">{s.handle}</span>
+                    </span>
+                  </a>
+                ))}
               </div>
-
-              {/* List Tombol Media Sosial Vertikal */}
-              <div className="space-y-2.5">
-                {socialMediaList.map((sosmed, idx) => {
-                  const Icon = sosmed.icon;
-                  return (
-                    <a
-                      key={idx}
-                      href={sosmed.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/90 shadow-2xs hover:border-blue-400 hover:shadow-md hover:bg-blue-50/40 transition-all flex items-center justify-between gap-3"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        {/* Brand Icon */}
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform ${sosmed.accent}`}>
-                          <Icon className="w-5 h-5" />
-                        </div>
-                        {/* Name & Handle */}
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-bold text-[#0b2545] group-hover:text-blue-700 transition-colors truncate">
-                              {sosmed.name}
-                            </h4>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-blue-100 group-hover:text-blue-800 transition-colors shrink-0">
-                              {sosmed.badge}
-                            </span>
-                          </div>
-                          <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
-                            {sosmed.handle}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* External Arrow */}
-                      <div className="w-8 h-8 rounded-lg bg-slate-50 group-hover:bg-blue-600 text-slate-400 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
-                        <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-
             </div>
-
-            {/* KOLOM KANAN: VIDEO PROFIL KAMPUS DENGAN BORDER CANTIK (lg:col-span-7) */}
-            <div className="lg:col-span-7 space-y-4">
-              
-              {/* Header Video */}
-              <div className="space-y-1.5 text-left">
-                <span className="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Play className="w-3.5 h-3.5 text-blue-600 fill-blue-600" />
-                  <span>Video Profil Resmi</span>
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
-                  Mengenal Kampus UPITRA
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Saksikan video profil Universitas Pignatelli Triputra Surakarta, fasilitas pembelajaran modern, serta integrasi ekosistem industri Triputra Group:
-                </p>
-              </div>
-
-              {/* Pemutar Video dengan Border Mewah & Cantik */}
-              <div className="relative group pt-1">
-                {/* 1. Ambient Glow Backlight Effect */}
-                <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-all duration-700 pointer-events-none" />
-
-                {/* 2. Multi-Layer Gradient Frame */}
-                <div className="relative p-2 sm:p-2.5 rounded-3xl bg-gradient-to-tr from-[#06172e] via-[#0b2545] to-blue-600 shadow-2xl shadow-blue-950/25 border border-white/20">
-                  
-                  {/* Decorative Corner Lights */}
-                  <div className="absolute top-2 right-2 w-20 h-20 bg-sky-400/20 rounded-full blur-xl pointer-events-none" />
-                  <div className="absolute bottom-2 left-2 w-20 h-20 bg-blue-500/20 rounded-full blur-xl pointer-events-none" />
-
-                  {/* 3. Inner Screen Wrapper */}
-                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner border border-white/10">
-                    <iframe
-                      src="https://www.youtube-nocookie.com/embed/rVDHh02bbA4?autoplay=1&mute=1&start=1&end=91&rel=0&modestbranding=1&playsinline=1"
-                      title="Video Profil Universitas Pignatelli Triputra"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      className="w-full h-full border-0"
-                    />
-                  </div>
-
-                </div>
-              </div>
-
-              {/* CTA Tonton Penuh di YouTube */}
-              <div className="flex justify-end pt-1">
-                <a
-                  href="https://www.youtube.com/watch?v=rVDHh02bbA4"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-600 font-bold text-xs transition-colors shrink-0"
-                >
-                  <YoutubeIcon className="w-4 h-4 text-red-600" />
-                  <span>Tonton Video Lengkap di YouTube</span>
-                  <ExternalLink className="w-3 h-3 ml-0.5" />
-                </a>
-              </div>
-
-            </div>
-
           </div>
-
         </section>
-
       </main>
 
       <Footer />

@@ -14,9 +14,9 @@ interface KemahasiswaanBanner {
 }
 
 const defaultBanner: KemahasiswaanBanner = {
-  title: "Bidang\nKemahasiswaan",
+  title: "Pengembangan\n& Kehidupan Mahasiswa",
   description:
-    "Kenali berbagai fakultas dan program studi di UPITRA dan\npilih kesempatan yang paling sesuai dengan prestasi, kualifikasi, dan potensimu.",
+    "Wadah pembinaan karakter, minat, bakat, dan prestasi mahasiswa\nUniversitas Pignatelli Triputra.",
   imageUrl: "/images/kemahasiswaan/banner.jpg",
 };
 
@@ -65,8 +65,7 @@ export default function KemahasiswaanPage() {
       .then((json) => {
         if (json?.ok && json.data) {
           setBanner({
-            title: json.data.title || defaultBanner.title,
-            description: json.data.description || defaultBanner.description,
+            ...defaultBanner,
             imageUrl: json.data.imageUrl || defaultBanner.imageUrl,
           });
         }
@@ -92,9 +91,9 @@ export default function KemahasiswaanPage() {
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#1f4f94]/45 via-[#1f4f94]/15 to-transparent" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
           <div
-            className={`mx-auto flex min-h-[300px] w-full max-w-[1440px] flex-col justify-end pb-10 pt-24 sm:min-h-[380px] lg:min-h-[485px] lg:pb-14 ${SECTION_X}`}
+            className={`mx-auto flex min-h-[300px] w-full max-w-[1440px] flex-col items-center justify-center text-center sm:min-h-[380px] lg:min-h-[480px] ${SECTION_X}`}
           >
-            <h1 className="max-w-4xl whitespace-pre-line text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.35)] sm:text-5xl lg:text-[60px]">
+            <h1 className="max-w-4xl whitespace-pre-line text-3xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.35)] sm:text-4xl lg:text-[44px]">
               {banner.title}
             </h1>
             <p className="mt-4 max-w-2xl whitespace-pre-line text-xs font-medium leading-relaxed text-white sm:text-sm">
@@ -106,7 +105,7 @@ export default function KemahasiswaanPage() {
         {/* Tentang Kemahasiswaan */}
         <section className="bg-white py-10 sm:py-14">
           <div className={`mx-auto max-w-[1440px] ${SECTION_X}`}>
-            <h2 className="text-2xl font-extrabold uppercase tracking-tight text-[#1f5bb5] sm:text-[32px]">
+            <h2 className="text-2xl font-bold tracking-tight text-[#006bbd] sm:text-[28px]">
               Tentang Kemahasiswaan
             </h2>
             <p className="mt-5 text-justify text-sm leading-relaxed text-slate-800">
@@ -131,13 +130,13 @@ export default function KemahasiswaanPage() {
         </section>
 
         {/* Program Pengembangan Mahasiswa */}
-        <section className="bg-[#d0dff2] py-10 sm:py-14">
+        <section className="bg-[#006bbd] py-10 sm:py-14">
           <div className={`mx-auto max-w-[1440px] ${SECTION_X}`}>
-            <div className="text-right">
-              <h2 className="text-2xl font-extrabold uppercase tracking-tight text-[#1f5bb5] sm:text-[32px]">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-white sm:text-[28px]">
                 Program Pengembangan Mahasiswa
               </h2>
-              <p className="mt-1 text-xs text-slate-600">Gelombang pendaftaran yang sedang kami buka.</p>
+              <p className="mt-1 text-xs text-white/90">Gelombang pendaftaran yang sedang kami buka.</p>
             </div>
             <div className="mt-6 grid gap-5 md:grid-cols-3">
               {programs.map((p) => (
@@ -156,7 +155,7 @@ export default function KemahasiswaanPage() {
                   </ul>
                   <Link
                     href="/layanan"
-                    className="mt-5 block rounded-lg bg-[#2f66bd] py-2 text-center text-xs font-bold text-white shadow-md shadow-blue-900/20 transition hover:bg-[#2757a3]"
+                    className="mt-5 block rounded-lg bg-[#006bbd] py-2 text-center text-xs font-bold text-white transition hover:bg-[#005a9e]"
                   >
                     Hubungi
                   </Link>
@@ -169,7 +168,7 @@ export default function KemahasiswaanPage() {
         {/* Organisasi Mahasiswa */}
         <section className="bg-white py-10 sm:py-14">
           <div className={`mx-auto max-w-[1440px] ${SECTION_X}`}>
-            <h2 className="text-2xl font-extrabold uppercase tracking-tight text-[#1f5bb5] sm:text-[32px]">
+            <h2 className="text-2xl font-bold tracking-tight text-[#006bbd] sm:text-[28px]">
               Organisasi Mahasiswa
             </h2>
             <p className="mt-1 text-xs text-slate-600">Penelitian</p>
@@ -196,7 +195,7 @@ export default function KemahasiswaanPage() {
         <section className="bg-[#e8f0f9] py-10 sm:py-14">
           <div className={`mx-auto max-w-[1440px] ${SECTION_X}`}>
             <div className="text-right">
-              <h2 className="text-2xl font-extrabold uppercase tracking-tight text-[#1f5bb5] sm:text-[32px]">
+              <h2 className="text-2xl font-bold tracking-tight text-[#006bbd] sm:text-[28px]">
                 Unit Kegiatan Mahasiswa
               </h2>
               <p className="mt-1 text-xs text-slate-600">Penelitian</p>
@@ -220,6 +219,29 @@ export default function KemahasiswaanPage() {
                   <figcaption className="mt-2 text-center text-sm font-semibold text-slate-900">{u.name}</figcaption>
                 </figure>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Galeri Prestasi dan Capaian */}
+        <section className="bg-white py-10 sm:py-14">
+          <div className={`mx-auto max-w-[1440px] ${SECTION_X}`}>
+            <h2 className="text-2xl font-bold tracking-tight text-[#006bbd] sm:text-[28px]">Galeri Prestasi dan Capaian</h2>
+            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {Array.from({ length: 10 }, (_, i) => (
+                <figure key={i}>
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-slate-200">
+                    {/* shortcut: placeholder gallery, no achievement data wired; connect to prestasi-mahasiswa data */}
+                    <Image src="/images/upitra-student-achiever.jpg" alt="" fill sizes="(min-width:1024px) 20vw, 50vw" className="object-cover" />
+                  </div>
+                  <figcaption className="mt-2 text-xs font-semibold text-slate-900">Judul Prestasi</figcaption>
+                </figure>
+              ))}
+            </div>
+            <div className="mt-5 text-right">
+              <Link href="/kemahasiswaan/prestasi-mahasiswa" className="text-xs font-semibold text-[#006bbd] hover:underline">
+                Selengkapnya &gt;
+              </Link>
             </div>
           </div>
         </section>
