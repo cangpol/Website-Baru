@@ -19,7 +19,7 @@ const navLinks = [
   { href: "/riset", label: "Riset" },
   { href: "/kemahasiswaan", label: "Kemahasiswaan" },
   { href: "/kerjasama", label: "Kerjasama" },
-  { href: "/layanan", label: "Layanan" },
+  { href: "/layanan", label: "Portal Kampus" },
 ];
 
 export default function Navbar() {
@@ -75,7 +75,7 @@ export default function Navbar() {
             <Logo />
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden min-[900px]:flex items-center gap-4 lg:gap-6 xl:gap-8 h-16 text-[12px] lg:text-[13px] font-semibold text-slate-800 tracking-normal">
+            <nav className="hidden min-[900px]:flex flex-1 justify-center items-center gap-4 lg:gap-6 xl:gap-8 h-16 text-[12px] lg:text-[13px] font-semibold text-slate-800 tracking-normal">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
                 return (
@@ -97,6 +97,7 @@ export default function Navbar() {
                   </div>
                 );
               })}
+<<<<<<< HEAD
 
               {/* CTA Button */}
               <Link
@@ -107,7 +108,19 @@ export default function Navbar() {
               >
                 <span>Daftar Sekarang</span>
               </Link>
+=======
+>>>>>>> e504be2 (feat(home): match navbar and hero to reference design)
             </nav>
+
+            {/* CTA Button */}
+            <Link
+              href="https://pmb.upitra.ac.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden min-[900px]:inline-flex h-8 px-4 items-center justify-center rounded-lg bg-[#FFC20E] hover:bg-[#f0b400] text-slate-900 font-bold text-[11px] transition-colors shrink-0"
+            >
+              Daftar Sekarang
+            </Link>
 
             {/* Mobile Hamburger Button (< 1024px) */}
             <button
