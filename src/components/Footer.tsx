@@ -46,9 +46,9 @@ const linkCls = "text-[11px] text-white hover:underline underline-offset-2";
 export default function Footer() {
   return (
     <footer className="bg-[#006bbd] text-white font-sans">
-      <div className="max-w-[1440px] mx-auto px-[clamp(20px,8.8vw,120px)] pt-12 pb-8">
+      <div className="max-w-[1440px] mx-auto px-[clamp(20px,8.8vw,120px)] pt-8 pb-5">
         {/* Logo + social */}
-        <div className="flex items-center justify-between gap-4 pb-8 border-b border-white/60">
+        <div className="flex items-center justify-between gap-4 pb-5 border-b border-white/60">
           <Link href="/" className="inline-flex items-center gap-3" aria-label="UPITRA Beranda">
             {/* shortcut: logo is the colour version on a white tile; swap in a white-line logo asset if one exists */}
             <span className="w-10 h-10 rounded-lg bg-white p-1 flex shrink-0">
@@ -76,13 +76,13 @@ export default function Footer() {
         </div>
 
         {/* Link columns */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-8 pt-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-6 pt-5">
           {columns.map((group, i) => (
-            <div key={i} className="space-y-6">
+            <div key={i} className="space-y-4">
               {group.map((col) => (
                 <div key={col.title}>
-                  <h4 className="text-[13px] font-bold mb-4">{col.title}</h4>
-                  <ul className="space-y-3.5">
+                  <h4 className="text-[13px] font-bold mb-2.5">{col.title}</h4>
+                  <ul className="space-y-2.5">
                     {col.links.map(([label, href]) => (
                       <li key={label}>
                         <Link href={href} className={linkCls}>{label}</Link>
@@ -95,9 +95,9 @@ export default function Footer() {
           ))}
 
           <div>
-            <h4 className="text-[13px] font-bold mb-4">Alamat</h4>
+            <h4 className="text-[13px] font-bold mb-2.5">Alamat</h4>
             <p className="text-[11px] leading-[1.4]">Jl. Duwet No. 1, Karangasem, Laweyan, Surakarta 57145</p>
-            <p className="text-[11px] leading-[1.4] mt-4">
+            <p className="text-[11px] leading-[1.4] mt-3">
               Fax: (0274) 550657<br />
               Hotline: 0811 290 7500<br />
               Email: <a href="mailto:pmb@upitra.ac.id" className="hover:underline">pmb@upitra.ac.id</a>
@@ -105,7 +105,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-12 text-center text-[9px] italic">
+        <p className="mt-6 text-center text-[9px] italic">
           Copyright © {new Date().getFullYear()} UPITRA. All rights reserved. Powered by Marketing &amp; IT UPITRA. #raisokerjo
         </p>
       </div>
