@@ -40,13 +40,13 @@ export default async function ProfilPage({
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#006bbd]/90 via-[#006bbd]/55 to-[#006bbd]/20" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#006bbd]/40 to-transparent" />
 
-          <div className="mx-auto flex min-h-[300px] w-full max-w-[1440px] flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[380px] sm:px-12 lg:min-h-[475px] lg:px-[120px] lg:pb-16">
+          <div className="mx-auto flex min-h-[300px] w-full max-w-[1440px] flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[380px] sm:px-12 lg:h-[480px] lg:min-h-[480px] lg:px-[120px] lg:pb-20">
             <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)] sm:text-5xl lg:text-[56px]">
               Profil Kampus
               <br />
               UPITRA
             </h1>
-            <p className="mt-3 max-w-md text-xs font-medium leading-snug text-white sm:text-sm">
+            <p className="mt-3 max-w-[480px] text-xs font-medium leading-snug text-white">
               Mengenal lebih dekat Universitas Pignatelli Triputra, profil, visi misi, dan kepemimpinan kami.
             </p>
           </div>
