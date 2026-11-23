@@ -54,22 +54,14 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-<<<<<<< HEAD
           className="relative z-20 max-w-[min(680px,100%)] flex flex-col justify-start gap-5 sm:gap-6"
-=======
-          className="relative z-20 max-w-[640px] flex flex-col justify-start gap-5 sm:gap-6"
->>>>>>> e504be2 (feat(home): match navbar and hero to reference design)
         >
           <div className="space-y-3 sm:space-y-3.5">
             <motion.h1 
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-<<<<<<< HEAD
-              className="text-[clamp(1.75rem,4vw,3.5rem)] font-black text-white tracking-tight leading-[0.98] drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)] font-sans whitespace-pre-line"
-=======
               className="text-[clamp(2rem,4.9vw,4.4rem)] font-extrabold text-white tracking-tight leading-[1.08] drop-shadow-[0_2px_8px_rgba(0,0,0,0.30)] font-sans whitespace-pre-line"
->>>>>>> e504be2 (feat(home): match navbar and hero to reference design)
             >
               {hero.title}
             </motion.h1>
@@ -78,11 +70,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-<<<<<<< HEAD
-              className="text-sm sm:text-xs lg:text-sm text-white leading-snug font-medium max-w-[340px] sm:max-w-[320px] lg:max-w-[380px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]"
-=======
               className="text-xs sm:text-[clamp(11px,1.05vw,14px)] text-white leading-[1.4] font-medium max-w-[min(34vw,420px)] drop-shadow-[0_1px_4px_rgba(0,0,0,0.25)]"
->>>>>>> e504be2 (feat(home): match navbar and hero to reference design)
             >
               {hero.subtitle}
             </motion.p>
@@ -97,11 +85,7 @@ export default function HeroSlider({ initialData }: { initialData?: HomepageHero
               href={hero.ctaHref || "https://pmb.upitra.ac.id"}
               target="_blank"
               rel="noopener noreferrer"
-<<<<<<< HEAD
-              className="inline-flex items-center justify-center px-6 py-3 sm:py-2.5 rounded-lg bg-[#ffcc00] hover:bg-[#f2c200] text-blue-950 font-bold text-sm sm:text-xs shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-fit"
-=======
               className="inline-flex items-center justify-center rounded-lg bg-[#FFC20E] hover:bg-[#f0b400] text-slate-900 font-bold text-sm sm:text-[13px] px-8 py-3 transition-colors cursor-pointer w-fit"
->>>>>>> e504be2 (feat(home): match navbar and hero to reference design)
             >
               {hero.ctaLabel || "Daftar Sekarang"}
             </Link>

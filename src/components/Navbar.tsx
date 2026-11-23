@@ -97,19 +97,6 @@ export default function Navbar() {
                   </div>
                 );
               })}
-<<<<<<< HEAD
-
-              {/* CTA Button */}
-              <Link
-                href="https://pmb.upitra.ac.id"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-6 px-3.5 ml-1 inline-flex items-center justify-center rounded-lg bg-[#ffcc00] hover:bg-[#f2c200] text-blue-950 font-bold text-[10px] lg:text-[11px] shadow-xs hover:shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <span>Daftar Sekarang</span>
-              </Link>
-=======
->>>>>>> e504be2 (feat(home): match navbar and hero to reference design)
             </nav>
 
             {/* CTA Button */}
