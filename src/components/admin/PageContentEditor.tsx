@@ -78,7 +78,7 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
                           swalToast(`${f.itemLabel} dihapus dari daftar. Klik Simpan untuk menerapkan.`, "info");
                         }
                       }}
-                      className="text-rose-300 hover:text-rose-200 cursor-pointer"
+                      className="text-blue-300 hover:text-blue-200 cursor-pointer"
                       aria-label={`Hapus ${f.itemLabel} ${i + 1}`}
                     >
                       <Trash2 className="w-4 h-4" />

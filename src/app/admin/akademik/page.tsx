@@ -546,7 +546,7 @@ export default function AdminAkademikCalendarPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30">
                     Dokumen Resmi SK Rektorat
                   </span>
                   <span className="text-xs text-slate-400">Format PDF Resmi</span>
@@ -575,7 +575,7 @@ export default function AdminAkademikCalendarPage() {
 
                   <button
                     onClick={async () => { if (await swalConfirmDelete()) handleDeleteAcademicPdf(); }}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-bold border border-rose-400/30 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold border border-blue-400/30 transition-all cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                     <span>Hapus Berkas</span>
@@ -588,7 +588,7 @@ export default function AdminAkademikCalendarPage() {
             {academicPdf?.fileUrl ? (
               <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300 shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-300 shrink-0">
                     <FileText className="w-6 h-6" />
                   </div>
                   <div>
@@ -603,7 +603,7 @@ export default function AdminAkademikCalendarPage() {
                       <span>•</span>
                       <span>Diperbarui: {academicPdf.updatedAt || "Baru saja"}</span>
                       <span>•</span>
-                      <span className="text-emerald-300 font-medium">Status: Aktif di Halaman Publik</span>
+                      <span className="text-sky-300 font-medium">Status: Aktif di Halaman Publik</span>
                     </div>
                   </div>
                 </div>
@@ -616,8 +616,8 @@ export default function AdminAkademikCalendarPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-xs text-amber-200 flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+              <div className="bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 text-xs text-sky-200 flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-sky-400 shrink-0" />
                 <span>
                   Belum ada dokumen PDF resmi yang diunggah. Halaman publik saat ini menggunakan dokumen PDF dinamis bawaan generator sistem.
                 </span>
@@ -666,7 +666,7 @@ export default function AdminAkademikCalendarPage() {
                       type="button"
                       disabled={isSavingPdf || !pdfFormUrl}
                       onClick={handleSaveAcademicPdf}
-                      className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Download className="w-4 h-4" />
                       <span>{isSavingPdf ? "Menyimpan..." : "Simpan Dokumen PDF Resmi"}</span>
@@ -827,7 +827,7 @@ export default function AdminAkademikCalendarPage() {
                               )}
                               {ev.location && (
                                 <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-1">
-                                  <MapPin className="w-3 h-3 text-rose-500" />
+                                  <MapPin className="w-3 h-3 text-blue-500" />
                                   <span>{ev.location}</span>
                                 </div>
                               )}
@@ -856,9 +856,9 @@ export default function AdminAkademikCalendarPage() {
                               <span
                                 className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
                                   ev.status === "Mendatang"
-                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    ? "bg-sky-50 text-sky-700 border-sky-200"
                                     : ev.status === "Berlangsung"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                    ? "bg-sky-50 text-sky-700 border-sky-200"
                                     : "bg-slate-100 text-slate-600 border-slate-200"
                                 }`}
                               >
@@ -877,7 +877,7 @@ export default function AdminAkademikCalendarPage() {
                                 <button
                                   onClick={async () => { if (await swalConfirmDelete()) handleDeleteEvent(ev.id); }}
                                   title="Hapus Event"
-                                  className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>

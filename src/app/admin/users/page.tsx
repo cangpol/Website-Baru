@@ -180,14 +180,14 @@ export default function AdminUsersPage() {
     switch (role) {
       case "SUPERADMIN":
         return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1 w-fit">
-            <ShieldAlert className="w-3.5 h-3.5 text-rose-400" /> Superadmin
+          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1 w-fit">
+            <ShieldAlert className="w-3.5 h-3.5 text-blue-400" /> Superadmin
           </span>
         );
       case "STAFF_PMB":
         return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1 w-fit">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> Staff Admisi PMB
+          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1 w-fit">
+            <ShieldCheck className="w-3.5 h-3.5 text-sky-400" /> Staff Admisi PMB
           </span>
         );
       case "CONTENT_WRITER":
@@ -207,13 +207,13 @@ export default function AdminUsersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0a192f] border border-blue-900/40 p-6 rounded-2xl">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase tracking-wider">
               Otoritas & Keamanan
             </span>
             <span className="text-xs text-slate-400">Total: {users.length} Akun Pengguna</span>
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <Users className="w-7 h-7 text-indigo-400" />
+            <Users className="w-7 h-7 text-blue-400" />
             Manajemen Pengguna & Hak Akses Admin
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -223,7 +223,7 @@ export default function AdminUsersPage() {
 
         <button
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02]"
+          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02]"
         >
           <Plus className="w-4 h-4" />
           Tambah Pengguna Baru
@@ -239,7 +239,7 @@ export default function AdminUsersPage() {
             placeholder="Cari nama atau email akun..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#071322] border border-blue-900/40 pl-9 pr-4 py-2 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400"
+            className="w-full bg-[#071322] border border-blue-900/40 pl-9 pr-4 py-2 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
           />
         </div>
 
@@ -248,7 +248,7 @@ export default function AdminUsersPage() {
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             aria-label="Filter role akun"
-            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-indigo-400"
+            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-blue-400"
           >
             <option value="ALL">Semua Peran (Role)</option>
             <option value="SUPERADMIN">Superadmin</option>
@@ -275,7 +275,7 @@ export default function AdminUsersPage() {
               {filtered.map((u) => (
                 <tr key={u.id} className="hover:bg-blue-950/20 transition group">
                   <td className="py-4 px-4">
-                    <div className="font-semibold text-white group-hover:text-indigo-300 transition">
+                    <div className="font-semibold text-white group-hover:text-blue-300 transition">
                       {u.name}
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono mt-0.5">
@@ -292,7 +292,7 @@ export default function AdminUsersPage() {
                       disabled={u.id === "usr-01"}
                       className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition ${
                         u.status === "Aktif"
-                          ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30"
+                          ? "bg-sky-500/20 text-sky-400 border-sky-500/30 hover:bg-sky-500/30"
                           : "bg-slate-700/40 text-slate-400 border-slate-600 hover:bg-slate-700/60"
                       } ${u.id === "usr-01" ? "cursor-default opacity-80" : ""}`}
                     >
@@ -314,7 +314,7 @@ export default function AdminUsersPage() {
                       {u.id !== "usr-01" && (
                         <button
                           onClick={async () => { if (await swalConfirmDelete()) handleDelete(u.id); }}
-                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition"
+                          className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 transition"
                           title="Hapus Pengguna"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -332,18 +332,18 @@ export default function AdminUsersPage() {
       {/* Role Guide Box */}
       <div className="bg-[#0a192f] border border-blue-900/40 p-6 rounded-2xl">
         <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-indigo-400" />
+          <ShieldCheck className="w-5 h-5 text-blue-400" />
           Keterangan Hak Akses & Matriks Otoritas
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="p-3.5 rounded-xl bg-[#071322] border border-rose-900/30 space-y-1.5">
-            <p className="font-bold text-rose-400">SUPERADMIN</p>
+          <div className="p-3.5 rounded-xl bg-[#071322] border border-blue-900/30 space-y-1.5">
+            <p className="font-bold text-blue-400">SUPERADMIN</p>
             <p className="text-slate-300">
               Akses penuh ke seluruh modul analitik, konfigurasi gateway, pengelolaan semua data prodi, pendaftaran PMB, berita, layanan, banner, dan manajemen user.
             </p>
           </div>
-          <div className="p-3.5 rounded-xl bg-[#071322] border border-amber-900/30 space-y-1.5">
-            <p className="font-bold text-amber-400">STAFF ADMISI PMB</p>
+          <div className="p-3.5 rounded-xl bg-[#071322] border border-sky-900/30 space-y-1.5">
+            <p className="font-bold text-sky-400">STAFF ADMISI PMB</p>
             <p className="text-slate-300">
               Akses khusus untuk memproses data pendaftar PMB Leads, follow-up WhatsApp calon mahasiswa, memperbarui status beasiswa/wawancara, dan ekspor CSV.
             </p>
@@ -363,7 +363,7 @@ export default function AdminUsersPage() {
           <div className="bg-[#0a192f] border border-blue-900/60 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-900/40 bg-[#071322]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-400" />
+                <Users className="w-5 h-5 text-blue-400" />
                 {editingItem ? "Edit Hak Akses Pengguna" : "Tambah Pengguna Admin Baru"}
               </h2>
               <button
@@ -383,7 +383,7 @@ export default function AdminUsersPage() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="Contoh: Budi Santoso, S.Kom."
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-400"
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-blue-400"
                 />
               </div>
 
@@ -395,7 +395,7 @@ export default function AdminUsersPage() {
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
                   placeholder="nama.staff@upitra.ac.id"
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-400"
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-blue-400"
                 />
               </div>
 
@@ -408,7 +408,7 @@ export default function AdminUsersPage() {
                   autoComplete="new-password"
                   value={formPassword}
                   onChange={(e) => setFormPassword(e.target.value)}
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-400"
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-blue-400"
                 />
               </div>
 
@@ -418,7 +418,7 @@ export default function AdminUsersPage() {
                   <select
                     value={formRole}
                     onChange={(e) => setFormRole(e.target.value as AdminUserItem["role"])}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-blue-400"
                   >
                     <option value="STAFF_PMB">Staff Admisi PMB</option>
                     <option value="CONTENT_WRITER">Humas & Redaksi</option>
@@ -430,7 +430,7 @@ export default function AdminUsersPage() {
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as AdminUserItem["status"])}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-blue-400"
                   >
                     <option value="Aktif">Aktif</option>
                     <option value="Nonaktif">Nonaktif</option>
@@ -456,7 +456,7 @@ export default function AdminUsersPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-indigo-500/20"
+                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-blue-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   {editingItem ? "Simpan Perubahan" : "Tambahkan Pengguna"}

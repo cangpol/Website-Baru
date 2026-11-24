@@ -403,7 +403,7 @@ export default function AdminRisetPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
               CMS Riset &amp; Inovasi
             </span>
             <span className="text-xs text-slate-400 font-medium">|</span>
@@ -441,7 +441,7 @@ export default function AdminRisetPage() {
           {activeTab === "publikasi" && (
             <button
               onClick={handleOpenCreatePub}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Publikasi Jurnal</span>
@@ -598,7 +598,7 @@ export default function AdminRisetPage() {
                               href={art.attachmentUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold hover:bg-emerald-100 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 text-[11px] font-bold hover:bg-sky-100 transition-colors"
                             >
                               <FileText className="w-3.5 h-3.5" />
                               <span className="truncate max-w-[120px]">
@@ -616,8 +616,8 @@ export default function AdminRisetPage() {
                           <span
                             className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
                               art.published
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                : "bg-amber-50 text-amber-700 border-amber-200"
+                                ? "bg-sky-50 text-sky-700 border-sky-200"
+                                : "bg-sky-50 text-sky-700 border-sky-200"
                             }`}
                           >
                             {art.published ? "Published" : "Draft"}
@@ -643,7 +643,7 @@ export default function AdminRisetPage() {
                             <button
                               onClick={async () => { if (await swalConfirmDelete()) handleDeleteArticle(art.id); }}
                               title="Hapus Artikel"
-                              className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -817,7 +817,7 @@ export default function AdminRisetPage() {
                 <button
                   type="submit"
                   disabled={isSavingPortals}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
                 >
                   {isSavingPortals ? "Menyimpan..." : "Simpan Tautan Portal"}
                 </button>
@@ -840,7 +840,7 @@ export default function AdminRisetPage() {
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                       {item.indexedIn}
                     </span>
                     <span className="text-xs text-slate-400 font-bold">Tahun {item.year}</span>
@@ -883,7 +883,7 @@ export default function AdminRisetPage() {
                     </button>
                     <button
                       onClick={async () => { if (await swalConfirmDelete()) handleDeletePub(item.id); }}
-                      className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1201,7 +1201,7 @@ export default function AdminRisetPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-xs transition-colors cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   Simpan Publikasi
                 </button>

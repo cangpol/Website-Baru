@@ -89,3 +89,8 @@ body {
 .animate-marquee-track-2:hover {
   animation-play-state: paused;
 }
+
+/* SweetAlert admin: hanya palet biru & putih */
+.swal-admin-popup .swal2-success-ring { border-color: rgba(56, 189, 248, 0.3) !important; }
+.swal-admin-popup .swal2-success [class^="swal2-success-line"] { background-color: #38bdf8 !important; }
+.swal-admin-popup .swal2-timer-progress-bar { background: #38bdf8 !important; }

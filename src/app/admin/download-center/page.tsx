@@ -156,13 +156,13 @@ export default function AdminDownloadCenterPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0a192f] border border-blue-900/40 p-6 rounded-2xl">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 uppercase tracking-wider">
               Download Center & E-Brosur
             </span>
             <span className="text-xs text-slate-400">Total: {downloads.length} Dokumen</span>
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <Download className="w-7 h-7 text-emerald-400" />
+            <Download className="w-7 h-7 text-sky-400" />
             Manajemen Download Center & Brosur
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -172,7 +172,7 @@ export default function AdminDownloadCenterPage() {
 
         <button
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-semibold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02]"
+          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold text-sm rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
         >
           <Plus className="w-4 h-4 text-slate-950" />
           Tambah Dokumen Brosur
@@ -186,12 +186,12 @@ export default function AdminDownloadCenterPage() {
           <p className="text-2xl font-bold text-white mt-1">{downloads.length}</p>
         </div>
         <div className="bg-[#0b1c38] border border-blue-900/30 p-4 rounded-xl">
-          <p className="text-xs text-emerald-400">Total Unduhan Pengunjung</p>
-          <p className="text-2xl font-bold text-emerald-300 mt-1">{totalDownloads.toLocaleString()}</p>
+          <p className="text-xs text-sky-400">Total Unduhan Pengunjung</p>
+          <p className="text-2xl font-bold text-sky-300 mt-1">{totalDownloads.toLocaleString()}</p>
         </div>
         <div className="bg-[#0b1c38] border border-blue-900/30 p-4 rounded-xl">
-          <p className="text-xs text-amber-400">Brosur PMB Utama</p>
-          <p className="text-2xl font-bold text-amber-300 mt-1">
+          <p className="text-xs text-sky-400">Brosur PMB Utama</p>
+          <p className="text-2xl font-bold text-sky-300 mt-1">
             {downloads.filter((d) => d.category === "Brosur PMB").length}
           </p>
         </div>
@@ -212,7 +212,7 @@ export default function AdminDownloadCenterPage() {
             placeholder="Cari judul brosur atau nama file..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#071322] border border-blue-900/40 pl-9 pr-4 py-2 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+            className="w-full bg-[#071322] border border-blue-900/40 pl-9 pr-4 py-2 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
           />
         </div>
 
@@ -221,7 +221,7 @@ export default function AdminDownloadCenterPage() {
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             aria-label="Filter kategori brosur dan dokumen"
-            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-400"
+            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-sky-400"
           >
             <option value="ALL">Semua Kategori</option>
             <option value="Brosur PMB">Brosur PMB</option>
@@ -260,11 +260,11 @@ export default function AdminDownloadCenterPage() {
                   <tr key={item.id} className="hover:bg-blue-950/20 transition group">
                     <td className="py-4 px-4 max-w-sm">
                       <div className="flex items-start gap-3">
-                        <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex-shrink-0">
+                        <div className="p-2.5 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex-shrink-0">
                           <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="font-semibold text-white group-hover:text-emerald-300 transition">
+                          <div className="font-semibold text-white group-hover:text-sky-300 transition">
                             {item.title}
                           </div>
                           <div className="text-xs text-slate-400 font-mono mt-0.5">
@@ -274,7 +274,7 @@ export default function AdminDownloadCenterPage() {
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-sky-500/10 text-sky-300 border border-sky-500/20">
                         {item.category}
                       </span>
                     </td>
@@ -282,7 +282,7 @@ export default function AdminDownloadCenterPage() {
                       {item.fileSize}
                     </td>
                     <td className="py-4 px-4">
-                      <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-400">
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-sky-400">
                         <Download className="w-3.5 h-3.5" />
                         <span>{(item.downloadCount || 0).toLocaleString()}x</span>
                       </div>
@@ -296,7 +296,7 @@ export default function AdminDownloadCenterPage() {
                           href={item.fileUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition"
+                          className="p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 transition"
                           title="Buka / Download File"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -310,7 +310,7 @@ export default function AdminDownloadCenterPage() {
                         </button>
                         <button
                           onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
-                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition"
+                          className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 transition"
                           title="Hapus Dokumen"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -331,7 +331,7 @@ export default function AdminDownloadCenterPage() {
           <div className="bg-[#0a192f] border border-blue-900/60 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-900/40 bg-[#071322]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Download className="w-5 h-5 text-emerald-400" />
+                <Download className="w-5 h-5 text-sky-400" />
                 {editingItem ? "Edit Dokumen Brosur" : "Tambah Dokumen Brosur Baru"}
               </h2>
               <button
@@ -351,7 +351,7 @@ export default function AdminDownloadCenterPage() {
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   placeholder="Contoh: E-Brosur Resmi PMB UPITRA TA 2026/2027"
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-400"
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                 />
               </div>
 
@@ -361,7 +361,7 @@ export default function AdminDownloadCenterPage() {
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value as AdminDownloadItem["category"])}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   >
                     <option value="Brosur PMB">Brosur PMB</option>
                     <option value="Fakultas Sains & Teknologi">Fakultas Sains & Teknologi</option>
@@ -379,7 +379,7 @@ export default function AdminDownloadCenterPage() {
                     value={formFileName}
                     onChange={(e) => setFormFileName(e.target.value)}
                     placeholder="Brosur-Resmi-UPITRA.pdf"
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm font-mono text-emerald-300 focus:outline-none focus:border-emerald-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm font-mono text-sky-300 focus:outline-none focus:border-sky-400"
                   />
                 </div>
               </div>
@@ -392,7 +392,7 @@ export default function AdminDownloadCenterPage() {
                     value={formFileSize}
                     onChange={(e) => setFormFileSize(e.target.value)}
                     placeholder="3.5 MB"
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   />
                 </div>
                 <div>
@@ -402,7 +402,7 @@ export default function AdminDownloadCenterPage() {
                     required
                     value={formFileUrl}
                     onChange={(e) => setFormFileUrl(e.target.value)}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   />
                 </div>
               </div>
@@ -413,7 +413,7 @@ export default function AdminDownloadCenterPage() {
                   type="text"
                   value={formPreviewUrl}
                   onChange={(e) => setFormPreviewUrl(e.target.value)}
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-400"
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                 />
               </div>
 
@@ -428,7 +428,7 @@ export default function AdminDownloadCenterPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-emerald-500/20"
+                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4 text-slate-950" />
                   {editingItem ? "Simpan Perubahan" : "Tambahkan Dokumen"}

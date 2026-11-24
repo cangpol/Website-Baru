@@ -187,14 +187,14 @@ export default function AdminMediaPage() {
       </div>
 
       {uploadError && (
-        <div className="flex items-center gap-2 text-sm text-red-400 bg-red-950/40 border border-red-800/40 p-4 rounded-xl">
+        <div className="flex items-center gap-2 text-sm text-blue-400 bg-blue-950/40 border border-blue-800/40 p-4 rounded-xl">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{uploadError}</span>
         </div>
       )}
 
       {loadError && (
-        <div role="alert" className="flex items-center justify-between gap-3 text-sm text-red-300 bg-red-950/40 border border-red-800/40 p-4 rounded-xl">
+        <div role="alert" className="flex items-center justify-between gap-3 text-sm text-blue-300 bg-blue-950/40 border border-blue-800/40 p-4 rounded-xl">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <span>{loadError}</span>
@@ -203,7 +203,7 @@ export default function AdminMediaPage() {
             type="button"
             onClick={() => void loadMedia()}
             disabled={loading}
-            className="shrink-0 px-3 py-1.5 rounded-lg border border-red-800/60 hover:bg-red-900/40 disabled:opacity-50"
+            className="shrink-0 px-3 py-1.5 rounded-lg border border-blue-800/60 hover:bg-blue-900/40 disabled:opacity-50"
           >
             Coba lagi
           </button>
@@ -294,7 +294,7 @@ export default function AdminMediaPage() {
                       unoptimized={item.path.startsWith("/uploads/") || item.path.startsWith("http")}
                     />
                   ) : (
-                    <FileText className="w-10 h-10 text-red-400" />
+                    <FileText className="w-10 h-10 text-blue-400" />
                   )}
                 </div>
 
@@ -327,7 +327,7 @@ export default function AdminMediaPage() {
                     title="Salin URL"
                     className="p-1.5 text-slate-300 hover:text-white rounded hover:bg-slate-800"
                   >
-                    {copiedId === item.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedId === item.id ? <Check className="w-3.5 h-3.5 text-sky-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                   <button
                     type="button"
@@ -341,7 +341,7 @@ export default function AdminMediaPage() {
                     type="button"
                     onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                     title="Hapus"
-                    className="p-1.5 text-slate-300 hover:text-red-400 rounded hover:bg-red-500/10"
+                    className="p-1.5 text-slate-300 hover:text-blue-400 rounded hover:bg-blue-500/10"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

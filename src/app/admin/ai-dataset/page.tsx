@@ -315,17 +315,17 @@ export default function AdminAiDatasetPage() {
       case "pmb":
         return "bg-blue-50 text-blue-700 border-blue-200";
       case "beasiswa":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+        return "bg-sky-50 text-sky-700 border-sky-200";
       case "akademik":
         return "bg-sky-50 text-sky-700 border-sky-200";
       case "fakultas":
-        return "bg-indigo-50 text-indigo-700 border-indigo-200";
+        return "bg-blue-50 text-blue-700 border-blue-200";
       case "magang":
-        return "bg-amber-50 text-amber-700 border-amber-200";
+        return "bg-sky-50 text-sky-700 border-sky-200";
       case "rektorat":
-        return "bg-purple-50 text-purple-700 border-purple-200";
+        return "bg-blue-50 text-blue-700 border-blue-200";
       case "fasilitas":
-        return "bg-teal-50 text-teal-700 border-teal-200";
+        return "bg-sky-50 text-sky-700 border-sky-200";
       default:
         return "bg-slate-100 text-slate-700 border-slate-200";
     }
@@ -393,7 +393,7 @@ export default function AdminAiDatasetPage() {
 
           <button
             onClick={handleResetToDefault}
-            className="p-2.5 rounded-xl bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 shadow-2xs transition-all cursor-pointer"
+            className="p-2.5 rounded-xl bg-white hover:bg-blue-50 text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-200 shadow-2xs transition-all cursor-pointer"
             title="Reset ke Dataset Bawaan UPITRA"
           >
             <RotateCcw className="w-4 h-4" />
@@ -446,14 +446,14 @@ export default function AdminAiDatasetPage() {
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Kata Kunci</span>
-            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
               <Tag className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
             {dataset.reduce((acc, curr) => acc + (Array.isArray(curr.keywords) ? curr.keywords.length : 0), 0)}
           </div>
-          <div className="text-[11px] text-indigo-600 font-semibold mt-1">
+          <div className="text-[11px] text-blue-600 font-semibold mt-1">
             Sinonim &amp; variasi pencarian
           </div>
         </div>
@@ -461,15 +461,15 @@ export default function AdminAiDatasetPage() {
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Status Chatbot</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="p-2 rounded-xl bg-sky-50 text-sky-600">
               <Zap className="w-4 h-4" />
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-[#06172e] tracking-tight flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse" />
             <span>Aktif</span>
           </div>
-          <div className="text-[11px] text-emerald-600 font-semibold mt-1">
+          <div className="text-[11px] text-sky-600 font-semibold mt-1">
             Live di portal publik website
           </div>
         </div>
@@ -646,7 +646,7 @@ export default function AdminAiDatasetPage() {
                           <button
                             onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                             title="Hapus Q&A"
-                            className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -830,7 +830,7 @@ export default function AdminAiDatasetPage() {
                         <button
                           type="button"
                           onClick={() => handleRemoveKeyword(kw)}
-                          className="hover:text-rose-600 cursor-pointer"
+                          className="hover:text-blue-600 cursor-pointer"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -988,8 +988,8 @@ export default function AdminAiDatasetPage() {
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                         testResult.answered 
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                          : "bg-amber-50 text-amber-700 border-amber-200"
+                          ? "bg-sky-50 text-sky-700 border-sky-200" 
+                          : "bg-sky-50 text-sky-700 border-sky-200"
                       }`}>
                         {testResult.answered ? "✓ Pertanyaan Cocok" : "⚠ Fallback (Tidak Ada Jawaban Spesifik)"}
                       </span>

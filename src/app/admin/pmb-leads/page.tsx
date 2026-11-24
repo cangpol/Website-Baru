@@ -242,15 +242,15 @@ export default function AdminPmbLeadsPage() {
       case "BARU_MASUK":
         return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30"><Clock className="w-3 h-3" /> Baru Masuk</span>;
       case "DIHUBUNGI":
-        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30"><MessageCircle className="w-3 h-3" /> Dihubungi</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/30"><MessageCircle className="w-3 h-3" /> Dihubungi</span>;
       case "WAWANCARA":
-        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-400 border border-purple-500/30"><GraduationCap className="w-3 h-3" /> Wawancara</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30"><GraduationCap className="w-3 h-3" /> Wawancara</span>;
       case "DITERIMA_BEASISWA":
-        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"><Award className="w-3 h-3" /> Beasiswa</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/30"><Award className="w-3 h-3" /> Beasiswa</span>;
       case "ENROLLED":
-        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-400 border border-teal-500/30"><UserCheck className="w-3 h-3" /> Enrolled (NIM)</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/30"><UserCheck className="w-3 h-3" /> Enrolled (NIM)</span>;
       case "BATAL":
-        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/30"><UserX className="w-3 h-3" /> Batal</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30"><UserX className="w-3 h-3" /> Batal</span>;
       default:
         return null;
     }
@@ -262,13 +262,13 @@ export default function AdminPmbLeadsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0a192f] border border-blue-900/40 p-6 rounded-2xl">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 uppercase tracking-wider">
               PMB Admisi TA 2026/2027
             </span>
             <span className="text-xs text-slate-400">Total: {leads.length} Calon Mahasiswa</span>
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <FileCheck2 className="w-7 h-7 text-amber-400" />
+            <FileCheck2 className="w-7 h-7 text-sky-400" />
             Manajemen Pendaftaran PMB & Leads
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -282,12 +282,12 @@ export default function AdminPmbLeadsPage() {
             className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-sm font-medium rounded-xl transition shadow-sm"
             title="Download CSV untuk Excel"
           >
-            <Download className="w-4 h-4 text-emerald-400" />
+            <Download className="w-4 h-4 text-sky-400" />
             Export CSV
           </button>
           <button
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 text-sm font-semibold rounded-xl shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02]"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 text-sm font-semibold rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
           >
             <Plus className="w-4 h-4 text-slate-950" />
             Tambah Lead Walk-in
@@ -308,26 +308,26 @@ export default function AdminPmbLeadsPage() {
           </p>
         </div>
         <div className="bg-[#0b1c38] border border-blue-900/30 p-3.5 rounded-xl">
-          <p className="text-xs text-amber-400 flex items-center gap-1"><MessageCircle className="w-3 h-3" /> Dihubungi</p>
-          <p className="text-xl font-bold text-amber-300 mt-1">
+          <p className="text-xs text-sky-400 flex items-center gap-1"><MessageCircle className="w-3 h-3" /> Dihubungi</p>
+          <p className="text-xl font-bold text-sky-300 mt-1">
             {leads.filter((l) => l.status === "DIHUBUNGI").length}
           </p>
         </div>
         <div className="bg-[#0b1c38] border border-blue-900/30 p-3.5 rounded-xl">
-          <p className="text-xs text-purple-400 flex items-center gap-1"><GraduationCap className="w-3 h-3" /> Wawancara</p>
-          <p className="text-xl font-bold text-purple-300 mt-1">
+          <p className="text-xs text-blue-400 flex items-center gap-1"><GraduationCap className="w-3 h-3" /> Wawancara</p>
+          <p className="text-xl font-bold text-blue-300 mt-1">
             {leads.filter((l) => l.status === "WAWANCARA").length}
           </p>
         </div>
         <div className="bg-[#0b1c38] border border-blue-900/30 p-3.5 rounded-xl">
-          <p className="text-xs text-emerald-400 flex items-center gap-1"><Award className="w-3 h-3" /> Lolos Beasiswa</p>
-          <p className="text-xl font-bold text-emerald-300 mt-1">
+          <p className="text-xs text-sky-400 flex items-center gap-1"><Award className="w-3 h-3" /> Lolos Beasiswa</p>
+          <p className="text-xl font-bold text-sky-300 mt-1">
             {leads.filter((l) => l.status === "DITERIMA_BEASISWA").length}
           </p>
         </div>
         <div className="bg-[#0b1c38] border border-blue-900/30 p-3.5 rounded-xl">
-          <p className="text-xs text-teal-400 flex items-center gap-1"><UserCheck className="w-3 h-3" /> Enrolled (NIM)</p>
-          <p className="text-xl font-bold text-teal-300 mt-1">
+          <p className="text-xs text-sky-400 flex items-center gap-1"><UserCheck className="w-3 h-3" /> Enrolled (NIM)</p>
+          <p className="text-xl font-bold text-sky-300 mt-1">
             {leads.filter((l) => l.status === "ENROLLED").length}
           </p>
         </div>
@@ -342,7 +342,7 @@ export default function AdminPmbLeadsPage() {
             placeholder="Cari nama, WA, sekolah, atau kota..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#071322] border border-blue-900/40 pl-9 pr-4 py-2 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+            className="w-full bg-[#071322] border border-blue-900/40 pl-9 pr-4 py-2 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
           />
         </div>
 
@@ -351,7 +351,7 @@ export default function AdminPmbLeadsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-amber-400"
+            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-sky-400"
           >
             <option value="ALL">Semua Status</option>
             <option value="BARU_MASUK">Baru Masuk</option>
@@ -366,7 +366,7 @@ export default function AdminPmbLeadsPage() {
           <select
             value={prodiFilter}
             onChange={(e) => setProdiFilter(e.target.value)}
-            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-amber-400"
+            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-sky-400"
           >
             <option value="ALL">Semua Program Studi</option>
             <option value="Informatika">Informatika</option>
@@ -407,7 +407,7 @@ export default function AdminPmbLeadsPage() {
                 filtered.map((lead) => (
                   <tr key={lead.id} className="hover:bg-blue-950/20 transition group">
                     <td className="py-4 px-4">
-                      <div className="font-semibold text-white group-hover:text-amber-300 transition">
+                      <div className="font-semibold text-white group-hover:text-sky-300 transition">
                         {lead.fullName}
                       </div>
                       <div className="text-xs text-slate-400 mt-0.5">
@@ -421,13 +421,13 @@ export default function AdminPmbLeadsPage() {
                     </td>
                     <td className="py-4 px-4">
                       <span className="font-medium text-slate-200">{lead.programChoice}</span>
-                      <div className="text-xs text-amber-400/90 font-mono mt-0.5">
+                      <div className="text-xs text-sky-400/90 font-mono mt-0.5">
                         Target TA {lead.targetYear}
                       </div>
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-1.5 text-xs text-slate-300">
-                        <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                        <Phone className="w-3.5 h-3.5 text-sky-400" />
                         <span className="font-mono">{lead.phoneWhatsapp}</span>
                       </div>
                       {lead.email && (
@@ -445,7 +445,7 @@ export default function AdminPmbLeadsPage() {
                           value={lead.status}
                           onChange={(e) => handleQuickStatusChange(lead.id, e.target.value as AdminLeadItem["status"])}
                           aria-label={`Ubah status untuk ${lead.fullName}`}
-                          className="text-[11px] bg-[#071322] border border-blue-900/40 text-slate-300 rounded px-2 py-0.5 focus:outline-none focus:border-amber-400"
+                          className="text-[11px] bg-[#071322] border border-blue-900/40 text-slate-300 rounded px-2 py-0.5 focus:outline-none focus:border-sky-400"
                         >
                           <option value="BARU_MASUK">Baru Masuk</option>
                           <option value="DIHUBUNGI">Dihubungi</option>
@@ -463,7 +463,7 @@ export default function AdminPmbLeadsPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openWhatsApp(lead.phoneWhatsapp || lead.phone || "", lead.fullName || lead.name || "", lead.programChoice || lead.programName || "")}
-                          className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition"
+                          className="p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 transition"
                           title="Chat via WhatsApp Resmi"
                         >
                           <MessageCircle className="w-4 h-4" />
@@ -477,7 +477,7 @@ export default function AdminPmbLeadsPage() {
                         </button>
                         <button
                           onClick={async () => { if (await swalConfirmDelete()) handleDelete(lead.id); }}
-                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition"
+                          className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 transition"
                           title="Hapus Lead"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -498,7 +498,7 @@ export default function AdminPmbLeadsPage() {
           <div className="bg-[#0a192f] border border-blue-900/60 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-900/40 bg-[#071322]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <FileCheck2 className="w-5 h-5 text-amber-400" />
+                <FileCheck2 className="w-5 h-5 text-sky-400" />
                 {editingLead ? "Edit Data Calon Mahasiswa" : "Tambah Calon Mahasiswa Baru (Walk-in)"}
               </h2>
               <button
@@ -519,7 +519,7 @@ export default function AdminPmbLeadsPage() {
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     placeholder="Contoh: Rian Anggoro"
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   />
                 </div>
                 <div>
@@ -530,7 +530,7 @@ export default function AdminPmbLeadsPage() {
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
                     placeholder="Contoh: 08123456789"
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   />
                 </div>
               </div>
@@ -543,7 +543,7 @@ export default function AdminPmbLeadsPage() {
                     value={formEmail}
                     onChange={(e) => setFormEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   />
                 </div>
                 <div>
@@ -553,7 +553,7 @@ export default function AdminPmbLeadsPage() {
                     value={formCity}
                     onChange={(e) => setFormCity(e.target.value)}
                     placeholder="Solo / Sukoharjo / dll"
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   />
                 </div>
               </div>
@@ -565,7 +565,7 @@ export default function AdminPmbLeadsPage() {
                   value={formSchool}
                   onChange={(e) => setFormSchool(e.target.value)}
                   placeholder="Contoh: SMA Regina Pacis Surakarta"
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                 />
               </div>
 
@@ -575,7 +575,7 @@ export default function AdminPmbLeadsPage() {
                   <select
                     value={formProdi}
                     onChange={(e) => setFormProdi(e.target.value)}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   >
                     <option value="S1 Informatika">S1 Informatika</option>
                     <option value="S1 Sains Data">S1 Sains Data</option>
@@ -594,7 +594,7 @@ export default function AdminPmbLeadsPage() {
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as AdminLeadItem["status"])}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                   >
                     <option value="BARU_MASUK">Baru Masuk</option>
                     <option value="DIHUBUNGI">Dihubungi</option>
@@ -613,7 +613,7 @@ export default function AdminPmbLeadsPage() {
                   value={formNotes}
                   onChange={(e) => setFormNotes(e.target.value)}
                   placeholder="Contoh: Mengajukan beasiswa penuh prestasi, ayah bekerja di Triputra, dll"
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
                 />
               </div>
 
@@ -628,7 +628,7 @@ export default function AdminPmbLeadsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-amber-500/20"
+                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   {editingLead ? "Simpan Perubahan" : "Tambahkan Lead"}

@@ -312,7 +312,7 @@ function ProfilManagerContent() {
                     {item.title}
                   </h3>
                   {item.subtitle && (
-                    <div className="text-xs font-semibold text-amber-300/90 mt-0.5">
+                    <div className="text-xs font-semibold text-sky-300/90 mt-0.5">
                       {item.subtitle}
                     </div>
                   )}
@@ -342,7 +342,7 @@ function ProfilManagerContent() {
                   </button>
                   <button
                     onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
-                    className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 text-rose-300 hover:text-rose-100 transition cursor-pointer"
+                    className="p-1.5 rounded-lg bg-blue-950/40 hover:bg-blue-900 text-blue-300 hover:text-blue-100 transition cursor-pointer"
                     title="Hapus Item"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

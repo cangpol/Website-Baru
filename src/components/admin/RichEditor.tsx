@@ -531,7 +531,7 @@ export default function RichEditor({
           font-weight: 700;
         }
         .tiptap mark {
-          background: #fef08a;
+          background: #bae6fd;
           padding: 0 3px;
           border-radius: 3px;
         }

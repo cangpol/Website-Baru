@@ -8,6 +8,7 @@ const base = Swal.mixin({
   color: "#e2e8f0",
   confirmButtonColor: "#0284c7",
   cancelButtonColor: "#334155",
+  iconColor: "#38bdf8",
   customClass: { popup: "swal-admin-popup" },
 });
 
@@ -41,7 +42,7 @@ export async function swalConfirmDelete(name?: string) {
     showCancelButton: true,
     confirmButtonText: "Ya, hapus",
     cancelButtonText: "Batal",
-    confirmButtonColor: "#e11d48",
+    confirmButtonColor: "#1d4ed8",
     focusCancel: true,
     reverseButtons: true,
   });

@@ -317,7 +317,7 @@ export default function AdminProdiCrudPage() {
                         <div className="font-bold text-white text-sm flex items-center gap-1.5">
                           <span>{item.name}</span>
                           {item.featured && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold uppercase">
+                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold uppercase">
                               Unggulan
                             </span>
                           )}
@@ -340,8 +340,8 @@ export default function AdminProdiCrudPage() {
                   </td>
 
                   <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-[10px]">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 font-bold text-[10px]">
+                      <CheckCircle2 className="w-3 h-3 text-sky-400" />
                       <span>{item.accreditation}</span>
                     </span>
                   </td>
@@ -371,7 +371,7 @@ export default function AdminProdiCrudPage() {
                       <button
                         onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                         title="Hapus prodi"
-                        className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg bg-blue-950/40 hover:bg-blue-900/60 text-blue-300 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

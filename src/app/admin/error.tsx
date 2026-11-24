@@ -17,13 +17,13 @@ export default function AdminError({
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center p-6 font-sans">
-      <div className="max-w-lg w-full bg-[#0a192f] rounded-3xl border border-rose-500/30 p-8 text-center space-y-6 shadow-2xl">
-        <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto shadow-inner">
+      <div className="max-w-lg w-full bg-[#0a192f] rounded-3xl border border-blue-500/30 p-8 text-center space-y-6 shadow-2xl">
+        <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center mx-auto shadow-inner">
           <ShieldAlert className="w-8 h-8" />
         </div>
 
         <div className="space-y-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-rose-400 bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
             Admin Error Boundary
           </span>
           <h2 className="text-2xl font-black text-white pt-1">

@@ -148,16 +148,16 @@ export default function AdminInstagramSyncPage() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-sky-600 text-white shadow-xl shadow-sky-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
+          <CheckCircle2 className="w-4 h-4 text-sky-200" />
           <span>{notification}</span>
         </div>
       )}
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-300">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-start gap-2.5 text-xs text-blue-300">
+          <AlertCircle className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
           <span>{errorMsg}</span>
         </div>
       )}
@@ -166,7 +166,7 @@ export default function AdminInstagramSyncPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-blue-900/40">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-sky-400 uppercase tracking-widest">
-            <Camera className="w-4 h-4 text-pink-400" />
+            <Camera className="w-4 h-4 text-blue-400" />
             <span>Manajemen Feed Sosial Kampus</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-white mt-1">
@@ -180,7 +180,7 @@ export default function AdminInstagramSyncPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => setIsNewPostModalOpen(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:opacity-90 text-white text-xs font-bold shadow-md shadow-pink-600/30 transition cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-600 hover:opacity-90 text-white text-xs font-bold shadow-md shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Postingan CMS</span>
@@ -191,12 +191,12 @@ export default function AdminInstagramSyncPage() {
       {/* Account Connection Status Card */}
       <div className="bg-[#071a33] border border-blue-900/50 rounded-3xl p-6 shadow-xl relative overflow-hidden">
         {/* Glow Orb */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-pink-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-5">
             <div className="relative">
-              <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 shadow-lg shrink-0">
+              <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-sky-400 via-blue-500 to-blue-600 shadow-lg shrink-0">
                 <div className="w-full h-full rounded-full bg-white p-1 overflow-hidden">
                   <Image
                     src={account.profilePicUrl}
@@ -207,7 +207,7 @@ export default function AdminInstagramSyncPage() {
                   />
                 </div>
               </div>
-              <span className="absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-[#071a33] bg-emerald-500 flex items-center justify-center">
+              <span className="absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-[#071a33] bg-sky-500 flex items-center justify-center">
                 <Check className="w-3 h-3 text-white" />
               </span>
             </div>
@@ -243,7 +243,7 @@ export default function AdminInstagramSyncPage() {
 
           <div className="flex flex-col sm:items-end justify-center gap-2 bg-[#051326]/80 p-4 rounded-2xl border border-blue-900/50">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+              <span className="w-2.5 h-2.5 rounded-full bg-sky-400" />
               <span className="text-xs font-bold text-white">
                 FEED CMS AKTIF
               </span>
@@ -269,7 +269,7 @@ export default function AdminInstagramSyncPage() {
           </div>
 
           <span className="text-xs text-slate-400">
-            Urutan: <span className="text-amber-300 font-bold">Terbaru (#1) &rarr; Terdahulu (#5)</span>
+            Urutan: <span className="text-sky-300 font-bold">Terbaru (#1) &rarr; Terdahulu (#5)</span>
           </span>
         </div>
 
@@ -277,7 +277,7 @@ export default function AdminInstagramSyncPage() {
           {account.recentPosts.slice(0, 5).map((post, idx) => (
             <div
               key={post.id || idx}
-              className="bg-[#071a33] border border-blue-900/50 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-pink-500/50 transition-all group"
+              className="bg-[#071a33] border border-blue-900/50 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-blue-500/50 transition-all group"
             >
               <div className="relative w-full aspect-square bg-blue-950/80 overflow-hidden">
                 <Image
@@ -288,9 +288,9 @@ export default function AdminInstagramSyncPage() {
                 />
                 <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-[10px] font-bold text-white flex items-center gap-1 border border-white/10">
                   <span>#{idx + 1}</span>
-                  {idx === 0 && <span className="text-pink-400 text-[9px]">BARU</span>}
+                  {idx === 0 && <span className="text-blue-400 text-[9px]">BARU</span>}
                 </div>
-                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-pink-600/80 backdrop-blur-xs text-[9px] font-bold text-white">
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-blue-600/80 backdrop-blur-xs text-[9px] font-bold text-white">
                   {post.category || "Feed"}
                 </div>
               </div>
@@ -324,7 +324,7 @@ export default function AdminInstagramSyncPage() {
           <div className="w-full max-w-lg bg-[#071a33] border border-blue-900/80 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-blue-900/60">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Plus className="w-4 h-4 text-pink-400" />
+                <Plus className="w-4 h-4 text-blue-400" />
                 <span>Tambah Postingan ke CMS Beranda</span>
               </h3>
               <button onClick={() => setIsNewPostModalOpen(false)} className="p-1 text-slate-400 hover:text-white">
@@ -341,7 +341,7 @@ export default function AdminInstagramSyncPage() {
                   value={postForm.caption}
                   onChange={(e) => setPostForm({ ...postForm, caption: e.target.value })}
                   placeholder="Tuliskan keterangan postingan terbaru dari @upitra_campus..."
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-pink-500 leading-relaxed"
+                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 leading-relaxed"
                 />
               </div>
 
@@ -350,7 +350,7 @@ export default function AdminInstagramSyncPage() {
                 <select
                   value={postForm.mediaUrl}
                   onChange={(e) => setPostForm({ ...postForm, mediaUrl: e.target.value })}
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500"
+                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="/images/pariwisata/par-1.jpg">Foto Pariwisata & Immersion (/images/pariwisata/par-1.jpg)</option>
                   <option value="/images/upitra-1.jpeg">Gedung Kampus UPITRA (/images/upitra-1.jpeg)</option>
@@ -368,7 +368,7 @@ export default function AdminInstagramSyncPage() {
                     type="text"
                     value={postForm.category}
                     onChange={(e) => setPostForm({ ...postForm, category: e.target.value })}
-                    className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500"
+                    className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -384,7 +384,7 @@ export default function AdminInstagramSyncPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:opacity-90 text-white font-bold cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90 text-white font-bold cursor-pointer disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>{loading ? "Mempublikasikan..." : "Publikasikan ke Feed Beranda"}</span>

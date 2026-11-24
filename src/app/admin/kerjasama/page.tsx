@@ -268,14 +268,14 @@ function KerjasamaManagerContent() {
                     </span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                       item.status === "Aktif" 
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                        : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                        ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                        : "bg-sky-500/20 text-sky-300 border border-sky-500/30"
                     }`}>
                       {item.status}
                     </span>
                   </div>
 
-                  <span className="text-xs font-mono text-amber-300">
+                  <span className="text-xs font-mono text-sky-300">
                     {item.startYear} - {item.endYear}
                   </span>
                 </div>
@@ -307,7 +307,7 @@ function KerjasamaManagerContent() {
                   </button>
                   <button
                     onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
-                    className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 text-rose-300 hover:text-rose-100 transition cursor-pointer"
+                    className="p-1.5 rounded-lg bg-blue-950/40 hover:bg-blue-900 text-blue-300 hover:text-blue-100 transition cursor-pointer"
                     title="Hapus Dokumen"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
