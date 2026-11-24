@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
   FileCheck2, 
@@ -23,6 +24,7 @@ import {
   getAdmissionLeads, 
   updateLeadStatusAction, 
   softDeleteLeadAction,
+  saveLeadAction,
   exportLeadsCsvAction
 } from "@/server/leads";
 import { AdmissionStatus } from "@prisma/client";
@@ -47,6 +49,17 @@ export interface AdminLeadItem {
   createdAt: string;
   date?: string;
 }
+
+// Status di tampilan admin <-> enum database.
+const UI_TO_DB: Record<string, AdmissionStatus> = {
+  BARU_MASUK: "LEAD_SUBMITTED",
+  DIHUBUNGI: "CONTACTED",
+  WAWANCARA: "SCHEDULED_INTERVIEW",
+  DITERIMA_BEASISWA: "ACCEPTED",
+  ENROLLED: "ENROLLED",
+  BATAL: "REJECTED",
+};
+const DB_TO_UI: Record<string, string> = Object.fromEntries(Object.entries(UI_TO_DB).map(([ui, db]) => [db, ui]));
 
 export default function AdminPmbLeadsPage() {
   const [leads, setLeads] = useState<AdminLeadItem[]>([]);
@@ -74,6 +87,7 @@ export default function AdminPmbLeadsPage() {
       const data = await getAdmissionLeads();
       const mapped: AdminLeadItem[] = data.map((l) => ({
         ...l,
+        status: DB_TO_UI[l.status] ?? l.status,
         name: l.fullName,
         phone: l.phoneWhatsapp,
         school: l.highSchool,
@@ -90,10 +104,7 @@ export default function AdminPmbLeadsPage() {
     loadData();
   }, []);
 
-  const saveToStorage = async (updated: AdminLeadItem[]) => {
-    setLeads(updated);
-    await loadData();
-  };
+  const [saving, setSaving] = useState(false);
 
   const handleOpenCreate = () => {
     setEditingLead(null);
@@ -123,63 +134,72 @@ export default function AdminPmbLeadsPage() {
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim() || !formPhone.trim()) return;
-
-    if (editingLead) {
-      const updated = leads.map((l) =>
-        l.id === editingLead.id
-          ? {
-              ...l,
-              fullName: formName,
-              phoneWhatsapp: formPhone,
-              email: formEmail,
-              highSchool: formSchool,
-              city: formCity,
-              programChoice: formProdi,
-              targetYear: Number(formTargetYear),
-              status: formStatus,
-              notes: formNotes,
-            }
-          : l
-      );
-      saveToStorage(updated);
-    } else {
-      const newLead: AdminLeadItem = {
-        id: `lead-${Date.now().toString().slice(-4)}`,
+    if (!formName.trim() || !formPhone.trim()) {
+      swalToast("Nama dan nomor WhatsApp wajib diisi.", "error");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await saveLeadAction(editingLead?.id ?? null, {
         fullName: formName,
         phoneWhatsapp: formPhone,
         email: formEmail,
         highSchool: formSchool,
         city: formCity,
-        programChoice: formProdi,
         targetYear: Number(formTargetYear),
-        status: formStatus,
+        programName: formProdi,
+        status: UI_TO_DB[formStatus] ?? "LEAD_SUBMITTED",
         notes: formNotes,
-        createdAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
-      };
-      saveToStorage([newLead, ...leads]);
+      });
+      if (!res.ok) {
+        swalToast(res.message || "Gagal menyimpan data.", "error");
+        return;
+      }
+      setModalOpen(false);
+      await loadData();
+      swalToast(res.message, "success");
+    } catch {
+      swalToast("Terjadi kesalahan saat menyimpan data.", "error");
+    } finally {
+      setSaving(false);
     }
-    setModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    const updated = leads.filter((l) => l.id !== id);
-    saveToStorage(updated);
-    setDeleteConfirmId(null);
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await softDeleteLeadAction(id);
+      if (res.ok) {
+        await loadData();
+        swalToast(res.message, "success");
+      } else {
+        swalToast(res.message, "error");
+      }
+    } catch {
+      swalToast("Terjadi kesalahan saat menghapus data.", "error");
+    }
   };
 
-  const handleQuickStatusChange = (id: string, newStatus: AdminLeadItem["status"]) => {
-    const updated = leads.map((l) => (l.id === id ? { ...l, status: newStatus } : l));
-    saveToStorage(updated);
+  const handleQuickStatusChange = async (id: string, newStatus: AdminLeadItem["status"]) => {
+    try {
+      const res = await updateLeadStatusAction(id, UI_TO_DB[newStatus] ?? "LEAD_SUBMITTED");
+      if (res.ok) {
+        await loadData();
+        swalToast("Status calon mahasiswa diperbarui.", "success");
+      } else {
+        swalToast(("message" in res && res.message) || "Gagal memperbarui status.", "error");
+      }
+    } catch {
+      swalToast("Terjadi kesalahan saat memperbarui status.", "error");
+    }
   };
 
   const exportToCSV = async () => {
     try {
       const res = await exportLeadsCsvAction();
       if (!res.ok || !res.csv) {
-        alert(res.message || "Gagal mengekspor data CSV.");
+        swalToast(res.message || "Gagal mengekspor data CSV.");
         return;
       }
       const blob = new Blob([res.csv], { type: "text/csv;charset=utf-8;" });
@@ -192,7 +212,7 @@ export default function AdminPmbLeadsPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch {
-      alert("Terjadi kesalahan saat mengekspor data CSV.");
+      swalToast("Terjadi kesalahan saat mengekspor data CSV.");
     }
   };
 
@@ -456,7 +476,7 @@ export default function AdminPmbLeadsPage() {
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => setDeleteConfirmId(lead.id)}
+                          onClick={async () => { if (await swalConfirmDelete()) handleDelete(lead.id); }}
                           className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition"
                           title="Hapus Lead"
                         >
@@ -607,6 +627,7 @@ export default function AdminPmbLeadsPage() {
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-amber-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4" />
@@ -619,33 +640,6 @@ export default function AdminPmbLeadsPage() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-[#0a192f] border border-rose-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-rose-400" />
-              Hapus Data Calon Mahasiswa?
-            </h3>
-            <p className="text-sm text-slate-400 mb-6">
-              Data lead ini akan dihapus dari sistem. Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <div className="flex items-center justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 text-sm text-slate-300 hover:text-white rounded-xl transition"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition"
-              >
-                Hapus Sekarang
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

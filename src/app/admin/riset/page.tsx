@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete, type SwalKind } from "@/lib/swal";
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -91,14 +92,9 @@ const emptyNewsForm: AdminArticleItem = {
 };
 
 export default function AdminRisetPage() {
-  const [activeTab, setActiveTab] = useState<"berita" | "banner_profil" | "publikasi">("berita");
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastType, setToastType] = useState<"success" | "error" | "info">("info");
-
-  const showToast = (msg: string, type: "success" | "error" | "info" = "info") => {
-    setToastMessage(msg);
-    setToastType(type);
-    setTimeout(() => setToastMessage(null), 3500);
+  const [activeTab, setActiveTab] = useState<"berita" | "banner_profil" | "publikasi">("berita");
+  const showToast = (message: string, type?: SwalKind) => {
+    swalToast(message, type);
   };
 
   // ── 1. BERITA & ARTIKEL STATE ──────────────────────────────────────────────
@@ -402,24 +398,6 @@ export default function AdminRisetPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-16 font-sans">
       {/* Toast Notification */}
-      {toastMessage && (
-        <div
-          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold transition-all animate-in slide-in-from-top-4 ${
-            toastType === "success"
-              ? "bg-emerald-600 text-white"
-              : toastType === "error"
-              ? "bg-rose-600 text-white"
-              : "bg-[#0b2545] text-white"
-          }`}
-        >
-          {toastType === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-          ) : (
-            <AlertCircle className="w-4 h-4 text-rose-200" />
-          )}
-          <span>{toastMessage}</span>
-        </div>
-      )}
 
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs">
@@ -663,7 +641,7 @@ export default function AdminRisetPage() {
                               <Edit3 className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => setDeleteNewsId(art.id)}
+                              onClick={async () => { if (await swalConfirmDelete()) handleDeleteArticle(art.id); }}
                               title="Hapus Artikel"
                               className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
                             >
@@ -904,7 +882,7 @@ export default function AdminRisetPage() {
                       <Edit3 className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleDeletePub(item.id)}
+                      onClick={async () => { if (await swalConfirmDelete()) handleDeletePub(item.id); }}
                       className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1234,35 +1212,6 @@ export default function AdminRisetPage() {
       )}
 
       {/* MODAL KONFIRMASI HAPUS ARTIKEL */}
-      {deleteNewsId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md shadow-2xl p-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 mx-auto flex items-center justify-center">
-              <AlertCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-[#06172e]">Hapus Artikel Riset?</h3>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Artikel ini akan dipindahkan ke kotak sampah dan tidak lagi tampil di halaman publik /riset.
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-2.5 pt-2">
-              <button
-                onClick={() => setDeleteNewsId(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDeleteArticle(deleteNewsId)}
-                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
-              >
-                Hapus Sekarang
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

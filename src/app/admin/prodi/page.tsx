@@ -1,5 +1,6 @@
 "use client";
 
+import { swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
   GraduationCap, 
@@ -14,7 +15,8 @@ import {
   Sparkles,
   ExternalLink
 } from "lucide-react";
-import { getAllAdminPrograms, saveProgramAction, softDeleteProgramAction } from "@/server/programs";
+import { getAllAdminPrograms, getFacultiesWithPrograms, saveProgramAction, softDeleteProgramAction } from "@/server/programs";
+import { swalToast } from "@/lib/swal";
 
 export interface AdminProdiItem {
   id: string;
@@ -32,6 +34,8 @@ export interface AdminProdiItem {
   tuitionPerSemester?: string;
   tuition: string;
   shortDesc: string;
+  fullDesc?: string;
+  campusLocation?: string;
   careerProspect?: string;
   careerProspects?: string;
   career: string;
@@ -49,6 +53,7 @@ export default function AdminProdiCrudPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<AdminProdiItem | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // Form states
   const [formFaculty, setFormFaculty] = useState<"FST" | "FEB" | "FSH" | "FKES">("FST");
@@ -80,6 +85,9 @@ export default function AdminProdiCrudPage() {
         tuitionFeeEst: p.tuitionFeeEst,
         tuition: p.tuitionFeeEst ? `Rp ${p.tuitionFeeEst.toLocaleString("id-ID")}` : "Rp 6.500.000",
         shortDesc: p.shortDesc,
+        fullDesc: p.fullDesc,
+        campusLocation: p.campusLocation,
+        featured: p.featured,
         careerProspect: p.careerProspect,
         career: p.careerProspect,
         coverImage: p.coverImage,
@@ -102,11 +110,6 @@ export default function AdminProdiCrudPage() {
       }
     }
   }, []);
-
-  const saveToStorage = async (updated: AdminProdiItem[]) => {
-    setProdis(updated);
-    await loadData();
-  };
 
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -138,70 +141,64 @@ export default function AdminProdiCrudPage() {
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim() || !formSlug.trim()) return;
-
-    const facultyMap: Record<string, string> = {
-      FST: "Fakultas Sains & Teknologi",
-      FEB: "Fakultas Ekonomi & Bisnis",
-      FSH: "Fakultas Sosial Humaniora",
-      FKES: "Fakultas Kesehatan",
-    };
-
-    if (editingItem) {
-      // Update
-      const updated = prodis.map((p) =>
-        p.id === editingItem.id
-          ? {
-              ...p,
-              faculty: formFaculty,
-              facultyName: facultyMap[formFaculty],
-              name: formName.trim(),
-              slug: formSlug.trim().toLowerCase(),
-              degreeLevel: formDegree,
-              degreeTitle: formDegreeTitle,
-              accreditation: formAccreditation,
-              tuitionPerSemester: formTuition,
-              shortDesc: formShortDesc,
-              careerProspects: formCareer,
-              coverImage: formCoverImage,
-            }
-          : p
-      );
-      saveToStorage(updated);
-    } else {
-      // Create
-      const newItem: AdminProdiItem = {
-        id: "prodi_" + Date.now(),
-        faculty: formFaculty,
-        facultyName: facultyMap[formFaculty],
+    if (!formName.trim() || !formSlug.trim()) {
+      swalToast("Nama dan slug program studi wajib diisi.", "error");
+      return;
+    }
+    setSaving(true);
+    try {
+      // Fakultas di database memakai ID; cocokkan lewat kode (FST/FEB/FSH/FKES).
+      const faculties = await getFacultiesWithPrograms();
+      const faculty = faculties.find((f) => f.code.toUpperCase() === formFaculty);
+      if (!faculty) {
+        swalToast("Fakultas tidak ditemukan di database. Pastikan data fakultas sudah di-seed.", "error");
+        return;
+      }
+      const digits = formTuition.replace(/[^0-9]/g, "");
+      const res = await saveProgramAction(editingItem?.id ?? null, {
+        facultyId: faculty.id,
         name: formName.trim(),
         slug: formSlug.trim().toLowerCase(),
-        degreeLevel: formDegree,
-        degreeTitle: formDegreeTitle,
-        accreditation: formAccreditation,
-        tuitionPerSemester: formTuition,
-        tuition: formTuition,
-        shortDesc: formShortDesc,
-        careerProspects: formCareer,
-        career: formCareer,
-        degree: formDegree,
-        version: 1,
-        totalStudentsEst: 150,
-        coverImage: formCoverImage,
-        featured: false,
-      };
-      saveToStorage([newItem, ...prodis]);
+        degreeLevel: formDegree === "D3" ? "DIPLOMA" : "BACHELOR",
+        degreeTitle: formDegreeTitle || null,
+        accreditation: formAccreditation || "Baik Sekali",
+        campusLocation: editingItem?.campusLocation || "Surakarta",
+        shortDesc: formShortDesc || null,
+        fullDesc: editingItem?.fullDesc || null,
+        careerProspect: formCareer || null,
+        tuitionFeeEst: digits ? Number(digits) : null,
+        coverImage: formCoverImage || null,
+        featured: editingItem?.featured ?? false,
+        version: editingItem?.version ?? 1,
+      } as any);
+      if (!res.ok) {
+        swalToast(("message" in res && res.message) || "Gagal menyimpan program studi.", "error");
+        return;
+      }
+      setModalOpen(false);
+      await loadData();
+      swalToast(editingItem ? "Program studi berhasil diperbarui." : "Program studi baru berhasil ditambahkan.", "success");
+    } catch {
+      swalToast("Terjadi kesalahan saat menyimpan program studi.", "error");
+    } finally {
+      setSaving(false);
     }
-
-    setModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    const updated = prodis.filter((p) => p.id !== id);
-    saveToStorage(updated);
-    setDeleteConfirmId(null);
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await softDeleteProgramAction(id);
+      if (res.ok) {
+        await loadData();
+        swalToast(("message" in res && res.message) || "Program studi berhasil dihapus.", "success");
+      } else {
+        swalToast(("message" in res && res.message) || "Gagal menghapus program studi.", "error");
+      }
+    } catch {
+      swalToast("Terjadi kesalahan saat menghapus program studi.", "error");
+    }
   };
 
   // Filter logic
@@ -372,7 +369,7 @@ export default function AdminProdiCrudPage() {
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => setDeleteConfirmId(item.id)}
+                        onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                         title="Hapus prodi"
                         className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 transition-colors cursor-pointer"
                       >
@@ -555,6 +552,7 @@ export default function AdminProdiCrudPage() {
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-md shadow-blue-600/30"
                 >
                   {editingItem ? "SIMPAN PERUBAHAN" : "TAMBAH PROGRAM STUDI"}
@@ -567,36 +565,6 @@ export default function AdminProdiCrudPage() {
       )}
 
       {/* MODAL KONFIRMASI DELETE */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4">
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-xs" onClick={() => setDeleteConfirmId(null)} />
-          <div className="relative w-full max-w-sm bg-[#071a33] border border-rose-500/40 rounded-3xl p-6 shadow-2xl z-10 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto border border-rose-500/40">
-              <Trash2 className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-base font-bold text-white">Hapus Program Studi?</h4>
-              <p className="text-xs text-slate-400 mt-1">
-                Data yang dihapus tidak dapat dipulihkan kembali dari sistem.
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-2 pt-2">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-blue-950 text-slate-300 text-xs font-semibold"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-600/30"
-              >
-                Ya, Hapus Data
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -34,9 +35,7 @@ function KerjasamaManagerContent() {
   const [items, setItems] = useState<AdminKerjasamaMouItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<AdminKerjasamaMouItem | null>(null);
-  const [successToast, setSuccessToast] = useState<string | null>(null);
-
+  const [editingItem, setEditingItem] = useState<AdminKerjasamaMouItem | null>(null);
   // Form State
   const [formData, setFormData] = useState({
     partnerName: "",
@@ -76,16 +75,15 @@ function KerjasamaManagerContent() {
       if (res.ok) {
         showNotification(res.message);
       } else {
-        alert(res.message);
+        swalToast(res.message);
       }
     } catch {
-      alert("Gagal menyimpan data MoU ke database.");
+      swalToast("Gagal menyimpan data MoU ke database.");
     }
   };
 
   const showNotification = (msg: string) => {
-    setSuccessToast(msg);
-    setTimeout(() => setSuccessToast(null), 3000);
+    swalToast(msg, "success");
   };
 
   const filteredItems = items.filter((item) => {
@@ -153,7 +151,7 @@ function KerjasamaManagerContent() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Hapus dokumen kerjasama ini?")) {
+    {
       const updated = items.filter((it) => it.id !== id);
       saveToStorage(updated);
       showNotification("Dokumen kerjasama berhasil dihapus!");
@@ -163,12 +161,6 @@ function KerjasamaManagerContent() {
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
-      {successToast && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-          <span>{successToast}</span>
-        </div>
-      )}
 
       {/* Header Info */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-blue-900/40">
@@ -314,7 +306,7 @@ function KerjasamaManagerContent() {
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(item.id)}
+                    onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                     className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 text-rose-300 hover:text-rose-100 transition cursor-pointer"
                     title="Hapus Dokumen"
                   >

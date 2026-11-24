@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirm, swalConfirmDelete, type SwalKind } from "@/lib/swal";
 import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { 
@@ -68,9 +69,7 @@ export default function AdminAiDatasetPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
+  const [pageSize, setPageSize] = useState(15);
   // Form Modal State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AIDatasetItem | null>(null);
@@ -106,9 +105,8 @@ export default function AdminAiDatasetPage() {
     loadData();
   }, []);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+  const showToast = (message: string, type?: SwalKind) => {
+    swalToast(message, type);
   };
 
   const saveDatasetToStorage = async (updated: AIDatasetItem[]) => {
@@ -201,7 +199,7 @@ export default function AdminAiDatasetPage() {
   const handleSaveForm = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.question.trim() || !formData.answer.trim()) {
-      alert("Pertanyaan dan Jawaban wajib diisi.");
+      swalToast("Pertanyaan dan Jawaban wajib diisi.");
       return;
     }
 
@@ -233,8 +231,8 @@ export default function AdminAiDatasetPage() {
     showToast("Entri Q&A berhasil dihapus.");
   };
 
-  const handleResetToDefault = () => {
-    if (window.confirm("Apakah Anda yakin ingin mereset seluruh dataset ke basis pengetahuan resmi UPITRA (100+ entri default)? Data kustom yang tidak di-export akan tertimpa.")) {
+  const handleResetToDefault = async () => {
+    if (await swalConfirm("Reset dataset ke bawaan?", "Apakah Anda yakin ingin mereset seluruh dataset ke basis pengetahuan resmi UPITRA (100+ entri default)? Data kustom yang tidak di-export akan tertimpa.")) {
       const initialFormatted: AIDatasetItem[] = (initialDatasetRaw as KnowledgeItem[]).map((item) => ({
         id: item.id || `qa-${Math.random().toString(36).substring(2, 8)}`,
         category: item.category || "umum",
@@ -281,10 +279,10 @@ export default function AdminAiDatasetPage() {
           saveDatasetToStorage(formatted);
           showToast(`Berhasil mengimpor ${formatted.length} entri dataset!`);
         } else {
-          alert("Format file JSON tidak sesuai. Harus berupa array data Q&A.");
+          swalToast("Format file JSON tidak sesuai. Harus berupa array data Q&A.");
         }
       } catch {
-        alert("Gagal membaca file JSON. Pastikan format file valid.");
+        swalToast("Gagal membaca file JSON. Pastikan format file valid.");
       }
     };
     reader.readAsText(file);
@@ -337,12 +335,6 @@ export default function AdminAiDatasetPage() {
     <div className="space-y-8 select-none font-sans text-slate-800">
       
       {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-[#06172e] text-white shadow-xl border border-blue-500/30 text-xs font-bold animate-in fade-in slide-in-from-top-4 duration-300">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
 
       {/* 1. HEADER HALAMAN: AI Dataset Assistant UPITRA */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-slate-200">
@@ -652,7 +644,7 @@ export default function AdminAiDatasetPage() {
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={() => setDeleteConfirmId(item.id)}
+                            onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                             title="Hapus Q&A"
                             className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer"
                           >
@@ -1056,35 +1048,6 @@ export default function AdminAiDatasetPage() {
       )}
 
       {/* 7. MODAL KONFIRMASI HAPUS */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-200">
-              <Trash2 className="w-6 h-6" />
-            </div>
-            <div className="space-y-1">
-              <h4 className="text-base font-bold text-[#06172e]">Hapus Pertanyaan AI?</h4>
-              <p className="text-xs text-slate-500">
-                Pertanyaan ini tidak akan dapat dikenali lagi oleh Veronica. Tindakan ini tidak dapat dibatalkan.
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-3 pt-2">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 transition-colors cursor-pointer"
-              >
-                Ya, Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

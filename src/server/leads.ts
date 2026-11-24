@@ -234,3 +234,71 @@ export async function exportLeadsCsvAction() {
   }
 }
 
+
+// ── Tambah / ubah lead dari panel admin ─────────────────────────────────────
+export interface SaveLeadInput {
+  fullName: string;
+  phoneWhatsapp: string;
+  email: string;
+  highSchool: string;
+  city?: string | null;
+  targetYear: number;
+  programName?: string | null;
+  status: AdmissionStatus;
+  notes?: string | null;
+}
+
+export async function saveLeadAction(id: string | null, input: SaveLeadInput) {
+  const session = await requirePermission("pmb", id ? "update" : "create");
+
+  const fullName = input.fullName?.trim();
+  const phone = input.phoneWhatsapp?.trim();
+  if (!fullName || fullName.length < 2) return { ok: false, message: "Nama calon mahasiswa minimal 2 karakter." };
+  if (!phone || phone.replace(/\D/g, "").length < 8) return { ok: false, message: "Nomor WhatsApp tidak valid." };
+  if (input.email && !/^\S+@\S+\.\S+$/.test(input.email.trim())) return { ok: false, message: "Format email tidak valid." };
+  const targetYear = Number.isFinite(input.targetYear) ? Math.trunc(input.targetYear) : 2026;
+  if (targetYear < 2000 || targetYear > 2100) return { ok: false, message: "Tahun target tidak valid." };
+
+  try {
+    let programId: string | null = null;
+    const programName = input.programName?.trim();
+    if (programName && programName !== "Belum Menentukan") {
+      const program = await prisma.program.findFirst({
+        where: { deletedAt: null, name: { equals: programName.replace(/^(S1|D3)\s+/i, ""), mode: "insensitive" } },
+        select: { id: true },
+      });
+      programId = program?.id ?? null;
+    }
+
+    const data = {
+      fullName,
+      phoneWhatsapp: phone,
+      email: input.email?.trim() ?? "",
+      highSchool: input.highSchool?.trim() ?? "",
+      city: input.city?.trim() || null,
+      targetYear,
+      programId,
+      status: input.status,
+      notes: input.notes?.trim() || null,
+    };
+
+    const lead = id
+      ? await prisma.admissionLead.update({ where: { id }, data })
+      : await prisma.admissionLead.create({ data: { ...data, source: "Admin" } });
+
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: id ? "UPDATE" : "CREATE",
+      entity: "AdmissionLead",
+      entityId: lead.id,
+      details: { studentName: lead.fullName, status: lead.status },
+    });
+
+    await invalidateEntity(CACHE_TAGS.LEADS);
+    return { ok: true, message: id ? "Data calon mahasiswa berhasil diperbarui." : "Calon mahasiswa baru berhasil ditambahkan." };
+  } catch (error) {
+    console.error("Save lead error:", error);
+    return { ok: false, message: "Gagal menyimpan data calon mahasiswa." };
+  }
+}

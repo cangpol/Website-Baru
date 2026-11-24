@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast } from "@/lib/swal";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Image as TiptapImage } from "@tiptap/extension-image";
@@ -156,12 +157,12 @@ export default function RichEditor({
   // ── 2. Insert Image via Server Upload API ─────────────────────────────────
   const handleImageUpload = async (file: File) => {
     if (!file.type.startsWith("image/")) {
-      alert("Berkas yang dipilih harus berupa gambar (JPG, JPEG, PNG, atau WebP).");
+      swalToast("Berkas yang dipilih harus berupa gambar (JPG, JPEG, PNG, atau WebP).");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran berkas melebihi batas 5 MB.");
+      swalToast("Ukuran berkas melebihi batas 5 MB.");
       return;
     }
 
@@ -192,7 +193,7 @@ export default function RichEditor({
           .run();
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Terjadi kesalahan saat mengunggah gambar.");
+      swalToast(err instanceof Error ? err.message : "Terjadi kesalahan saat mengunggah gambar.");
     }
   };
 
@@ -225,7 +226,7 @@ export default function RichEditor({
     }
 
     if (!videoId) {
-      alert("URL YouTube tidak valid. Gunakan format: https://www.youtube.com/watch?v=ID_VIDEO");
+      swalToast("URL YouTube tidak valid. Gunakan format: https://www.youtube.com/watch?v=ID_VIDEO");
       return;
     }
 

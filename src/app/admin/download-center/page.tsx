@@ -1,5 +1,6 @@
 "use client";
 
+import { swalConfirmDelete, swalToast } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
   Download, 
@@ -71,10 +72,7 @@ export default function AdminDownloadCenterPage() {
     loadData();
   }, []);
 
-  const saveToStorage = async (updated: AdminDownloadItem[]) => {
-    setDownloads(updated);
-    await loadData();
-  };
+  const [saving, setSaving] = useState(false);
 
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -98,47 +96,47 @@ export default function AdminDownloadCenterPage() {
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formTitle.trim() || !formFileName.trim()) return;
-
-    if (editingItem) {
-      const updated = downloads.map((d) =>
-        d.id === editingItem.id
-          ? {
-              ...d,
-              title: formTitle,
-              category: formCategory,
-              fileName: formFileName,
-              fileSize: formFileSize,
-              fileUrl: formFileUrl,
-              previewUrl: formPreviewUrl,
-              updatedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
-            }
-          : d
-      );
-      saveToStorage(updated);
-    } else {
-      const newItem: AdminDownloadItem = {
-        id: `dl-${Date.now().toString().slice(-4)}`,
-        title: formTitle,
-        category: formCategory,
-        fileName: formFileName,
-        fileSize: formFileSize,
-        fileUrl: formFileUrl,
-        previewUrl: formPreviewUrl,
-        downloadCount: 0,
-        updatedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
-      };
-      saveToStorage([newItem, ...downloads]);
+    if (!formTitle.trim() || !formFileUrl.trim()) {
+      swalToast("Judul dan berkas dokumen wajib diisi.", "error");
+      return;
     }
-    setModalOpen(false);
+    setSaving(true);
+    try {
+      const res = await saveDownloadDocAction(editingItem?.id ?? null, {
+        title: formTitle.trim(),
+        category: formCategory,
+        fileUrl: formFileUrl,
+        fileSize: formFileSize || null,
+        version: editingItem?.version ?? 1,
+      });
+      if (!res.ok) {
+        swalToast(res.message || "Gagal menyimpan dokumen.", "error");
+        return;
+      }
+      setModalOpen(false);
+      await loadData();
+      swalToast(res.message || "Dokumen berhasil disimpan.", "success");
+    } catch {
+      swalToast("Terjadi kesalahan saat menyimpan dokumen.", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    const updated = downloads.filter((d) => d.id !== id);
-    saveToStorage(updated);
-    setDeleteConfirmId(null);
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteDownloadDocAction(id);
+      if (res.ok) {
+        await loadData();
+        swalToast(res.message, "success");
+      } else {
+        swalToast(res.message, "error");
+      }
+    } catch {
+      swalToast("Terjadi kesalahan saat menghapus dokumen.", "error");
+    }
   };
 
   const totalDownloads = downloads.reduce((acc, curr) => acc + (curr.downloadCount || 0), 0);
@@ -311,7 +309,7 @@ export default function AdminDownloadCenterPage() {
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => setDeleteConfirmId(item.id)}
+                          onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                           className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition"
                           title="Hapus Dokumen"
                         >
@@ -429,6 +427,7 @@ export default function AdminDownloadCenterPage() {
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-emerald-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4 text-slate-950" />
@@ -441,33 +440,6 @@ export default function AdminDownloadCenterPage() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-[#0a192f] border border-rose-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-rose-400" />
-              Hapus Dokumen Brosur?
-            </h3>
-            <p className="text-sm text-slate-400 mb-6">
-              File ini tidak akan bisa diunduh lagi dari Download Center. Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <div className="flex items-center justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 text-sm text-slate-300 hover:text-white rounded-xl transition"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition"
-              >
-                Hapus Sekarang
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

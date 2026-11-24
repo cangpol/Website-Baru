@@ -2,7 +2,7 @@
 // Editable via /admin/konten-halaman. Defaults are used until an admin saves a page.
 import type { FieldSpec } from "./pageContent";
 
-export const EXTRA_KEYS = ["pimpinan","visi-misi","prestasi-capaian","galeri-kegiatan","kalender-akademik","organisasi-mahasiswa","prestasi-mahasiswa","program-pengembangan","tugas-dan-fungsi","daftar-kerjasama","kegiatan-kerjasama","kelompok-mitra","career-center","e-learning","immersion-program","perpustakaan","tracer-study","pusat-penelitian","fakultas-feb","fakultas-fst","fakultas-fsh","fakultas-fkes","entrepreneurship","ebrochure","life-at-upitra","mitra-kerjasama"] as const;
+export const EXTRA_KEYS = ["pimpinan","visi-misi","prestasi-capaian","galeri-kegiatan","kalender-akademik","organisasi-mahasiswa","prestasi-mahasiswa","program-pengembangan","tugas-dan-fungsi","daftar-kerjasama","kegiatan-kerjasama","kelompok-mitra","career-center","e-learning","immersion-program","perpustakaan","tracer-study","pusat-penelitian","fakultas-feb","fakultas-fst","fakultas-fsh","fakultas-fkes","entrepreneurship","ebrochure","life-at-upitra","mitra-kerjasama","pengaturan-situs"] as const;
 
 export const EXTRA_LABELS = {
   "pimpinan": "Pimpinan",
@@ -30,7 +30,8 @@ export const EXTRA_LABELS = {
   "entrepreneurship": "Entrepreneurship",
   "ebrochure": "E-Brosur",
   "life-at-upitra": "Life at UPITRA",
-  "mitra-kerjasama": "Daftar Mitra Kerjasama"
+  "mitra-kerjasama": "Daftar Mitra Kerjasama",
+  "pengaturan-situs": "Pengaturan Situs (Footer & Kontak)"
 } as const;
 
 export const EXTRA_PATHS: Record<string, string> = {
@@ -59,7 +60,8 @@ export const EXTRA_PATHS: Record<string, string> = {
   "entrepreneurship": "/entrepreneurship",
   "ebrochure": "/ebrochure",
   "life-at-upitra": "/life-at-upitra",
-  "mitra-kerjasama": "/mitra-kerjasama"
+  "mitra-kerjasama": "/mitra-kerjasama",
+  "pengaturan-situs": "/"
 };
 
 export const EXTRA_DEFAULTS = {
@@ -1908,6 +1910,17 @@ export const EXTRA_DEFAULTS = {
         "status": "Aktif"
       }
     ]
+  },
+  "pengaturan-situs": {
+    "address": "Jl. Duwet No. 1, Karangasem, Laweyan, Surakarta 57145",
+    "fax": "(0274) 550657",
+    "hotline": "0811 290 7500",
+    "whatsapp": "628112907500",
+    "email": "pmb@upitra.ac.id",
+    "instagram": "https://instagram.com",
+    "tiktok": "https://tiktok.com",
+    "youtube": "https://youtube.com",
+    "facebook": "https://facebook.com"
   }
 };
 
@@ -3168,6 +3181,53 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
           "type": "text"
         }
       ]
+    }
+  ],
+  "pengaturan-situs": [
+    {
+      "key": "address",
+      "label": "Alamat Kampus",
+      "type": "textarea"
+    },
+    {
+      "key": "fax",
+      "label": "Fax",
+      "type": "text"
+    },
+    {
+      "key": "hotline",
+      "label": "Hotline",
+      "type": "text"
+    },
+    {
+      "key": "whatsapp",
+      "label": "Nomor WhatsApp (format 628xxx)",
+      "type": "text"
+    },
+    {
+      "key": "email",
+      "label": "Email",
+      "type": "text"
+    },
+    {
+      "key": "instagram",
+      "label": "Tautan Instagram",
+      "type": "text"
+    },
+    {
+      "key": "tiktok",
+      "label": "Tautan TikTok",
+      "type": "text"
+    },
+    {
+      "key": "youtube",
+      "label": "Tautan YouTube",
+      "type": "text"
+    },
+    {
+      "key": "facebook",
+      "label": "Tautan Facebook",
+      "type": "text"
     }
   ]
 };

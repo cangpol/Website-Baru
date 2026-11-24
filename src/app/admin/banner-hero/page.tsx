@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, type SwalKind } from "@/lib/swal";
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { 
@@ -25,8 +26,6 @@ interface AkademikBannerData {
 
 export default function AdminBannerHeroPage() {
   const [activeTab, setActiveTab] = useState<"HERO" | "AKADEMIK">("HERO");
-
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Akademik Banner State
@@ -37,9 +36,8 @@ export default function AdminBannerHeroPage() {
     bgImage: "/images/hero-campus.jpg",
   });
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
+  const showToast = (message: string, type?: SwalKind) => {
+    swalToast(message, type);
   };
 
   const loadData = async () => {
@@ -75,7 +73,7 @@ export default function AdminBannerHeroPage() {
         showToast(res.message);
         await loadData();
       } else {
-        alert(res.message);
+        swalToast(res.message);
       }
     });
   };
@@ -83,12 +81,6 @@ export default function AdminBannerHeroPage() {
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-blue-700 text-white shadow-xl shadow-blue-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 text-blue-200" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0a192f] border border-blue-900/40 p-6 rounded-2xl">

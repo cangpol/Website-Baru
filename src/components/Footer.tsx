@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePageContent } from "@/lib/usePageContent";
 import { Music2, MessageCircle } from "lucide-react";
 
 type Col = { title: string; links: [string, string][] };
@@ -44,6 +47,15 @@ const socials = [
 const linkCls = "text-[11px] text-white hover:underline underline-offset-2";
 
 export default function Footer() {
+  // Kontak dan tautan sosial dapat diubah di /admin/konten-halaman (Pengaturan Situs).
+  const site = usePageContent("pengaturan-situs").content as Record<string, string>;
+  const socialHref: Record<string, string> = {
+    Instagram: site.instagram,
+    TikTok: site.tiktok,
+    YouTube: site.youtube,
+    Facebook: site.facebook,
+    WhatsApp: `https://wa.me/${site.whatsapp}`,
+  };
   return (
     <footer className="bg-[#006bbd] text-white font-sans">
       <div className="max-w-[1440px] mx-auto px-[clamp(20px,8.8vw,120px)] pt-8 pb-5">
@@ -63,7 +75,7 @@ export default function Footer() {
             {socials.map((s) => (
               <a
                 key={s.label}
-                href={s.href}
+                href={socialHref[s.label] || s.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
@@ -96,11 +108,11 @@ export default function Footer() {
 
           <div>
             <h4 className="text-[13px] font-bold mb-2.5">Alamat</h4>
-            <p className="text-[11px] leading-[1.4]">Jl. Duwet No. 1, Karangasem, Laweyan, Surakarta 57145</p>
+            <p className="text-[11px] leading-[1.4]">{site.address}</p>
             <p className="text-[11px] leading-[1.4] mt-3">
-              Fax: (0274) 550657<br />
-              Hotline: 0811 290 7500<br />
-              Email: <a href="mailto:pmb@upitra.ac.id" className="hover:underline">pmb@upitra.ac.id</a>
+              Fax: {site.fax}<br />
+              Hotline: {site.hotline}<br />
+              Email: <a href={`mailto:${site.email}`} className="hover:underline">{site.email}</a>
             </p>
           </div>
         </div>

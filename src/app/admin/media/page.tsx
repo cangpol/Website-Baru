@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect, useTransition, useCallback } from "react";
 import Image from "next/image";
 import {
@@ -103,8 +104,10 @@ export default function AdminMediaPage() {
       }
 
       await loadMedia();
+      swalToast("Berkas berhasil diunggah ke pustaka media.", "success");
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Gagal mengunggah berkas.");
+      swalToast(err instanceof Error ? err.message : "Gagal mengunggah berkas.", "error");
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -126,8 +129,9 @@ export default function AdminMediaPage() {
           prev.map((it) => (it.id === editingItem.id ? { ...it, altText: altInput } : it))
         );
         setEditingItem(null);
+        swalToast("Teks alternatif berhasil diperbarui.", "success");
       } else {
-        alert(res.message);
+        swalToast(res.message, "error");
       }
     });
   };
@@ -139,8 +143,10 @@ export default function AdminMediaPage() {
       if (res.ok) {
         setDeleteId(null);
         await loadMedia();
+        swalToast(res.message || "Berkas berhasil dihapus.", "success");
       } else {
         setDeleteError(res.message);
+        swalToast(res.message, "error");
       }
     });
   };
@@ -333,7 +339,7 @@ export default function AdminMediaPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setDeleteId(item.id)}
+                    onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                     title="Hapus"
                     className="p-1.5 text-slate-300 hover:text-red-400 rounded hover:bg-red-500/10"
                   >
@@ -409,44 +415,6 @@ export default function AdminMediaPage() {
       )}
 
       {/* Modal Delete Confirm */}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md bg-slate-900 border border-red-900/50 rounded-2xl p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-red-400 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              Hapus Berkas Media
-            </h3>
-            <p className="text-xs text-slate-300">
-              Apakah Anda yakin ingin menghapus berkas ini secara permanen dari server penyimpanan?
-            </p>
-
-            {deleteError && (
-              <div className="p-3 rounded-lg bg-red-950/60 border border-red-800/60 text-xs text-red-300">
-                {deleteError}
-              </div>
-            )}
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => { setDeleteId(null); setDeleteError(null); }}
-                className="px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 rounded-lg"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={() => handleDelete(deleteId)}
-                className="px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-500 text-white rounded-lg flex items-center gap-1.5"
-              >
-                {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                Hapus Permanen
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

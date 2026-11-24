@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
   Users, 
@@ -74,10 +75,7 @@ export default function AdminUsersPage() {
     loadData();
   }, []);
 
-  const saveToStorage = async (updated: AdminUserItem[]) => {
-    setUsers(updated);
-    await loadData();
-  };
+  const [saving, setSaving] = useState(false);
 
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -85,6 +83,7 @@ export default function AdminUsersPage() {
     setFormEmail("");
     setFormRole("STAFF_PMB");
     setFormStatus("Aktif");
+    setFormPassword("");
     setModalOpen(true);
   };
 
@@ -94,62 +93,78 @@ export default function AdminUsersPage() {
     setFormEmail(user.email);
     setFormRole(user.role);
     setFormStatus(user.status);
+    setFormPassword("");
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim() || !formEmail.trim()) return;
-
-    if (editingItem) {
-      const updated = users.map((u) =>
-        u.id === editingItem.id
-          ? {
-              ...u,
-              name: formName,
-              email: formEmail,
-              role: formRole,
-              status: formStatus,
-            }
-          : u
-      );
-      saveToStorage(updated);
-    } else {
-      const newUser: AdminUserItem = {
-        id: `usr-${Date.now().toString().slice(-4)}`,
-        name: formName,
-        email: formEmail,
-        role: formRole,
-        status: formStatus,
-        lastLogin: "Baru dibuat (Belum login)",
-      };
-      saveToStorage([...users, newUser]);
-    }
-    setModalOpen(false);
-  };
-
-  const handleDelete = (id: string) => {
-    // Prevent deleting the primary superadmin
-    if (id === "usr-01") {
-      alert("Akun Administrator Utama tidak dapat dihapus!");
+    if (!formName.trim() || !formEmail.trim()) {
+      swalToast("Nama dan email wajib diisi.", "error");
       return;
     }
-    const updated = users.filter((u) => u.id !== id);
-    saveToStorage(updated);
-    setDeleteConfirmId(null);
+    if (!editingItem && formPassword.trim().length < 8) {
+      swalToast("Password awal minimal 8 karakter untuk akun baru.", "error");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await saveUserAction(editingItem?.id ?? null, {
+        name: formName.trim(),
+        email: formEmail.trim(),
+        role: formRole as "SUPERADMIN" | "STAFF_PMB" | "CONTENT_WRITER",
+        password: formPassword.trim() || "",
+        isActive: formStatus === "Aktif",
+      });
+      if (!res.ok) {
+        swalToast(res.message || "Gagal menyimpan akun staf.", "error");
+        return;
+      }
+      setModalOpen(false);
+      await loadData();
+      swalToast(res.message, "success");
+    } catch {
+      swalToast("Terjadi kesalahan saat menyimpan akun staf.", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const toggleStatus = (id: string) => {
-    if (id === "usr-01") return;
-    const updated = users.map((u) =>
-      u.id === id
-        ? {
-            ...u,
-            status: (u.status === "Aktif" ? "Nonaktif" : "Aktif") as AdminUserItem["status"],
-          }
-        : u
-    );
-    saveToStorage(updated);
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteUserAction(id);
+      if (res.ok) {
+        await loadData();
+        swalToast(res.message, "success");
+      } else {
+        swalToast(res.message, "error");
+      }
+    } catch {
+      swalToast("Terjadi kesalahan saat menghapus akun.", "error");
+    }
+  };
+
+  const toggleStatus = async (id: string) => {
+    const u = users.find((x) => x.id === id);
+    if (!u) return;
+    const nextActive = u.status !== "Aktif";
+    try {
+      const res = await saveUserAction(id, {
+        name: u.name,
+        email: u.email,
+        role: u.role as "SUPERADMIN" | "STAFF_PMB" | "CONTENT_WRITER",
+        password: "",
+        isActive: nextActive,
+      });
+      if (res.ok) {
+        await loadData();
+        swalToast(nextActive ? "Akun diaktifkan." : "Akun dinonaktifkan.", "success");
+      } else {
+        swalToast(res.message || "Gagal mengubah status akun.", "error");
+      }
+    } catch {
+      swalToast("Terjadi kesalahan saat mengubah status akun.", "error");
+    }
   };
 
   // Filtered
@@ -298,7 +313,7 @@ export default function AdminUsersPage() {
                       </button>
                       {u.id !== "usr-01" && (
                         <button
-                          onClick={() => setDeleteConfirmId(u.id)}
+                          onClick={async () => { if (await swalConfirmDelete()) handleDelete(u.id); }}
                           className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition"
                           title="Hapus Pengguna"
                         >
@@ -384,6 +399,19 @@ export default function AdminUsersPage() {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                  {editingItem ? "Password Baru (kosongkan bila tidak diganti)" : "Password Awal * (min. 8 karakter)"}
+                </label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={formPassword}
+                  onChange={(e) => setFormPassword(e.target.value)}
+                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-400"
+                />
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1.5">Peran Otoritas (Role)</label>
@@ -427,6 +455,7 @@ export default function AdminUsersPage() {
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-indigo-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4" />
@@ -439,33 +468,6 @@ export default function AdminUsersPage() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-[#0a192f] border border-rose-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-rose-400" />
-              Hapus Pengguna Admin?
-            </h3>
-            <p className="text-sm text-slate-400 mb-6">
-              Akun pengguna ini akan dicabut hak aksesnya dari dashboard admin UPITRA.
-            </p>
-            <div className="flex items-center justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 text-sm text-slate-300 hover:text-white rounded-xl transition"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition"
-              >
-                Hapus Sekarang
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

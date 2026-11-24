@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete, type SwalKind } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
   LayoutDashboard, 
@@ -48,11 +49,8 @@ import { ImageUploadField } from "@/components/admin/ImageUploadField";
 export default function AdminHalamanDepanPage() {
   const [activeTab, setActiveTab] = useState<"hero" | "waves" | "immersion" | "stats" | "instagram" | "cta" | "visibility">("hero");
 
-  // Notification Toast
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-  const showToast = (message: string, type: "success" | "error" = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 4000);
+  // Notification Toast  const showToast = (message: string, type?: SwalKind) => {
+    swalToast(message, type);
   };
 
   // ── FORM STATES ──
@@ -197,22 +195,6 @@ export default function AdminHalamanDepanPage() {
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
-      {toast && (
-        <div
-          className={`fixed top-5 right-5 z-50 px-4 py-3 rounded-xl shadow-lg border flex items-center gap-2.5 text-sm font-semibold transition-all ${
-            toast.type === "success"
-              ? "bg-blue-50 text-blue-800 border-blue-200"
-              : "bg-blue-950 text-white border-blue-900"
-          }`}
-        >
-          {toast.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-blue-700" />
-          ) : (
-            <AlertCircle className="w-4 h-4 text-white" />
-          )}
-          <span>{toast.message}</span>
-        </div>
-      )}
 
       {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
@@ -447,10 +429,10 @@ export default function AdminHalamanDepanPage() {
                   <button
                     type="button"
                     disabled={waves.waves.length <= 1}
-                    onClick={() => setWaves({
+                    onClick={async () => { if (await swalConfirmDelete()) setWaves({
                       ...waves,
                       waves: waves.waves.filter((_, waveIndex) => waveIndex !== index),
-                    })}
+                    }); }}
                     aria-label={`Hapus kartu ${wave.title}`}
                     className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
                   >
@@ -644,10 +626,10 @@ export default function AdminHalamanDepanPage() {
                     <button
                       type="button"
                       disabled={immersion.concepts.length <= 1}
-                      onClick={() => setImmersion({
+                      onClick={async () => { if (await swalConfirmDelete()) setImmersion({
                         ...immersion,
                         concepts: immersion.concepts.filter((_, i) => i !== index),
-                      })}
+                      }); }}
                       aria-label={`Hapus konsep ${concept.title}`}
                       className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
                     >
@@ -714,10 +696,10 @@ export default function AdminHalamanDepanPage() {
                     <button
                       type="button"
                       disabled={immersion.pillars.length <= 1}
-                      onClick={() => setImmersion({
+                      onClick={async () => { if (await swalConfirmDelete()) setImmersion({
                         ...immersion,
                         pillars: immersion.pillars.filter((_, i) => i !== index),
-                      })}
+                      }); }}
                       aria-label={`Hapus pilar ${pillar.label}`}
                       className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
                     >
@@ -815,10 +797,10 @@ export default function AdminHalamanDepanPage() {
                     <button
                       type="button"
                       disabled={stats.metrics.length <= 1}
-                      onClick={() => setStats({
+                      onClick={async () => { if (await swalConfirmDelete()) setStats({
                         ...stats,
                         metrics: stats.metrics.filter((_, metricIndex) => metricIndex !== index),
-                      })}
+                      }); }}
                       aria-label={`Hapus metrik ${metric.label}`}
                       className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
                     >
@@ -950,10 +932,10 @@ export default function AdminHalamanDepanPage() {
                     <button
                       type="button"
                       disabled={instagram.posts.length <= 1}
-                      onClick={() => setInstagram({
+                      onClick={async () => { if (await swalConfirmDelete()) setInstagram({
                         ...instagram,
                         posts: instagram.posts.filter((_, postIndex) => postIndex !== index),
-                      })}
+                      }); }}
                       aria-label={`Hapus postingan ${index + 1}`}
                       className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
                     >

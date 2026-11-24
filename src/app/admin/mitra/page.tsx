@@ -1,5 +1,6 @@
 "use client";
 
+import { swalConfirmDelete, swalToast } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
   Handshake, 
@@ -56,7 +57,15 @@ export default function AdminMitraPage() {
   const loadData = async () => {
     try {
       const data = await getPartners();
-      setMitras(data as any);
+      setMitras(
+        (data as any[]).map((p) => ({
+          ...p,
+          partnershipType: p.partnershipType ?? p.description ?? undefined,
+          logo: p.logoUrl,
+          mouYear: p.startYear ?? undefined,
+          status: p.mouStatus ?? undefined,
+        })) as AdminMitraItem[]
+      );
     } catch (err) {
       console.error("Error loading partners:", err);
     }
@@ -66,10 +75,7 @@ export default function AdminMitraPage() {
     loadData();
   }, []);
 
-  const saveToStorage = async (updated: AdminMitraItem[]) => {
-    setMitras(updated);
-    await loadData();
-  };
+  const [saving, setSaving] = useState(false);
 
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -93,47 +99,52 @@ export default function AdminMitraPage() {
     setModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim()) return;
-
-    if (editingItem) {
-      const updated = mitras.map((m) =>
-        m.id === editingItem.id
-          ? {
-              ...m,
-              name: formName,
-              category: formCategory,
-              partnershipType: formPartnershipType,
-              logo: formLogo,
-              mouYear: formMouYear,
-              status: formStatus,
-            }
-          : m
-      );
-      saveToStorage(updated);
-    } else {
-      const newItem: AdminMitraItem = {
-        id: `mitra-${Date.now().toString().slice(-4)}`,
-        name: formName,
-        category: formCategory,
-        partnershipType: formPartnershipType,
-        logo: formLogo,
-        mouYear: formMouYear,
-        status: formStatus,
-        order: 0,
-        isActive: true,
-        version: 1,
-      };
-      saveToStorage([newItem, ...mitras]);
+    if (!formName.trim()) {
+      swalToast("Nama mitra wajib diisi.", "error");
+      return;
     }
-    setModalOpen(false);
+    const yearMatch = String(formMouYear).match(/d{4}/);
+    setSaving(true);
+    try {
+      const res = await savePartnerAction(editingItem?.id ?? null, {
+        name: formName.trim(),
+        category: formCategory,
+        logoUrl: formLogo || null,
+        description: formPartnershipType || null,
+        startYear: yearMatch ? Number(yearMatch[0]) : null,
+        mouStatus: formStatus || "Aktif",
+        order: editingItem?.order ?? 0,
+        isActive: true,
+        version: editingItem?.version ?? 1,
+      });
+      if (!res.ok) {
+        swalToast(("message" in res && res.message) || "Gagal menyimpan data mitra.", "error");
+        return;
+      }
+      setModalOpen(false);
+      await loadData();
+      swalToast(editingItem ? "Data mitra berhasil diperbarui." : "Mitra baru berhasil ditambahkan.", "success");
+    } catch {
+      swalToast("Terjadi kesalahan saat menyimpan data mitra.", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    const updated = mitras.filter((m) => m.id !== id);
-    saveToStorage(updated);
-    setDeleteConfirmId(null);
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await softDeletePartnerAction(id);
+      if (res.ok) {
+        await loadData();
+        swalToast(res.message, "success");
+      } else {
+        swalToast(res.message, "error");
+      }
+    } catch {
+      swalToast("Terjadi kesalahan saat menghapus mitra.", "error");
+    }
   };
 
   // Filtered
@@ -302,7 +313,7 @@ export default function AdminMitraPage() {
                 Edit
               </button>
               <button
-                onClick={() => setDeleteConfirmId(item.id)}
+                onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                 className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold border border-rose-500/20 transition flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -417,6 +428,7 @@ export default function AdminMitraPage() {
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-amber-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4 text-slate-950" />
@@ -429,33 +441,6 @@ export default function AdminMitraPage() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-[#0a192f] border border-rose-900/50 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-rose-400" />
-              Hapus Mitra Kerjasama?
-            </h3>
-            <p className="text-sm text-slate-400 mb-6">
-              Data kerjasama industri ini akan dihapus dari daftar mitra UPITRA.
-            </p>
-            <div className="flex items-center justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 text-sm text-slate-300 hover:text-white rounded-xl transition"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition"
-              >
-                Hapus Sekarang
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

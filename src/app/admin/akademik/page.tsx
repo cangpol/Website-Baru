@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete, type SwalKind } from "@/lib/swal";
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { 
@@ -171,10 +172,7 @@ export default function AdminAkademikCalendarPage() {
   const [filterCategory, setFilterCategory] = useState("Semua");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  // Feedback Toast
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastType, setToastType] = useState<"success" | "error" | "info">("info");
-
+  // Feedback Toast
   // Modal Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [form, setForm] = useState<AdminCalendarEvent>(emptyForm);
@@ -184,10 +182,8 @@ export default function AdminAkademikCalendarPage() {
   // Calendar Visual View State
   const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
 
-  const showToast = (msg: string, type: "success" | "error" | "info" = "info") => {
-    setToastMessage(msg);
-    setToastType(type);
-    setTimeout(() => setToastMessage(null), 3500);
+  const showToast = (message: string, type?: SwalKind) => {
+    swalToast(message, type);
   };
 
   // Load from Database
@@ -453,24 +449,6 @@ export default function AdminAkademikCalendarPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-16 font-sans">
       {/* Toast Notification */}
-      {toastMessage && (
-        <div
-          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold transition-all animate-in slide-in-from-top-4 ${
-            toastType === "success"
-              ? "bg-emerald-600 text-white"
-              : toastType === "error"
-              ? "bg-rose-600 text-white"
-              : "bg-[#0b2545] text-white"
-          }`}
-        >
-          {toastType === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-          ) : (
-            <AlertCircle className="w-4 h-4 text-rose-200" />
-          )}
-          <span>{toastMessage}</span>
-        </div>
-      )}
 
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs">
@@ -596,7 +574,7 @@ export default function AdminAkademikCalendarPage() {
                   </a>
 
                   <button
-                    onClick={() => setDeletePdfConfirm(true)}
+                    onClick={async () => { if (await swalConfirmDelete()) handleDeleteAcademicPdf(); }}
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-bold border border-rose-400/30 transition-all cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -897,7 +875,7 @@ export default function AdminAkademikCalendarPage() {
                                   <Edit3 className="w-4 h-4" />
                                 </button>
                                 <button
-                                  onClick={() => setDeleteConfirmId(ev.id)}
+                                  onClick={async () => { if (await swalConfirmDelete()) handleDeleteEvent(ev.id); }}
                                   title="Hapus Event"
                                   className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer"
                                 >
@@ -1378,67 +1356,8 @@ export default function AdminAkademikCalendarPage() {
       )}
 
       {/* MODAL KONFIRMASI HAPUS EVENT */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md shadow-2xl p-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 mx-auto flex items-center justify-center">
-              <AlertCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-[#06172e]">Hapus Agenda Kegiatan?</h3>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Agenda ini akan dihapus dari kalender akademik universitas dan tidak lagi muncul di halaman publik.
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-2.5 pt-2">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => handleDeleteEvent(deleteConfirmId)}
-                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
-              >
-                Hapus Sekarang
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* MODAL KONFIRMASI HAPUS PDF KALENDER */}
-      {deletePdfConfirm && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md shadow-2xl p-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 mx-auto flex items-center justify-center">
-              <AlertCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-[#06172e]">Hapus Dokumen PDF Resmi?</h3>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Tindakan ini akan mencabut dokumen PDF resmi saat ini. Tombol unduh di halaman publik akan otomatis beralih ke generator PDF kalender sistem.
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-2.5 pt-2">
-              <button
-                onClick={() => setDeletePdfConfirm(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleDeleteAcademicPdf}
-                disabled={isSavingPdf}
-                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
-              >
-                {isSavingPdf ? "Menghapus..." : "Hapus Berkas PDF"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

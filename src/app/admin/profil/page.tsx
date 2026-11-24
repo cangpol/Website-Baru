@@ -1,5 +1,6 @@
 "use client";
 
+import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { 
@@ -18,6 +19,15 @@ import {
   CheckCircle2
 } from "lucide-react";
 import Image from "next/image";
+import PageContentEditor from "@/components/admin/PageContentEditor";
+import type { PageContentKey } from "@/lib/pageContent";
+
+// Tab di bawah ini mengedit data yang sama dengan halaman publik /visi-misi, /pimpinan, /profil/prestasi-dan-capaian.
+const TAB_CONTENT_KEY: Record<string, PageContentKey> = {
+  "visi-misi": "visi-misi",
+  pimpinan: "pimpinan",
+  prestasi: "prestasi-capaian",
+};
 import { 
   getProfilSections, 
   saveProfilSectionsAction, 
@@ -34,9 +44,7 @@ function ProfilManagerContent() {
   const [items, setItems] = useState<AdminProfilSection[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<AdminProfilSection | null>(null);
-  const [successToast, setSuccessToast] = useState<string | null>(null);
-
+  const [editingItem, setEditingItem] = useState<AdminProfilSection | null>(null);
   // Form State
   const [formData, setFormData] = useState({
     title: "",
@@ -73,16 +81,15 @@ function ProfilManagerContent() {
       if (res.ok) {
         showNotification(res.message);
       } else {
-        alert(res.message);
+        swalToast(res.message);
       }
     } catch {
-      alert("Gagal menyimpan data profil ke database.");
+      swalToast("Gagal menyimpan data profil ke database.");
     }
   };
 
   const showNotification = (msg: string) => {
-    setSuccessToast(msg);
-    setTimeout(() => setSuccessToast(null), 3000);
+    swalToast(msg, "success");
   };
 
   // Filter based on active tab and search
@@ -164,7 +171,7 @@ function ProfilManagerContent() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+    {
       const updated = items.filter((it) => it.id !== id);
       saveToStorage(updated);
       showNotification("Data berhasil dihapus!");
@@ -174,12 +181,6 @@ function ProfilManagerContent() {
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
-      {successToast && (
-        <div className="fixed top-20 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-950/40 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-          <span>{successToast}</span>
-        </div>
-      )}
 
       {/* Header Info */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-blue-900/40">
@@ -196,6 +197,7 @@ function ProfilManagerContent() {
           </p>
         </div>
 
+        {activeTab === "tentang" && (
         <button
           onClick={() => handleOpenModal()}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
@@ -203,6 +205,7 @@ function ProfilManagerContent() {
           <Plus className="w-4 h-4" />
           <span>Tambah Konten {activeTab.toUpperCase()}</span>
         </button>
+        )}
       </div>
 
       {/* Tabs Bar */}
@@ -256,6 +259,10 @@ function ProfilManagerContent() {
         </button>
       </div>
 
+      {TAB_CONTENT_KEY[activeTab] && <PageContentEditor key={activeTab} pageKey={TAB_CONTENT_KEY[activeTab]} />}
+
+      {activeTab === "tentang" && (
+      <>
       {/* Search Input */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
@@ -334,7 +341,7 @@ function ProfilManagerContent() {
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(item.id)}
+                    onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                     className="p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 text-rose-300 hover:text-rose-100 transition cursor-pointer"
                     title="Hapus Item"
                   >
@@ -437,6 +444,8 @@ function ProfilManagerContent() {
             </form>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );
