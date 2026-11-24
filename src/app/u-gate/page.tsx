@@ -28,6 +28,8 @@ function UGateLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [gatewayKey, setGatewayKey] = useState("");
+  // Akun demo hanya tampil saat development, atau bila NEXT_PUBLIC_SHOW_DEMO_LOGIN="true".
+  const showDemo = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_SHOW_DEMO_LOGIN === "true";
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -178,6 +180,24 @@ function UGateLoginForm() {
           </div>
           )}
 
+          {showDemo && (
+            <button
+              type="button"
+              onClick={() => {
+                setEmail(DEMO_ACCOUNT.email);
+                setPassword(DEMO_ACCOUNT.password);
+                setError(null);
+              }}
+              className="w-full flex items-center justify-between gap-3 rounded-xl border border-dashed border-blue-300 bg-blue-50/60 px-4 py-2.5 text-left hover:bg-blue-100/70 transition cursor-pointer"
+            >
+              <span>
+                <span className="block text-[11px] font-bold text-blue-800">Akun Demo Admin (klik untuk mengisi)</span>
+                <span className="block text-[10px] font-mono text-slate-500">{DEMO_ACCOUNT.email}</span>
+              </span>
+              <span className="text-[10px] font-bold text-blue-700 bg-white border border-blue-200 rounded px-2 py-0.5">Isi otomatis</span>
+            </button>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
@@ -207,6 +227,9 @@ function UGateLoginForm() {
     </div>
   );
 }
+
+// Sama dengan akun bawaan prisma/seed.ts. Ganti jika SEED_ADMIN_* diubah.
+const DEMO_ACCOUNT = { email: "admin@upitra.ac.id", password: "AdminSecurePass!2026" };
 
 export default function UGateLoginPage() {
   return (
