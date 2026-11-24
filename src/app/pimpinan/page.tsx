@@ -47,8 +47,17 @@ interface DekanItem {
 
 export default async function PimpinanPage() {
   const __c = await getPageContentMerged("pimpinan");
-  const pimpinanList = __c.pimpinanList as PimpinanItem[];
-  const dekanatList = __c.dekanatList as DekanItem[];
+  // Data dari admin dinormalisasi supaya item kosong atau kolom daftar yang hilang tidak merusak halaman.
+  const arr = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.trim() !== "") : []);
+  const pimpinanList = ((__c.pimpinanList as PimpinanItem[]) ?? [])
+    .filter((p) => p?.nama?.trim())
+    .map((p) => ({ ...p, kredensial: arr(p.kredensial) }));
+  const dekanatList = ((__c.dekanatList as DekanItem[]) ?? [])
+    .filter((d) => d?.nama?.trim())
+    .map((d) => ({ ...d, keahlian: arr(d.keahlian), prodi: arr(d.prodi), link: d.link?.trim() || "/akademik" }));
+  const rektor = pimpinanList[0];
+  const sambutanJudul = (__c.sambutanJudul as string) || "";
+  const sambutanIsi = (__c.sambutanIsi as string) || "";
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
       <Navbar />
@@ -74,20 +83,21 @@ export default async function PimpinanPage() {
         </section>
 
         {/* 1. SAMBUTAN REKTOR */}
+        {rektor && (
         <section className="py-14 max-w-7xl mx-auto px-4 sm:px-8">
           <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             <div className="lg:col-span-4 flex justify-center">
               <div className="relative w-64 h-80 rounded-2xl overflow-hidden shadow-lg border-4 border-slate-100 bg-slate-200">
                 <img 
-                  src={pimpinanList[0].foto} 
-                  alt={pimpinanList[0].nama}
+                  src={rektor.foto} 
+                  alt={rektor.nama}
                   className="w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end p-4">
                   <div className="text-white text-center w-full">
                     <div className="text-xs font-bold text-sky-300 uppercase tracking-wider">Rektor UPITRA</div>
-                    <div className="text-sm font-black leading-tight mt-0.5">{pimpinanList[0].nama}</div>
+                    <div className="text-sm font-black leading-tight mt-0.5">{rektor.nama}</div>
                   </div>
                 </div>
               </div>
@@ -99,20 +109,22 @@ export default async function PimpinanPage() {
               </span>
 
               <h2 className="text-2xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
-                Membangun Ekosistem Pendidikan yang Relevan dengan Industri &amp; Berbudi Pekerti Luhur
+                {sambutanJudul}
               </h2>
 
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                &ldquo;Universitas Pignatelli Triputra hadir sebagai jawaban atas tantangan dunia nyata. Bersama ekosistem Triputra Group, kami berkomitmen menyajikan kurikulum transformatif yang membekali mahasiswa bukan hanya dengan kecakapan teknologi dan bisnis mutakhir, melainkan juga integritas moral, kerendahan hati, dan ketangguhan karakter.&rdquo;
+                &ldquo;{sambutanIsi}&rdquo;
               </p>
 
               <div className="pt-2 text-xs sm:text-sm font-bold text-slate-500">
-                — Neil Semuel Rupidara, S.E., M.Sc., Ph.D (Rektor UPITRA)
+                — {rektor.nama} (Rektor UPITRA)
               </div>
             </div>
 
           </div>
         </section>
+
+        )}
 
         {/* 2. REKTORAT */}
         <section className="py-14 bg-slate-100/70 border-t border-slate-200">

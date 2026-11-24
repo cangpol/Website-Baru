@@ -1,4 +1,4 @@
-import { StorageDriver, StorageFileResult } from "./types";
+import { StorageDriver, StorageFileResult, StorageUnavailableError } from "./types";
 
 export class VercelBlobStorageDriver implements StorageDriver {
   name = "vercel-blob";
@@ -20,6 +20,9 @@ export class VercelBlobStorageDriver implements StorageDriver {
       };
     } catch (err) {
       console.error("Vercel Blob upload failed:", err);
+      if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        throw new StorageUnavailableError("Vercel Blob belum terhubung: BLOB_READ_WRITE_TOKEN belum diatur.");
+      }
       throw new Error(`Gagal mengunggah berkas ke Vercel Blob: ${err instanceof Error ? err.message : String(err)}`);
     }
   }

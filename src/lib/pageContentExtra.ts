@@ -66,6 +66,8 @@ export const EXTRA_PATHS: Record<string, string> = {
 
 export const EXTRA_DEFAULTS = {
   "pimpinan": {
+    "sambutanJudul": "Membangun Ekosistem Pendidikan yang Relevan dengan Industri & Berbudi Pekerti Luhur",
+    "sambutanIsi": "Universitas Pignatelli Triputra hadir sebagai jawaban atas tantangan dunia nyata. Bersama ekosistem Triputra Group, kami berkomitmen menyajikan kurikulum transformatif yang membekali mahasiswa bukan hanya dengan kecakapan teknologi dan bisnis mutakhir, melainkan juga integritas moral, kerendahan hati, dan ketangguhan karakter.",
     "pimpinanList": [
       {
         "nama": "Neil Semuel Rupidara, S.E., M.Sc., Ph.D",
@@ -1926,6 +1928,16 @@ export const EXTRA_DEFAULTS = {
 
 export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "pimpinan": [
+    {
+      "key": "sambutanJudul",
+      "label": "Judul Sambutan Rektor",
+      "type": "text"
+    },
+    {
+      "key": "sambutanIsi",
+      "label": "Isi Sambutan Rektor",
+      "type": "textarea"
+    },
     {
       "key": "pimpinanList",
       "label": "Pimpinan List",

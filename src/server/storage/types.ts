@@ -12,3 +12,11 @@ export interface StorageDriver {
   getFileUrl(path: string): string;
 }
 
+
+// Dilempar saat penyimpanan berkas tidak bisa dipakai di server ini (mis. disk read-only di Vercel).
+export class StorageUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "StorageUnavailableError";
+  }
+}

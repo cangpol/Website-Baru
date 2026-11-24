@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
-import { getStorageDriver } from "@/server/storage";
+import { getStorageDriver, StorageUnavailableError } from "@/server/storage";
 import {
   MAX_UPLOAD_FILE_SIZE_BYTES,
   validateAndSanitizeFile,
@@ -129,6 +129,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("Upload API error:", err);
+    if (err instanceof StorageUnavailableError) {
+      return NextResponse.json({ ok: false, message: err.message }, { status: 503 });
+    }
     const message = err instanceof Error ? err.message : "Terjadi kesalahan internal saat mengunggah.";
     const status = /harus login/i.test(message)
       ? 401

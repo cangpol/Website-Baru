@@ -33,7 +33,8 @@ const imageUrlSchema = z.string().trim().min(1).max(2048).refine((value) => {
     return url.protocol === "https:" && (
       url.hostname === "images.unsplash.com" ||
       url.hostname === "placehold.co" ||
-      url.hostname.endsWith(".upitra.ac.id")
+      url.hostname.endsWith(".upitra.ac.id") ||
+      url.hostname.endsWith(".public.blob.vercel-storage.com")
     );
   } catch {
     return false;

@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import { StorageDriver, StorageFileResult } from "./types";
+import { StorageDriver, StorageFileResult, StorageUnavailableError } from "./types";
 
 export class LocalDiskStorageDriver implements StorageDriver {
   name = "local";
@@ -9,14 +9,24 @@ export class LocalDiskStorageDriver implements StorageDriver {
 
   constructor() {
     this.uploadsDir = path.join(process.cwd(), "uploads");
-    if (!fsSync.existsSync(this.uploadsDir)) {
-      fsSync.mkdirSync(this.uploadsDir, { recursive: true });
-    }
   }
 
   async saveFile(buffer: Buffer, filename: string, mimeType: string): Promise<StorageFileResult> {
     const filePath = path.join(this.uploadsDir, filename);
-    await fs.writeFile(filePath, buffer);
+    try {
+      if (!fsSync.existsSync(this.uploadsDir)) {
+        fsSync.mkdirSync(this.uploadsDir, { recursive: true });
+      }
+      await fs.writeFile(filePath, buffer);
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException)?.code;
+      if (code === "EROFS" || code === "EACCES" || code === "EPERM" || code === "ENOENT") {
+        throw new StorageUnavailableError(
+          "Penyimpanan berkas belum dikonfigurasi di server ini. Hubungkan Vercel Blob (BLOB_READ_WRITE_TOKEN) agar unggahan dapat disimpan."
+        );
+      }
+      throw err;
+    }
     return {
       url: `/uploads/${filename}`,
       path: filename,
