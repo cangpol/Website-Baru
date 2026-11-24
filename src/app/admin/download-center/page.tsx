@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
+import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalConfirmDelete, swalToast } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -155,6 +155,8 @@ export default function AdminDownloadCenterPage() {
     return matchSearch && matchCategory;
   });
 
+  const pg = usePagination(filtered, 10);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -261,7 +263,7 @@ export default function AdminDownloadCenterPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((item) => (
+                pg.items.map((item) => (
                   <tr key={item.id} className="hover:bg-blue-50 transition group">
                     <td className="py-4 px-4 max-w-sm">
                       <div className="flex items-start gap-3">
@@ -331,6 +333,7 @@ export default function AdminDownloadCenterPage() {
       </div>
 
       {/* Modal Create / Edit */}
+      {loaded && <Pagination pg={pg} noun="dokumen" />}
       {!loaded && <LoadingState />}
       {loaded && filtered.length === 0 && (
         <EmptyState

@@ -221,7 +221,7 @@ export default function AdminHalamanDepanPage() {
       </div>
 
       {/* Navigasi Tab Per Section */}
-      <div className="flex border-b border-slate-200 gap-2 overflow-x-auto">
+      <div className="flex border-b border-slate-200 gap-2 flex-wrap">
         <button
           onClick={() => setActiveTab("hero")}
           className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${

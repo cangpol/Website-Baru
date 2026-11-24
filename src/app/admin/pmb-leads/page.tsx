@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
+import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -242,6 +242,8 @@ export default function AdminPmbLeadsPage() {
     return matchSearch && matchStatus && matchProdi;
   });
 
+  const pg = usePagination(filtered, 10);
+
   const getStatusBadge = (status: AdminLeadItem["status"]) => {
     switch (status) {
       case "BARU_MASUK":
@@ -409,7 +411,7 @@ export default function AdminPmbLeadsPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((lead) => (
+                pg.items.map((lead) => (
                   <tr key={lead.id} className="hover:bg-blue-50 transition group">
                     <td className="py-4 px-4">
                       <div className="font-semibold text-slate-900 group-hover:text-blue-600 transition">
@@ -498,6 +500,7 @@ export default function AdminPmbLeadsPage() {
       </div>
 
       {/* Modal Create / Edit Lead */}
+      {loaded && <Pagination pg={pg} noun="calon mahasiswa" />}
       {!loaded && <LoadingState />}
       {loaded && filtered.length === 0 && (
         <EmptyState

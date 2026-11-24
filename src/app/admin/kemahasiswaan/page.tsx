@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
+import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -38,7 +38,7 @@ function KemahasiswaanManagerContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   useModalKeys(isModalOpen, () => setIsModalOpen(false));
-  const [editingItem, setEditingItem] = useState<AdminKemahasiswaanSection | null>(null);
+  const [editingItem, setEditingItem] = useState<AdminKemahasiswaanSection | null>(null);
   // Form State
   const [formData, setFormData] = useState({
     title: "",
@@ -106,6 +106,8 @@ function KemahasiswaanManagerContent() {
 
     return matchesTab && matchesSearch;
   });
+
+  const pg = usePagination(filteredItems, 10);
 
   const handleOpenModal = (item?: AdminKemahasiswaanSection) => {
     if (item) {
@@ -210,7 +212,7 @@ function KemahasiswaanManagerContent() {
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-blue-100 text-xs font-bold">
+      <div className="flex items-center gap-2 flex-wrap pb-2 border-b border-blue-100 text-xs font-bold">
         {[
           { key: "tugas-fungsi", label: "Tugas & Fungsi", icon: FolderKanban },
           { key: "pengembangan", label: "Pengembangan", icon: Sparkles },
@@ -262,7 +264,7 @@ function KemahasiswaanManagerContent() {
             <p className="text-xs text-slate-500">Belum ada konten untuk kategori kemahasiswaan ini.</p>
           </div>
         ) : (
-          filteredItems.map((item) => (
+          pg.items.map((item) => (
             <div
               key={item.id}
               className="bg-white border border-blue-200 rounded-2xl p-4 flex flex-col justify-between hover:border-blue-700/60 transition-all space-y-3"
@@ -325,6 +327,7 @@ function KemahasiswaanManagerContent() {
       </div>
 
       {/* CRUD Modal Dialog */}
+      {loaded && <Pagination pg={pg} noun="data" />}
       {!loaded && <LoadingState />}
       {loaded && filteredItems.length === 0 && (
         <EmptyState

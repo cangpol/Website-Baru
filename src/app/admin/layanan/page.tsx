@@ -486,7 +486,7 @@ export default function AdminLayananPage() {
       </div>
 
       {/* Navigasi Tab */}
-      <div className="flex border-b border-slate-200 gap-2 overflow-x-auto">
+      <div className="flex border-b border-slate-200 gap-2 flex-wrap">
         <button
           onClick={() => setActiveTab("services")}
           className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${

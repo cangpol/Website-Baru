@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
+import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -38,7 +38,7 @@ function KerjasamaManagerContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   useModalKeys(isModalOpen, () => setIsModalOpen(false));
-  const [editingItem, setEditingItem] = useState<AdminKerjasamaMouItem | null>(null);
+  const [editingItem, setEditingItem] = useState<AdminKerjasamaMouItem | null>(null);
   // Form State
   const [formData, setFormData] = useState({
     partnerName: "",
@@ -99,6 +99,8 @@ function KerjasamaManagerContent() {
       item.documentType.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
+
+  const pg = usePagination(filteredItems, 10);
 
   const handleOpenModal = (item?: AdminKerjasamaMouItem) => {
     if (item) {
@@ -202,7 +204,7 @@ function KerjasamaManagerContent() {
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-blue-100 text-xs font-bold">
+      <div className="flex items-center gap-2 flex-wrap pb-2 border-b border-blue-100 text-xs font-bold">
         <Link
           href="/admin/mitra"
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-blue-50 transition-all"
@@ -260,7 +262,7 @@ function KerjasamaManagerContent() {
             <p className="text-xs text-slate-500">Tidak ada dokumen kerjasama ditemukan.</p>
           </div>
         ) : (
-          filteredItems.map((item) => (
+          pg.items.map((item) => (
             <div
               key={item.id}
               className="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-700/60 transition-all space-y-3"
@@ -325,6 +327,7 @@ function KerjasamaManagerContent() {
       </div>
 
       {/* CRUD Modal Dialog */}
+      {loaded && <Pagination pg={pg} noun="dokumen" />}
       {!loaded && <LoadingState />}
       {loaded && filteredItems.length === 0 && (
         <EmptyState

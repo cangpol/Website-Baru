@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
+import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -181,6 +181,8 @@ export default function AdminUsersPage() {
     return matchSearch && matchRole;
   });
 
+  const pg = usePagination(filtered, 10);
+
   const getRoleBadge = (role: AdminUserItem["role"]) => {
     switch (role) {
       case "SUPERADMIN":
@@ -277,7 +279,7 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-blue-100 text-slate-700">
-              {filtered.map((u) => (
+              {pg.items.map((u) => (
                 <tr key={u.id} className="hover:bg-blue-50 transition group">
                   <td className="py-4 px-4">
                     <div className="font-semibold text-slate-900 group-hover:text-blue-600 transition">
@@ -363,6 +365,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Modal Create / Edit */}
+      {loaded && <Pagination pg={pg} noun="akun" />}
       {!loaded && <LoadingState />}
       {loaded && filtered.length === 0 && (
         <EmptyState

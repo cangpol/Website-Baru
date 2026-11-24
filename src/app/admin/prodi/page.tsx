@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
+import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -217,6 +217,8 @@ export default function AdminProdiCrudPage() {
     return matchSearch && matchFaculty && matchDegree;
   });
 
+  const pg = usePagination(filtered, 10);
+
   return (
     <div className="space-y-6 select-none font-sans">
       
@@ -263,7 +265,7 @@ export default function AdminProdiCrudPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+        <div className="flex items-center gap-2 w-full md:w-auto flex-wrap">
           <select
             value={facultyFilter}
             onChange={(e) => setFacultyFilter(e.target.value)}
@@ -304,7 +306,7 @@ export default function AdminProdiCrudPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-blue-900/40">
-              {filtered.map((item) => (
+              {pg.items.map((item) => (
                 <tr key={item.id} className="hover:bg-blue-50 transition-colors">
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
@@ -396,6 +398,7 @@ export default function AdminProdiCrudPage() {
       </div>
 
       {/* MODAL CREATE / EDIT PRODI */}
+      {loaded && <Pagination pg={pg} noun="program studi" />}
       {!loaded && <LoadingState />}
       {loaded && filtered.length === 0 && (
         <EmptyState

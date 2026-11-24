@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
+import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalConfirmDelete, swalToast } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -160,6 +160,8 @@ export default function AdminMitraPage() {
     return matchSearch && matchCategory && matchType;
   });
 
+  const pg = usePagination(filtered, 10);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -260,7 +262,7 @@ export default function AdminMitraPage() {
 
       {/* Grid of Partners */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((item) => (
+        {pg.items.map((item) => (
           <div
             key={item.id}
             className="bg-white border border-blue-100 rounded-2xl p-5 hover:border-sky-400/40 transition duration-200 flex flex-col justify-between group shadow-lg"
@@ -330,6 +332,7 @@ export default function AdminMitraPage() {
       </div>
 
       {/* Modal Create / Edit */}
+      {loaded && <Pagination pg={pg} noun="mitra" />}
       {!loaded && <LoadingState />}
       {loaded && filtered.length === 0 && (
         <EmptyState

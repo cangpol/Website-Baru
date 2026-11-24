@@ -69,7 +69,7 @@ export default function AdminAiDatasetPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(15);
   // Form Modal State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AIDatasetItem | null>(null);
@@ -526,7 +526,7 @@ export default function AdminAiDatasetPage() {
         </div>
 
         {/* Category Pills Slider */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+        <div className="flex items-center gap-1.5 flex-wrap pb-1 text-xs">
           <button
             onClick={() => {
               setSelectedCategory("all");
