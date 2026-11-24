@@ -242,7 +242,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-7 select-none font-sans text-slate-800">
       
       {/* ── 1. EXECUTIVE WELCOME BANNER ──────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06172e] via-[#092244] to-[#06172e] border border-blue-950/80 shadow-xl text-white p-6 sm:p-8">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06172e] via-[#092244] to-[#06172e] border border-blue-100 shadow-xl text-white p-6 sm:p-8">
         
         {/* Ambient Decorative Accents */}
         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 rounded-full bg-blue-600/15 blur-3xl pointer-events-none" />

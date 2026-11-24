@@ -93,22 +93,22 @@ export function FileUploadField({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-          {label} {required && <span className="text-blue-400">*</span>}
+        <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+          {label} {required && <span className="text-blue-600">*</span>}
         </label>
-        <span className="text-[11px] font-mono text-sky-400 bg-sky-950/60 border border-sky-800/40 px-2 py-0.5 rounded">
+        <span className="text-[11px] font-mono text-blue-600 bg-sky-950/60 border border-sky-800/40 px-2 py-0.5 rounded">
           Format: PDF (Maks. 20 MB)
         </span>
       </div>
 
       {value ? (
-        <div className="relative rounded-xl border border-slate-700 bg-slate-900/60 p-3 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-blue-950/40 border border-blue-800/40 flex items-center justify-center flex-shrink-0">
-            <FileText className="w-6 h-6 text-blue-400" />
+        <div className="relative rounded-xl border border-blue-100 bg-blue-50 p-3 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-blue-50 border border-blue-800/40 flex items-center justify-center flex-shrink-0">
+            <FileText className="w-6 h-6 text-blue-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-slate-200 truncate">{fileName || value}</p>
-            <p className="text-[11px] text-sky-400 mt-0.5 flex items-center gap-1">
+            <p className="text-xs font-medium text-slate-700 truncate">{fileName || value}</p>
+            <p className="text-[11px] text-blue-600 mt-0.5 flex items-center gap-1">
               <CheckCircle className="w-3 h-3" /> Berkas dokumen tersimpan {fileSize ? `(${fileSize})` : ""}
             </p>
           </div>
@@ -117,7 +117,7 @@ export function FileUploadField({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="px-2.5 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-600 transition"
+              className="px-2.5 py-1.5 text-xs font-medium bg-blue-100 hover:bg-blue-100 text-slate-700 rounded-lg border border-slate-600 transition"
             >
               Ganti
             </button>
@@ -125,7 +125,7 @@ export function FileUploadField({
               type="button"
               onClick={handleRemove}
               disabled={isUploading}
-              className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition"
+              className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
               title="Hapus berkas"
             >
               <X className="w-4 h-4" />
@@ -138,24 +138,24 @@ export function FileUploadField({
           className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition ${
             isUploading
               ? "border-sky-500/50 bg-sky-500/5"
-              : "border-slate-700 hover:border-sky-500/60 bg-slate-900/40 hover:bg-slate-900/70"
+              : "border-blue-100 hover:border-sky-500/60 bg-blue-50 hover:bg-blue-50"
           }`}
         >
           {isUploading ? (
             <div className="flex flex-col items-center justify-center gap-2 py-2">
-              <Loader2 className="w-6 h-6 text-sky-400 animate-spin" />
-              <p className="text-xs text-sky-300 font-medium">Memvalidasi magic bytes %PDF & mengunggah...</p>
+              <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+              <p className="text-xs text-blue-600 font-medium">Memvalidasi magic bytes %PDF & mengunggah...</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
-                <Upload className="w-5 h-5 text-sky-400" />
+              <div className="w-10 h-10 rounded-full bg-blue-100 border border-blue-100 flex items-center justify-center text-slate-700">
+                <Upload className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-xs font-medium text-slate-200">
+                <p className="text-xs font-medium text-slate-700">
                   Klik untuk mengunggah dokumen PDF
                 </p>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="text-[11px] text-slate-500 mt-0.5">
                   Batas maksimum 20 MB. Diverifikasi dengan magic bytes %PDF.
                 </p>
               </div>
@@ -165,14 +165,14 @@ export function FileUploadField({
       )}
 
       {errorMessage && (
-        <div className="flex items-center gap-2 text-xs text-blue-400 bg-blue-950/40 border border-blue-800/40 px-3 py-2 rounded-lg">
+        <div className="flex items-center gap-2 text-xs text-blue-600 bg-blue-50 border border-blue-800/40 px-3 py-2 rounded-lg">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {helperText && !errorMessage && (
-        <p className="text-[11px] text-slate-400">{helperText}</p>
+        <p className="text-[11px] text-slate-500">{helperText}</p>
       )}
 
       <input

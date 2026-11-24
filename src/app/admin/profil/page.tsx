@@ -183,16 +183,16 @@ function ProfilManagerContent() {
       {/* Toast Notification */}
 
       {/* Header Info */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-blue-900/40">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-blue-100">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-sky-400 uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-widest">
             <Info className="w-4 h-4" />
             <span>Manajemen Konten Profil</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white mt-1">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
             Profil Kampus & Organisasi
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Kelola data Tentang UPITRA, Visi Misi, Pimpinan Universitas, dan Capaian Prestasi yang tampil di navbar depan.
           </p>
         </div>
@@ -209,13 +209,13 @@ function ProfilManagerContent() {
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-blue-900/30 text-xs font-bold">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-blue-100 text-xs font-bold">
         <button
           onClick={() => setActiveTab("tentang")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
             activeTab === "tentang"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-              : "text-slate-400 hover:text-white hover:bg-blue-950"
+              ? "bg-blue-600 text-slate-900 shadow-md shadow-blue-600/20"
+              : "text-slate-500 hover:text-slate-900 hover:bg-blue-50"
           }`}
         >
           <Info className="w-3.5 h-3.5" />
@@ -226,8 +226,8 @@ function ProfilManagerContent() {
           onClick={() => setActiveTab("visi-misi")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
             activeTab === "visi-misi"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-              : "text-slate-400 hover:text-white hover:bg-blue-950"
+              ? "bg-blue-600 text-slate-900 shadow-md shadow-blue-600/20"
+              : "text-slate-500 hover:text-slate-900 hover:bg-blue-50"
           }`}
         >
           <Target className="w-3.5 h-3.5" />
@@ -238,8 +238,8 @@ function ProfilManagerContent() {
           onClick={() => setActiveTab("pimpinan")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
             activeTab === "pimpinan"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-              : "text-slate-400 hover:text-white hover:bg-blue-950"
+              ? "bg-blue-600 text-slate-900 shadow-md shadow-blue-600/20"
+              : "text-slate-500 hover:text-slate-900 hover:bg-blue-50"
           }`}
         >
           <Users2 className="w-3.5 h-3.5" />
@@ -250,8 +250,8 @@ function ProfilManagerContent() {
           onClick={() => setActiveTab("prestasi")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
             activeTab === "prestasi"
-              ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-              : "text-slate-400 hover:text-white hover:bg-blue-950"
+              ? "bg-blue-600 text-slate-900 shadow-md shadow-blue-600/20"
+              : "text-slate-500 hover:text-slate-900 hover:bg-blue-50"
           }`}
         >
           <Award className="w-3.5 h-3.5" />
@@ -266,35 +266,35 @@ function ProfilManagerContent() {
       {/* Search Input */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari judul, konten, atau info..."
-            className="w-full bg-[#071a33] border border-blue-900/50 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 transition"
+            className="w-full bg-white border border-blue-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-400 transition"
           />
         </div>
-        <div className="text-xs text-slate-400">
-          Total: <span className="text-white font-bold">{filteredItems.length}</span> item
+        <div className="text-xs text-slate-500">
+          Total: <span className="text-slate-900 font-bold">{filteredItems.length}</span> item
         </div>
       </div>
 
       {/* Cards List Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredItems.length === 0 ? (
-          <div className="col-span-full py-12 text-center bg-[#071a33]/60 rounded-2xl border border-blue-900/40">
-            <p className="text-xs text-slate-400">Tidak ada konten ditemukan untuk kategori ini.</p>
+          <div className="col-span-full py-12 text-center bg-white rounded-2xl border border-blue-100">
+            <p className="text-xs text-slate-500">Tidak ada konten ditemukan untuk kategori ini.</p>
           </div>
         ) : (
           filteredItems.map((item) => (
             <div
               key={item.id}
-              className="bg-[#071a33] border border-blue-900/50 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-700/60 transition-all space-y-4"
+              className="bg-white border border-blue-200 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-700/60 transition-all space-y-4"
             >
               <div className="space-y-3">
                 {item.image && (
-                  <div className="relative w-full h-36 rounded-xl overflow-hidden bg-blue-950/80 border border-blue-900/40">
+                  <div className="relative w-full h-36 rounded-xl overflow-hidden bg-blue-50 border border-blue-100">
                     <Image
                       src={item.image}
                       alt={item.title}
@@ -305,10 +305,10 @@ function ProfilManagerContent() {
                 )}
 
                 <div>
-                  <div className="text-[10px] font-bold uppercase text-sky-400 tracking-wider">
+                  <div className="text-[10px] font-bold uppercase text-blue-600 tracking-wider">
                     {(item.type || item.category || "").replace("_", " ")}
                   </div>
-                  <h3 className="text-sm font-bold text-white mt-0.5 leading-snug">
+                  <h3 className="text-sm font-bold text-slate-900 mt-0.5 leading-snug">
                     {item.title}
                   </h3>
                   {item.subtitle && (
@@ -318,31 +318,31 @@ function ProfilManagerContent() {
                   )}
                 </div>
 
-                <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed">
+                <p className="text-xs text-slate-700 line-clamp-3 leading-relaxed">
                   {item.content}
                 </p>
 
                 {item.extraMeta && (
-                  <div className="text-[11px] text-slate-400 bg-blue-950/60 px-3 py-1.5 rounded-lg border border-blue-900/60">
+                  <div className="text-[11px] text-slate-500 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
                     {item.extraMeta}
                   </div>
                 )}
               </div>
 
-              <div className="pt-3 border-t border-blue-900/40 flex items-center justify-between text-xs text-slate-400">
+              <div className="pt-3 border-t border-blue-100 flex items-center justify-between text-xs text-slate-500">
                 <span className="text-[10px]">Diperbarui: {item.updatedAt}</span>
 
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => handleOpenModal(item)}
-                    className="p-1.5 rounded-lg bg-blue-900/50 hover:bg-blue-800 text-sky-300 hover:text-white transition cursor-pointer"
+                    className="p-1.5 rounded-lg bg-blue-900/50 hover:bg-blue-800 text-blue-600 hover:text-white transition cursor-pointer"
                     title="Edit Item"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
-                    className="p-1.5 rounded-lg bg-blue-950/40 hover:bg-blue-900 text-blue-300 hover:text-blue-100 transition cursor-pointer"
+                    className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-900 text-blue-600 hover:text-blue-700 transition cursor-pointer"
                     title="Hapus Item"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -356,80 +356,80 @@ function ProfilManagerContent() {
 
       {/* CRUD Modal Dialog */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-black/75 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-[#071a33] border border-blue-900/80 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-blue-900/60">
-              <h3 className="text-sm font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-blue-50 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-blue-200 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-blue-200">
+              <h3 className="text-sm font-bold text-slate-900">
                 {editingItem ? "Edit Konten Profil" : "Tambah Konten Profil Baru"}
               </h3>
-              <button onClick={handleCloseModal} className="p-1 text-slate-400 hover:text-white">
+              <button onClick={handleCloseModal} className="p-1 text-slate-500 hover:text-slate-900">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Judul / Nama Lengkap</label>
+                <label className="block text-slate-700 font-semibold mb-1">Judul / Nama Lengkap</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Misal: Tentang UPITRA atau Nama Pejabat Rektor"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                  className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-400"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Sub Judul / Jabatan / Posisi</label>
+                <label className="block text-slate-700 font-semibold mb-1">Sub Judul / Jabatan / Posisi</label>
                 <input
                   type="text"
                   value={formData.subtitle}
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                   placeholder="Misal: Rektor Universitas Pignatelli Triputra"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                  className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-400"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Konten / Narasi Lengkap</label>
+                <label className="block text-slate-700 font-semibold mb-1">Konten / Narasi Lengkap</label>
                 <textarea
                   required
                   rows={4}
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Tuliskan deskripsi lengkap, rincian visi misi, atau biografi singkat..."
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 leading-relaxed"
+                  className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-400 leading-relaxed"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Metadata Tambahan / Keterangan</label>
+                <label className="block text-slate-700 font-semibold mb-1">Metadata Tambahan / Keterangan</label>
                 <input
                   type="text"
                   value={formData.extraMeta}
                   onChange={(e) => setFormData({ ...formData, extraMeta: e.target.value })}
                   placeholder="Misal: Akreditasi BAIK SEKALI, Kategori Internasional, dsb"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                  className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-400"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">URL Gambar / Foto</label>
+                <label className="block text-slate-700 font-semibold mb-1">URL Gambar / Foto</label>
                 <input
                   type="text"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                   placeholder="/images/gedung-upitra.jpg atau URL lainnya"
-                  className="w-full bg-[#051326] border border-blue-900/60 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+                  className="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-400"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-blue-900/40">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-blue-100">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
+                  className="px-4 py-2 rounded-xl bg-blue-100 text-slate-700 hover:text-slate-900"
                 >
                   Batal
                 </button>
@@ -453,7 +453,7 @@ function ProfilManagerContent() {
 
 export default function AdminProfilPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-xs text-slate-400">Memuat Manajer Profil UPITRA...</div>}>
+    <Suspense fallback={<div className="p-8 text-xs text-slate-500">Memuat Manajer Profil UPITRA...</div>}>
       <ProfilManagerContent />
     </Suspense>
   );

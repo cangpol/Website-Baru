@@ -17,23 +17,23 @@ export default function AdminError({
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center p-6 font-sans">
-      <div className="max-w-lg w-full bg-[#0a192f] rounded-3xl border border-blue-500/30 p-8 text-center space-y-6 shadow-2xl">
-        <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center mx-auto shadow-inner">
+      <div className="max-w-lg w-full bg-white rounded-3xl border border-blue-200 p-8 text-center space-y-6 shadow-2xl">
+        <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mx-auto shadow-inner">
           <ShieldAlert className="w-8 h-8" />
         </div>
 
         <div className="space-y-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
             Admin Error Boundary
           </span>
-          <h2 className="text-2xl font-black text-white pt-1">
+          <h2 className="text-2xl font-black text-slate-900 pt-1">
             Gagal Memuat Modul Admin
           </h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-sm text-slate-700 leading-relaxed">
             {error.message || "Terjadi kesalahan saat memproses data modul CMS. Hak akses Anda atau data input mungkin mengalami konflik."}
           </p>
           {error.digest && (
-            <p className="text-xs font-mono text-slate-400 bg-slate-900/80 py-1.5 px-3 rounded-lg border border-slate-800">
+            <p className="text-xs font-mono text-slate-500 bg-blue-50 py-1.5 px-3 rounded-lg border border-blue-100">
               Digest: {error.digest}
             </p>
           )}
@@ -49,7 +49,7 @@ export default function AdminError({
           </button>
           <Link
             href="/admin"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-sm flex items-center justify-center gap-2 transition"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-100 hover:bg-blue-100 text-slate-700 border border-blue-100 font-bold text-sm flex items-center justify-center gap-2 transition"
           >
             <LayoutDashboard className="w-4 h-4" />
             Dashboard Utama

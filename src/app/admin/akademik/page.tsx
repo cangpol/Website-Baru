@@ -542,7 +542,7 @@ export default function AdminAkademikCalendarPage() {
       {activeTab === "calendar" && (
         <div className="space-y-8">
           {/* 1. KARTU UPLOAD DOKUMEN PDF KALENDER RESMI */}
-          <div className="bg-gradient-to-br from-slate-900 to-[#0b2545] text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-blue-900/40 space-y-6">
+          <div className="bg-gradient-to-br from-[#0b2545] to-blue-700 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-blue-900/40 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">

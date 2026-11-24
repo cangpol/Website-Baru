@@ -158,19 +158,19 @@ export default function AdminMitraPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0a192f] border border-blue-900/40 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-blue-100 p-6 rounded-2xl">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-600 border border-blue-200 uppercase tracking-wider">
               Ekosistem Industri
             </span>
-            <span className="text-xs text-slate-400">Total: {mitras.length} Mitra Strategis</span>
+            <span className="text-xs text-slate-500">Total: {mitras.length} Mitra Strategis</span>
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <Handshake className="w-7 h-7 text-sky-400" />
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+            <Handshake className="w-7 h-7 text-blue-600" />
             Manajemen Mitra & Kerjasama Industri
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             Kelola jaringan kemitraan Triputra Group, korporasi nasional, rumah sakit jejaring, dan institusi riset pendukung Program Immersion 3+1.
           </p>
         </div>
@@ -186,40 +186,40 @@ export default function AdminMitraPage() {
 
       {/* KPI Counters */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-[#0b1c38] border border-blue-900/30 p-4 rounded-xl">
-          <p className="text-xs text-slate-400">Total Mitra Industri</p>
-          <p className="text-2xl font-bold text-white mt-1">{mitras.length}</p>
+        <div className="bg-white border border-blue-100 p-4 rounded-xl">
+          <p className="text-xs text-slate-500">Total Mitra Industri</p>
+          <p className="text-2xl font-bold text-slate-900 mt-1">{mitras.length}</p>
         </div>
-        <div className="bg-[#0b1c38] border border-blue-900/30 p-4 rounded-xl">
-          <p className="text-xs text-sky-400">Triputra Group Companies</p>
-          <p className="text-2xl font-bold text-sky-300 mt-1">
+        <div className="bg-white border border-blue-100 p-4 rounded-xl">
+          <p className="text-xs text-blue-600">Triputra Group Companies</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">
             {mitras.filter((m) => m.category === "Triputra Group").length}
           </p>
         </div>
-        <div className="bg-[#0b1c38] border border-blue-900/30 p-4 rounded-xl">
-          <p className="text-xs text-sky-400">Mitra Immersion 3+1</p>
-          <p className="text-2xl font-bold text-sky-300 mt-1">
+        <div className="bg-white border border-blue-100 p-4 rounded-xl">
+          <p className="text-xs text-blue-600">Mitra Immersion 3+1</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">
             {mitras.filter((m) => m.partnershipType === "Immersion 3+1").length}
           </p>
         </div>
-        <div className="bg-[#0b1c38] border border-blue-900/30 p-4 rounded-xl">
-          <p className="text-xs text-sky-400">MoU Berstatus Aktif</p>
-          <p className="text-2xl font-bold text-sky-300 mt-1">
+        <div className="bg-white border border-blue-100 p-4 rounded-xl">
+          <p className="text-xs text-blue-600">MoU Berstatus Aktif</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">
             {mitras.filter((m) => m.status === "Aktif").length}
           </p>
         </div>
       </div>
 
       {/* Filter and Search */}
-      <div className="bg-[#0a192f] border border-blue-900/40 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-white border border-blue-100 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Cari nama perusahaan atau institusi..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#071322] border border-blue-900/40 pl-9 pr-4 py-2 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400"
+            className="w-full bg-blue-50 border border-blue-100 pl-9 pr-4 py-2 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-400"
           />
         </div>
 
@@ -228,7 +228,7 @@ export default function AdminMitraPage() {
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             aria-label="Filter kategori industri mitra"
-            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-sky-400"
+            className="bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-sky-400"
           >
             <option value="ALL">Semua Kategori Mitra (49 Mitra)</option>
             <option value="Triputra Group">Triputra Group</option>
@@ -242,7 +242,7 @@ export default function AdminMitraPage() {
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
             aria-label="Filter skema kerjasama mitra"
-            className="bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-xs font-medium text-slate-200 focus:outline-none focus:border-sky-400"
+            className="bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-sky-400"
           >
             <option value="ALL">Semua Skema Kerjasama</option>
             <option value="Immersion 3+1">Immersion 3+1</option>
@@ -258,25 +258,25 @@ export default function AdminMitraPage() {
         {filtered.map((item) => (
           <div
             key={item.id}
-            className="bg-[#0a192f] border border-blue-900/40 rounded-2xl p-5 hover:border-sky-400/40 transition duration-200 flex flex-col justify-between group shadow-lg"
+            className="bg-white border border-blue-100 rounded-2xl p-5 hover:border-sky-400/40 transition duration-200 flex flex-col justify-between group shadow-lg"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
                 <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                   item.category === "Triputra Group"
-                    ? "bg-sky-500/10 text-sky-300 border-sky-500/30"
-                    : "bg-blue-500/10 text-blue-300 border-blue-500/30"
+                    ? "bg-blue-50 text-blue-600 border-blue-200"
+                    : "bg-blue-50 text-blue-600 border-blue-200"
                 }`}>
                   {item.category}
                 </span>
 
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-600 border border-sky-500/20">
                   {item.status}
                 </span>
               </div>
 
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-xl bg-slate-900 border border-blue-900/50 flex items-center justify-center p-2 relative overflow-hidden flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center p-2 relative overflow-hidden flex-shrink-0">
                   <Image
                     src={item.logo || item.logoUrl || "/images/logo.png"}
                     alt={item.name}
@@ -286,7 +286,7 @@ export default function AdminMitraPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white group-hover:text-sky-300 transition text-base leading-snug">
+                  <h3 className="font-bold text-slate-900 group-hover:text-blue-600 transition text-base leading-snug">
                     {item.name}
                   </h3>
                   <p className="text-xs text-sky-400/90 font-medium flex items-center gap-1 mt-0.5">
@@ -296,25 +296,25 @@ export default function AdminMitraPage() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-blue-900/30 space-y-1.5 text-xs text-slate-400">
+              <div className="pt-3 border-t border-blue-100 space-y-1.5 text-xs text-slate-500">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-slate-500" /> Periode MoU:</span>
-                  <span className="font-mono text-slate-300">{item.mouYear}</span>
+                  <span className="font-mono text-slate-700">{item.mouYear}</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 mt-4 border-t border-blue-900/30 flex items-center justify-end gap-2">
+            <div className="pt-4 mt-4 border-t border-blue-100 flex items-center justify-end gap-2">
               <button
                 onClick={() => handleOpenEdit(item)}
-                className="px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-semibold border border-blue-500/20 transition flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-semibold border border-blue-200 transition flex items-center gap-1.5"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 Edit
               </button>
               <button
                 onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
-                className="px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-semibold border border-blue-500/20 transition flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-semibold border border-blue-200 transition flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Hapus
@@ -326,16 +326,16 @@ export default function AdminMitraPage() {
 
       {/* Modal Create / Edit */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-[#0a192f] border border-blue-900/60 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-5 border-b border-blue-900/40 bg-[#071322]">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Handshake className="w-5 h-5 text-sky-400" />
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white border border-blue-200 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-5 border-b border-blue-100 bg-blue-50">
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Handshake className="w-5 h-5 text-blue-600" />
                 {editingItem ? "Edit Mitra Industri" : "Tambah Mitra Industri Baru"}
               </h2>
               <button
                 onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition"
+                className="text-slate-500 hover:text-slate-900 p-1 rounded-lg hover:bg-blue-50 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -343,24 +343,24 @@ export default function AdminMitraPage() {
 
             <form onSubmit={handleSave} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Nama Perusahaan / Institusi *</label>
+                <label className="block text-xs font-medium text-slate-700 mb-1.5">Nama Perusahaan / Institusi *</label>
                 <input
                   type="text"
                   required
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="Contoh: PT Dharma Polimetal Tbk"
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
+                  className="w-full bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-sky-400"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Kategori Industri</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1.5">Kategori Industri</label>
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value as AdminMitraItem["category"])}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
+                    className="w-full bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-sky-400"
                   >
                     <option value="Triputra Group">Triputra Group</option>
                     <option value="Industri & Finansial">Industri & Finansial</option>
@@ -370,11 +370,11 @@ export default function AdminMitraPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Skema Kerjasama</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1.5">Skema Kerjasama</label>
                   <select
                     value={formPartnershipType}
                     onChange={(e) => setFormPartnershipType(e.target.value as AdminMitraItem["partnershipType"])}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
+                    className="w-full bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-sky-400"
                   >
                     <option value="Immersion 3+1">Immersion 3+1</option>
                     <option value="Beasiswa Industri">Beasiswa Industri</option>
@@ -386,21 +386,21 @@ export default function AdminMitraPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Masa MoU / Tahun</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1.5">Masa MoU / Tahun</label>
                   <input
                     type="text"
                     value={formMouYear}
                     onChange={(e) => setFormMouYear(e.target.value)}
                     placeholder="2024 - 2029"
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
+                    className="w-full bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-sky-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Status Kerjasama</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1.5">Status Kerjasama</label>
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as AdminMitraItem["status"])}
-                    className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
+                    className="w-full bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-sky-400"
                   >
                     <option value="Aktif">Aktif</option>
                     <option value="Dalam Perpanjangan">Dalam Perpanjangan</option>
@@ -409,20 +409,20 @@ export default function AdminMitraPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Path / URL Logo Perusahaan</label>
+                <label className="block text-xs font-medium text-slate-700 mb-1.5">Path / URL Logo Perusahaan</label>
                 <input
                   type="text"
                   value={formLogo}
                   onChange={(e) => setFormLogo(e.target.value)}
-                  className="w-full bg-[#071322] border border-blue-900/40 px-3 py-2 rounded-lg text-sm text-white focus:outline-none focus:border-sky-400"
+                  className="w-full bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-sky-400"
                 />
               </div>
 
-              <div className="pt-3 border-t border-blue-900/40 flex items-center justify-end gap-3">
+              <div className="pt-3 border-t border-blue-100 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-sm text-slate-300 hover:text-white rounded-xl transition"
+                  className="px-4 py-2 text-sm text-slate-700 hover:text-slate-900 rounded-xl transition"
                 >
                   Batal
                 </button>

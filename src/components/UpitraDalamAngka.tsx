@@ -23,9 +23,9 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
 
   return (
     <section className="relative w-full overflow-hidden bg-[#006bbd] text-white" aria-label="UPITRA Dalam Angka">
-      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center lg:min-h-[642px] lg:grid-cols-[minmax(0,864fr)_minmax(0,576fr)]">
+      <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-center gap-6 px-4 sm:px-12 lg:min-h-[560px] lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:gap-10 lg:px-[120px]">
         {/* Left: centered title + 3 × 2 metric cards */}
-        <div className="flex flex-col items-center justify-center gap-6 px-4 pt-10 sm:px-12 lg:gap-7 lg:px-10 lg:py-16">
+        <div className="flex min-w-0 flex-col items-center justify-center gap-6 pt-10 lg:gap-7 lg:py-14">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -39,7 +39,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
             <p className="text-xs font-medium text-white/90 sm:text-sm">{statsData.subtitle}</p>
           </motion.div>
 
-          <div className="grid w-full max-w-[692px] grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:gap-[21px]">
+          <div className="grid w-full max-w-[640px] grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:gap-5">
             {statsData.metrics.map((item, index) => {
               const highlighted = index === 2;
               return (
@@ -49,21 +49,21 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.45, delay: index * 0.08 }}
-                  className={`flex min-h-[112px] flex-col items-center justify-center rounded-xl p-4 text-center transition-all duration-300 hover:-translate-y-0.5 lg:min-h-[148px] ${
+                  className={`flex min-h-[112px] min-w-0 flex-col items-center justify-center rounded-xl p-3 text-center transition-all duration-300 hover:-translate-y-0.5 lg:min-h-[132px] ${
                     highlighted
                       ? "border border-white/40 bg-white/15 shadow-[0_2px_8px_rgba(15,23,42,0.18)] backdrop-blur-sm"
                       : "bg-white shadow-[0_2px_6px_rgba(15,23,42,0.18)]"
                   }`}
                 >
                   <span
-                    className={`mb-2 text-3xl font-extrabold leading-none tracking-tight lg:text-[40px] ${
+                    className={`mb-2 text-3xl font-extrabold leading-none tracking-tight lg:text-[34px] ${
                       highlighted ? "text-white" : "text-[#222]"
                     }`}
                   >
                     {item.value}
                   </span>
                   <span
-                    className={`text-[11px] font-bold leading-tight sm:text-xs lg:text-sm ${
+                    className={`text-[11px] font-bold leading-tight sm:text-xs lg:text-[13px] ${
                       highlighted ? "text-white" : "text-[#006bbd]"
                     }`}
                   >
@@ -87,7 +87,7 @@ export default function UpitraDalamAngka({ initialData }: { initialData?: Homepa
             src={statsData.studentCutoutImage || "/images/upitra-student-stats.webp"}
             alt="Mahasiswi Berprestasi Universitas Pignatelli Triputra"
             fill
-            sizes="(max-width: 1024px) 400px, 576px"
+            sizes="(max-width: 1024px) 400px, 440px"
             className="pointer-events-none object-cover object-bottom"
           />
         </motion.div>

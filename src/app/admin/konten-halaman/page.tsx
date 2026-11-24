@@ -20,8 +20,8 @@ export default function AdminKontenHalamanPage() {
   return (
     <div className="space-y-6 max-w-5xl">
       <div>
-        <h1 className="text-2xl font-black text-white">Konten Halaman</h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <h1 className="text-2xl font-black text-slate-900">Konten Halaman</h1>
+        <p className="text-xs text-slate-500 mt-1">
           Ubah banner, teks, daftar, dan gambar halaman publik (tambah, ubah, hapus item). Katalog layanan dikelola di menu Katalog &amp; Unduhan.
         </p>
       </div>
@@ -33,7 +33,7 @@ export default function AdminKontenHalamanPage() {
             type="button"
             onClick={() => setPage(k)}
             className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer ${
-              page === k ? "bg-sky-500 text-white" : "bg-slate-900 text-slate-300 border border-blue-900/50"
+              page === k ? "bg-sky-500 text-white" : "bg-blue-50 text-slate-700 border border-blue-200"
             }`}
           >
             {PAGE_LABELS[k]}
@@ -43,7 +43,7 @@ export default function AdminKontenHalamanPage() {
           aria-label="Halaman lainnya"
           value={BANNERS[page] ? "" : page}
           onChange={(e) => e.target.value && setPage(e.target.value as PageContentKey)}
-          className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-200 border border-blue-900/50 cursor-pointer"
+          className="px-3 py-2 rounded-xl text-xs font-bold bg-blue-50 text-slate-700 border border-blue-200 cursor-pointer"
         >
           <option value="">Halaman lainnya…</option>
           {PAGE_CONTENT_KEYS.filter((k) => !BANNERS[k]).map((k) => (
@@ -52,7 +52,7 @@ export default function AdminKontenHalamanPage() {
             </option>
           ))}
         </select>
-        <Link href={PAGE_PATHS[page] ?? `/${page}`} target="_blank" className="ml-auto text-xs text-sky-300 flex items-center gap-1 self-center">
+        <Link href={PAGE_PATHS[page] ?? `/${page}`} target="_blank" className="ml-auto text-xs text-blue-600 flex items-center gap-1 self-center">
           Lihat halaman <ExternalLink className="w-3.5 h-3.5" />
         </Link>
       </div>

@@ -313,10 +313,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen flex bg-slate-50 font-sans text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
       
       {/* 1. SIDEBAR (Navy Blue #06172e matching UPITRA Branding) */}
-      <aside className="hidden lg:flex lg:w-64 xl:w-72 flex-col shrink-0 bg-[#06172e] text-white border-r border-blue-950 z-30 select-none shadow-xl">
+      <aside className="hidden lg:flex lg:w-64 xl:w-72 flex-col shrink-0 bg-[#006bbd] text-white border-r border-white/20 z-30 select-none shadow-xl">
         
         {/* Brand Header */}
-        <div className="h-16 flex items-center px-5 border-b border-blue-950 bg-[#040e1e]/60">
+        <div className="h-16 flex items-center px-5 border-b border-white/20 bg-[#005a9e]">
           <Link href="/admin" className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md border border-white/20 shrink-0 group-hover:scale-105 transition-transform">
               <Image
@@ -333,7 +333,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <span className="text-sm font-black tracking-wider text-white uppercase">UPITRA</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500 text-white font-extrabold uppercase tracking-wide">CMS</span>
               </div>
-              <span className="text-[9.5px] text-sky-300/80 font-medium tracking-tight mt-1 truncate">
+              <span className="text-[9.5px] text-blue-100 font-medium tracking-tight mt-1 truncate">
                 Admin Control Center
               </span>
             </div>
@@ -346,15 +346,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             href="/admin"
             className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
               pathname === "/admin"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                : "text-slate-300 hover:bg-white/10 hover:text-white"
+                ? "bg-white text-[#006bbd] shadow-md"
+                : "text-blue-50 hover:bg-white/10 hover:text-white"
             }`}
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <LayoutDashboard className={`w-4 h-4 shrink-0 ${pathname === "/admin" ? "text-white" : "text-sky-400"}`} />
+              <LayoutDashboard className={`w-4 h-4 shrink-0 ${pathname === "/admin" ? "text-[#006bbd]" : "text-blue-100"}`} />
               <span className="truncate">Dashboard Utama</span>
             </div>
-            <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-blue-500/20 text-sky-200 border border-blue-400/30">
+            <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-white/15 text-white border border-white/30">
               Home
             </span>
           </Link>
@@ -374,11 +374,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   href={first.href}
                   className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                     groupActive
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                      : "text-slate-300 hover:bg-white/10 hover:text-white"
+                      ? "bg-white text-[#006bbd] shadow-md"
+                      : "text-blue-50 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <GroupIcon className={`w-4 h-4 shrink-0 ${groupActive ? "text-white" : "text-sky-400"}`} />
+                  <GroupIcon className={`w-4 h-4 shrink-0 ${groupActive ? "text-white" : "text-blue-100"}`} />
                   <span className="truncate">{first.label}</span>
                 </Link>
               );
@@ -392,15 +392,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   onClick={() => setOpenGroups((prev) => ({ ...prev, [group.title]: !isOpen }))}
                   aria-expanded={isOpen}
                   className={`w-full flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    groupActive ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/10 hover:text-white"
+                    groupActive ? "bg-white/10 text-white" : "text-blue-50 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <GroupIcon className="w-4 h-4 shrink-0 text-sky-400" />
+                    <GroupIcon className="w-4 h-4 shrink-0 text-blue-100" />
                     <span className="truncate capitalize">{group.title.toLowerCase()}</span>
                   </span>
                   <span className="flex items-center gap-2 shrink-0">
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-sky-200 border border-blue-400/30">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/15 text-white border border-white/30">
                       {group.items.length}
                     </span>
                     <ChevronDown className={`w-4 h-4 text-sky-300/70 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
@@ -408,7 +408,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </button>
 
                 {isOpen && (
-                  <div className="mt-1 ml-5 pl-3 border-l border-blue-800/60 space-y-0.5">
+                  <div className="mt-1 ml-5 pl-3 border-l border-white/30 space-y-0.5">
                     {group.items.map((item) => {
                       const Icon = item.icon;
                       const isActive = pathname.startsWith(item.href);
@@ -418,11 +418,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           href={item.href}
                           className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11.5px] font-semibold transition-all ${
                             isActive
-                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                              : "text-slate-300 hover:bg-white/10 hover:text-white"
+                              ? "bg-white text-[#006bbd] shadow-md"
+                              : "text-blue-50 hover:bg-white/10 hover:text-white"
                           }`}
                         >
-                          <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-white" : "text-sky-400"}`} />
+                          <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[#006bbd]" : "text-blue-100"}`} />
                           <span className="truncate">{item.label}</span>
                         </Link>
                       );
@@ -435,7 +435,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* User Card in Sidebar Footer */}
-        <div className="p-3.5 border-t border-blue-950 bg-[#040e1e]/90">
+        <div className="p-3.5 border-t border-white/20 bg-[#005a9e]">
           <div className="flex items-center justify-between gap-2.5">
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-xs">
@@ -445,7 +445,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="text-xs font-bold text-white truncate">
                   {session.name}
                 </div>
-                <div className="text-[9.5px] text-blue-300 flex items-center gap-1 font-medium">
+                <div className="text-[9.5px] text-blue-100 flex items-center gap-1 font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse"></span>
                   <span>{session.role}</span>
                 </div>
@@ -455,7 +455,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button
               onClick={handleLogout}
               title="Keluar dari sesi admin (/u-gate)"
-              className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-blue-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-[#005a9e] transition-colors cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -532,11 +532,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {mobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div 
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative w-72 max-w-xs bg-[#06172e] text-white flex flex-col p-4 z-10 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-blue-950">
+          <div className="relative w-72 max-w-xs bg-[#006bbd] text-white flex flex-col p-4 z-10 shadow-2xl">
+            <div className="flex items-center justify-between pb-4 border-b border-white/20">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-white p-1 flex items-center justify-center shrink-0">
                   <Image src="/images/logo.png" alt="Logo" width={24} height={24} />
@@ -556,7 +556,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold ${
-                  pathname === "/admin" ? "bg-blue-600 text-white" : "text-slate-300"
+                  pathname === "/admin" ? "bg-white text-[#006bbd]" : "text-blue-50"
                 }`}
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -572,7 +572,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
-                      isActive ? "bg-blue-600 text-white" : "text-slate-300"
+                      isActive ? "bg-white text-[#006bbd]" : "text-blue-50"
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
@@ -587,9 +587,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               })}
             </div>
 
-            <div className="pt-3 border-t border-blue-950 flex items-center justify-between text-xs">
+            <div className="pt-3 border-t border-white/20 flex items-center justify-between text-xs">
               <span className="text-slate-400">{session.name}</span>
-              <button onClick={handleLogout} className="text-blue-200 hover:text-white font-bold">Keluar</button>
+              <button onClick={handleLogout} className="text-blue-100 hover:text-white font-bold">Keluar</button>
             </div>
           </div>
         </div>

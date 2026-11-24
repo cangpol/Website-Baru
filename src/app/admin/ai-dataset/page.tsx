@@ -812,7 +812,7 @@ export default function AdminAiDatasetPage() {
                   <button
                     type="button"
                     onClick={handleAddKeyword}
-                    className="px-4 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs hover:bg-slate-900 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-blue-700 text-white font-bold text-xs hover:bg-blue-800 cursor-pointer"
                   >
                     Tambah
                   </button>

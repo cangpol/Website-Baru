@@ -83,18 +83,18 @@ export default function AdminBannerHeroPage() {
       {/* Toast Notification */}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0a192f] border border-blue-900/40 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-blue-100 p-6 rounded-2xl">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-sky-300 border border-blue-500/30 uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-600 border border-blue-200 uppercase tracking-wider">
               Visual Marketing &amp; Header Portal
             </span>
           </div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
-            <Sliders className="w-6 h-6 text-sky-400" />
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+            <Sliders className="w-6 h-6 text-blue-600" />
             Manajemen Hero &amp; Banner
           </h1>
-          <p className="text-slate-400 text-xs mt-1">
+          <p className="text-slate-500 text-xs mt-1">
             Konten hero beranda dikelola melalui CMS halaman depan. Banner header Akademik dapat dikelola di halaman ini.
           </p>
         </div>
@@ -112,13 +112,13 @@ export default function AdminBannerHeroPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-blue-900/40 gap-6">
+      <div className="flex border-b border-blue-100 gap-6">
         <button
           onClick={() => setActiveTab("HERO")}
           className={`pb-3 text-xs font-bold tracking-wide uppercase transition relative cursor-pointer ${
             activeTab === "HERO"
-              ? "text-sky-400 border-b-2 border-sky-400"
-              : "text-slate-400 hover:text-slate-200"
+              ? "text-blue-600 border-b-2 border-sky-400"
+              : "text-slate-500 hover:text-slate-700"
           }`}
         >
           Hero Beranda
@@ -127,8 +127,8 @@ export default function AdminBannerHeroPage() {
           onClick={() => setActiveTab("AKADEMIK")}
           className={`pb-3 text-xs font-bold tracking-wide uppercase transition relative cursor-pointer ${
             activeTab === "AKADEMIK"
-              ? "text-sky-400 border-b-2 border-sky-400"
-              : "text-slate-400 hover:text-slate-200"
+              ? "text-blue-600 border-b-2 border-sky-400"
+              : "text-slate-500 hover:text-slate-700"
           }`}
         >
           Header Akademik (1440x480 px)
@@ -137,10 +137,10 @@ export default function AdminBannerHeroPage() {
 
       {/* TAB 1: HERO SLIDES */}
       {activeTab === "HERO" && (
-        <div className="rounded-2xl border border-blue-900/40 bg-[#0a192f] p-6">
+        <div className="rounded-2xl border border-blue-100 bg-white p-6">
           <div className="max-w-2xl space-y-3">
-            <h2 className="text-lg font-bold text-white">Sumber hero halaman depan</h2>
-            <p className="text-sm leading-relaxed text-slate-300">
+            <h2 className="text-lg font-bold text-slate-900">Sumber hero halaman depan</h2>
+            <p className="text-sm leading-relaxed text-slate-700">
               Halaman depan dan dashboard membaca hero dari CMS yang sama. Kelola judul, deskripsi, gambar, dan tombol pada CMS Halaman Depan; data slide lama tidak digunakan oleh render publik.
             </p>
             <Link
@@ -156,26 +156,26 @@ export default function AdminBannerHeroPage() {
 
       {/* TAB 2: AKADEMIK BANNER */}
       {activeTab === "AKADEMIK" && (
-        <form onSubmit={saveAkademikBanner} className="bg-[#0a192f] border border-blue-900/40 rounded-2xl p-6 space-y-6">
+        <form onSubmit={saveAkademikBanner} className="bg-white border border-blue-100 rounded-2xl p-6 space-y-6">
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-white">Banner Header Halaman Akademik (1440x480 px)</h2>
+            <h2 className="text-lg font-bold text-slate-900">Banner Header Halaman Akademik (1440x480 px)</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Judul Header</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Judul Header</label>
                 <input
                   type="text"
                   value={akademikBanner.title}
                   onChange={(e) => setAkademikBanner({ ...akademikBanner, title: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-blue-50 border border-blue-200 text-slate-900 focus:outline-none focus:border-sky-500"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">Subjudul / Deskripsi</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Subjudul / Deskripsi</label>
                 <input
                   type="text"
                   value={akademikBanner.description}
                   onChange={(e) => setAkademikBanner({ ...akademikBanner, description: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-blue-50 border border-blue-200 text-slate-900 focus:outline-none focus:border-sky-500"
                 />
               </div>
             </div>
@@ -188,7 +188,7 @@ export default function AdminBannerHeroPage() {
             />
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-blue-900/40">
+          <div className="flex justify-end pt-4 border-t border-blue-100">
             <button
               type="submit"
               disabled={isPending}

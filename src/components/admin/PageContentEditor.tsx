@@ -19,7 +19,7 @@ type Json = Record<string, any>;
 const BANNERS = CORE_BANNERS as Record<string, Json>;
 
 const inputCls =
-  "w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500";
+  "w-full px-3 py-2 text-xs rounded-xl bg-blue-50 border border-blue-200 text-slate-900 focus:outline-none focus:border-sky-500";
 
 function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; onChange: (v: Json) => void }) {
   const set = (key: string, v: unknown) => onChange({ ...value, [key]: v });
@@ -36,7 +36,7 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
           const arr: string[] = Array.isArray(value[f.key]) ? value[f.key] : [];
           return (
             <div key={f.key}>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">{f.label}</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">{f.label}</label>
               <textarea
                 rows={Math.min(8, Math.max(3, arr.length + 1))}
                 value={arr.join("\n")}
@@ -52,21 +52,21 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
           return (
             <div key={f.key} className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white">
+                <h3 className="text-sm font-bold text-slate-900">
                   {f.label} <span className="text-slate-500 font-medium">({items.length})</span>
                 </h3>
                 <button
                   type="button"
                   onClick={() => set(f.key, [...items, blank])}
-                  className="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-200 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" /> Tambah {f.itemLabel}
                 </button>
               </div>
               {items.map((item, i) => (
-                <div key={i} className="border border-blue-900/50 rounded-xl p-4 space-y-3 bg-slate-950/40">
+                <div key={i} className="border border-blue-200 rounded-xl p-4 space-y-3 bg-blue-50">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-400">
+                    <span className="text-[11px] font-bold text-slate-500">
                       {f.itemLabel} #{i + 1}
                     </span>
                     <button
@@ -78,7 +78,7 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
                           swalToast(`${f.itemLabel} dihapus dari daftar. Klik Simpan untuk menerapkan.`, "info");
                         }
                       }}
-                      className="text-blue-300 hover:text-blue-200 cursor-pointer"
+                      className="text-blue-600 hover:text-blue-700 cursor-pointer"
                       aria-label={`Hapus ${f.itemLabel} ${i + 1}`}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -97,7 +97,7 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
         }
         return (
           <div key={f.key}>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">{f.label}</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">{f.label}</label>
             {f.type === "textarea" ? (
               <textarea rows={4} value={value[f.key] ?? ""} onChange={(e) => set(f.key, e.target.value)} className={inputCls} />
             ) : (
@@ -170,19 +170,19 @@ export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey
 
   if (loading) {
     return (
-      <div className="text-slate-400 text-xs flex items-center gap-2">
+      <div className="text-slate-500 text-xs flex items-center gap-2">
         <Loader2 className="w-4 h-4 animate-spin" /> Memuat…
       </div>
     );
   }
 
   return (
-    <form onSubmit={save} className="bg-[#0a192f] border border-blue-900/40 rounded-2xl p-6 space-y-8">
+    <form onSubmit={save} className="bg-white border border-blue-100 rounded-2xl p-6 space-y-8">
       {hasBanner && (
         <section className="space-y-4">
-          <h2 className="text-lg font-bold text-white">Banner (1440 × 480 px)</h2>
+          <h2 className="text-lg font-bold text-slate-900">Banner (1440 × 480 px)</h2>
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">Judul (Enter untuk baris baru)</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">Judul (Enter untuk baris baru)</label>
             <textarea
               rows={2}
               required
@@ -192,7 +192,7 @@ export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">Subjudul</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">Subjudul</label>
             <textarea
               rows={2}
               value={banner.description ?? ""}
@@ -209,12 +209,12 @@ export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey
         </section>
       )}
 
-      <section className={`space-y-4 ${hasBanner ? "border-t border-blue-900/40 pt-6" : ""}`}>
-        <h2 className="text-lg font-bold text-white">Isi Halaman {PAGE_LABELS[pageKey]}</h2>
+      <section className={`space-y-4 ${hasBanner ? "border-t border-blue-100 pt-6" : ""}`}>
+        <h2 className="text-lg font-bold text-slate-900">Isi Halaman {PAGE_LABELS[pageKey]}</h2>
         <Fields specs={CONTENT_SPECS[pageKey]} value={content} onChange={setContent} />
       </section>
 
-      <div className="flex justify-end pt-4 border-t border-blue-900/40">
+      <div className="flex justify-end pt-4 border-t border-blue-100">
         <button
           type="submit"
           disabled={isPending}

@@ -216,19 +216,19 @@ export default function AdminProdiCrudPage() {
     <div className="space-y-6 select-none font-sans">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-blue-900/40">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-blue-100">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-bold text-sky-400 uppercase tracking-widest">
+            <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">
               Manajemen Akademik
             </span>
             <span className="text-xs text-slate-500">•</span>
-            <span className="text-xs text-slate-400">Total {prodis.length} Program Studi</span>
+            <span className="text-xs text-slate-500">Total {prodis.length} Program Studi</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <span>Program Studi &amp; 4 Fakultas</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Kelola kurikulum, akreditasi, biaya pendidikan, dan profil prodi yang tampil di website utama.
           </p>
         </div>
@@ -243,17 +243,17 @@ export default function AdminProdiCrudPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="p-4 rounded-2xl bg-[#071a33] border border-blue-900/60 shadow-lg flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="p-4 rounded-2xl bg-white border border-blue-200 shadow-lg flex flex-col md:flex-row gap-3 items-center justify-between">
         
         {/* Search */}
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari prodi, fakultas, gelar..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#030d1c] border border-blue-900/80 text-xs text-white focus:outline-none focus:border-sky-400"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-blue-50 border border-blue-200 text-xs text-slate-900 focus:outline-none focus:border-sky-400"
           />
         </div>
 
@@ -262,7 +262,7 @@ export default function AdminProdiCrudPage() {
           <select
             value={facultyFilter}
             onChange={(e) => setFacultyFilter(e.target.value)}
-            className="bg-[#030d1c] border border-blue-900/80 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-sky-400"
+            className="bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-sky-400"
           >
             <option value="ALL">Semua Fakultas (4)</option>
             <option value="FST">Fakultas Sains &amp; Teknologi (FST)</option>
@@ -274,7 +274,7 @@ export default function AdminProdiCrudPage() {
           <select
             value={degreeFilter}
             onChange={(e) => setDegreeFilter(e.target.value)}
-            className="bg-[#030d1c] border border-blue-900/80 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-sky-400"
+            className="bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-sky-400"
           >
             <option value="ALL">Semua Jenjang</option>
             <option value="S1">Sarjana (S1)</option>
@@ -285,11 +285,11 @@ export default function AdminProdiCrudPage() {
       </div>
 
       {/* Data Table */}
-      <div className="rounded-3xl bg-[#071a33] border border-blue-900/60 shadow-xl overflow-hidden">
+      <div className="rounded-3xl bg-white border border-blue-200 shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-blue-900/60 bg-[#051427] text-slate-400 text-[10px] uppercase tracking-wider">
+              <tr className="border-b border-blue-200 bg-white text-slate-500 text-[10px] uppercase tracking-wider">
                 <th className="py-3.5 px-4">Nama Program Studi</th>
                 <th className="py-3.5 px-4">Fakultas</th>
                 <th className="py-3.5 px-4">Jenjang &amp; Gelar</th>
@@ -300,10 +300,10 @@ export default function AdminProdiCrudPage() {
             </thead>
             <tbody className="divide-y divide-blue-900/40">
               {filtered.map((item) => (
-                <tr key={item.id} className="hover:bg-blue-950/40 transition-colors">
+                <tr key={item.id} className="hover:bg-blue-50 transition-colors">
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-blue-950 border border-blue-800/80 overflow-hidden shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-800/80 overflow-hidden shrink-0">
                         <img 
                           src={item.coverImage} 
                           alt={item.name} 
@@ -314,39 +314,39 @@ export default function AdminProdiCrudPage() {
                         />
                       </div>
                       <div>
-                        <div className="font-bold text-white text-sm flex items-center gap-1.5">
+                        <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
                           <span>{item.name}</span>
                           {item.featured && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold uppercase">
+                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-100 text-blue-600 border border-sky-500/40 font-bold uppercase">
                               Unggulan
                             </span>
                           )}
                         </div>
-                        <div className="text-[10px] font-mono text-sky-400">/{item.slug}</div>
+                        <div className="text-[10px] font-mono text-blue-600">/{item.slug}</div>
                       </div>
                     </div>
                   </td>
 
                   <td className="py-3.5 px-4">
-                    <span className="px-2.5 py-1 rounded-lg bg-blue-950 border border-blue-800 text-[11px] font-bold text-sky-200">
+                    <span className="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[11px] font-bold text-blue-700">
                       {item.faculty}
                     </span>
                   </td>
 
                   <td className="py-3.5 px-4">
-                    <div className="font-semibold text-slate-200">
+                    <div className="font-semibold text-slate-700">
                       {item.degreeLevel} • {item.degreeTitle}
                     </div>
                   </td>
 
                   <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 font-bold text-[10px]">
-                      <CheckCircle2 className="w-3 h-3 text-sky-400" />
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-600 font-bold text-[10px]">
+                      <CheckCircle2 className="w-3 h-3 text-blue-600" />
                       <span>{item.accreditation}</span>
                     </span>
                   </td>
 
-                  <td className="py-3.5 px-4 font-mono font-medium text-slate-300">
+                  <td className="py-3.5 px-4 font-mono font-medium text-slate-700">
                     {item.tuitionPerSemester}
                   </td>
 
@@ -357,21 +357,21 @@ export default function AdminProdiCrudPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Lihat halaman publik"
-                        className="p-1.5 rounded-lg bg-blue-950 hover:bg-blue-900 text-sky-300 transition-colors"
+                        className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-900 text-blue-600 transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                       <button
                         onClick={() => handleOpenEdit(item)}
                         title="Edit data prodi"
-                        className="p-1.5 rounded-lg bg-blue-950 hover:bg-blue-800 text-slate-200 hover:text-white transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-800 text-slate-700 hover:text-white transition-colors cursor-pointer"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
                         title="Hapus prodi"
-                        className="p-1.5 rounded-lg bg-blue-950/40 hover:bg-blue-900/60 text-blue-300 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-900/60 text-blue-600 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -384,7 +384,7 @@ export default function AdminProdiCrudPage() {
         </div>
 
         {filtered.length === 0 && (
-          <div className="p-8 text-center text-slate-400 text-xs">
+          <div className="p-8 text-center text-slate-500 text-xs">
             Tidak ada program studi yang sesuai dengan kata kunci pencarian.
           </div>
         )}
@@ -393,19 +393,19 @@ export default function AdminProdiCrudPage() {
       {/* MODAL CREATE / EDIT PRODI */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4">
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-xs" onClick={() => setModalOpen(false)} />
-          <div className="relative w-full max-w-xl bg-[#071a33] border border-blue-900/80 rounded-3xl p-6 shadow-2xl z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="fixed inset-0 bg-blue-50 backdrop-blur-xs" onClick={() => setModalOpen(false)} />
+          <div className="relative w-full max-w-xl bg-white border border-blue-200 rounded-3xl p-6 shadow-2xl z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
             
-            <div className="flex items-center justify-between pb-4 border-b border-blue-900/60 mb-5">
+            <div className="flex items-center justify-between pb-4 border-b border-blue-200 mb-5">
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {editingItem ? "Edit Program Studi" : "Tambah Program Studi Baru"}
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   Lengkapi data akademik resmi untuk publikasi website
                 </p>
               </div>
-              <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white p-1">
+              <button onClick={() => setModalOpen(false)} className="text-slate-500 hover:text-slate-900 p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -414,11 +414,11 @@ export default function AdminProdiCrudPage() {
               
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Fakultas</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Fakultas</label>
                   <select
                     value={formFaculty}
                     onChange={(e) => setFormFaculty(e.target.value as any)}
-                    className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white"
+                    className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                   >
                     <option value="FST">Fakultas Sains &amp; Teknologi (FST)</option>
                     <option value="FEB">Fakultas Ekonomi &amp; Bisnis (FEB)</option>
@@ -428,11 +428,11 @@ export default function AdminProdiCrudPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Jenjang Pendidikan</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Jenjang Pendidikan</label>
                   <select
                     value={formDegree}
                     onChange={(e) => setFormDegree(e.target.value as any)}
-                    className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white"
+                    className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                   >
                     <option value="S1">Sarjana (S1)</option>
                     <option value="D3">Diploma (D3)</option>
@@ -441,7 +441,7 @@ export default function AdminProdiCrudPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Nama Program Studi</label>
+                <label className="block text-slate-700 font-semibold mb-1">Nama Program Studi</label>
                 <input
                   type="text"
                   required
@@ -453,43 +453,43 @@ export default function AdminProdiCrudPage() {
                     }
                   }}
                   placeholder="Misal: S1 Informatika"
-                  className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white"
+                  className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Slug URL</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Slug URL</label>
                   <input
                     type="text"
                     required
                     value={formSlug}
                     onChange={(e) => setFormSlug(e.target.value)}
                     placeholder="informatika"
-                    className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white font-mono"
+                    className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900 font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Gelar Kelulusan</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Gelar Kelulusan</label>
                   <input
                     type="text"
                     required
                     value={formDegreeTitle}
                     onChange={(e) => setFormDegreeTitle(e.target.value)}
                     placeholder="S.Kom., S.M., S.Par."
-                    className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white font-mono"
+                    className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Akreditasi BAN-PT</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Akreditasi BAN-PT</label>
                   <select
                     value={formAccreditation}
                     onChange={(e) => setFormAccreditation(e.target.value)}
-                    className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white"
+                    className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                   >
                     <option value="Unggul">Unggul</option>
                     <option value="Baik Sekali">Baik Sekali</option>
@@ -498,55 +498,55 @@ export default function AdminProdiCrudPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Biaya SPP per Semester</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Biaya SPP per Semester</label>
                   <input
                     type="text"
                     value={formTuition}
                     onChange={(e) => setFormTuition(e.target.value)}
                     placeholder="Rp 4.500.000"
-                    className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white"
+                    className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Deskripsi Singkat</label>
+                <label className="block text-slate-700 font-semibold mb-1">Deskripsi Singkat</label>
                 <textarea
                   rows={2}
                   value={formShortDesc}
                   onChange={(e) => setFormShortDesc(e.target.value)}
                   placeholder="Ringkasan kurikulum dan fokus pembelajaran..."
-                  className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white"
+                  className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Prospek Karir Utama</label>
+                <label className="block text-slate-700 font-semibold mb-1">Prospek Karir Utama</label>
                 <input
                   type="text"
                   value={formCareer}
                   onChange={(e) => setFormCareer(e.target.value)}
                   placeholder="Software Engineer, Data Scientist, Tech Lead..."
-                  className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white"
+                  className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Path Gambar Cover</label>
+                <label className="block text-slate-700 font-semibold mb-1">Path Gambar Cover</label>
                 <input
                   type="text"
                   value={formCoverImage}
                   onChange={(e) => setFormCoverImage(e.target.value)}
                   placeholder="/images/ar-vr.jpg"
-                  className="w-full bg-[#030d1c] border border-blue-900 rounded-xl p-2.5 text-white font-mono"
+                  className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900 font-mono"
                 />
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-blue-900/60">
+              <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-blue-200">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-blue-950 text-slate-300 hover:text-white"
+                  className="px-4 py-2 rounded-xl bg-blue-50 text-slate-700 hover:text-slate-900"
                 >
                   Batal
                 </button>

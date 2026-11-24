@@ -906,7 +906,7 @@ export default function AdminLayananPage() {
 
               <button
                 onClick={handleOpenCreateDoc}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold shadow-sm transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 <span>Upload Dokumen Baru</span>
@@ -978,7 +978,7 @@ export default function AdminLayananPage() {
 
       {/* ── MODAL: TAMBAH / EDIT LAYANAN UTAMA ── */}
       {serviceModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-xs">
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h2 className="text-lg font-black text-slate-900">
@@ -1122,7 +1122,7 @@ export default function AdminLayananPage() {
 
       {/* ── MODAL: FAQ CREATE / EDIT ── */}
       {faqModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-xs">
           <div className="bg-white rounded-3xl w-full max-w-xl p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h2 className="text-lg font-black text-slate-900">
@@ -1203,7 +1203,7 @@ export default function AdminLayananPage() {
 
       {/* ── MODAL: UPLOAD DOKUMEN DOWNLOAD CENTER ── */}
       {docModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-xs">
           <div className="bg-white rounded-3xl w-full max-w-lg p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h2 className="text-lg font-black text-slate-900">Upload Dokumen Baru</h2>
