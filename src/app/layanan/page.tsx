@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Image from "next/image";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, ExternalLink } from "lucide-react";
 import { usePageContent } from "@/lib/usePageContent";
 
 // ── SVG brand icons ──
@@ -157,33 +157,34 @@ export default function LayananIndexPage() {
         </section>
 
         {/* Media Sosial */}
-        <section className="bg-[#006bbd]">
-          <div className={`${pad} grid items-end gap-6 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]`}>
-            <div className="relative order-2 mx-auto h-[300px] w-[160px] self-end md:order-1 md:h-[380px] md:w-[220px]">
-              <Image src={content.sideImage} alt="" fill sizes="220px" className="object-contain object-bottom" />
+        <section className="bg-[#cce0f2]">
+          <div className={`${pad} grid items-end gap-6 pt-10 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.9fr)] md:pt-0`}>
+            <div className="relative order-2 mx-auto h-[300px] w-[220px] self-end md:order-1 md:h-[370px] md:w-[300px]">
+              <Image src={content.sideImage} alt="" fill sizes="300px" className="object-contain object-bottom" />
             </div>
-            <div className="order-1 pb-10 md:order-2">
-              <h2 className="text-2xl font-bold text-white">Media Sosial</h2>
-              <p className="mt-1 text-xs text-white/90">Ikuti kabar terbaru dan kegiatan UPITRA di media sosial resmi kami.</p>
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="order-1 py-8 md:order-2 md:py-10">
+              <h2 className="text-right text-3xl font-extrabold text-[#006bbd]">Media Sosial</h2>
+              <p className="mt-1 text-right text-xs text-slate-700">Dapatkan kabar terbaru seputar UPITRA melalui media sosial resmi kami.</p>
+              <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {content.socials.map((s, i) => {
                   const Icon = socialIcons[s.name.toLowerCase()] ?? MessageCircle;
                   return (
-                  <a
-                    key={i}
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 transition-transform hover:-translate-y-0.5"
-                  >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#006bbd] text-white">
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-xs font-bold text-slate-900">{s.name}</span>
-                      <span className="block truncate text-[10px] text-slate-500">{s.handle}</span>
-                    </span>
-                  </a>
+                    <a
+                      key={i}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-2xl bg-white px-5 py-4 shadow-[0_4px_12px_rgba(0,107,189,0.15)] transition-transform hover:-translate-y-0.5"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#006bbd] text-white">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-bold text-[#006bbd]">{s.name}</span>
+                        <span className="mt-0.5 block truncate text-[10px] text-slate-500">{s.handle}</span>
+                      </span>
+                      <ExternalLink className="h-5 w-5 shrink-0 text-slate-300" strokeWidth={1.5} />
+                    </a>
                   );
                 })}
               </div>
