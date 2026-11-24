@@ -122,7 +122,7 @@ export const CONTENT_DEFAULTS = {
     })),
   },
   layanan: {
-    sideImage: "/images/upitra-student-achiever.png",
+    sideImage: "/images/layanan-media-sosial.png",
     socials: [
       { name: "Instagram", handle: "@upitra_campus", url: "https://www.instagram.com/upitra_campus/" },
       { name: "Tiktok", handle: "@upitra_campus", url: "https://www.tiktok.com/@upitra_campus" },
