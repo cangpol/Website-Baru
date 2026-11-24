@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
 import { swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -51,6 +52,8 @@ export default function AdminProdiCrudPage() {
   const [facultyFilter, setFacultyFilter] = useState<string>("ALL");
   const [degreeFilter, setDegreeFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useModalKeys(modalOpen, () => setModalOpen(false));
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<AdminProdiItem | null>(null);
   const [saving, setSaving] = useState(false);
@@ -96,6 +99,8 @@ export default function AdminProdiCrudPage() {
       setProdis(mapped);
     } catch (err) {
       console.error("Error loading programs:", err);
+    } finally {
+      setLoaded(true);
     }
   };
 
@@ -391,8 +396,18 @@ export default function AdminProdiCrudPage() {
       </div>
 
       {/* MODAL CREATE / EDIT PRODI */}
+      {!loaded && <LoadingState />}
+      {loaded && filtered.length === 0 && (
+        <EmptyState
+          title={prodis.length === 0 ? "Belum ada program studi" : "Tidak ada hasil yang cocok"}
+          hint={prodis.length === 0 ? "Klik tombol di bawah untuk menambahkan data pertama." : "Coba ubah kata kunci pencarian atau filter yang dipakai."}
+          actionLabel={prodis.length === 0 ? "Tambah Program Studi" : undefined}
+          onAction={handleOpenCreate}
+        />
+      )}
+
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="fixed inset-0 bg-blue-50 backdrop-blur-xs" onClick={() => setModalOpen(false)} />
           <div className="relative w-full max-w-xl bg-white border border-blue-200 rounded-3xl p-6 shadow-2xl z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
             

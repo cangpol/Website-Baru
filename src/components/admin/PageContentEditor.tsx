@@ -214,7 +214,8 @@ export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey
         <Fields specs={CONTENT_SPECS[pageKey]} value={content} onChange={setContent} />
       </section>
 
-      <div className="flex justify-end pt-4 border-t border-blue-100">
+      <div className="sticky bottom-0 z-10 -mx-6 -mb-6 flex items-center justify-between gap-3 rounded-b-2xl border-t border-blue-100 bg-white/95 px-6 py-3 backdrop-blur">
+        <span className="text-[11px] text-slate-500">Perubahan baru tampil di situs setelah Anda menekan Simpan.</span>
         <button
           type="submit"
           disabled={isPending}

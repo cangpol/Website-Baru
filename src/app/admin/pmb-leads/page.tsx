@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
 import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -67,6 +68,8 @@ export default function AdminPmbLeadsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [prodiFilter, setProdiFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useModalKeys(modalOpen, () => setModalOpen(false));
   const [editingLead, setEditingLead] = useState<AdminLeadItem | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -97,6 +100,8 @@ export default function AdminPmbLeadsPage() {
       setLeads(mapped);
     } catch (err) {
       console.error("Error loading leads:", err);
+    } finally {
+      setLoaded(true);
     }
   };
 
@@ -287,9 +292,9 @@ export default function AdminPmbLeadsPage() {
           </button>
           <button
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 text-sm font-semibold rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
           >
-            <Plus className="w-4 h-4 text-slate-950" />
+            <Plus className="w-4 h-4 text-white" />
             Tambah Lead Walk-in
           </button>
         </div>
@@ -493,8 +498,18 @@ export default function AdminPmbLeadsPage() {
       </div>
 
       {/* Modal Create / Edit Lead */}
+      {!loaded && <LoadingState />}
+      {loaded && filtered.length === 0 && (
+        <EmptyState
+          title={leads.length === 0 ? "Belum ada calon mahasiswa" : "Tidak ada hasil yang cocok"}
+          hint={leads.length === 0 ? "Klik tombol di bawah untuk menambahkan data pertama." : "Coba ubah kata kunci pencarian atau filter yang dipakai."}
+          actionLabel={leads.length === 0 ? "Tambah Calon Mahasiswa" : undefined}
+          onAction={handleOpenCreate}
+        />
+      )}
+
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}>
           <div className="bg-white border border-blue-200 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-100 bg-blue-50">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -628,7 +643,7 @@ export default function AdminPmbLeadsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
+                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   {editingLead ? "Simpan Perubahan" : "Tambahkan Lead"}

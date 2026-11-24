@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
 import { swalConfirmDelete, swalToast } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -43,6 +44,8 @@ export default function AdminMitraPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useModalKeys(modalOpen, () => setModalOpen(false));
   const [editingItem, setEditingItem] = useState<AdminMitraItem | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -68,6 +71,8 @@ export default function AdminMitraPage() {
       );
     } catch (err) {
       console.error("Error loading partners:", err);
+    } finally {
+      setLoaded(true);
     }
   };
 
@@ -177,9 +182,9 @@ export default function AdminMitraPage() {
 
         <button
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold text-sm rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
+          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
         >
-          <Plus className="w-4 h-4 text-slate-950" />
+          <Plus className="w-4 h-4 text-white" />
           Tambah Mitra Kerjasama
         </button>
       </div>
@@ -230,7 +235,7 @@ export default function AdminMitraPage() {
             aria-label="Filter kategori industri mitra"
             className="bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:border-sky-400"
           >
-            <option value="ALL">Semua Kategori Mitra (49 Mitra)</option>
+            <option value="ALL">Semua Kategori Mitra</option>
             <option value="Triputra Group">Triputra Group</option>
             <option value="Industri & Finansial">Industri & Finansial</option>
             <option value="Kesehatan & RS">Kesehatan & RS</option>
@@ -325,8 +330,18 @@ export default function AdminMitraPage() {
       </div>
 
       {/* Modal Create / Edit */}
+      {!loaded && <LoadingState />}
+      {loaded && filtered.length === 0 && (
+        <EmptyState
+          title={mitras.length === 0 ? "Belum ada mitra" : "Tidak ada hasil yang cocok"}
+          hint={mitras.length === 0 ? "Klik tombol di bawah untuk menambahkan data pertama." : "Coba ubah kata kunci pencarian atau filter yang dipakai."}
+          actionLabel={mitras.length === 0 ? "Tambah Mitra" : undefined}
+          onAction={handleOpenCreate}
+        />
+      )}
+
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}>
           <div className="bg-white border border-blue-200 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-100 bg-blue-50">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -429,9 +444,9 @@ export default function AdminMitraPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
+                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-slate-950" />
+                  <CheckCircle2 className="w-4 h-4 text-white" />
                   {editingItem ? "Simpan Perubahan" : "Tambahkan Mitra"}
                 </button>
               </div>

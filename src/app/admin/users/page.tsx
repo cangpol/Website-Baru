@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
 import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -38,6 +39,8 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useModalKeys(modalOpen, () => setModalOpen(false));
   const [editingItem, setEditingItem] = useState<AdminUserItem | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -68,6 +71,8 @@ export default function AdminUsersPage() {
       setUsers(mapped);
     } catch (err) {
       console.error("Error loading users:", err);
+    } finally {
+      setLoaded(true);
     }
   };
 
@@ -358,8 +363,18 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Modal Create / Edit */}
+      {!loaded && <LoadingState />}
+      {loaded && filtered.length === 0 && (
+        <EmptyState
+          title={users.length === 0 ? "Belum ada akun staf" : "Tidak ada hasil yang cocok"}
+          hint={users.length === 0 ? "Klik tombol di bawah untuk menambahkan data pertama." : "Coba ubah kata kunci pencarian atau filter yang dipakai."}
+          actionLabel={users.length === 0 ? "Tambah Akun Staf" : undefined}
+          onAction={handleOpenCreate}
+        />
+      )}
+
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}>
           <div className="bg-white border border-blue-200 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-100 bg-blue-50">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">

@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
 import { swalConfirmDelete, swalToast } from "@/lib/swal";
 import { useState, useEffect } from "react";
 import { 
@@ -38,6 +39,8 @@ export default function AdminDownloadCenterPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useModalKeys(modalOpen, () => setModalOpen(false));
   const [editingItem, setEditingItem] = useState<AdminDownloadItem | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -65,6 +68,8 @@ export default function AdminDownloadCenterPage() {
       setDownloads(mapped);
     } catch (err) {
       console.error("Error loading downloads:", err);
+    } finally {
+      setLoaded(true);
     }
   };
 
@@ -172,9 +177,9 @@ export default function AdminDownloadCenterPage() {
 
         <button
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold text-sm rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
+          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02]"
         >
-          <Plus className="w-4 h-4 text-slate-950" />
+          <Plus className="w-4 h-4 text-white" />
           Tambah Dokumen Brosur
         </button>
       </div>
@@ -326,8 +331,18 @@ export default function AdminDownloadCenterPage() {
       </div>
 
       {/* Modal Create / Edit */}
+      {!loaded && <LoadingState />}
+      {loaded && filtered.length === 0 && (
+        <EmptyState
+          title={downloads.length === 0 ? "Belum ada dokumen" : "Tidak ada hasil yang cocok"}
+          hint={downloads.length === 0 ? "Klik tombol di bawah untuk menambahkan data pertama." : "Coba ubah kata kunci pencarian atau filter yang dipakai."}
+          actionLabel={downloads.length === 0 ? "Tambah Dokumen" : undefined}
+          onAction={handleOpenCreate}
+        />
+      )}
+
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}>
           <div className="bg-white border border-blue-200 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-blue-100 bg-blue-50">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -428,9 +443,9 @@ export default function AdminDownloadCenterPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-slate-950 font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
+                  className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-sky-500/20"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-slate-950" />
+                  <CheckCircle2 className="w-4 h-4 text-white" />
                   {editingItem ? "Simpan Perubahan" : "Tambahkan Dokumen"}
                 </button>
               </div>

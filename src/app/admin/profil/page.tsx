@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState, LoadingState, useModalKeys } from "@/components/admin/crud-ui";
 import { swalToast, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -44,6 +45,8 @@ function ProfilManagerContent() {
   const [items, setItems] = useState<AdminProfilSection[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useModalKeys(isModalOpen, () => setIsModalOpen(false));
   const [editingItem, setEditingItem] = useState<AdminProfilSection | null>(null);
   // Form State
   const [formData, setFormData] = useState({
@@ -67,6 +70,8 @@ function ProfilManagerContent() {
       setItems(data);
     } catch (err) {
       console.error("Error loading profil sections:", err);
+    } finally {
+      setLoaded(true);
     }
   };
 
@@ -355,8 +360,18 @@ function ProfilManagerContent() {
       </div>
 
       {/* CRUD Modal Dialog */}
+      {!loaded && <LoadingState />}
+      {loaded && filteredItems.length === 0 && (
+        <EmptyState
+          title={items.length === 0 ? "Belum ada konten profil" : "Tidak ada hasil yang cocok"}
+          hint={items.length === 0 ? "Klik tombol di bawah untuk menambahkan data pertama." : "Coba ubah kata kunci pencarian atau filter yang dipakai."}
+          actionLabel={items.length === 0 ? "Tambah Konten" : undefined}
+          onAction={() => handleOpenModal()}
+        />
+      )}
+
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-blue-50 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 bg-slate-900/50 backdrop-blur-sm" onMouseDown={(e) => { if (e.target === e.currentTarget) setIsModalOpen(false); }}>
           <div className="w-full max-w-lg bg-white border border-blue-200 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-blue-200">
               <h3 className="text-sm font-bold text-slate-900">
