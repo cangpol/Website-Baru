@@ -152,7 +152,8 @@ function UGateLoginForm() {
             </div>
           </div>
 
-          {/* Security Gateway Key */}
+          {/* Security Gateway Key: hanya tampil bila NEXT_PUBLIC_ADMIN_GATEWAY_KEY diatur */}
+          {process.env.NEXT_PUBLIC_ADMIN_GATEWAY_KEY && (
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-slate-700">
@@ -175,6 +176,7 @@ function UGateLoginForm() {
               />
             </div>
           </div>
+          )}
 
           {/* Submit Button */}
           <button

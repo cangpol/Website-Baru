@@ -9,7 +9,8 @@ import {
   X, 
   ChevronRight,
   Phone, 
-  ExternalLink 
+  ExternalLink,
+  ShieldCheck
 } from "lucide-react";
 import Logo from "./Logo";
 
@@ -109,6 +110,15 @@ export default function Navbar() {
               Daftar Sekarang
             </Link>
 
+            {/* Tombol Admin */}
+            <Link
+              href="/u-gate"
+              className="hidden min-[900px]:inline-flex h-8 px-3 items-center justify-center gap-1.5 rounded-lg border border-[#006bbd] text-[#006bbd] hover:bg-[#006bbd] hover:text-white font-bold text-[11px] transition-colors shrink-0"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Admin
+            </Link>
+
             {/* Mobile Hamburger Button (< 1024px) */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -167,6 +177,14 @@ export default function Navbar() {
                   <Phone className="w-3.5 h-3.5 text-[#006bbd]" />
                   <span>Konsultasi WhatsApp Admisi</span>
                 </a>
+
+                <Link
+                  href="/u-gate"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-[#006bbd] text-[#006bbd] font-semibold text-xs hover:bg-[#006bbd] hover:text-white transition-colors"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Admin</span>
+                </Link>
               </div>
             </motion.div>
           )}
