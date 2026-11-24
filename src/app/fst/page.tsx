@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -23,49 +25,12 @@ export const metadata: Metadata = {
   description: "Fakultas Sains dan Teknologi UPITRA Surakarta: S1 Informatika, S1 Sistem Informasi, dan S1 Rekayasa Perangkat Lunak. Mencetak talenta komputasi dan AI berdaya saing global.",
 };
 
-const prodiListFST = [
-  {
-    name: "S1 Informatika",
-    slug: "informatika",
-    degree: "Sarjana Komputer (S.Kom.)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Fokus pada kecerdasan buatan (Artificial Intelligence), data science, machine learning, cyber security, dan komputasi awan berstandar industri modern.",
-    prospek: ["AI Engineer", "Data Scientist", "Cybersecurity Specialist", "Fullstack Developer"],
-  },
-  {
-    name: "S1 Sistem Informasi",
-    slug: "sistem-informasi",
-    degree: "Sarjana Komputer (S.Kom.)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Mengintegrasikan teknologi informasi dengan strategi bisnis korporasi, implementasi ERP (SAP), UI/UX product design, dan tata kelola TI enterprise.",
-    prospek: ["IT Business Analyst", "ERP Consultant", "Product Manager", "Database Administrator"],
-  },
-  {
-    name: "S1 Rekayasa Perangkat Lunak",
-    slug: "rekayasa-perangkat-lunak",
-    degree: "Sarjana Komputer (S.Kom.)",
-    akreditasi: "BAIK",
-    desc: "Mendalami metodologi rekayasa software berskala enterprise, arsitektur microservices, mobile app development (Flutter/React Native), dan DevOps automation.",
-    prospek: ["Software Architect", "DevOps Engineer", "Mobile App Specialist", "Quality Assurance Lead"],
-  },
-];
 
-const labFST = [
-  {
-    name: "Laboratorium Artificial Intelligence & Big Data",
-    desc: "Dilengkapi workstation komputasi GPU tinggi untuk riset deep learning, computer vision, dan natural language processing.",
-  },
-  {
-    name: "Laboratorium Rekayasa Perangkat Lunak & Cloud",
-    desc: "Infrastruktur server lokal dan cloud sandboxing untuk simulasi deployment skala enterprise, CI/CD, dan fullstack development.",
-  },
-  {
-    name: "Laboratorium Jaringan & Keamanan Siber",
-    desc: "Fasilitas pelatihan penetration testing, konfigurasi router/switch enterprise, firewall, dan keamanan infrastruktur data.",
-  },
-];
 
-export default function FakultasSainsTeknologiPage() {
+export default async function FakultasSainsTeknologiPage() {
+  const __c = await getPageContentMerged("fakultas-fst");
+  const prodiListFST = __c.prodiListFST as (typeof EXTRA_DEFAULTS)["fakultas-fst"]["prodiListFST"];
+  const labFST = __c.labFST as (typeof EXTRA_DEFAULTS)["fakultas-fst"]["labFST"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

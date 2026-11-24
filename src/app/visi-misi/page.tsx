@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -23,69 +25,14 @@ export const metadata: Metadata = {
   description: "Visi, 6 Misi resmi, dan 7 Tujuan Strategis UPITRA Surakarta. Membangun generasi unggul berkarakter Triputra DNA, berintegritas, dan berdaya saing industri.",
 };
 
-const misiList = [
-  {
-    no: "01",
-    title: "Pendidikan Transformatif & Karakter Berbelarasa",
-    desc: "Menghadirkan pengalaman pendidikan transformatif bagi mahasiswa yang berfokus pada kedalaman pengetahuan keilmuan, kedalaman spiritualitas, kemampuan beradaptasi, kemampuan berkomunikasi, kerendahan hati, dan berbelarasa pada sesama maupun lingkungan.",
-  },
-  {
-    no: "02",
-    title: "Atmosfer Riset Kreatif & Inovatif",
-    desc: "Menciptakan atmosfer akademik yang menumbuhkan kreativitas dan semangat berinovasi melalui penelitian-penelitian yang berdampak transformatif bagi masyarakat luas.",
-  },
-  {
-    no: "03",
-    title: "Pengabdian Berbasis Teknologi & Solusi Nyata",
-    desc: "Mewujudkan atmosfer yang mendorong penerapan ilmu pengetahuan dan teknologi bagi penyelesaian masalah-masalah kemasyarakatan melalui kegiatan pengabdian kepada masyarakat.",
-  },
-  {
-    no: "04",
-    title: "Pendidikan Terjangkau & Berkelanjutan",
-    desc: "Merealisasikan pendidikan tinggi yang terjangkau bagi masyarakat luas yang dikelola secara profesional dan dikembangkan secara berkelanjutan.",
-  },
-  {
-    no: "05",
-    title: "Kerjasama Strategis Industri & Pemerintahan",
-    desc: "Mendorong terwujudnya kerjasama yang produktif dengan lembaga pendidikan, pemerintah, nonpemerintah, dan dunia usaha (Triputra Group & mitra) baik tingkat regional, nasional, maupun internasional.",
-  },
-  {
-    no: "06",
-    title: "Kampus Modern, Digital & Ramah Lingkungan",
-    desc: "Menciptakan suasana kampus modern yang kondusif untuk proses pendidikan dengan prasarana dan sarana yang berkualitas, berbasis digital, dan ramah lingkungan.",
-  },
-];
 
-const tujuanList = [
-  "Melibatkan diri dalam usaha mencerdaskan kehidupan bangsa, memupuk rasa kesatuan dan persatuan bangsa yang dilandasi nilai-nilai Pancasila, etika akademis, moral, iman, dan takwa kepada Tuhan Yang Maha Esa.",
-  "Melibatkan diri dalam usaha memperluas akses pendidikan tinggi bagi masyarakat yang kurang mampu melalui skema beasiswa berkeadilan (Beasiswa Triputra Peduli).",
-  "Menghasilkan lulusan yang berbudi pekerti luhur, memiliki kedalaman spiritual, unggul dalam IPTEK, profesional, berintegritas, bertanggung jawab, santun, rendah hati, dan berwawasan lingkungan.",
-  "Memberikan kontribusi yang berkualitas dalam pengembangan ilmu pengetahuan dan teknologi yang berdampak transformatif bagi kemajuan peradaban dan masyarakat.",
-  "Menerapkan ilmu pengetahuan dan teknologi bagi penyelesaian masalah-masalah nyata di lingkungan industri korporasi dan sosial kemasyarakatan.",
-  "Mengembangkan sistem jejaring kemitraan strategis dengan perguruan tinggi terkemuka, masyarakat, industri nasional, lembaga pendidikan, pemerintah, dan dunia usaha yang dilandasi etika akademik, manfaat timbal balik, dan keberlanjutan.",
-  "Menciptakan tata kelola kampus modern, berbasis teknologi informasi dan komunikasi mutakhir serta berwawasan lingkungan (green campus) yang mendukung proses tridharma perguruan tinggi prima.",
-];
 
-const triputraValues = [
-  {
-    title: "Integrity & Ethics (Integritas)",
-    desc: "Kejujuran tanpa kompromi, keselarasan antara perkataan dan perbuatan, serta menjunjung tinggi etika moral dalam setiap tindakan.",
-  },
-  {
-    title: "Excellence & Hard Work (Keunggulan Kerja)",
-    desc: "Selalu memberikan usaha terbaik (extra mile), pantang menyerah, dan berorientasi pada standar kualitas tertinggi.",
-  },
-  {
-    title: "Humility & Continuous Learning (Kerendahan Hati)",
-    desc: "Senantiasa rendah hati, bersedia mendengar, menghargai sesama, dan memiliki rasa lapar untuk terus belajar mengembangkan diri.",
-  },
-  {
-    title: "Compassion (Berbelarasa)",
-    desc: "Ketulusan hati untuk peduli dan berbelarasa kepada sesama yang membutuhkan serta kelestarian alam lingkungan hidup.",
-  },
-];
 
-export default function VisiMisiPage() {
+export default async function VisiMisiPage() {
+  const __c = await getPageContentMerged("visi-misi");
+  const misiList = __c.misiList as (typeof EXTRA_DEFAULTS)["visi-misi"]["misiList"];
+  const tujuanList = __c.tujuanList as string[];
+  const triputraValues = __c.triputraValues as (typeof EXTRA_DEFAULTS)["visi-misi"]["triputraValues"];
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
       <Navbar />

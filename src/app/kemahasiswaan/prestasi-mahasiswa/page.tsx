@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,55 +23,10 @@ export const metadata: Metadata = {
   description: "Daftar torehan prestasi dan penghargaan mahasiswa Universitas Pignatelli Triputra Surakarta dalam kompetisi akademik, inovasi sains, bisnis, seni, dan olahraga tingkat nasional.",
 };
 
-const prestasiList = [
-  {
-    tahun: "2026",
-    kategori: "Teknologi & AI",
-    juara: "Juara 1 Tingkat Nasional",
-    kejuaraan: "National Agri-Tech & Smart Farming Hackathon 2026",
-    penyelenggara: "Kementerian Pertanian RI & Konsorsium Perguruan Tinggi",
-    tim: "Bagas Satria & Tim (S1 Informatika & Sistem Informasi)",
-    deskripsi: "Menciptakan prototipe sensorik tanah cerdas terkoneksi cloud untuk efisiensi pemupukan kelapa sawit di unit bisnis Triputra Agro Persada.",
-  },
-  {
-    tahun: "2026",
-    kategori: "Bisnis & Manajemen",
-    juara: "Juara 2 & Best Presentation",
-    kejuaraan: "National Corporate Case Competition Triputra Youth Summit",
-    penyelenggara: "Triputra Group Talent Management Jakarta",
-    tim: "Anisa Rahmawati & Tim (S1 Manajemen)",
-    deskripsi: "Solusi optimalisasi rute distribusi logistik ramah lingkungan berbasis algoritma routing pintar di PT Adi Sarana Armada Tbk.",
-  },
-  {
-    tahun: "2026",
-    kategori: "Kesehatan & K3",
-    juara: "Juara 1 Kategori Riset Terapan",
-    kejuaraan: "Kompetisi Nasional Inovasi K3 Industri Manufaktur 2026",
-    penyelenggara: "Dewan K3 Nasional (DK3N)",
-    tim: "Rizky Pratama & Tim (S1 Keselamatan & Kesehatan Kerja)",
-    deskripsi: "Aplikasi penilaian postur kerja otomatis menggunakan Computer Vision untuk menurunkan angka insiden Low Back Pain di pabrik otomotif.",
-  },
-  {
-    tahun: "2026",
-    kategori: "Bahasa & Debat",
-    juara: "Juara 3 & Overall Best Speaker",
-    kejuaraan: "Central Java University English Debating Championship",
-    penyelenggara: "LLDIKTI Wilayah VI Jawa Tengah",
-    tim: "Maria Jessica (S1 Bahasa Inggris)",
-    deskripsi: "Membahas mosi regulasi kecerdasan buatan, etika data global, dan diplomasi ketahanan pangan negara berkembang.",
-  },
-  {
-    tahun: "2025",
-    kategori: "Pariwisata & Hospitality",
-    juara: "Gold Medal Table Setting & Tourism Video",
-    kejuaraan: "National Hospitality Skills Competition 2025",
-    penyelenggara: "Asosiasi Pendidikan Tinggi Pariwisata Indonesia (HILDIKTIPARI)",
-    tim: "Tim S1 Pariwisata UPITRA",
-    deskripsi: "Peragaan standar tata hidang bintang lima berpadu unsur kearifan kuliner tradisional keraton Surakarta.",
-  },
-];
 
-export default function PrestasiMahasiswaPage() {
+export default async function PrestasiMahasiswaPage() {
+  const __c = await getPageContentMerged("prestasi-mahasiswa");
+  const prestasiList = __c.prestasiList as (typeof EXTRA_DEFAULTS)["prestasi-mahasiswa"]["prestasiList"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

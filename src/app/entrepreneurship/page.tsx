@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
@@ -12,33 +14,9 @@ import {
   Briefcase
 } from "lucide-react";
 
-export default function EntrepreneurshipPage() {
-  const alumniStartups = [
-    {
-      name: "Soloraya AgriLogistics",
-      category: "Supply Chain & Agribusiness",
-      founded: "2023",
-      valuation: "Mitra 50+ Petani & Industri",
-      desc: "Platform rantai pasok komoditas pertanian dan distribusi pangan modern yang menghubungkan petani Jawa Tengah dengan pasar retail.",
-      founders: "Kolaborasi Alumni Manajemen Bisnis (FEB) & Informatika (FST)",
-    },
-    {
-      name: "JavaHeritage Tour & MICE",
-      category: "Hospitality & Cultural Tourism",
-      founded: "2022",
-      valuation: "Omset Rp 3 M / tahun",
-      desc: "Agensi perjalanan wisata budaya, paket heritage Solo Raya, dan event organizer MICE internasional berbasis komunitas.",
-      founders: "Alumni S1 Pariwisata (Fakultas Social Humaniora)",
-    },
-    {
-      name: "TransLingua Global Media",
-      category: "Corporate Translation & Localization",
-      founded: "2024",
-      valuation: "Klien 20+ Perusahaan Multinasional",
-      desc: "Layanan lokalisasi konten digital, penerjemahan dokumen hukum bisnis, dan konsultasi komunikasi korporat dwibahasa.",
-      founders: "Alumni S1 Bahasa Inggris (Fakultas Social Humaniora)",
-    },
-  ];
+export default async function EntrepreneurshipPage() {
+  const __c = await getPageContentMerged("entrepreneurship");
+  const alumniStartups = __c.alumniStartups as (typeof EXTRA_DEFAULTS)["entrepreneurship"]["alumniStartups"];
 
   return (
     <div className="min-h-screen flex flex-col bg-white">

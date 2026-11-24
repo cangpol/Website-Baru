@@ -1,11 +1,25 @@
 // Shared (client + server) definitions for the editable content of the public pages.
 // Banner (title, description, image) is stored separately via the page-header-banner setting.
 
-export const PAGE_CONTENT_KEYS = ["riset", "kemahasiswaan", "kerjasama", "layanan"] as const;
-export type PageContentKey = (typeof PAGE_CONTENT_KEYS)[number];
+import { EXTRA_KEYS, EXTRA_LABELS, EXTRA_PATHS, EXTRA_DEFAULTS, EXTRA_SPECS } from "./pageContentExtra";
+
+export const CORE_CONTENT_KEYS = ["riset", "kemahasiswaan", "kerjasama", "layanan"] as const;
+export type CoreContentKey = (typeof CORE_CONTENT_KEYS)[number];
+export type ExtraContentKey = (typeof EXTRA_KEYS)[number];
+export const PAGE_CONTENT_KEYS = [...CORE_CONTENT_KEYS, ...EXTRA_KEYS] as const;
+export type PageContentKey = CoreContentKey | ExtraContentKey;
+
+// Public URL of each editable page (used for "Lihat halaman" and cache revalidation).
+export const PAGE_PATHS: Record<string, string> = {
+  riset: "/riset",
+  kemahasiswaan: "/kemahasiswaan",
+  kerjasama: "/kerjasama",
+  layanan: "/layanan",
+  ...EXTRA_PATHS,
+};
 
 export type FieldSpec =
-  | { key: string; label: string; type: "text" | "textarea" | "image" }
+  | { key: string; label: string; type: "text" | "textarea" | "image" | "lines" }
   | { key: string; label: string; type: "list"; itemLabel: string; fields: FieldSpec[] };
 
 export const PAGE_LABELS: Record<PageContentKey, string> = {
@@ -13,9 +27,10 @@ export const PAGE_LABELS: Record<PageContentKey, string> = {
   kemahasiswaan: "Kemahasiswaan",
   kerjasama: "Kerjasama",
   layanan: "Layanan",
+  ...EXTRA_LABELS,
 };
 
-export const BANNER_DEFAULTS: Record<PageContentKey, { title: string; description: string; imageUrl: string }> = {
+export const BANNER_DEFAULTS: Record<CoreContentKey, { title: string; description: string; imageUrl: string }> = {
   riset: {
     title: "Pusat Riset, Inovasi,\n& Pengabdian",
     description: "Mendorong riset terapan, inovasi, dan pengabdian kepada masyarakat yang berdampak bagi industri dan masyarakat.",
@@ -39,7 +54,7 @@ export const BANNER_DEFAULTS: Record<PageContentKey, { title: string; descriptio
 };
 
 // ── Defaults (identik dengan tampilan referensi; dipakai bila admin belum mengisi) ──
-export const CONTENT_DEFAULTS = {
+const CORE_DEFAULTS = {
   riset: {
     about:
       "LPPM (Lembaga Penelitian dan Pengabdian kepada Masyarakat) Universitas Pignatelli Triputra menjadi pusat penelitian, pengabdian, dan inovasi sivitas akademika. LPPM mengoordinasikan perencanaan, pelaksanaan, monitoring, dan evaluasi kegiatan penelitian serta pengabdian kepada masyarakat, mendorong publikasi ilmiah, perlindungan kekayaan intelektual, dan hilirisasi hasil riset melalui kolaborasi dengan mitra industri dan ekosistem Triputra Group.",
@@ -132,12 +147,14 @@ export const CONTENT_DEFAULTS = {
       { name: "Whatsapp", handle: "0811-290-7500", url: "https://wa.me/628112907500" },
     ],
   },
-} satisfies Record<PageContentKey, Record<string, unknown>>;
+} satisfies Record<CoreContentKey, Record<string, unknown>>;
+
+export const CONTENT_DEFAULTS = { ...CORE_DEFAULTS, ...EXTRA_DEFAULTS };
 
 export type PageContentMap = typeof CONTENT_DEFAULTS;
 
 // ── Spesifikasi form editor admin ──
-export const CONTENT_SPECS: Record<PageContentKey, FieldSpec[]> = {
+const CORE_SPECS: Record<CoreContentKey, FieldSpec[]> = {
   riset: [
     { key: "about", label: "Teks Tentang LPPM", type: "textarea" },
     { key: "stats", label: "Statistik Performa Akademik", type: "list", itemLabel: "Statistik", fields: [
@@ -198,3 +215,5 @@ export const CONTENT_SPECS: Record<PageContentKey, FieldSpec[]> = {
     ] },
   ],
 };
+
+export const CONTENT_SPECS: Record<PageContentKey, FieldSpec[]> = { ...CORE_SPECS, ...EXTRA_SPECS } as Record<PageContentKey, FieldSpec[]>;

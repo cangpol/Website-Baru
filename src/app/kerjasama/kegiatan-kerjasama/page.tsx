@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -20,45 +22,10 @@ export const metadata: Metadata = {
   description: "Dokumentasi implementasi program kerjasama nyata UPITRA Surakarta: Campus recruitment, dosen praktisi industri, magang bersertifikat, dan beasiswa ikatan dinas.",
 };
 
-const kegiatanList = [
-  {
-    judul: "Campus Recruitment & Direct Hiring Triputra Group",
-    kategori: "Perekrutan Kerja",
-    mitra: "PT Adi Sarana Armada Tbk & Triputra Talent Acquisition",
-    desc: "Pelaksanaan seleksi wawancara dan tes psikotes langsung di kampus UPITRA Solo. Terbukti mengantarkan 26 lulusan langsung menandatangani kontrak kerja sebelum upacara wisuda.",
-    hasil: ["26 Wisudawan Langsung Bekerja", "Kontrak Karir Jangka Panjang", "Penempatan di Jakarta & Solo"],
-  },
-  {
-    judul: "Program Dosen Praktisi Industri (Executive Visiting Lecturer)",
-    kategori: "Pembelajaran Industri",
-    mitra: "Direksi & Manajer Senior Triputra Group",
-    desc: "Kuliah umum reguler menghadirkan pimpinan industri untuk membedah studi kasus supply chain, kecerdasan buatan, akuntansi korporasi, dan audit K3 modern.",
-    hasil: ["Transfer Ilmu Praktis Terkini", "Networking Profesional Mahasiswa", "Studi Kasus Bisnis Nyata"],
-  },
-  {
-    judul: "Program Magang Industri Bersertifikat 6 Bulan (Certified Internship)",
-    kategori: "Magang Terstruktur",
-    mitra: "PT Dharma Polimetal, PT TAP & ASSA Group",
-    desc: "Mahasiswa tingkat akhir terjun langsung selama satu semester penuh menangani proyek operasional riil dengan bimbingan mentor industri dan konversi 20 SKS.",
-    hasil: ["Uang Saku & Fasilitas Kerja", "Sertifikat Pengalaman Industri", "Jalur Cepat Menjadi Pegawai Tetap"],
-  },
-  {
-    judul: "Skema Beasiswa Penuh & Ikatan Dinas Triputra Peduli",
-    kategori: "Beasiswa & Karir",
-    mitra: "Yayasan Santo Ignatius Pignatelli & Triputra Group",
-    desc: "Pembiayaan 100% biaya kuliah bagi mahasiswa terpilih dengan komitmen ikatan dinas kerja di lini korporasi Triputra setelah menyelesaikan studi sarjana.",
-    hasil: ["Bebas SPP & Uang Gedung 100%", "Jaminan Kerja Pasca Kelulusan", "Mentoring Khusus Karir"],
-  },
-  {
-    judul: "Praktik Rotasi Klinik Rumah Sakit & Faskes Mitra",
-    kategori: "Praktik Medis",
-    mitra: "RS Kasih Ibu, RS Dr. Oen & RS Panti Waluyo",
-    desc: "Rotasi klinis mahasiswa Fisioterapi, Keperawatan, dan K3 di instalasi gawat darurat, ruang rawat inap medikal bedah, dan departemen hiperkes keselamatan kerja.",
-    hasil: ["Kompetensi Klinis Pasien Nyata", "Sertifikat Jam Terbang Klinik", "Akreditasi Uji Kompetensi Nasional"],
-  },
-];
 
-export default function KegiatanKerjasamaPage() {
+export default async function KegiatanKerjasamaPage() {
+  const __c = await getPageContentMerged("kegiatan-kerjasama");
+  const kegiatanList = __c.kegiatanList as (typeof EXTRA_DEFAULTS)["kegiatan-kerjasama"]["kegiatanList"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,35 +23,10 @@ export const metadata: Metadata = {
   description: "Tugas pokok dan fungsi Direktorat Kemahasiswaan Universitas Pignatelli Triputra dalam membina karakter, penalaran, minat bakat, dan kesejahteraan mahasiswa.",
 };
 
-const tupoksiList = [
-  {
-    no: "01",
-    bidang: "Pembinaan Karakter & Spiritualitas Ignasian",
-    tugas: "Menyelenggarakan program inkubasi nilai kepemimpinan Triputra DNA (Integritas, Etika, Belarasa, Keunggulan), pendampingan retret/rekoleksi karakter, dan penanaman budaya saling menghormati di kampus.",
-  },
-  {
-    no: "02",
-    bidang: "Penalaran, Keilmuan & Kreativitas Mahasiswa",
-    tugas: "Mendorong keikutsertaan mahasiswa dalam Program Kreativitas Mahasiswa (PKM) Kemendiktisaintek, lomba inovasi teknologi, kompetisi debat bahasa Inggris, dan seleksi Mahasiswa Berprestasi (Mawapres).",
-  },
-  {
-    no: "03",
-    bidang: "Pembinaan Minat, Bakat, Seni & Olahraga",
-    tugas: "Memfasilitasi pembinaan dan sarana aktivitas seluruh Unit Kegiatan Mahasiswa (UKM), menyelenggarakan kejuaraan rektor cup, serta memfasilitasi delegasi lomba di tingkat regional dan nasional.",
-  },
-  {
-    no: "04",
-    bidang: "Kesejahteraan Mahasiswa & Layanan Beasiswa",
-    tugas: "Mengelola seleksi dan distribusi Beasiswa Penuh Triputra Peduli 100%, beasiswa prestasi akademik/non-akademik, serta menyediakan layanan konseling bimbingan psikologis gratis bagi mahasiswa.",
-  },
-  {
-    no: "05",
-    bidang: "Pengembangan Karir & Organisasi Kemahasiswaan (Ormawa)",
-    tugas: "Mendampingi tata kelola BEM, DPM, dan Himpunan Mahasiswa Jurusan (HMPS) agar demokratis, transparan, berorientasi layanan, serta menyinergikan program persiapan karir bersama Triputra Career Center.",
-  },
-];
 
-export default function TugasDanFungsiKemahasiswaanPage() {
+export default async function TugasDanFungsiKemahasiswaanPage() {
+  const __c = await getPageContentMerged("tugas-dan-fungsi");
+  const tupoksiList = __c.tupoksiList as (typeof EXTRA_DEFAULTS)["tugas-dan-fungsi"]["tupoksiList"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

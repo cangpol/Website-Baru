@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -19,58 +21,10 @@ export const metadata: Metadata = {
   description: "Direktori dokumen resmi nota kesepahaman (MoU) dan perjanjian kerjasama (MoA) aktif antara UPITRA Surakarta dengan institusi mitra industri, universitas, dan pemerintah.",
 };
 
-const mouList = [
-  {
-    nomor: "012/MOU/UPITRA-ASSA/I/2026",
-    mitra: "PT Adi Sarana Armada Tbk (ASSA Group)",
-    jenis: "MoU & MoA",
-    bidang: "Perekrutan Lulusan, Magang Bersertifikat & Riset Logistik Cerdas",
-    berlakuHingga: "Januari 2031",
-    status: "Aktif",
-  },
-  {
-    nomor: "009/MOU/UPITRA-TAP/XII/2025",
-    mitra: "PT Triputra Agro Persada Tbk (TAP)",
-    jenis: "MoU & MoA",
-    bidang: "Beasiswa Ikatan Dinas, Praktik Lapangan K3 Perkebunan & Riset Otomasi",
-    berlakuHingga: "Desember 2030",
-    status: "Aktif",
-  },
-  {
-    nomor: "007/MOU/UPITRA-DHARMA/XI/2025",
-    mitra: "PT Dharma Polimetal Tbk",
-    jenis: "MoA Teknis",
-    bidang: "Penyelarasan Kurikulum Teknik, Audit K3 Manufaktur, dan Magang Industri",
-    berlakuHingga: "November 2029",
-    status: "Aktif",
-  },
-  {
-    nomor: "005/MOU/UPITRA-BEI/IX/2025",
-    mitra: "PT Bursa Efek Indonesia (IDX)",
-    jenis: "MoU Edukasi",
-    bidang: "Pendirian Galeri Investasi BEI, Pelatihan Analis Saham & Literasi Pasar Modal",
-    berlakuHingga: "September 2028",
-    status: "Aktif",
-  },
-  {
-    nomor: "004/MOU/UPITRA-RSKI/VIII/2025",
-    mitra: "Rumah Sakit Kasih Ibu Surakarta",
-    jenis: "MoA Praktik",
-    bidang: "Wahana Praktik Klinik Keperawatan & Fisioterapi Mahasiswa FKes",
-    berlakuHingga: "Agustus 2028",
-    status: "Aktif",
-  },
-  {
-    nomor: "002/MOU/UPITRA-LLDIKTI6/VI/2025",
-    mitra: "LLDIKTI Wilayah VI Jawa Tengah",
-    jenis: "MoU Pembinaan",
-    bidang: "Peningkatan Mutu Akreditasi, Hibah Dosen, dan Merdeka Belajar Kampus Merdeka",
-    berlakuHingga: "Juni 2030",
-    status: "Aktif",
-  },
-];
 
-export default function DaftarKerjasamaPage() {
+export default async function DaftarKerjasamaPage() {
+  const __c = await getPageContentMerged("daftar-kerjasama");
+  const mouList = __c.mouList as (typeof EXTRA_DEFAULTS)["daftar-kerjasama"]["mouList"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -23,61 +25,12 @@ export const metadata: Metadata = {
   description: "Pusat Penelitian dan Publikasi Ilmiah LPPM Universitas Pignatelli Triputra Surakarta: Roadmap riset, jurnal SINTA, skema hibah Triputra Research Grant, dan sentra HKI.",
 };
 
-const roadmapRiset = [
-  {
-    bidang: "Kecerdasan Buatan & Transformasi Digital Industri",
-    fokus: "Pengembangan machine learning, computer vision untuk otomasi industri manufaktur, analitik rantai pasok cerdas, dan keamanan siber.",
-    fakultas: "Fakultas Sains & Teknologi (FST)",
-  },
-  {
-    bidang: "Manajemen Berkelanjutan & Ekonomi Sirkular",
-    fokus: "Strategi keberlanjutan agribisnis, tata kelola logistik hijau (*green supply chain*), akuntansi ESG (Environmental, Social, Governance), dan technopreneurship.",
-    fakultas: "Fakultas Ekonomi & Bisnis (FEB)",
-  },
-  {
-    bidang: "Keselamatan Kerja (K3) & Ergonomi Industri",
-    fokus: "Mitigasi risiko bahaya di perkebunan dan pabrik otomotif, pencegahan musculoskeletal disorders pada pekerja, dan inovasi intervensi fisioterapi.",
-    fakultas: "Fakultas Kesehatan (FKes)",
-  },
-  {
-    bidang: "Komunikasi Lintas Budaya & Ekowisata Berkelanjutan",
-    fokus: "Kajian diplomasi bahasa dalam negosiasi bisnis internasional, pelestarian warisan budaya lokal Solo, dan pengembangan desa wisata mandiri.",
-    fakultas: "Fakultas Sosial Humaniora (FSH)",
-  },
-];
 
-const jurnalList = [
-  {
-    nama: "Jurnal Sains Terapan & Komputasi (JSTK UPITRA)",
-    issn: "e-ISSN: 2985-7821",
-    index: "Terakreditasi SINTA & Google Scholar",
-    frekuensi: "2 Terbitan per Tahun (Juni & Desember)",
-    lingkup: "Informatika, Data Science, Sistem Informasi, Rekayasa Software.",
-  },
-  {
-    nama: "Jurnal Manajemen & Dinamika Korporasi (JMDK)",
-    issn: "e-ISSN: 2986-1142",
-    index: "Terakreditasi SINTA & Garuda",
-    frekuensi: "2 Terbitan per Tahun (April & Oktober)",
-    lingkup: "Manajemen Strategis, Rantai Pasok, Akuntansi Forensik, Perpajakan.",
-  },
-  {
-    nama: "Jurnal Keselamatan, Kesehatan Kerja & Keperawatan (JK4)",
-    issn: "e-ISSN: 2987-3450",
-    index: "Google Scholar & Copernicus Index",
-    frekuensi: "2 Terbitan per Tahun (Mei & November)",
-    lingkup: "K3 Industri, Ergonomi, Rehabilitasi Fisioterapi, Asuhan Keperawatan.",
-  },
-  {
-    nama: "Jurnal Humaniora, Bahasa & Pariwisata Nusantara",
-    issn: "e-ISSN: 2988-5678",
-    index: "Google Scholar & Garuda",
-    frekuensi: "2 Terbitan per Tahun (Januari & Juli)",
-    lingkup: "Hospitality Management, Kajian Linguistik Terapan, Budaya Pariwisata.",
-  },
-];
 
-export default function PusatPenelitianPublikasiPage() {
+export default async function PusatPenelitianPublikasiPage() {
+  const __c = await getPageContentMerged("pusat-penelitian");
+  const roadmapRiset = __c.roadmapRiset as (typeof EXTRA_DEFAULTS)["pusat-penelitian"]["roadmapRiset"];
+  const jurnalList = __c.jurnalList as (typeof EXTRA_DEFAULTS)["pusat-penelitian"]["jurnalList"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -22,68 +24,14 @@ export const metadata: Metadata = {
   description: "Direktori organisasi kemahasiswaan Universitas Pignatelli Triputra Surakarta: BEM, DPM, Himpunan Mahasiswa Program Studi (HMPS), dan ragam Unit Kegiatan Mahasiswa (UKM).",
 };
 
-const lembagaUtama = [
-  {
-    nama: "Dewan Perwakilan Mahasiswa (DPM)",
-    singkatan: "DPM UPITRA",
-    peran: "Lembaga Legislatif & Pengawasan",
-    desc: "Memegang kedaulatan aspirasi mahasiswa, mengesahkan anggaran organisasi kemahasiswaan, dan mengawasi implementasi program kerja kabinet eksekutif mahasiswa.",
-  },
-  {
-    nama: "Badan Eksekutif Mahasiswa (BEM)",
-    singkatan: "BEM UPITRA",
-    peran: "Lembaga Eksekutif Tertinggi Mahasiswa",
-    desc: "Menjalankan roda kepemimpinan eksekutif mahasiswa, menginisiasi gerakan sosial kemasyarakatan, advokasi kesejahteraan mahasiswa, dan event festival kampus tahunan.",
-  },
-];
 
-const hmpsList = [
-  { nama: "HIMATIF", prodi: "Himpunan Mahasiswa Informatika", fakultas: "FST" },
-  { nama: "HIMASI", prodi: "Himpunan Mahasiswa Sistem Informasi", fakultas: "FST" },
-  { nama: "HIMARPL", prodi: "Himpunan Mahasiswa Rekayasa Perangkat Lunak", fakultas: "FST" },
-  { nama: "HIMAMA", prodi: "Himpunan Mahasiswa Manajemen", fakultas: "FEB" },
-  { nama: "HIMAKSI", prodi: "Himpunan Mahasiswa Akuntansi", fakultas: "FEB" },
-  { nama: "HIMAPAR", prodi: "Himpunan Mahasiswa Pariwisata", fakultas: "FSH" },
-  { nama: "ESA", prodi: "English Students Association", fakultas: "FSH" },
-  { nama: "HIMA K3", prodi: "Himpunan Mahasiswa Keselamatan & Kesehatan Kerja", fakultas: "FKes" },
-  { nama: "HIMA FISIO", prodi: "Himpunan Mahasiswa Fisioterapi", fakultas: "FKes" },
-  { nama: "HIMA KEP", prodi: "Himpunan Mahasiswa Keperawatan", fakultas: "FKes" },
-];
 
-const ukmList = [
-  {
-    nama: "UKM Olahraga Terpadu (Futsal, Basket, Badminton)",
-    kategori: "Olahraga & Kebugaran",
-    desc: "Wadah pengembangan bakat atletik mahasiswa, latihan rutin mingguan, dan partisipasi dalam kejuaraan antar universitas se-Jawa Tengah.",
-  },
-  {
-    nama: "Paduan Suara Mahasiswa (PSM Gita Pignatelli)",
-    kategori: "Seni Suara & Vokal",
-    desc: "Grup paduan suara resmi universitas yang bertugas dalam upacara wisuda, dies natalis, serta kompetisi paduan suara nasional.",
-  },
-  {
-    nama: "UKM Musik & Akustik Kampus",
-    kategori: "Seni Musik & Kreativitas",
-    desc: "Komunitas musisi kampus, pembinaan band mahasiswa, pelatihan instrumen musik, dan pengisi panggung apresiasi seni.",
-  },
-  {
-    nama: "Robotics, IoT & Developer Student Club",
-    kategori: "Sains & Teknologi Terapan",
-    desc: "Klub riset terapan mikrokontroler Arduino/ESP32, autonomous robot, dan kompetisi hackathon teknologi.",
-  },
-  {
-    nama: "Mahasiswa Pecinta Alam (MAPALA Pignatelli)",
-    kategori: "Petualangan & Konservasi Alam",
-    desc: "Eksplorasi pendakian gunung, susur gua (*caving*), konservasi hutan lindung, dan tanggap darurat bencana alam relawan kampus.",
-  },
-  {
-    nama: "Kerohanian & Pelayanan Kasih Ignasian",
-    kategori: "Spiritualitas & Sosial",
-    desc: "Pembinaan rohani, doa bersama, retret tahunan, dan pelayanan bakti kasih sosial ke panti werdha dan anak asuh.",
-  },
-];
 
-export default function OrganisasiMahasiswaPage() {
+export default async function OrganisasiMahasiswaPage() {
+  const __c = await getPageContentMerged("organisasi-mahasiswa");
+  const lembagaUtama = __c.lembagaUtama as (typeof EXTRA_DEFAULTS)["organisasi-mahasiswa"]["lembagaUtama"];
+  const hmpsList = __c.hmpsList as (typeof EXTRA_DEFAULTS)["organisasi-mahasiswa"]["hmpsList"];
+  const ukmList = __c.ukmList as (typeof EXTRA_DEFAULTS)["organisasi-mahasiswa"]["ukmList"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

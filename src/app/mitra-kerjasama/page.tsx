@@ -1,5 +1,6 @@
 "use client";
 
+import { usePageContent } from "@/lib/usePageContent";
 import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -17,7 +18,6 @@ import {
 } from "lucide-react";
 
 interface PartnerData {
-  id: number;
   nama: string;
   bidang?: string;
   kategori: "triputra" | "industry" | "health_tourism" | "institution";
@@ -26,60 +26,10 @@ interface PartnerData {
   status: string;
 }
 
-const allMitraList: PartnerData[] = [
-  // 1. TRIPUTRA GROUP & AFILIASI
-  { id: 17, nama: "PT Triputra Agro Persada", kategori: "triputra", kategoriLabel: "Triputra Group", logo: "/images/mitra/mitra17.png", status: "Aktif" },
-  { id: 18, nama: "PT Persada Capital Investama", kategori: "triputra", kategoriLabel: "Triputra Group", logo: "/images/mitra/1779420091_6a0fcbbb0181c.png", status: "Aktif" },
-  { id: 42, nama: "PT Daya Adicipta Mustika", kategori: "triputra", kategoriLabel: "Triputra Group", logo: "/images/mitra/1779428428_6a0fec4c95ef6.png", status: "Aktif" },
-  { id: 1, nama: "PT Adaro Energy Indonesia Tbk", kategori: "triputra", kategoriLabel: "Afiliasi Triputra", logo: "/images/mitra/mitra1.png", status: "Aktif" },
-  { id: 4, nama: "PT Kirana Megatara Tbk", kategori: "triputra", kategoriLabel: "Afiliasi Triputra", logo: "/images/mitra/mitra4.png", status: "Aktif" },
-  { id: 14, nama: "PT Surya Semesta Internusa Tbk", kategori: "triputra", kategoriLabel: "Afiliasi Triputra", logo: "/images/mitra/mitra14.png", status: "Aktif" },
-  { id: 12, nama: "PT Sumber Energi Pangan", kategori: "triputra", kategoriLabel: "Afiliasi Triputra", logo: "/images/mitra/mitra12.png", status: "Aktif" },
-  { id: 6, nama: "PT Lintas Samudra Borneo Line", kategori: "triputra", kategoriLabel: "Afiliasi Triputra", logo: "/images/mitra/mitra6.png", status: "Aktif" },
-  { id: 3, nama: "PT Java Energy Semesta", kategori: "triputra", kategoriLabel: "Afiliasi Triputra", logo: "/images/mitra/mitra3.png", status: "Aktif" },
-  { id: 16, nama: "PT Mitra Selera Bersama", kategori: "triputra", kategoriLabel: "Afiliasi Triputra", logo: "/images/mitra/mitra16.png", status: "Aktif" },
-
-  // 2. INDUSTRI, FINANSIAL & MANUFAKTUR
-  { id: 5, nama: "PT Konimex", kategori: "industry", kategoriLabel: "Farmasi & Manufaktur", logo: "/images/mitra/mitra5.png", status: "Aktif" },
-  { id: 2, nama: "PT Dan Liris", kategori: "industry", kategoriLabel: "Tekstil & Garment", logo: "/images/mitra/mitra2.png", status: "Aktif" },
-  { id: 23, nama: "PT Bursa Efek Indonesia", kategori: "industry", kategoriLabel: "Pasar Modal & Finansial", logo: "/images/mitra/1779420683_6a0fce0b533be.jfif", status: "Aktif" },
-  { id: 8, nama: "PT Pegadaian", kategori: "industry", kategoriLabel: "BUMN Finansial", logo: "/images/mitra/mitra8.png", status: "Aktif" },
-  { id: 9, nama: "BUMN Perum Perhutani", kategori: "industry", kategoriLabel: "BUMN Kehutanan", logo: "/images/mitra/mitra9.png", status: "Aktif" },
-  { id: 13, nama: "PT Asuransi Sinarmas", kategori: "industry", kategoriLabel: "Asuransi & Finansial", logo: "/images/mitra/mitra13.png", status: "Aktif" },
-  { id: 7, nama: "KAP Naufal Widita Jati", kategori: "industry", kategoriLabel: "Kantor Akuntan Publik", logo: "/images/mitra/mitra7.png", status: "Aktif" },
-  { id: 27, nama: "PT ATMI Solo", kategori: "industry", kategoriLabel: "Presisi & Manufaktur", logo: "/images/mitra/1779420875_6a0fcecb13dc7.jfif", status: "Aktif" },
-  { id: 25, nama: "PT ATMI IGI Center", kategori: "industry", kategoriLabel: "Engineering & IT", logo: "/images/mitra/1779420768_6a0fce60e1788.png", status: "Aktif" },
-  { id: 26, nama: "PT ATMI Bizdec", kategori: "industry", kategoriLabel: "Konsultan Industri", logo: "/images/mitra/1779420830_6a0fce9e9fd48.jfif", status: "Aktif" },
-  { id: 19, nama: "Solo Techno Park", kategori: "industry", kategoriLabel: "Inkubator & Riset Solo", logo: "/images/mitra/1779420221_6a0fcc3d58c8e.png", status: "Aktif" },
-  { id: 20, nama: "PT Mitra Data Abadi", kategori: "industry", kategoriLabel: "Teknologi Informasi", logo: "/images/mitra/1779420438_6a0fcd1610bb3.png", status: "Aktif" },
-  { id: 21, nama: "PT Aksara Solopos", kategori: "industry", kategoriLabel: "Media & Pers", logo: "/images/mitra/1779420481_6a0fcd41b273d.jfif", status: "Aktif" },
-  { id: 22, nama: "PT Tribun (Tribun Network)", kategori: "industry", kategoriLabel: "Media Nasional", logo: "/images/mitra/1779420518_6a0fcd668edd3.png", status: "Aktif" },
-  { id: 10, nama: "PT. Periplus Bookindo", kategori: "industry", kategoriLabel: "Retail & Distribusi", logo: "/images/mitra/mitra10.png", status: "Aktif" },
-  { id: 24, nama: "PT Hailai Sinar Cemerlang", kategori: "industry", kategoriLabel: "Layanan Komersial", logo: "/images/mitra/1779420734_6a0fce3e7a99f.png", status: "Aktif" },
-  { id: 28, nama: "PT Kartika Cemerlang Jaya Abadi", kategori: "industry", kategoriLabel: "Manufaktur & Bisnis", logo: "/images/mitra/1779420978_6a0fcf32e9137.jfif", status: "Aktif" },
-
-  // 3. KESEHATAN (FACULTY HEALTH) & PARIWISATA (FSH)
-  { id: 11, nama: "PT Persada Medika Raya", kategori: "health_tourism", kategoriLabel: "Kesehatan & Klinis", logo: "/images/mitra/mitra11.png", status: "Aktif" },
-  { id: 43, nama: "PT Persada Medika Utama", kategori: "health_tourism", kategoriLabel: "Rumah Sakit & Medika", logo: "/images/mitra/1779428488_6a0fec886b0a8.jfif", status: "Aktif" },
-  { id: 15, nama: "PT Legian Hotel Management", kategori: "health_tourism", kategoriLabel: "Hospitality & Perhotelan", logo: "/images/mitra/mitra15.png", status: "Aktif" },
-  { id: 29, nama: "PT Citra Pariwisata Indonesia", kategori: "health_tourism", kategoriLabel: "Biro Perjalanan Wisata", logo: "/images/mitra/1779427566_6a0fe8ee65999.png", status: "Aktif" },
-  { id: 39, nama: "Asosiasi Pelaku Pariwisata Indonesia", kategori: "health_tourism", kategoriLabel: "Asosiasi Pariwisata (ASPPI)", logo: "/images/mitra/1779428318_6a0febde89159.jfif", status: "Aktif" },
-  { id: 31, nama: "Dinas Kebudayaan & Pariwisata Kota Surakarta", kategori: "health_tourism", kategoriLabel: "Dinas Kebudayaan", logo: "/images/mitra/1779427866_6a0fea1a28584.png", status: "Aktif" },
-
-  // 4. INSTITUSI PENDIDIKAN & PEMERINTAHAN
-  { id: 30, nama: "Pemerintah Kota Surakarta", kategori: "institution", kategoriLabel: "Pemerintah Kota", logo: "/images/mitra/1779427606_6a0fe916773a0.png", status: "Aktif" },
-  { id: 40, nama: "Pemerintah Provinsi Jawa Tengah", kategori: "institution", kategoriLabel: "Pemerintah Daerah", logo: "/images/mitra/1779428364_6a0fec0c82bb1.png", status: "Aktif" },
-  { id: 33, nama: "Pemerintah Desa Karangasem", kategori: "institution", kategoriLabel: "Pemerintahan Desa", logo: "/images/mitra/1779427944_6a0fea68ef8b4.png", status: "Aktif" },
-  { id: 34, nama: "Diskominfo Tuban", kategori: "institution", kategoriLabel: "Dinas Kominfo", logo: "/images/mitra/1779427994_6a0fea9a93851.png", status: "Aktif" },
-  { id: 32, nama: "LLDIKTI Wilayah IV", kategori: "institution", kategoriLabel: "Lembaga Layanan Dikti", logo: "/images/mitra/1779427903_6a0fea3fd6285.png", status: "Aktif" },
-  { id: 41, nama: "Universitas Atma Jaya Yogyakarta", kategori: "institution", kategoriLabel: "Perguruan Tinggi Mitra", logo: "/images/mitra/1779428394_6a0fec2a38709.png", status: "Aktif" },
-  { id: 35, nama: "Benny Subianto Foundation", kategori: "institution", kategoriLabel: "Yayasan Beasiswa", logo: "/images/mitra/1779428069_6a0feae5a234e.jfif", status: "Aktif" },
-  { id: 38, nama: "Yayasan Adikarya Pusaka Indonesia", kategori: "institution", kategoriLabel: "Yayasan Budaya", logo: "/images/mitra/1779428283_6a0febbb40932.png", status: "Aktif" },
-  { id: 36, nama: "Gereja Santo Petrus Surakarta", kategori: "institution", kategoriLabel: "Institusi Keagamaan", logo: "/images/mitra/1779428153_6a0feb39bba5c.jfif", status: "Aktif" },
-  { id: 37, nama: "Kevikepan Surakarta", kategori: "institution", kategoriLabel: "Institusi Keuskupan", logo: "/images/mitra/1779428204_6a0feb6c2b074.jfif", status: "Aktif" },
-];
 
 export default function MitraKerjasamaPage() {
+  const __c = usePageContent("mitra-kerjasama").content as any;
+  const allMitraList = __c.allMitraList as PartnerData[];
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortOrder, setSortOrder] = useState<"name-asc" | "category">("name-asc");
@@ -213,9 +163,9 @@ export default function MitraKerjasamaPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
-              {filteredMitra.map((item) => (
+              {filteredMitra.map((item, itemIdx) => (
                 <div
-                  key={item.id}
+                  key={`${item.nama}-${itemIdx}`}
                   className="bg-white rounded-xl border border-slate-200/80 p-2.5 sm:p-3 shadow-xs hover:shadow-md hover:border-blue-400 hover:-translate-y-0.5 transition-all duration-200 flex flex-col items-center justify-between h-[126px] sm:h-[132px] group"
                 >
                   {/* Status Badge */}

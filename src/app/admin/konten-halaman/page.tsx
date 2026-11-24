@@ -7,7 +7,8 @@ import { getPageHeaderBanner, savePageHeaderBannerAction } from "@/server/hero";
 import { getPageContent, savePageContentAction } from "@/server/page-content";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import {
-  BANNER_DEFAULTS,
+  BANNER_DEFAULTS as CORE_BANNERS,
+  PAGE_PATHS,
   CONTENT_DEFAULTS,
   CONTENT_SPECS,
   PAGE_CONTENT_KEYS,
@@ -17,6 +18,7 @@ import {
 } from "@/lib/pageContent";
 
 type Json = Record<string, any>;
+const BANNERS = CORE_BANNERS as Record<string, Json>;
 
 const inputCls =
   "w-full px-3 py-2 text-xs rounded-xl bg-slate-950 border border-blue-900/60 text-white focus:outline-none focus:border-sky-500";
@@ -30,6 +32,20 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
         if (f.type === "image") {
           return (
             <ImageUploadField key={f.key} label={f.label} value={value[f.key]} onChange={(url) => set(f.key, url)} />
+          );
+        }
+        if (f.type === "lines") {
+          const arr: string[] = Array.isArray(value[f.key]) ? value[f.key] : [];
+          return (
+            <div key={f.key}>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">{f.label}</label>
+              <textarea
+                rows={Math.min(8, Math.max(3, arr.length + 1))}
+                value={arr.join("\n")}
+                onChange={(e) => set(f.key, e.target.value.split("\n"))}
+                className={inputCls}
+              />
+            </div>
           );
         }
         if (f.type === "list") {
@@ -90,24 +106,25 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
 
 export default function AdminKontenHalamanPage() {
   const [page, setPage] = useState<PageContentKey>("layanan");
-  const [banner, setBanner] = useState<Json>(BANNER_DEFAULTS.layanan);
+  const [banner, setBanner] = useState<Json>(BANNERS.layanan);
   const [content, setContent] = useState<Json>(CONTENT_DEFAULTS.layanan);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [isPending, startTransition] = useTransition();
+  const hasBanner = Boolean(BANNERS[page]);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     (async () => {
       try {
-        const [b, c] = await Promise.all([getPageHeaderBanner(page), getPageContent(page)]);
+        const [b, c] = await Promise.all([BANNERS[page] ? getPageHeaderBanner(page) : Promise.resolve(null), getPageContent(page)]);
         if (cancelled) return;
-        setBanner({ ...BANNER_DEFAULTS[page], ...(b ?? {}) });
+        setBanner({ ...(BANNERS[page] ?? {}), ...(b ?? {}) });
         setContent({ ...CONTENT_DEFAULTS[page], ...(c ?? {}) });
       } catch {
         if (!cancelled) {
-          setBanner(BANNER_DEFAULTS[page]);
+          setBanner(BANNERS[page] ?? {});
           setContent(CONTENT_DEFAULTS[page]);
         }
       } finally {
@@ -128,12 +145,14 @@ export default function AdminKontenHalamanPage() {
     e.preventDefault();
     startTransition(async () => {
       try {
-        const b = await savePageHeaderBannerAction(page, {
-          title: banner.title,
-          description: banner.description ?? "",
-          imageUrl: banner.imageUrl,
-        });
-        if (!b.ok) return showToast(b.message, false);
+        if (hasBanner) {
+          const b = await savePageHeaderBannerAction(page, {
+            title: banner.title,
+            description: banner.description ?? "",
+            imageUrl: banner.imageUrl,
+          });
+          if (!b.ok) return showToast(b.message, false);
+        }
         const c = await savePageContentAction(page, content);
         showToast(c.message, c.ok);
       } catch {
@@ -147,7 +166,7 @@ export default function AdminKontenHalamanPage() {
       <div>
         <h1 className="text-2xl font-black text-white">Konten Halaman</h1>
         <p className="text-xs text-slate-400 mt-1">
-          Ubah banner, teks, dan gambar halaman publik. Katalog layanan dikelola di menu Katalog &amp; Unduhan.
+          Ubah banner, teks, daftar, dan gambar halaman publik (tambah, ubah, hapus item). Katalog layanan dikelola di menu Katalog &amp; Unduhan.
         </p>
       </div>
 
@@ -163,7 +182,7 @@ export default function AdminKontenHalamanPage() {
       )}
 
       <div className="flex flex-wrap gap-2">
-        {PAGE_CONTENT_KEYS.map((k) => (
+        {PAGE_CONTENT_KEYS.filter((k) => BANNERS[k]).map((k) => (
           <button
             key={k}
             type="button"
@@ -175,7 +194,20 @@ export default function AdminKontenHalamanPage() {
             {PAGE_LABELS[k]}
           </button>
         ))}
-        <Link href={`/${page}`} target="_blank" className="ml-auto text-xs text-sky-300 flex items-center gap-1 self-center">
+        <select
+          aria-label="Halaman lainnya"
+          value={BANNERS[page] ? "" : page}
+          onChange={(e) => e.target.value && setPage(e.target.value as PageContentKey)}
+          className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-200 border border-blue-900/50 cursor-pointer"
+        >
+          <option value="">Halaman lainnya…</option>
+          {PAGE_CONTENT_KEYS.filter((k) => !BANNERS[k]).map((k) => (
+            <option key={k} value={k}>
+              {PAGE_LABELS[k]}
+            </option>
+          ))}
+        </select>
+        <Link href={PAGE_PATHS[page] ?? `/${page}`} target="_blank" className="ml-auto text-xs text-sky-300 flex items-center gap-1 self-center">
           Lihat halaman <ExternalLink className="w-3.5 h-3.5" />
         </Link>
       </div>
@@ -186,6 +218,7 @@ export default function AdminKontenHalamanPage() {
         </div>
       ) : (
         <form onSubmit={save} className="bg-[#0a192f] border border-blue-900/40 rounded-2xl p-6 space-y-8">
+          {hasBanner && (
           <section className="space-y-4">
             <h2 className="text-lg font-bold text-white">Banner (1440 × 480 px)</h2>
             <div>
@@ -214,8 +247,9 @@ export default function AdminKontenHalamanPage() {
               recommendedSize="1440 × 480 px"
             />
           </section>
+          )}
 
-          <section className="space-y-4 border-t border-blue-900/40 pt-6">
+          <section className={`space-y-4 ${hasBanner ? "border-t border-blue-900/40 pt-6" : ""}`}>
             <h2 className="text-lg font-bold text-white">Isi Halaman {PAGE_LABELS[page]}</h2>
             <Fields specs={CONTENT_SPECS[page]} value={content} onChange={setContent} />
           </section>

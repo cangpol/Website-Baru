@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,40 +23,10 @@ export const metadata: Metadata = {
   description: "Program unggulan pengembangan karakter, kepemimpinan Triputra DNA, Latihan Keterampilan Manajemen Mahasiswa (LKMM), dan pembinaan prestasi di UPITRA.",
 };
 
-const programList = [
-  {
-    title: "Triputra Leadership Camp (TLC)",
-    kategori: "Kepemimpinan & Karakter",
-    desc: "Program pelatihan kepemimpinan intensif selama 3 hari di alam terbuka yang dirancang khusus bersama tim Talent Management Triputra Group untuk mengasah ketangguhan mental, integritas, dan kerjasama tim.",
-    manfaat: ["Internalisasi Triputra DNA", "Sertifikat Eksekutif Leadership", "Prioritas Seleksi Magang Triputra"],
-  },
-  {
-    title: "Latihan Keterampilan Manajemen Mahasiswa (LKMM)",
-    kategori: "Manajemen Organisasi",
-    desc: "Pelatihan berjenjang (Tingkat Pra-Dasar hingga Tingkat Menengah) yang membekali pengurus ormawa kemampuan merumuskan visi kerja, tata kelola keuangan organisasi, manajemen konflik, dan evaluasi program.",
-    manfaat: ["Keahlian Manajemen Proyek", "Sertifikasi Kepengurusan Ormawa", "Portofolio SKPI Resmi"],
-  },
-  {
-    title: "Inkubasi Program Kreativitas Mahasiswa (PKM)",
-    kategori: "Penalaran & Riset",
-    desc: "Bootcamp bimbingan penulisan proposal PKM 8 bidang (Riset, Karsa Cipta, Kewirausahaan, Pengabdian Masyarakat, dll.) bersama dosen pendamping bereputasi nasional hingga lolos PIMNAS.",
-    manfaat: ["Hibah Pendanaan Kemendikbud", "Rekognisi Konversi SKS Kuliah", "Pendampingan Paten HKI"],
-  },
-  {
-    title: "Sertifikasi Kompetensi Profesi Industri",
-    kategori: "Kesiapan Karir",
-    desc: "Fasilitasi ujian sertifikasi kompetensi berstandar BNSP, Microsoft Certified Educator/Developer, Cisco CCNA, SAP ERP Financials, dan Brevet Pajak A & B bagi mahasiswa tingkat akhir.",
-    manfaat: ["Sertifikat Lisensi Resmi BNSP", "Daya Saing Tinggi di Pasar Kerja", "Tertera dalam Surat Keterangan Pendamping Ijazah (SKPI)"],
-  },
-  {
-    title: "Aksi Belarasa Peduli Sesama (Community Empowerment)",
-    kategori: "Spiritualitas & Sosial",
-    desc: "Kegiatan nyata terjun ke masyarakat untuk mendampingi pelaku UMKM, pelatihan melek digital bagi anak panti asuhan, dan bakti lingkungan hidup di wilayah Surakarta dan sekitarnya.",
-    manfaat: ["Peningkatan Empati Sosial", "Pengalaman Lapangan Nyata", "Penanaman Nilai Kasih Ignasian"],
-  },
-];
 
-export default function ProgramPengembanganMahasiswaPage() {
+export default async function ProgramPengembanganMahasiswaPage() {
+  const __c = await getPageContentMerged("program-pengembangan");
+  const programList = __c.programList as (typeof EXTRA_DEFAULTS)["program-pengembangan"]["programList"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,65 +23,12 @@ export const metadata: Metadata = {
   description: "Daftar capaian prestasi akademik, rekor serapan kerja lulusan di Triputra Group, akreditasi Baik Sekali, dan torehan juara mahasiswa UPITRA.",
 };
 
-const prestasiMahasiswa = [
-  {
-    kegiatan: "National IoT & AI Innovation Hackathon 2026",
-    raihan: "Juara 1 Tingkat Nasional",
-    tim: "Tim FST UPITRA (Informatika & Sistem Informasi)",
-    penyelenggara: "Kementerian Komunikasi dan Informatika & Perguruan Tinggi Terkemuka",
-    deskripsi: "Mengembangkan inovasi 'Smart Agri-Telemetry System' untuk pemantauan perkebunan sawit berkelanjutan berbasis IoT dan edge computing.",
-  },
-  {
-    kegiatan: "National Business Case Competition Triputra Youth Summit 2026",
-    raihan: "Juara 2 Nasional & Best Presentation",
-    tim: "Tim FEB UPITRA (Manajemen & Akuntansi)",
-    penyelenggara: "Triputra Group Talent Management",
-    deskripsi: "Menyusun strategi optimalisasi logistik rantai pasok 'Green Cold-Chain Logistics' yang efisien dan ramah lingkungan.",
-  },
-  {
-    kegiatan: "Lomba Inovasi K3 & Ergonomi Industri Manufaktur 2026",
-    raihan: "Juara 1 Kategori Riset Terapan",
-    tim: "Mahasiswa S1 K3 (Fakultas Kesehatan)",
-    penyelenggara: "Dewan Keselamatan dan Kesehatan Kerja Nasional (DK3N)",
-    deskripsi: "Rancang bangun aplikasi mobile audit risiko ergonomis berbasis Computer Vision untuk pekerja manufaktur komponen otomotif.",
-  },
-  {
-    kegiatan: "Central Java English Debate Championship 2026",
-    raihan: "Juara 3 & Overall Best Speaker",
-    tim: "Debating Society S1 Bahasa Inggris UPITRA",
-    penyelenggara: "Kopertis / LLDIKTI Wilayah VI Jawa Tengah",
-    deskripsi: "Berhasil melaju ke babak semifinal dan meraih predikat pembicara terbaik dalam mosi etika kecerdasan buatan global.",
-  },
-];
 
-const capaianInstitusi = [
-  {
-    angka: "BAIK SEKALI",
-    label: "Akreditasi Institusi",
-    instansi: "BAN-PT (Badan Akreditasi Nasional)",
-    desc: "Penjaminan mutu tata kelola perguruan tinggi modern, kurikulum adaptif, dan sarana prasarana digital prima.",
-  },
-  {
-    angka: "92%",
-    label: "Tingkat Serapan Kerja Lulusan",
-    instansi: "Tracer Study UPITRA & Triputra CDC",
-    desc: "Lulusan telah diterima bekerja di ekosistem Triputra Group dan perusahaan mitra nasional sebelum masa tunggu 3 bulan.",
-  },
-  {
-    angka: "100%",
-    label: "Beasiswa Triputra Peduli",
-    instansi: "Yayasan Santo Ignatius Pignatelli",
-    desc: "Ratusan mahasiswa berprestasi dan berlatar belakang ekonomi rentan didanai beasiswa pendidikan penuh.",
-  },
-  {
-    angka: "50+",
-    label: "Jejaring Industri Aktif",
-    instansi: "Triputra Group & Mitra Strategis",
-    desc: "Kerjasama magang bersertifikat, campus recruitment, dan penyelarasan kurikulum bersama industri riil.",
-  },
-];
 
-export default function PrestasiDanCapaianPage() {
+export default async function PrestasiDanCapaianPage() {
+  const __c = await getPageContentMerged("prestasi-capaian");
+  const prestasiMahasiswa = __c.prestasiMahasiswa as (typeof EXTRA_DEFAULTS)["prestasi-capaian"]["prestasiMahasiswa"];
+  const capaianInstitusi = __c.capaianInstitusi as (typeof EXTRA_DEFAULTS)["prestasi-capaian"]["capaianInstitusi"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

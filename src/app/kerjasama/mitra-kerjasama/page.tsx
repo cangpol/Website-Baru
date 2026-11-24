@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,45 +23,10 @@ export const metadata: Metadata = {
   description: "Jejaring kemitraan strategis Universitas Pignatelli Triputra Surakarta: Triputra Group, BUMN, rumah sakit terkemuka, dan perguruan tinggi bereputasi.",
 };
 
-const kelompokMitra = [
-  {
-    kategori: "Ekosistem Bisnis Triputra Group",
-    badge: "Mitra Strategis Utama",
-    desc: "Kerjasama penyerapan lulusan, program magang intensif, beasiswa ikatan dinas, dan transfer pengetahuan langsung dari praktisi industri.",
-    mitraList: [
-      { nama: "PT Adi Sarana Armada Tbk (ASSA)", sektor: "Logistics, Car Rental & Mobility Solutions" },
-      { nama: "PT Triputra Agro Persada Tbk (TAP)", sektor: "Agribusiness, Sustainable Palm Oil & Rubber" },
-      { nama: "PT Dharma Polimetal Tbk", sektor: "Automotive Component Manufacturing" },
-      { nama: "PT Kirana Megatara Tbk", sektor: "Natural Rubber Processing & Export" },
-      { nama: "PT Puninar Logistics", sektor: "Integrated Supply Chain & Warehousing" },
-      { nama: "PT Daya Adicipta Mustika", sektor: "Honda Motorcycle Dealership & Distribution" },
-    ],
-  },
-  {
-    kategori: "Sektor Perbankan, Finansial & Pasar Modal",
-    badge: "Keuangan & Investasi",
-    desc: "Kerjasama edukasi pasar modal, tax center, magang perbankan syariah/konvensional, dan kurikulum akuntansi digital.",
-    mitraList: [
-      { nama: "Bursa Efek Indonesia (BEI / IDX)", sektor: "Galeri Investasi & Edukasi Pasar Modal" },
-      { nama: "PT Bank Central Asia Tbk (BCA)", sektor: "Perbankan Komersial & Pembayaran Digital" },
-      { nama: "PT Bank Mandiri (Persero) Tbk", sektor: "Layanan Perbankan & Program Magang Kampus" },
-      { nama: "Bank Jateng", sektor: "Mitra Perbankan Daerah & Beasiswa Pemda" },
-    ],
-  },
-  {
-    kategori: "Rumah Sakit & Lembaga Layanan Kesehatan",
-    badge: "Klinik & Rumah Sakit",
-    desc: "Fasilitas praktik klinik mahasiswa Fakultas Kesehatan (K3, Fisioterapi, Keperawatan) dan riset kesehatan kerja.",
-    mitraList: [
-      { nama: "RS Kasih Ibu Surakarta", sektor: "Praktik Keperawatan & Fisioterapi" },
-      { nama: "RS Dr. Oen Surakarta", sektor: "Praktik Medikal Bedah & Emergency Nursing" },
-      { nama: "RS Panti Waluyo Surakarta", sektor: "Klinik Asuhan Keperawatan Komprehensif" },
-      { nama: "Pusat K3 & Hiperkes Jawa Tengah", sektor: "Sertifikasi K3 & Higiene Industri" },
-    ],
-  },
-];
 
-export default function MitraKerjasamaPage() {
+export default async function MitraKerjasamaPage() {
+  const __c = await getPageContentMerged("kelompok-mitra");
+  const kelompokMitra = __c.kelompokMitra as (typeof EXTRA_DEFAULTS)["kelompok-mitra"]["kelompokMitra"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

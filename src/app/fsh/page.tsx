@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -22,41 +24,12 @@ export const metadata: Metadata = {
   description: "Fakultas Sosial Humaniora UPITRA Surakarta: S1 Pariwisata dan S1 Bahasa Inggris. Mengembangkan keahlian perhotelan global, komunikasi bisnis internasional, dan diplomasi budaya.",
 };
 
-const prodiListFSH = [
-  {
-    name: "S1 Pariwisata",
-    slug: "pariwisata",
-    degree: "Sarjana Pariwisata (S.Par.)",
-    akreditasi: "BAIK",
-    desc: "Mempelajari manajemen destinasi pariwisata berkelanjutan, industri perhotelan (*hospitality management*), MICE (Meeting, Incentive, Convention, Exhibition), dan ecotourism.",
-    prospek: ["Hotel & Resort Manager", "Tourism Destination Planner", "MICE Event Director", "Travel & Tour Consultant"],
-  },
-  {
-    name: "S1 Bahasa Inggris",
-    slug: "bahasa-inggris",
-    degree: "Sarjana Sastra (S.S.)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Menitikberatkan pada komunikasi bisnis global (*English for Professional Communication*), penerjemahan profesional (*Translation & Interpreting*), dan penulisan konten media digital internasional.",
-    prospek: ["Corporate Communications Specialist", "Professional Translator / Interpreter", "Content Strategist", "Diplomatic & Public Relations Officer"],
-  },
-];
 
-const labFSH = [
-  {
-    name: "Tourism & Hospitality Lab (Mini Hotel & Mockup Suite)",
-    desc: "Fasilitas praktikum tata hidang (F&B Service), front office hotel bintang lima, housekeeping, dan tata kelola operasional hospitality.",
-  },
-  {
-    name: "Multimedia Language & Simultaneous Interpreting Lab",
-    desc: "Laboratorium bahasa berbasis software canggih untuk pelatihan penerjemahan lisan simultan, tes TOEFL/IELTS, dan public speaking.",
-  },
-  {
-    name: "International Cultural & Creative Content Studio",
-    desc: "Studio kreatif pembuatan konten media pariwisata digital, podcast komunikasi internasional, dan simulasi negosiasi bisnis multibudaya.",
-  },
-];
 
-export default function FakultasSosialHumanioraPage() {
+export default async function FakultasSosialHumanioraPage() {
+  const __c = await getPageContentMerged("fakultas-fsh");
+  const prodiListFSH = __c.prodiListFSH as (typeof EXTRA_DEFAULTS)["fakultas-fsh"]["prodiListFSH"];
+  const labFSH = __c.labFSH as (typeof EXTRA_DEFAULTS)["fakultas-fsh"]["labFSH"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePageContent } from "@/lib/usePageContent";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -32,162 +33,10 @@ interface BrochureItem {
   highlights: string[];
 }
 
-const brochureList: BrochureItem[] = [
-  // 1. BROSUR UMUM PMB
-  {
-    id: "pmb-general",
-    title: "Brosur PMB & Panduan Akademik 2026/2027",
-    faculty: "all_pmb",
-    facultyName: "Universitas Pignatelli Triputra",
-    degree: "S1 & D3",
-    degreeTitle: "Prospectus Resmi",
-    fileSize: "6.2 MB",
-    coverImage: "/images/brochures/1788939036_6aa10b1c44527.jpg",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1791794242_6acc9c42b5951.pdf",
-    description: "Panduan resmi penerimaan mahasiswa baru UPITRA, skema beasiswa Triputra Peduli (potongan SPP s/d 100%), jadwal pendaftaran jalur tanpa tes, dan profil ekosistem kampus.",
-    highlights: ["Jalur Rapor Bebas Tes", "Beasiswa Prestasi Triputra", "Estimasi Biaya Kuliah & Asrama", "Fasilitas Kampus Surakarta"],
-  },
-
-  // 2. FACULTY SAINS & TECHNOLOGY (FST)
-  {
-    id: "fst-inf",
-    title: "E-Brosur S1 Informatika (Computer Science)",
-    faculty: "fst",
-    facultyName: "Faculty Sains & Technology",
-    degree: "S1",
-    degreeTitle: "S.Kom.",
-    fileSize: "19.5 MB",
-    coverImage: "/images/brochures/1781243989_6a2ba055e65df.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781157527_S1 Informatika.pdf",
-    description: "Kurikulum berbasis rekayasa software modern, kecerdasan buatan (AI/ML), cloud computing, dan jalur magang industri langsung ke Triputra Group.",
-    highlights: ["Software Engineering & Architecture", "Artificial Intelligence & Data Science", "Cloud & Cybersecurity", "Magang Industri Bersertifikat"],
-  },
-  {
-    id: "fst-se",
-    title: "E-Brosur S1 Software Engineering",
-    faculty: "fst",
-    facultyName: "Faculty Sains & Technology",
-    degree: "S1",
-    degreeTitle: "S.Kom.",
-    fileSize: "17.4 MB",
-    coverImage: "/images/brochures/1781244302_6a2ba18e4cad2.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781157663_S1 Sofware engineering.pdf",
-    description: "Fokus mendalam pada siklus rekayasa perangkat lunak skala enterprise, metodologi agile modern, DevOps automation, dan QA software testing.",
-    highlights: ["Enterprise Microservices Architecture", "DevOps & CI/CD Pipelines", "Mobile & Web Platform Engineering", "Lab Komputasi FST"],
-  },
-  {
-    id: "fst-si",
-    title: "E-Brosur S1 Sistem Informasi (Information Systems)",
-    faculty: "fst",
-    facultyName: "Faculty Sains & Technology",
-    degree: "S1",
-    degreeTitle: "S.Kom.",
-    fileSize: "18.2 MB",
-    coverImage: "/images/brochures/1781243035_6a2b9c9b505a7.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781157341_S1 Sistem Informasi.pdf",
-    description: "Menjembatani strategi transformasi bisnis perusahaan dengan analisis big data, Enterprise Resource Planning (ERP), dan tata kelola teknologi informasi korporasi.",
-    highlights: ["Business Process Automation", "ERP & Enterprise Systems", "Big Data Analytics", "IT Governance & Strategy"],
-  },
-
-  // 3. FACULTY EKONOMIC & BUSSINESS (FEB)
-  {
-    id: "feb-man",
-    title: "E-Brosur S1 Manajemen Bisnis (Business Management)",
-    faculty: "feb",
-    facultyName: "Faculty Ekonomic & Bussiness",
-    degree: "S1",
-    degreeTitle: "S.M.",
-    fileSize: "20.8 MB",
-    coverImage: "/images/brochures/1781244311_6a2ba19746727.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781152364_S1  Manajemen.pdf",
-    description: "Membekali calon wirausahawan dan manajer operasional korporat dengan keunggulan strategic thinking, supply chain management, dan digital marketing.",
-    highlights: ["Corporate Strategic Planning", "Supply Chain & Agribusiness Management", "Digital Marketing & Brand Strategy", "Inkubasi Bisnis UPITRA"],
-  },
-  {
-    id: "feb-akt",
-    title: "E-Brosur S1 Akuntansi (Accounting & Digital Finance)",
-    faculty: "feb",
-    facultyName: "Faculty Ekonomic & Bussiness",
-    degree: "S1",
-    degreeTitle: "S.Ak.",
-    fileSize: "17.1 MB",
-    coverImage: "/images/brochures/1781243921_6a2ba0118eb8a.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781157699_S1 Akuntansi.pdf",
-    description: "Menghasilkan akuntan publik, auditor keuangan, dan financial analyst berintegritas tinggi dengan penguasaan teknologi audit digital dan standar IFRS.",
-    highlights: ["Audit & Financial Reporting IFRS", "Digital Tax & Corporate Accounting", "Forensic Accounting & Risk Analysis", "Kerjasama Kantor Akuntan Publik"],
-  },
-
-  // 4. FACULTY SOCIAL HUMANIORA (FSH)
-  {
-    id: "fsh-par",
-    title: "E-Brosur S1 Pariwisata (Hospitality & Tourism)",
-    faculty: "fsh",
-    facultyName: "Faculty Social Humaniora",
-    degree: "S1",
-    degreeTitle: "S.Par.",
-    fileSize: "21.2 MB",
-    coverImage: "/images/brochures/1781244224_6a2ba140c96d9.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781157500_S1 Pariwisata.pdf",
-    description: "Mencetak profesional manajemen perhotelan bintang lima, penyelenggara MICE internasional, dan perencana destinasi pariwisata berkelanjutan.",
-    highlights: ["International Hotel & Resort Management", "MICE & Event Production", "Cultural & Heritage Tourism", "Lab Simulasi Perhotelan FSH"],
-  },
-  {
-    id: "fsh-ing",
-    title: "E-Brosur S1 Bahasa Inggris (English for Business)",
-    faculty: "fsh",
-    facultyName: "Faculty Social Humaniora",
-    degree: "S1",
-    degreeTitle: "S.Li.",
-    fileSize: "16.9 MB",
-    coverImage: "/images/brochures/1781244787_6a2ba373177a4.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781157727_S1 Bahasa Inggris.pdf",
-    description: "Mengasah kemahiran komunikasi bahasa Inggris tingkat tinggi untuk negosiasi bisnis multinasional, diplomasi internasional, dan penerjemahan profesional.",
-    highlights: ["Global Business Communication", "Professional Translation & Interpreting", "Corporate PR & Public Speaking", "Studio Bahasa Multimedia"],
-  },
-
-  // 5. FACULTY HEALTH (FH)
-  {
-    id: "fh-k3",
-    title: "E-Brosur S1 Keselamatan & Kesehatan Kerja (K3)",
-    faculty: "fh",
-    facultyName: "Faculty Health",
-    degree: "S1",
-    degreeTitle: "S.Tr.Kes.",
-    fileSize: "18.5 MB",
-    coverImage: "/images/brochures/1781245590_6a2ba6961cc0c.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1783049270_6a472c36e0a11.pdf",
-    description: "Mencetak ahli K3 korporat, auditor keselamatan kerja industri manufaktur, pertambangan, dan perancang sistem manajemen HSE bersama Triputra Group.",
-    highlights: ["Industrial Safety & Ergonomics", "HSE Management Systems (SMK3)", "Industrial Hygiene & Toxicology", "Praktek Industri Lapangan"],
-  },
-  {
-    id: "fh-fis",
-    title: "E-Brosur S1 Fisioterapi (Physiotherapy)",
-    faculty: "fh",
-    facultyName: "Faculty Health",
-    degree: "S1",
-    degreeTitle: "S.Ft.",
-    fileSize: "19.1 MB",
-    coverImage: "/images/brochures/1781245748_6a2ba734e352e.png",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1781157992_S1 Fisioterapi.pdf",
-    description: "Fisioterapi klinis profesional, rehabilitasi muskuloskeletal, neuromuskular, penanganan cedera olahraga, dan rehabilitasi pascaoperasi medik.",
-    highlights: ["Musculoskeletal Rehabilitation", "Sports Physiotherapy & Rehab", "Neuro-Pediatric Physical Therapy", "Jejaring Rumah Sakit Mitra"],
-  },
-  {
-    id: "fh-kep",
-    title: "E-Brosur D3 Keperawatan (Nursing)",
-    faculty: "fh",
-    facultyName: "Faculty Health",
-    degree: "D3",
-    degreeTitle: "A.Md.Kep.",
-    fileSize: "15.4 MB",
-    coverImage: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=800&auto=format&fit=crop&q=80",
-    pdfUrl: "https://www.upitra.ac.id/files/brochures/1791794242_6acc9c42b5951.pdf",
-    description: "Membekali perawat vokasi yang terampil, tanggap gawat darurat, dan beretika compassion dengan laboratorium keperawatan lengkap dan praktek klinis rumah sakit.",
-    highlights: ["Keperawatan Medikal Bedah", "Kegawatdaruratan & Critical Care", "Asuhan Keperawatan Maternitas", "Kerjasama Rumah Sakit di Surakarta"],
-  },
-];
 
 export default function EBrochurePage() {
+  const __c = usePageContent("ebrochure").content as any;
+  const brochureList = __c.brochureList as BrochureItem[];
   const [selectedFaculty, setSelectedFaculty] = useState<string>("all");
   const [previewBrochure, setPreviewBrochure] = useState<BrochureItem | null>(null);
 

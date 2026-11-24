@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,32 +23,12 @@ export const metadata: Metadata = {
   description: "Portal perkuliahan daring Learning Management System (LMS) Universitas Pignatelli Triputra Surakarta: Akses materi kuliah digital, kuis interaktif, dan panduan belajar daring.",
 };
 
-const fiturLMS = [
-  {
-    judul: "Akses Materi Perkuliahan 24/7",
-    desc: "Unduh modul perkuliahan, presentasi dosen, e-book pendamping, dan rekaman sesi kuliah kapan saja dan di mana saja melalui laptop atau smartphone.",
-  },
-  {
-    judul: "Pengumpulan Tugas & Ujian Terintegrasi",
-    desc: "Sistem unggah tugas terstruktur dengan notifikasi tenggat waktu otomatis, feedback nilai langsung dari dosen, dan ujian CBT terjadwal.",
-  },
-  {
-    judul: "Forum Diskusi & Kolaborasi Interaktif",
-    desc: "Ruang tanya jawab asinkron bersama dosen pengampu dan rekan sekelas untuk membedah topik materi maupun proyek kelompok.",
-  },
-  {
-    judul: "Video Conference Kuliah Daring HD",
-    desc: "Terhubung langsung dengan sesi tatap maya Google Meet & Zoom Education berkecepatan tinggi tanpa perlu instalasi aplikasi tambahan yang rumit.",
-  },
-];
 
-const panduanAkun = [
-  { langkah: "Username Login", keterangan: "NIM (Nomor Induk Mahasiswa) resmi Anda." },
-  { langkah: "Kata Sandi Awal", keterangan: "Kombinasi tanggal lahir baku atau kata sandi yang dikirimkan ke email @upitra.ac.id." },
-  { langkah: "Kendala Akses?", keterangan: "Hubungi Unit Pelaksana Teknis (UPT) Teknologi Informasi & Komunikasi di Kampus Solo." },
-];
 
-export default function ELearningPage() {
+export default async function ELearningPage() {
+  const __c = await getPageContentMerged("e-learning");
+  const fiturLMS = __c.fiturLMS as (typeof EXTRA_DEFAULTS)["e-learning"]["fiturLMS"];
+  const panduanAkun = __c.panduanAkun as (typeof EXTRA_DEFAULTS)["e-learning"]["panduanAkun"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

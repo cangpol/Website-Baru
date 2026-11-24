@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,37 +23,12 @@ export const metadata: Metadata = {
   description: "Pusat pengembangan karir dan bursa kerja Universitas Pignatelli Triputra Surakarta: Campus hiring eksklusif Triputra Group, konseling karir, dan magang bersertifikat.",
 };
 
-const layananCDC = [
-  {
-    judul: "Campus Hiring Eksklusif Triputra Group",
-    desc: "Proses rekrutmen kerja langsung di kampus sebelum wisuda oleh korporasi terkemuka (PT ASSA Tbk, PT TAP Tbk, PT Dharma Polimetal Tbk, dll.).",
-    manfaat: ["Jalur Prioritas Seleksi", "Proses Wawancara di Kampus Solo", "Penempatan Karir Cepat"],
-  },
-  {
-    judul: "Konseling Karir & Pemetaan Potensi Diri",
-    desc: "Sesi konsultasi privat satu lawan satu bersama psikolog industri dan praktisi HRD untuk memetakan minat karir dan rencana pasca kelulusan.",
-    manfaat: ["Tes Asesmen Psikologi Karir", "Klarifikasi Minat & Bakat", "Rencana Pengembangan Karir Jangka Panjang"],
-  },
-  {
-    judul: "Workshop Resume ATS & Simulasi Interview",
-    desc: "Pelatihan intensif penulisan CV berstandar Applicant Tracking System (ATS), optimalisasi profil LinkedIn, dan simulasi wawancara kerja teknis.",
-    manfaat: ["Bedah CV Secara Personal", "Simulasi Wawancara HR & User", "Tips Negosiasi Gaji Awal"],
-  },
-  {
-    judul: "Program Magang Industri Bersertifikat 6 Bulan",
-    desc: "Penempatan magang berbayar dengan konversi 20 SKS di departemen operasional industri riil, didampingi langsung oleh senior mentor profesional.",
-    manfaat: ["Pengalaman Proyek Nyata", "Uang Saku & Benefit Magang", "Peluang Diangkat Karyawan Tetap"],
-  },
-];
 
-const statistikSerapan = [
-  { angka: "92%", label: "Lulusan Bekerja < 3 Bulan", sub: "Survei Tracer Study Resmi" },
-  { angka: "50+", label: "Perusahaan Mitra Rekrutmen", sub: "Ekosistem Triputra & Nasional" },
-  { angka: "26 Orang", label: "Lulusan Direkrut Sebelum Wisuda", sub: "Batch Terkini di ASSA Group" },
-  { angka: "100%", label: "Pendampingan Karir", sub: "Sejak Semester 5 hingga Lulus" },
-];
 
-export default function CareerCenterPage() {
+export default async function CareerCenterPage() {
+  const __c = await getPageContentMerged("career-center");
+  const layananCDC = __c.layananCDC as (typeof EXTRA_DEFAULTS)["career-center"]["layananCDC"];
+  const statistikSerapan = __c.statistikSerapan as (typeof EXTRA_DEFAULTS)["career-center"]["statistikSerapan"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

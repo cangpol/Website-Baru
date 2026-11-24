@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,49 +23,12 @@ export const metadata: Metadata = {
   description: "Fakultas Kesehatan UPITRA Surakarta: S1 K3 (Kesehatan & Keselamatan Kerja), S1 Fisioterapi, dan D3 Keperawatan. Menyiapkan tenaga kesehatan dan ahli HSE profesional industri.",
 };
 
-const prodiListFKes = [
-  {
-    name: "S1 Keselamatan & Kesehatan Kerja (K3)",
-    slug: "kesehatan-dan-keselamatan-kerja",
-    degree: "Sarjana Keselamatan & Kesehatan Kerja (S.K3)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Mempelajari manajemen risiko bahaya industri (*Hazard Identification & Risk Assessment*), higiene industri, ergonomi kerja, pencegahan kecelakaan kerja, dan audit SMK3/ISO 45001 di sektor manufaktur dan perkebunan.",
-    prospek: ["HSE Specialist / K3 Officer", "Safety Auditor", "Industrial Hygiene Consultant", "Ergonomist Industri"],
-  },
-  {
-    name: "S1 Fisioterapi",
-    slug: "fisioterapi",
-    degree: "Sarjana Fisioterapi (S.Ft)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Fokus pada pemulihan dan rehabilitasi gerak fungsi tubuh manusia, penanganan cedera olahraga (*sports physiotherapy*), fisioterapi muskuloskeletal, neuromuskular, dan pediatri.",
-    prospek: ["Sports Physiotherapist", "Clinical Physiotherapist RS", "Rehabilitation Specialist", "Wellness & Ergonomic Consultant"],
-  },
-  {
-    name: "D3 Keperawatan",
-    slug: "keperawatan",
-    degree: "Ahli Madya Keperawatan (A.Md.Kep)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Pendidikan vokasional intensif asuhan keperawatan profesional, gawat darurat (Basic Trauma Cardiac Life Support), keperawatan medikal bedah, dan etika keperawatan berhati belarasa.",
-    prospek: ["Perawat Rumah Sakit / Klinik", "Industrial Occupational Health Nurse", "Emergency Response Nurse", "Perawat Home Care Mandiri"],
-  },
-];
 
-const labFKes = [
-  {
-    name: "Laboratorium K3 & Higiene Industri",
-    desc: "Dilengkapi instrumen pengukuran kebisingan (Sound Level Meter), pencahayaan (Lux Meter), debu/gas berbahaya (Dust Sampler), dan simulasi tanggap darurat APAR.",
-  },
-  {
-    name: "Klinik Praktikum Fisioterapi & Elektroterapi",
-    desc: "Fasilitas modalitas terapi modern: Ultrasound therapy, TENS, gym rehabilitasi muskuloskeletal, dan peralatan analisis postur tubuh.",
-  },
-  {
-    name: "Mini Hospital & Laboratorium Keperawatan Medikal",
-    desc: "Simulasi bangsal rawat inap terpadu, manikin resusitasi jantung paru (CPR), laboratorium keperawatan anak & maternitas, serta ruang tindakan steril.",
-  },
-];
 
-export default function FakultasKesehatanPage() {
+export default async function FakultasKesehatanPage() {
+  const __c = await getPageContentMerged("fakultas-fkes");
+  const prodiListFKes = __c.prodiListFKes as (typeof EXTRA_DEFAULTS)["fakultas-fkes"]["prodiListFKes"];
+  const labFKes = __c.labFKes as (typeof EXTRA_DEFAULTS)["fakultas-fkes"]["labFKes"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

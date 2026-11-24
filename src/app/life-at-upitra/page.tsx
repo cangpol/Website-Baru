@@ -1,3 +1,4 @@
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -25,57 +26,15 @@ export const metadata: Metadata = {
   description: "Jelajahi kehidupan mahasiswa di Universitas Pignatelli Triputra Surakarta. Kota Solo yang asri, organisasi kemahasiswaan aktif, smart campus, dan jejaring komunitas.",
 };
 
-const studentLifePillars = [
-  {
-    icon: MapPin,
-    title: "Kota Surakarta: Asri, Aman & Ramah Mahasiswa",
-    desc: "Solo terkenal sebagai kota budaya dengan biaya hidup paling terjangkau di Indonesia, transportasi publik modern (Batik Solo Trans), dan lingkungan yang tenang untuk fokus menuntut ilmu.",
-  },
-  {
-    icon: Users,
-    title: "Organisasi Mahasiswa & Komunitas Kreatif",
-    desc: "Wadah kepemimpinan aktif melalui Badan Eksekutif Mahasiswa (BEM), Himpunan Mahasiswa Jurusan (FST, FEB, FSH, FH), Komunitas Coding & AI, English Debate Society, dan UKM Olahraga.",
-  },
-  {
-    icon: Building2,
-    title: "Smart Classroom & Lab Komputasi Terpadu",
-    desc: "Seluruh ruang perkuliahan ber-AC dilengkapi proyektor interaktif, jaringan WiFi berkecepatan tinggi, ruang simulasi perhotelan, dan laboratorium komputer spesialis.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Pendampingan Dosen & Mentor Karir Triputra",
-    desc: "Rasio bimbingan dosen yang personal memungkinkan pendampingan intensif tidak hanya pada aspek akademik, namun juga pengembangan karir dan karakter moral.",
-  },
-];
+const PILLAR_ICONS = [MapPin, Users, Building2, HeartHandshake];
+const UKM_ICONS = [Sparkles, Music, Award, HeartHandshake];
 
-const ukmList = [
-  {
-    kategori: "Penalaran & Riset",
-    nama: "UPITRA Tech & AI Innovators",
-    desc: "Komunitas riset komputasi, hackathon, kompetisi data science, dan workshop pengembangan perangkat lunak.",
-    icon: Sparkles,
-  },
-  {
-    kategori: "Seni & Budaya",
-    nama: "Paduan Suara & Musik UPITRA",
-    desc: "Wadah ekspresi musikal, paduan suara universitas, band akustik, dan pelestarian gamelan seni tradisional Jawa.",
-    icon: Music,
-  },
-  {
-    kategori: "Olahraga & Kebugaran",
-    nama: "UKM Futsal, Basket & Badminton",
-    desc: "Turnamen olahraga antar-fakultas, latihan rutin kebugaran, dan bimbingan atlet mahasiswa berprestasi.",
-    icon: Award,
-  },
-  {
-    kategori: "Kepemimpinan & Sosial",
-    nama: "BEM & Korps Sukarela (KSR)",
-    desc: "Aksi pengabdian sosial kemasyarakatan di Surakarta, tanggap darurat bencana, dan pengembangan kepemimpinan publik.",
-    icon: HeartHandshake,
-  },
-];
 
-export default function LifeAtUpitraPage() {
+
+export default async function LifeAtUpitraPage() {
+  const __c = await getPageContentMerged("life-at-upitra");
+  const studentLifePillars = __c.studentLifePillars as any[];
+  const ukmList = __c.ukmList as any[];
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
       <Navbar />
@@ -131,7 +90,7 @@ export default function LifeAtUpitraPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {studentLifePillars.map((p, idx) => {
-              const IconComponent = p.icon;
+              const IconComponent = PILLAR_ICONS[idx % PILLAR_ICONS.length];
               return (
                 <div 
                   key={idx}
@@ -211,7 +170,7 @@ export default function LifeAtUpitraPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {ukmList.map((ukm, idx) => {
-              const IconComp = ukm.icon;
+              const IconComp = UKM_ICONS[idx % UKM_ICONS.length];
               return (
                 <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all flex flex-col justify-between">
                   <div>

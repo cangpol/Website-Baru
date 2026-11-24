@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,34 +23,12 @@ export const metadata: Metadata = {
   description: "Program unggulan Triputra Immersion: Pengalaman kerja langsung mahasiswa UPITRA di unit bisnis Triputra Group di seluruh Indonesia dengan mentoring eksekutif.",
 };
 
-const keunggulanImmersion = [
-  {
-    judul: "Pengalaman Kerja Nyata di Site Industri",
-    desc: "Mahasiswa diterjunkan langsung ke lokasi operasional unit bisnis Triputra Group (perkebunan kelapa sawit di Kalimantan/Sumatera, pabrik otomotif di Karawang/Cikarang, atau pusat logistik di Jakarta/Surabaya).",
-  },
-  {
-    judul: "Mentoring Eksklusif oleh Pimpinan Senior",
-    desc: "Setiap peserta mendapatkan bimbingan berkala (*one-on-one coaching*) dari General Manager dan Senior Manager profesional Triputra Group.",
-  },
-  {
-    judul: "Fasilitas & Tunjangan Penuh",
-    desc: "Akomodasi tempat tinggal, tiket transportasi, perlindungan asuransi kerja, dan uang saku bulanan ditanggung penuh oleh perusahaan mitra selama periode program.",
-  },
-  {
-    judul: "Jalur Cepat Menjadi Pegawai Tetap (Fast-Track Hiring)",
-    desc: "Peserta dengan penilaian kinerja prima mendapatkan tawaran kontrak kerja tetap atau percepatan program Management Trainee (MT) sebelum kelulusan.",
-  },
-];
 
-const alurPendaftaran = [
-  { tahap: "1. Pengajuan Berkas", desc: "Mahasiswa aktif semester 5 atau 6 dengan IPK minimal 3.00 mengunggah CV, transkrip nilai, dan surat rekomendasi Kaprodi." },
-  { tahap: "2. Seleksi & Wawancara HRD", desc: "Tes asesmen kepribadian, wawancara motivasi, dan verifikasi kesiapan fisik/mental bersama tim Talent Triputra Group." },
-  { tahap: "3. Pembekalan Pra-Penempatan", desc: "Bootcamp etika kerja, pelatihan keselamatan kerja K3 site, dan pengenalan budaya perusahaan (Triputra DNA)." },
-  { tahap: "4. Pelaksanaan Immersion (3-6 Bulan)", desc: "Praktik kerja nyata menangani proyek terukur, rotasi departemen, dan pelaporan evaluasi kemajuan mingguan." },
-  { tahap: "5. Sidang Evaluasi & Konversi SKS", desc: "Presentasi hasil proyek inovasi di hadapan dewan penguji dosen dan mentor industri dengan konversi hingga 20 SKS." },
-];
 
-export default function ImmersionProgramPage() {
+export default async function ImmersionProgramPage() {
+  const __c = await getPageContentMerged("immersion-program");
+  const keunggulanImmersion = __c.keunggulanImmersion as (typeof EXTRA_DEFAULTS)["immersion-program"]["keunggulanImmersion"];
+  const alurPendaftaran = __c.alurPendaftaran as (typeof EXTRA_DEFAULTS)["immersion-program"]["alurPendaftaran"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

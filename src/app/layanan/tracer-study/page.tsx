@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,29 +23,12 @@ export const metadata: Metadata = {
   description: "Portal survei penelusuran lulusan (Tracer Study) Universitas Pignatelli Triputra Surakarta: Evaluasi daya serap kerja, kepuasan pengguna lulusan, dan kuesioner alumni.",
 };
 
-const metrikTracer = [
-  { angka: "92%", judul: "Tingkat Serapan Kerja", desc: "Alumni telah bekerja dalam rentang waktu kurang dari 3 bulan setelah kelulusan." },
-  { angka: "87%", judul: "Kesesuaian Bidang Ilmu", desc: "Posisi pekerjaan alumni selaras langsung dengan program studi yang ditempuh." },
-  { angka: "96%", judul: "Kepuasan Industri", desc: "Perusahaan pengguna menilai etika kerja, integritas, dan ketrampilan alumni 'Sangat Baik'." },
-  { angka: "1.8x UMR", judul: "Rata-rata Penghasilan Awal", desc: "Gaji awal lulusan berada di atas rata-rata Upah Minimum Regional industri." },
-];
 
-const testimoniAlumni = [
-  {
-    nama: "Stefanus Aditya, S.Kom.",
-    lulusan: "Alumni S1 Sistem Informasi",
-    posisi: "ERP & Business Process Analyst di PT ASSA Tbk (Jakarta)",
-    testimoni: "Kurikulum UPITRA yang berbasis kasus nyata dan pembinaan karakter Triputra DNA membuat saya sangat percaya diri saat memasuki dunia kerja. Sebelum wisuda pun saya sudah diterima bekerja.",
-  },
-  {
-    nama: "Theresia Natalia, S.M.",
-    lulusan: "Alumni S1 Manajemen",
-    posisi: "Management Trainee Supply Chain di PT Triputra Agro Persada Tbk",
-    testimoni: "Bimbingan dosen dan program magang bersertifikat di UPITRA memberi saya bekal manajemen operasional riil yang dicari korporasi besar. Kesempatan karirnya sangat luas.",
-  },
-];
 
-export default function TracerStudyPage() {
+export default async function TracerStudyPage() {
+  const __c = await getPageContentMerged("tracer-study");
+  const metrikTracer = __c.metrikTracer as (typeof EXTRA_DEFAULTS)["tracer-study"]["metrikTracer"];
+  const testimoniAlumni = __c.testimoniAlumni as (typeof EXTRA_DEFAULTS)["tracer-study"]["testimoniAlumni"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

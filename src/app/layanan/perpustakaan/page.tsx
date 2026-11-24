@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -21,30 +23,10 @@ export const metadata: Metadata = {
   description: "Layanan Perpustakaan Universitas Pignatelli Triputra Surakarta: Katalog OPAC, ribuan e-book, akses jurnal internasional bereputasi, dan ruang baca modern.",
 };
 
-const layananPerpus = [
-  {
-    judul: "Katalog Online Publik (OPAC UPITRA)",
-    desc: "Sistem penelusuran digital untuk mencari ketersediaan koleksi buku teks cetak, monograf, dan skripsi/tugas akhir mahasiswa di rak perpustakaan.",
-    fitur: ["Pencarian Berdasarkan Judul & Penulis", "Informasi Status Ketersediaan Buku", "Reservasi Peminjaman Online"],
-  },
-  {
-    judul: "Akses E-Journal Internasional & Nasional",
-    desc: "Langganan basis data jurnal ilmiah bereputasi tinggi (ScienceDirect, IEEE Xplore, ProQuest, EBSCO, Garuda) yang dapat diakses dari jaringan kampus.",
-    fitur: ["Akses Full-Text PDF Gratis", "Login Single Sign-On Mahasiswa", "Koleksi Terindeks Scopus & SINTA"],
-  },
-  {
-    judul: "Repositori Karya Ilmiah & Skripsi Digital",
-    desc: "Arsip digital karya penelitian, laporan magang industri, tesis, dan naskah publikasi dosen serta wisudawan UPITRA.",
-    fitur: ["Cek Kemiripan / Plagiasi (Turnitin)", "Pemberian Bebas Pustaka Yudisium", "Metadata Standar Nasional"],
-  },
-  {
-    judul: "Ruang Baca Nyaman & Diskusi Terpadu",
-    desc: "Fasilitas fisik modern di Gedung Utama lantai 2: silent study pod, ruang diskusi kelompok tertutup, dan workstation komputer berkecepatan tinggi.",
-    fitur: ["Koneksi Wi-Fi Gigabit", "Ruangan Ber-AC Penuh", "Kapasitas 150 Tempat Duduk"],
-  },
-];
 
-export default function PerpustakaanPage() {
+export default async function PerpustakaanPage() {
+  const __c = await getPageContentMerged("perpustakaan");
+  const layananPerpus = __c.layananPerpus as (typeof EXTRA_DEFAULTS)["perpustakaan"]["layananPerpus"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

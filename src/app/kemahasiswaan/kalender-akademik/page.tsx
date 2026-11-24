@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -19,27 +21,12 @@ export const metadata: Metadata = {
   description: "Jadwal resmi kalender akademik Universitas Pignatelli Triputra Surakarta: Masa perkuliahan semester ganjil dan genap, registrasi KRS, jadwal UTS/UAS, dan wisuda.",
 };
 
-const jadwalGasal = [
-  { kegiatan: "Pembayaran SPP & Her-Registrasi Semester Gasal", tanggal: "01 - 20 Agustus 2026", status: "Selesai" },
-  { kegiatan: "Konsultasi Dosen PA & Pengisian KRS Online (SIAKAD)", tanggal: "15 - 28 Agustus 2026", status: "Selesai" },
-  { kegiatan: "Awal Perkuliahan Efektif Semester Gasal", tanggal: "01 September 2026", status: "Berlangsung" },
-  { kegiatan: "Ujian Tengah Semester (UTS) Gasal", tanggal: "19 - 30 Oktober 2026", status: "Berlangsung" },
-  { kegiatan: "Upacara Wisuda Sarjana & Diploma Periode I", tanggal: "28 November 2026", status: "Mendatang" },
-  { kegiatan: "Ujian Akhir Semester (UAS) Gasal", tanggal: "21 Desember 2026 - 08 Januari 2027", status: "Mendatang" },
-  { kegiatan: "Batas Akhir Penginputan Nilai KHS oleh Dosen", tanggal: "15 Januari 2027", status: "Mendatang" },
-];
 
-const jadwalGenap = [
-  { kegiatan: "Pembayaran SPP & Her-Registrasi Semester Genap", tanggal: "11 - 29 Januari 2027", status: "Mendatang" },
-  { kegiatan: "Konsultasi DPA & Pengisian KRS Online Semester Genap", tanggal: "25 Januari - 05 Februari 2027", status: "Mendatang" },
-  { kegiatan: "Awal Perkuliahan Efektif Semester Genap", tanggal: "08 Februari 2027", status: "Mendatang" },
-  { kegiatan: "Ujian Tengah Semester (UTS) Genap", tanggal: "29 Maret - 09 April 2027", status: "Mendatang" },
-  { kegiatan: "Ujian Akhir Semester (UAS) Genap", tanggal: "07 - 18 Juni 2027", status: "Mendatang" },
-  { kegiatan: "Upacara Wisuda Sarjana & Diploma Periode II", tanggal: "26 Juni 2027", status: "Mendatang" },
-  { kegiatan: "Libur Akademik & Semester Antara (Pendek)", tanggal: "01 Juli - 14 Agustus 2027", status: "Mendatang" },
-];
 
-export default function KalenderAkademikPage() {
+export default async function KalenderAkademikPage() {
+  const __c = await getPageContentMerged("kalender-akademik");
+  const jadwalGasal = __c.jadwalGasal as (typeof EXTRA_DEFAULTS)["kalender-akademik"]["jadwalGasal"];
+  const jadwalGenap = __c.jadwalGenap as (typeof EXTRA_DEFAULTS)["kalender-akademik"]["jadwalGenap"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

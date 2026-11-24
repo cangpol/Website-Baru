@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
-import { PAGE_CONTENT_KEYS, CONTENT_DEFAULTS, type PageContentKey } from "@/lib/pageContent";
+import { PAGE_CONTENT_KEYS, PAGE_PATHS, CONTENT_DEFAULTS, type PageContentKey } from "@/lib/pageContent";
 
 const URL_KEYS = new Set(["image", "logo", "url", "sideImage"]);
 
@@ -41,6 +41,12 @@ function isPageKey(key: string): key is PageContentKey {
   return (PAGE_CONTENT_KEYS as readonly string[]).includes(key);
 }
 
+// Server-component helper: stored content merged over the built-in defaults.
+export async function getPageContentMerged(pageKey: PageContentKey) {
+  const stored = await getPageContent(pageKey);
+  return { ...CONTENT_DEFAULTS[pageKey], ...(stored ?? {}) } as Record<string, any>;
+}
+
 // Public read: stored content, or null so callers fall back to defaults.
 export async function getPageContent(pageKey: string) {
   if (!isPageKey(pageKey)) return null;
@@ -67,7 +73,7 @@ export async function savePageContentAction(pageKey: string, raw: unknown) {
     const settingKey = `content_${pageKey}`;
     await prisma.siteSetting.upsert({
       where: { key: settingKey },
-      create: { key: settingKey, value: clean as Prisma.InputJsonValue, description: `Konten halaman /${pageKey}` },
+      create: { key: settingKey, value: clean as Prisma.InputJsonValue, description: `Konten halaman ${PAGE_PATHS[pageKey] ?? "/" + pageKey}` },
       update: { value: clean as Prisma.InputJsonValue },
     });
 
@@ -80,7 +86,7 @@ export async function savePageContentAction(pageKey: string, raw: unknown) {
       details: JSON.stringify({ pageKey }),
     });
 
-    await invalidateEntity(CACHE_TAGS.SETTINGS, `/${pageKey}`);
+    await invalidateEntity(CACHE_TAGS.SETTINGS, PAGE_PATHS[pageKey] ?? `/${pageKey}`);
     return { ok: true, message: "Konten halaman berhasil disimpan." };
   } catch (err) {
     console.error(`Error saving page content ${pageKey}:`, err);

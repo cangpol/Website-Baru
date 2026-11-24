@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -18,64 +20,10 @@ export const metadata: Metadata = {
   description: "Dokumentasi visual momen inspiratif, festival seni, inisiasi mahasiswa baru, dan bakti sosial mahasiswa Universitas Pignatelli Triputra Surakarta.",
 };
 
-const galeriKegiatan = [
-  {
-    judul: "Pengenalan Kehidupan Kampus Mahasiswa Baru (P2K2)",
-    kategori: "Inisiasi Mahasiswa",
-    tanggal: "September 2026",
-    lokasi: "Auditorium & Lapangan Kampus UPITRA Solo",
-    gambar: "/images/kegiatan/p2k2-upitra.jpg",
-    fallbackBg: "from-blue-900 to-[#06172e]",
-    deskripsi: "Penyambutan mahasiswa baru bernuansa edukatif tanpa perpeloncoan, berfokus pada pengenalan nilai Triputra DNA dan orientasi akademik modern.",
-  },
-  {
-    judul: "Triputra Leadership Camp (TLC) Mahasiswa Berprestasi",
-    kategori: "Kepemimpinan",
-    tanggal: "Oktober 2026",
-    lokasi: "Kawasan Lereng Gunung Lawu, Karanganyar",
-    gambar: "/images/kegiatan/leadership-camp.jpg",
-    fallbackBg: "from-[#0b2545] to-blue-900",
-    deskripsi: "Pelatihan pembentukan mental kepemimpinan tangguh, simulasi pemecahan masalah tim industri, dan malam keakraban api unggun.",
-  },
-  {
-    judul: "UPITRA Innovation & Technopreneurship Expo 2026",
-    kategori: "Pameran & Inovasi",
-    tanggal: "Agustus 2026",
-    lokasi: "Hall Utama Gedung Santo Ignatius",
-    gambar: "/images/kegiatan/expo-upitra.jpg",
-    fallbackBg: "from-blue-950 to-blue-800",
-    deskripsi: "Pameran prototipe aplikasi cerdas, karya inovasi produk pariwisata, klinik fisioterapi gratis, dan demo keselamatan kerja K3.",
-  },
-  {
-    judul: "Bakti Sosial Belarasa Peduli Lingkungan & Masyarakat",
-    kategori: "Sosial & Spiritualitas",
-    tanggal: "Juli 2026",
-    lokasi: "Kecamatan Laweyan, Surakarta",
-    gambar: "/images/kegiatan/baksos-upitra.jpg",
-    fallbackBg: "from-[#092244] to-blue-950",
-    deskripsi: "Aksi kemanusiaan pembagian sembako, penyuluhan kesehatan ergonomis bagi perajin batik Solo, dan penanaman pohon penghijauan.",
-  },
-  {
-    judul: "Rektor Cup Tournament & Pentas Seni Mahasiswa",
-    kategori: "Olahraga & Seni",
-    tanggal: "Juni 2026",
-    lokasi: "Sport Hall & Gelanggang Terbuka UPITRA",
-    gambar: "/images/kegiatan/rektor-cup.jpg",
-    fallbackBg: "from-blue-900 to-[#0b2b54]",
-    deskripsi: "Ajang unjuk ketangkasan olahraga futsal, bola basket, badminton antar fakultas, ditutup panggung pertunjukan musik akustik kampus.",
-  },
-  {
-    judul: "Kuliah Umum & Executive Sharing Bersama Triputra Group",
-    kategori: "Wawasan Industri",
-    tanggal: "Mei 2026",
-    lokasi: "Smart Auditorium UPITRA",
-    gambar: "/images/kegiatan/kuliah-umum.jpg",
-    fallbackBg: "from-[#06172e] to-blue-900",
-    deskripsi: "Sesi kuliah perdana bersama jajaran direksi Triputra Group tentang prospek karir masa depan dan nilai integritas korporasi.",
-  },
-];
 
-export default function GaleriKegiatanMahasiswaPage() {
+export default async function GaleriKegiatanMahasiswaPage() {
+  const __c = await getPageContentMerged("galeri-kegiatan");
+  const galeriKegiatan = __c.galeriKegiatan as (typeof EXTRA_DEFAULTS)["galeri-kegiatan"]["galeriKegiatan"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />

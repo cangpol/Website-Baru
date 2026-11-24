@@ -1,3 +1,5 @@
+import { EXTRA_DEFAULTS } from "@/lib/pageContentExtra";
+import { getPageContentMerged } from "@/server/page-content";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -22,41 +24,12 @@ export const metadata: Metadata = {
   description: "Fakultas Ekonomi dan Bisnis UPITRA Surakarta: S1 Manajemen dan S1 Akuntansi. Membentuk pemimpin bisnis, manajer korporat, dan akuntan profesional terintegrasi Triputra Group.",
 };
 
-const prodiListFEB = [
-  {
-    name: "S1 Manajemen",
-    slug: "manajemen",
-    degree: "Sarjana Manajemen (S.M.)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Mempelajari manajemen operasional rantai pasok (Supply Chain Management), manajemen sumber daya manusia korporasi, strategi pemasaran digital, dan kepemimpinan bisnis adaptif.",
-    prospek: ["Corporate Management Trainee", "Supply Chain Analyst", "Human Capital Specialist", "Business Development Manager"],
-  },
-  {
-    name: "S1 Akuntansi",
-    slug: "akuntansi",
-    degree: "Sarjana Akuntansi (S.Ak.)",
-    akreditasi: "BAIK SEKALI",
-    desc: "Fokus pada akuntansi forensik, audit internal korporasi, perpajakan digital, dan analisis sistem informasi akuntansi berbasis ERP (SAP) berstandar IFRS/PSAK.",
-    prospek: ["Financial Auditor", "Corporate Tax Consultant", "Management Accountant", "Financial Analyst"],
-  },
-];
 
-const labFEB = [
-  {
-    name: "Laboratorium Pasar Modal & Galeri Investasi BEI",
-    desc: "Simulasi perdagangan efek real-time, analisis fundamental dan teknikal saham, serta edukasi pasar modal terintegrasi.",
-  },
-  {
-    name: "Tax Center UPITRA & Lab Perpajakan",
-    desc: "Pusat pelatihan perpajakan Brevet A & B, aplikasi e-SPT, konsultasi pajak, dan riset kepatuhan wajib pajak.",
-  },
-  {
-    name: "Business Incubator & Entrepreneurship Hub",
-    desc: "Wadah inkubasi bisnis rintisan mahasiswa dengan bimbingan mentor eksekutif bisnis dari Triputra Group.",
-  },
-];
 
-export default function FakultasEkonomiBisnisPage() {
+export default async function FakultasEkonomiBisnisPage() {
+  const __c = await getPageContentMerged("fakultas-feb");
+  const prodiListFEB = __c.prodiListFEB as (typeof EXTRA_DEFAULTS)["fakultas-feb"]["prodiListFEB"];
+  const labFEB = __c.labFEB as (typeof EXTRA_DEFAULTS)["fakultas-feb"]["labFEB"];
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />
