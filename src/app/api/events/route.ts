@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getEvents, getAcademicCalendarDoc } from "@/server/events";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const [events, officialPdf] = await Promise.all([

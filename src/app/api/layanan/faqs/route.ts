@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getLayananFaqs } from "@/server/services";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const faqs = await getLayananFaqs();

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getRisetPortals } from "@/server/articles";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const portals = await getRisetPortals();

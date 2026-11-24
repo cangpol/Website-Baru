@@ -5,6 +5,15 @@ import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import ProdiDetailView from "@/components/ProdiDetailView";
 import type { Metadata } from "next";
+import { getPublicProgramOverride } from "@/server/programs";
+
+// Gabungkan data statis dengan perubahan dari admin (database).
+async function withOverride<T extends { slug: string }>(prodi: T): Promise<T> {
+  const o = await getPublicProgramOverride(prodi.slug);
+  if (!o) return prodi;
+  const clean = Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && !(Array.isArray(v) && v.length === 0)));
+  return { ...prodi, ...clean };
+}
 
 export async function generateStaticParams() {
   const prodis = getAllProdi();
@@ -26,7 +35,8 @@ export async function generateMetadata({
   params: Promise<{ prodiSlug: string }>;
 }): Promise<Metadata> {
   const { prodiSlug } = await params;
-  const prodi = getProdiBySlug(prodiSlug);
+  const base = getProdiBySlug(prodiSlug);
+  const prodi = base ? await withOverride(base) : undefined;
 
   if (!prodi) {
     return {
@@ -59,11 +69,12 @@ export default async function ProdiPage({
   params: Promise<{ prodiSlug: string }>;
 }) {
   const { prodiSlug } = await params;
-  const prodi = getProdiBySlug(prodiSlug);
+  const base = getProdiBySlug(prodiSlug);
 
-  if (!prodi) {
+  if (!base) {
     notFound();
   }
+  const prodi = await withOverride(base);
 
   const related = getRelatedProdi(prodi.slug, 3);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePageContent } from "@/lib/usePageContent";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
@@ -27,9 +27,39 @@ interface PartnerData {
 }
 
 
+function mapKategori(category: string): PartnerData["kategori"] {
+  const c = (category || "").toLowerCase();
+  if (c.includes("triputra")) return "triputra";
+  if (c.includes("kesehatan") || c.includes("pariwisata") || c.includes("hotel")) return "health_tourism";
+  if (c.includes("industri") || c.includes("korporasi") || c.includes("perusahaan")) return "industry";
+  return "institution";
+}
+
 export default function MitraKerjasamaPage() {
   const __c = usePageContent("mitra-kerjasama").content as any;
-  const allMitraList = __c.allMitraList as PartnerData[];
+  const fallbackMitra = __c.allMitraList as PartnerData[];
+  const [dbMitra, setDbMitra] = useState<PartnerData[] | null>(null);
+
+  // Mitra dari database (dikelola di /admin/mitra) menggantikan daftar bawaan bila sudah ada.
+  useEffect(() => {
+    fetch("/api/partners")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j?.ok && Array.isArray(j.data) && j.data.length > 0) {
+          setDbMitra(
+            j.data.map((p: any) => ({
+              nama: p.name,
+              kategori: mapKategori(p.category),
+              kategoriLabel: p.category,
+              logo: p.logoUrl,
+              status: p.mouStatus || "Aktif",
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+  const allMitraList = dbMitra ?? fallbackMitra;
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortOrder, setSortOrder] = useState<"name-asc" | "category">("name-asc");

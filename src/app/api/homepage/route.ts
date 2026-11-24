@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getHomepageContent } from "@/server/homepage";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const data = await getHomepageContent();

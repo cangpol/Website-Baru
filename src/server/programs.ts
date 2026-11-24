@@ -264,3 +264,24 @@ export async function softDeleteProgramAction(id: string) {
     return { ok: false, message: "Gagal menghapus program studi." };
   }
 }
+
+// Data program dari database untuk menimpa isi halaman prodi publik (sinkron dengan /admin/prodi).
+// Hanya kolom yang terisi yang dikembalikan; sisanya memakai konten bawaan halaman.
+export async function getPublicProgramOverride(slug: string) {
+  try {
+    const p = await prisma.program.findFirst({ where: { slug, deletedAt: null } });
+    if (!p) return null;
+    const text = (v: string | null | undefined) => (v && v.trim() ? v.trim() : undefined);
+    return {
+      name: text(p.name),
+      degreeTitle: text(p.degreeTitle),
+      accreditation: text(p.accreditation),
+      campusLocation: text(p.campusLocation),
+      heroImage: text(p.coverImage),
+      tagline: text(p.shortDesc),
+      overview: text(p.fullDesc)?.split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean),
+    };
+  } catch {
+    return null;
+  }
+}

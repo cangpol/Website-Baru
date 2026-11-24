@@ -17,6 +17,7 @@ import {
   Microscope,
   Bot,
   ChevronRight,
+  ChevronDown,
   Handshake,
   Award,
   HelpCircle,
@@ -229,6 +230,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   // Cek otorisasi sesi admin via server cookie
   useEffect(() => {
@@ -282,6 +284,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const visibleNavigation = sidebarNavigation.filter(
     (item) => !item.roles || (session && item.roles.includes(session.role))
   );
+
+  // Kelompokkan menu per grup (urutan sesuai kemunculan pertama).
+  const navGroups: { title: string; items: SidebarItem[] }[] = [];
+  for (const item of visibleNavigation) {
+    const g = navGroups.find((n) => n.title === item.groupTitle);
+    if (g) g.items.push(item);
+    else navGroups.push({ title: item.groupTitle, items: [item] });
+  }
 
   const handleLogout = async () => {
     await logoutAdminAction();
@@ -350,37 +360,79 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </div>
 
-        {/* Navigation Groups - Clean, Complete & Mapped 1-to-1 to Navbar */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 custom-scrollbar">
-          {visibleNavigation.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname.startsWith(item.href);
+        {/* Navigasi: grup dengan banyak menu berbentuk dropdown, menu tunggal berupa tautan langsung */}
+        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1 custom-scrollbar" aria-label="Menu admin">
+          {navGroups.map((group) => {
+            const first = group.items[0];
+            const GroupIcon = first.icon;
+            const groupActive = group.items.some((i) => pathname.startsWith(i.href));
 
-            return (
-              <div key={item.id}>
-                <div className="px-3 text-[9.5px] font-extrabold uppercase tracking-widest text-sky-300/60 mb-1 flex items-center justify-between">
-                  <span>{item.groupTitle}</span>
-                </div>
+            if (group.items.length === 1) {
+              return (
                 <Link
-                  href={item.href}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    isActive
+                  key={group.title}
+                  href={first.href}
+                  className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    groupActive
                       ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                       : "text-slate-300 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-sky-400"}`} />
-                    <span className="truncate">{item.label}</span>
-                  </div>
-                  <span className={`text-[8.5px] px-1.5 py-0.5 rounded font-bold uppercase border ${item.badgeColor}`}>
-                    {item.badge}
-                  </span>
+                  <GroupIcon className={`w-4 h-4 shrink-0 ${groupActive ? "text-white" : "text-sky-400"}`} />
+                  <span className="truncate">{first.label}</span>
                 </Link>
+              );
+            }
+
+            const isOpen = openGroups[group.title] ?? groupActive;
+            return (
+              <div key={group.title}>
+                <button
+                  type="button"
+                  onClick={() => setOpenGroups((prev) => ({ ...prev, [group.title]: !isOpen }))}
+                  aria-expanded={isOpen}
+                  className={`w-full flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    groupActive ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5 min-w-0">
+                    <GroupIcon className="w-4 h-4 shrink-0 text-sky-400" />
+                    <span className="truncate capitalize">{group.title.toLowerCase()}</span>
+                  </span>
+                  <span className="flex items-center gap-2 shrink-0">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-sky-200 border border-blue-400/30">
+                      {group.items.length}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-sky-300/70 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                  </span>
+                </button>
+
+                {isOpen && (
+                  <div className="mt-1 ml-5 pl-3 border-l border-blue-800/60 space-y-0.5">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname.startsWith(item.href);
+                      return (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11.5px] font-semibold transition-all ${
+                            isActive
+                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                              : "text-slate-300 hover:bg-white/10 hover:text-white"
+                          }`}
+                        >
+                          <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-white" : "text-sky-400"}`} />
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
-        </div>
+        </nav>
 
         {/* User Card in Sidebar Footer */}
         <div className="p-3.5 border-t border-blue-950 bg-[#040e1e]/90">

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getFacultiesWithPrograms } from "@/server/programs";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const faculties = await getFacultiesWithPrograms();
