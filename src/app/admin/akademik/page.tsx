@@ -1,6 +1,7 @@
 "use client";
 
 import { swalToast, swalConfirmDelete, type SwalKind } from "@/lib/swal";
+import { AccordionRow } from "@/components/admin/AccordionRow";
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { 
@@ -144,7 +145,7 @@ const defaultFakultasOverview = [
 ];
 
 export default function AdminAkademikCalendarPage() {
-  const [activeTab, setActiveTab] = useState<"calendar" | "banner" | "fakultas">("calendar");
+  const [activeTab, setActiveTab] = useState<"pdf" | "calendar" | "banner" | "fakultas" | null>("pdf");
   const [viewMode, setViewMode] = useState<"table" | "calendar">("table");
   const [events, setEvents] = useState<AdminCalendarEvent[]>([]);
   const [academicPdf, setAcademicPdf] = useState<AcademicCalendarDoc | null>(null);
@@ -480,70 +481,23 @@ export default function AdminAkademikCalendarPage() {
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
           </Link>
 
-          {activeTab === "calendar" && (
-            <button
-              onClick={handleOpenCreate}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Tambah Agenda Baru</span>
-            </button>
-          )}
         </div>
-      </div>
-
-      {/* Navigasi Tab */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
-        <button
-          onClick={() => setActiveTab("calendar")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "calendar"
-              ? "bg-[#0b2545] text-white shadow-md"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <CalendarDays className="w-4 h-4" />
-          <span>Kalender &amp; Dokumen PDF Resmi</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white">
-            {events.length}
-          </span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("banner")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "banner"
-              ? "bg-[#0b2545] text-white shadow-md"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>Pengaturan Header Banner</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("fakultas")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "fakultas"
-              ? "bg-[#0b2545] text-white shadow-md"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <Building2 className="w-4 h-4" />
-          <span>Fakultas &amp; Program Studi</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700">
-            4
-          </span>
-        </button>
       </div>
 
       {/* ========================================================================= */}
       {/* TAB 1: KALENDER & DOKUMEN PDF RESMI */}
       {/* ========================================================================= */}
-      {activeTab === "calendar" && (
-        <div className="space-y-8">
+      <div className="space-y-3">
+        <AccordionRow
+          number={1}
+          title="Dokumen PDF Kalender Akademik"
+          summary={academicPdf?.fileUrl ? `${academicPdf.fileName} · TA ${academicPdf.academicYear}` : "Belum ada dokumen PDF yang diunggah"}
+          icon={FileText}
+          open={activeTab === "pdf"}
+          onToggle={() => setActiveTab(activeTab === "pdf" ? null : "pdf")}
+        >
           {/* 1. KARTU UPLOAD DOKUMEN PDF KALENDER RESMI */}
-          <div className="bg-gradient-to-br from-[#0b2545] to-blue-700 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-blue-900/40 space-y-6">
+          <div className="adm-on-dark bg-gradient-to-br from-[#0b2545] to-blue-700 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-blue-900/40 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -678,6 +632,26 @@ export default function AdminAkademikCalendarPage() {
             </div>
           </div>
 
+        </AccordionRow>
+
+        <AccordionRow
+          number={2}
+          title="Agenda Kalender Akademik"
+          summary={`${events.length} agenda kegiatan`}
+          icon={CalendarDays}
+          open={activeTab === "calendar"}
+          onToggle={() => setActiveTab(activeTab === "calendar" ? null : "calendar")}
+        >
+          <div className="mb-4 flex justify-end">
+            <button
+              type="button"
+              onClick={handleOpenCreate}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Agenda Baru</span>
+            </button>
+          </div>
           {/* 2. DAFTAR AGENDA KEGIATAN & KALENDER INTERAKTIF */}
           <div className="space-y-6">
             {/* Filter Bar */}
@@ -1002,13 +976,19 @@ export default function AdminAkademikCalendarPage() {
               </div>
             )}
           </div>
-        </div>
-      )}
+        </AccordionRow>
 
       {/* ========================================================================= */}
       {/* TAB 2: PENGATURAN HEADER BANNER */}
       {/* ========================================================================= */}
-      {activeTab === "banner" && (
+        <AccordionRow
+          number={3}
+          title="Header Banner Halaman /akademik"
+          summary={bannerForm.title.split("\n")[0] || "Judul, deskripsi, dan foto banner"}
+          icon={Sparkles}
+          open={activeTab === "banner"}
+          onToggle={() => setActiveTab(activeTab === "banner" ? null : "banner")}
+        >
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
           <div className="border-b border-slate-100 pb-4">
             <h2 className="text-xl font-black text-[#06172e]">
@@ -1069,12 +1049,19 @@ export default function AdminAkademikCalendarPage() {
             </div>
           </form>
         </div>
-      )}
+        </AccordionRow>
 
       {/* ========================================================================= */}
       {/* TAB 3: FAKULTAS & PROGRAM STUDI */}
       {/* ========================================================================= */}
-      {activeTab === "fakultas" && (
+        <AccordionRow
+          number={4}
+          title="Fakultas & Program Studi"
+          summary={`${defaultFakultasOverview.length} fakultas yang tampil di /akademik`}
+          icon={Building2}
+          open={activeTab === "fakultas"}
+          onToggle={() => setActiveTab(activeTab === "fakultas" ? null : "fakultas")}
+        >
         <div className="space-y-6">
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
@@ -1146,7 +1133,8 @@ export default function AdminAkademikCalendarPage() {
             ))}
           </div>
         </div>
-      )}
+        </AccordionRow>
+      </div>
 
       {/* ========================================================================= */}
       {/* MODAL TAMBAH / EDIT EVENT */}

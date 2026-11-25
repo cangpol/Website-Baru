@@ -35,7 +35,7 @@ function ProfilManager() {
         </div>
         <h1 className="text-2xl font-black text-slate-900">Profil & Pimpinan</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Klik sebuah baris untuk membuka detailnya. Ubah, tambah, atau hapus data, lalu tekan <b>Simpan</b> di bagian bawah. Perubahan langsung tampil
+          Klik sebuah baris untuk membuka detailnya. Isinya juga berupa baris per bagian: ubah, tambah, atau hapus data, lalu tekan <b>Simpan</b> pada bagian itu. Perubahan langsung tampil
           di halaman Profil situs.
         </p>
       </div>
@@ -47,7 +47,7 @@ function ProfilManager() {
           return (
             <section
               key={s.id}
-              className={`overflow-hidden rounded-2xl border bg-white transition-shadow ${
+              className={`rounded-2xl border bg-white transition-shadow ${
                 isOpen ? "border-blue-300 shadow-md" : "border-blue-100 hover:border-blue-200"
               }`}
             >
@@ -82,7 +82,7 @@ function ProfilManager() {
                 <ChevronDown className={`h-5 w-5 shrink-0 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
-                <div className="border-t border-blue-100 bg-blue-50/30 p-5">
+                <div className="rounded-b-2xl border-t border-blue-100 bg-blue-50/30 p-3 sm:p-5">
                   <PageContentEditor key={s.key} pageKey={s.key} />
                 </div>
               )}

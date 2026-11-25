@@ -90,6 +90,16 @@ html[data-admin-theme="dark"] {
   --color-sky-200: #1e4260;
 }
 
+/* Kartu yang berlatar gelap di kedua tema: kembalikan warna terang asli agar teksnya terbaca. */
+html[data-admin-theme="dark"] .adm-on-dark {
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-800: #1e293b;
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+}
+
 /*
  * Penimpaan utilitas. Diletakkan di layer utilities dengan :where() agar bobotnya
  * setara utilitas Tailwind, sehingga varian hover/focus tetap bekerja.

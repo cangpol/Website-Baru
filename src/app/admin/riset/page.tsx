@@ -1,6 +1,7 @@
 "use client";
 
 import { swalToast, swalConfirmDelete, type SwalKind } from "@/lib/swal";
+import { AccordionRow } from "@/components/admin/AccordionRow";
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -92,7 +93,7 @@ const emptyNewsForm: AdminArticleItem = {
 };
 
 export default function AdminRisetPage() {
-  const [activeTab, setActiveTab] = useState<"berita" | "banner_profil" | "publikasi">("berita");
+  const [activeTab, setActiveTab] = useState<"berita" | "banner_profil" | "portal" | "publikasi" | null>("berita");
 
   const showToast = (message: string, type?: SwalKind) => {
     swalToast(message, type);
@@ -429,77 +430,32 @@ export default function AdminRisetPage() {
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
           </Link>
 
-          {activeTab === "berita" && (
-            <button
-              onClick={handleOpenCreateArticle}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Tulis Artikel / Riset Baru</span>
-            </button>
-          )}
 
-          {activeTab === "publikasi" && (
-            <button
-              onClick={handleOpenCreatePub}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Tambah Publikasi Jurnal</span>
-            </button>
-          )}
         </div>
-      </div>
-
-      {/* Navigasi Tab */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
-        <button
-          onClick={() => setActiveTab("berita")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "berita"
-              ? "bg-[#0b2545] text-white shadow-md"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <Newspaper className="w-4 h-4" />
-          <span>Berita &amp; Artikel Riset</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white">
-            {articles.length}
-          </span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("banner_profil")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "banner_profil"
-              ? "bg-[#0b2545] text-white shadow-md"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>Header Banner &amp; Portal LPPM</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("publikasi")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-            activeTab === "publikasi"
-              ? "bg-[#0b2545] text-white shadow-md"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <BookOpen className="w-4 h-4" />
-          <span>Publikasi Jurnal &amp; Riset Terapan</span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700">
-            {publications.length}
-          </span>
-        </button>
       </div>
 
       {/* ========================================================================= */}
       {/* TAB 1: BERITA & ARTIKEL RISET */}
       {/* ========================================================================= */}
-      {activeTab === "berita" && (
+      <div className="space-y-3">
+        <AccordionRow
+          number={1}
+          title="Berita & Artikel Riset"
+          summary={`${articles.length} artikel`}
+          icon={Newspaper}
+          open={activeTab === "berita"}
+          onToggle={() => setActiveTab(activeTab === "berita" ? null : "berita")}
+        >
+          <div className="mb-4 flex justify-end">
+            <button
+              type="button"
+              onClick={handleOpenCreateArticle}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tulis Artikel / Riset Baru</span>
+            </button>
+          </div>
         <div className="space-y-6">
           {/* Filter & Pencarian Bar */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -699,13 +655,19 @@ export default function AdminRisetPage() {
             )}
           </div>
         </div>
-      )}
+        </AccordionRow>
 
       {/* ========================================================================= */}
       {/* TAB 2: HEADER BANNER & PORTAL LPPM */}
       {/* ========================================================================= */}
-      {activeTab === "banner_profil" && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <AccordionRow
+          number={2}
+          title="Header Banner Halaman /riset"
+          summary={bannerForm.title.split("\n")[0] || "Judul, deskripsi, dan foto banner"}
+          icon={Sparkles}
+          open={activeTab === "banner_profil"}
+          onToggle={() => setActiveTab(activeTab === "banner_profil" ? null : "banner_profil")}
+        >
           {/* Form Banner Header */}
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
             <div className="border-b border-slate-100 pb-4">
@@ -763,6 +725,16 @@ export default function AdminRisetPage() {
             </form>
           </div>
 
+        </AccordionRow>
+
+        <AccordionRow
+          number={3}
+          title="Portal LPPM & Jurnal Ilmiah"
+          summary={portalsForm.lppmUrl || "Tautan situs LPPM dan jurnal ilmiah"}
+          icon={ExternalLink}
+          open={activeTab === "portal"}
+          onToggle={() => setActiveTab(activeTab === "portal" ? null : "portal")}
+        >
           {/* Form Portal Eksternal LPPM & Jurnal */}
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
             <div className="border-b border-slate-100 pb-4">
@@ -825,13 +797,29 @@ export default function AdminRisetPage() {
               </div>
             </form>
           </div>
-        </div>
-      )}
+        </AccordionRow>
 
       {/* ========================================================================= */}
       {/* TAB 3: PUBLIKASI JURNAL & RISET TERAPAN */}
       {/* ========================================================================= */}
-      {activeTab === "publikasi" && (
+        <AccordionRow
+          number={4}
+          title="Publikasi Jurnal & Riset Terapan"
+          summary={`${publications.length} publikasi`}
+          icon={BookOpen}
+          open={activeTab === "publikasi"}
+          onToggle={() => setActiveTab(activeTab === "publikasi" ? null : "publikasi")}
+        >
+          <div className="mb-4 flex justify-end">
+            <button
+              type="button"
+              onClick={handleOpenCreatePub}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Publikasi Jurnal</span>
+            </button>
+          </div>
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {publications.map((item) => (
@@ -894,7 +882,8 @@ export default function AdminRisetPage() {
             ))}
           </div>
         </div>
-      )}
+        </AccordionRow>
+      </div>
 
       {/* ========================================================================= */}
       {/* MODAL TAMBAH / EDIT ARTIKEL */}

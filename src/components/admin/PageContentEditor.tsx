@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { ChevronDown, Loader2, Plus, Save, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronDown, ImageIcon, List, Loader2, Plus, Save, Trash2, Type } from "lucide-react";
 import { getPageHeaderBanner, savePageHeaderBannerAction } from "@/server/hero";
 import { getPageContent, savePageContentAction } from "@/server/page-content";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { AccordionRow } from "@/components/admin/AccordionRow";
 import { swalConfirmDelete, swalToast } from "@/lib/swal";
 import {
   BANNER_DEFAULTS as CORE_BANNERS,
   CONTENT_DEFAULTS,
   CONTENT_SPECS,
-  PAGE_LABELS,
   type FieldSpec,
   type PageContentKey,
 } from "@/lib/pageContent";
@@ -184,62 +184,144 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
   );
 }
 
-/** Editor konten halaman publik: memuat data tersimpan (atau bawaan), lalu menyimpan ke database. */
+const BANNER_ROW = "banner";
+
+type EditorRow = { id: string; title: string; specs: FieldSpec[] };
+
+/** Setiap daftar menjadi satu baris; isian tunggal yang berurutan digabung dalam satu baris. */
+function buildRows(specs: FieldSpec[]): EditorRow[] {
+  const rows: EditorRow[] = [];
+  let group: FieldSpec[] = [];
+  const flush = () => {
+    if (group.length === 0) return;
+    const title = group.length === 1 ? group[0].label : group.some((f) => f.type === "image") ? "Teks & Gambar" : "Teks Halaman";
+    rows.push({ id: `isian-${group[0].key}`, title, specs: group });
+    group = [];
+  };
+  for (const spec of specs) {
+    if (spec.type === "list") {
+      flush();
+      rows.push({ id: spec.key, title: spec.label, specs: [spec] });
+    } else {
+      group.push(spec);
+    }
+  }
+  flush();
+  return rows;
+}
+
+function rowSummary(row: EditorRow, content: Json): string {
+  const first = row.specs[0];
+  if (first.type === "list") {
+    const items: Json[] = Array.isArray(content[first.key]) ? content[first.key] : [];
+    const names = items.map(rowTitle).filter(Boolean).slice(0, 3).join(", ");
+    return names ? `${items.length} item · ${names}` : `${items.length} item`;
+  }
+  if (row.specs.length > 1) return row.specs.map((f) => f.label).join(", ");
+  const value = content[first.key];
+  if (first.type === "image") return value ? "Foto sudah terpasang" : "Belum ada foto";
+  const text = Array.isArray(value) ? value.filter(Boolean).join(", ") : String(value ?? "");
+  return text.split("\n")[0] || "Belum diisi";
+}
+
+const pick = (source: Json, specs: FieldSpec[]): Json => Object.fromEntries(specs.map((f) => [f.key, source[f.key]]));
+
+const unsavedBadge = (current: unknown, saved: unknown) =>
+  JSON.stringify(current) !== JSON.stringify(saved) ? "BELUM DISIMPAN" : undefined;
+
+function SaveBar({ label, saving, disabled }: { label: string; saving: boolean; disabled: boolean }) {
+  return (
+    <div className="sticky bottom-0 z-10 -mx-4 -mb-4 flex flex-wrap items-center justify-between gap-3 rounded-b-2xl border-t border-blue-100 bg-white/95 px-4 py-3 backdrop-blur sm:-mx-5 sm:-mb-5 sm:px-5">
+      <span className="text-[11px] text-slate-500">Perubahan baru tampil di situs setelah Anda menekan Simpan.</span>
+      <button
+        type="submit"
+        disabled={disabled}
+        className="flex cursor-pointer items-center gap-2 rounded-xl bg-sky-500 px-6 py-2.5 text-xs font-bold text-white hover:bg-sky-400 disabled:opacity-60"
+      >
+        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        <span>Simpan {label}</span>
+      </button>
+    </div>
+  );
+}
+
+/** Editor konten halaman publik: tiap bagian berupa baris yang dibuka dan disimpan sendiri-sendiri. */
 export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey }) {
   const hasBanner = Boolean(BANNERS[pageKey]);
+  const rows = buildRows(CONTENT_SPECS[pageKey]);
   const [banner, setBanner] = useState<Json>(BANNERS[pageKey] ?? {});
   const [content, setContent] = useState<Json>(CONTENT_DEFAULTS[pageKey] as Json);
+  // Salinan yang terakhir tersimpan, agar menyimpan satu baris tidak ikut menyimpan baris lain.
+  const [savedBanner, setSavedBanner] = useState<Json>(BANNERS[pageKey] ?? {});
+  const [savedContent, setSavedContent] = useState<Json>(CONTENT_DEFAULTS[pageKey] as Json);
+  const [openRow, setOpenRow] = useState<string | null>(hasBanner ? BANNER_ROW : (rows[0]?.id ?? null));
+  const [savingRow, setSavingRow] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     (async () => {
+      let nextBanner: Json = BANNERS[pageKey] ?? {};
+      let nextContent = CONTENT_DEFAULTS[pageKey] as Json;
       try {
         const [b, c] = await Promise.all([
           hasBanner ? getPageHeaderBanner(pageKey) : Promise.resolve(null),
           getPageContent(pageKey),
         ]);
-        if (cancelled) return;
-        setBanner({ ...(BANNERS[pageKey] ?? {}), ...(b ?? {}) });
-        setContent({ ...(CONTENT_DEFAULTS[pageKey] as Json), ...(c ?? {}) });
+        nextBanner = { ...nextBanner, ...(b ?? {}) };
+        nextContent = { ...nextContent, ...(c ?? {}) };
       } catch {
-        if (!cancelled) {
-          setBanner(BANNERS[pageKey] ?? {});
-          setContent(CONTENT_DEFAULTS[pageKey] as Json);
-          swalToast("Gagal memuat data dari database. Menampilkan isi bawaan.", "warning");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) swalToast("Gagal memuat data dari database. Menampilkan isi bawaan.", "warning");
       }
+      if (cancelled) return;
+      setBanner(nextBanner);
+      setSavedBanner(nextBanner);
+      setContent(nextContent);
+      setSavedContent(nextContent);
+      setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
   }, [pageKey, hasBanner]);
 
-  const save = (e: React.FormEvent) => {
+  const runSave = async (rowId: string, save: () => Promise<{ ok: boolean; message: string }>, onSaved: () => void) => {
+    setSavingRow(rowId);
+    try {
+      const res = await save();
+      if (res.ok) onSaved();
+      swalToast(res.message, res.ok ? "success" : "error");
+    } catch {
+      swalToast("Gagal menyimpan. Pastikan Anda masih login sebagai admin.", "error");
+    } finally {
+      setSavingRow(null);
+    }
+  };
+
+  const saveBanner = (e: React.FormEvent) => {
     e.preventDefault();
-    startTransition(async () => {
-      try {
-        if (hasBanner) {
-          const b = await savePageHeaderBannerAction(pageKey, {
-            title: banner.title,
-            description: banner.description ?? "",
-            imageUrl: banner.imageUrl,
-          });
-          if (!b.ok) {
-            swalToast(b.message, "error");
-            return;
-          }
-        }
-        const c = await savePageContentAction(pageKey, content);
-        swalToast(c.message, c.ok ? "success" : "error");
-      } catch {
-        swalToast("Gagal menyimpan. Pastikan Anda masih login sebagai admin.", "error");
-      }
-    });
+    const snapshot = banner;
+    runSave(
+      BANNER_ROW,
+      () =>
+        savePageHeaderBannerAction(pageKey, {
+          title: snapshot.title,
+          description: snapshot.description ?? "",
+          imageUrl: snapshot.imageUrl,
+        }),
+      () => setSavedBanner(snapshot)
+    );
+  };
+
+  const saveRow = (row: EditorRow) => (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = { ...savedContent, ...pick(content, row.specs) };
+    runSave(
+      row.id,
+      () => savePageContentAction(pageKey, payload),
+      () => setSavedContent(payload)
+    );
   };
 
   if (loading) {
@@ -250,55 +332,70 @@ export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey
     );
   }
 
+  const toggle = (id: string) => setOpenRow(openRow === id ? null : id);
+  const offset = hasBanner ? 1 : 0;
+
   return (
-    <form onSubmit={save} className="bg-white border border-blue-100 rounded-2xl p-6 space-y-8">
+    <div className="space-y-3">
       {hasBanner && (
-        <section className="space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">Banner (1440 × 480 px)</h2>
-          <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">Judul (Enter untuk baris baru)</label>
-            <textarea
-              rows={2}
-              required
-              value={banner.title ?? ""}
-              onChange={(e) => setBanner({ ...banner, title: e.target.value })}
-              className={inputCls}
+        <AccordionRow
+          number={1}
+          title="Banner Halaman"
+          summary={String(banner.title ?? "").split("\n")[0] || "Judul, subjudul, dan foto banner"}
+          icon={ImageIcon}
+          badge={unsavedBadge(banner, savedBanner)}
+          open={openRow === BANNER_ROW}
+          onToggle={() => toggle(BANNER_ROW)}
+        >
+          <form onSubmit={saveBanner} className="space-y-4">
+            <p className="text-xs text-slate-500">Ukuran banner yang disarankan: 1440 × 480 px.</p>
+            <div>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Judul (Enter untuk baris baru)</label>
+              <textarea
+                rows={2}
+                required
+                value={banner.title ?? ""}
+                onChange={(e) => setBanner({ ...banner, title: e.target.value })}
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Subjudul</label>
+              <textarea
+                rows={2}
+                value={banner.description ?? ""}
+                onChange={(e) => setBanner({ ...banner, description: e.target.value })}
+                className={inputCls}
+              />
+            </div>
+            <ImageUploadField
+              label="Foto Banner"
+              value={banner.imageUrl}
+              onChange={(url) => setBanner((prev) => ({ ...prev, imageUrl: url }))}
+              recommendedSize="1440 × 480 px"
             />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">Subjudul</label>
-            <textarea
-              rows={2}
-              value={banner.description ?? ""}
-              onChange={(e) => setBanner({ ...banner, description: e.target.value })}
-              className={inputCls}
-            />
-          </div>
-          <ImageUploadField
-            label="Foto Banner"
-            value={banner.imageUrl}
-            onChange={(url) => setBanner({ ...banner, imageUrl: url })}
-            recommendedSize="1440 × 480 px"
-          />
-        </section>
+            <SaveBar label="Banner Halaman" saving={savingRow === BANNER_ROW} disabled={savingRow !== null} />
+          </form>
+        </AccordionRow>
       )}
 
-      <section className={`space-y-4 ${hasBanner ? "border-t border-blue-100 pt-6" : ""}`}>
-        <h2 className="text-lg font-bold text-slate-900">Isi Halaman {PAGE_LABELS[pageKey]}</h2>
-        <Fields specs={CONTENT_SPECS[pageKey]} value={content} onChange={setContent} />
-      </section>
-
-      <div className="sticky bottom-0 z-10 -mx-6 -mb-6 flex items-center justify-between gap-3 rounded-b-2xl border-t border-blue-100 bg-white/95 px-6 py-3 backdrop-blur">
-        <span className="text-[11px] text-slate-500">Perubahan baru tampil di situs setelah Anda menekan Simpan.</span>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-60 text-white font-bold text-xs flex items-center gap-2 cursor-pointer"
+      {rows.map((row, i) => (
+        <AccordionRow
+          key={row.id}
+          number={i + 1 + offset}
+          title={row.title}
+          summary={rowSummary(row, content)}
+          icon={row.specs[0].type === "list" ? List : row.specs[0].type === "image" && row.specs.length === 1 ? ImageIcon : Type}
+          badge={unsavedBadge(pick(content, row.specs), pick(savedContent, row.specs))}
+          open={openRow === row.id}
+          onToggle={() => toggle(row.id)}
         >
-          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          <span>Simpan Halaman {PAGE_LABELS[pageKey]}</span>
-        </button>
-      </div>
-    </form>
+          <form onSubmit={saveRow(row)} className="space-y-4">
+            <Fields specs={row.specs} value={content} onChange={setContent} />
+            <SaveBar label={row.title} saving={savingRow === row.id} disabled={savingRow !== null} />
+          </form>
+        </AccordionRow>
+      ))}
+    </div>
   );
 }

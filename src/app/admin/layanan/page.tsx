@@ -1,6 +1,7 @@
 "use client";
 
 import { swalToast, swalConfirmDelete, type SwalKind } from "@/lib/swal";
+import { AccordionRow } from "@/components/admin/AccordionRow";
 import { useState, useEffect } from "react";
 import { 
   Building2, 
@@ -70,7 +71,7 @@ export interface AdminDownloadDoc {
 }
 
 export default function AdminLayananPage() {
-  const [activeTab, setActiveTab] = useState<"services" | "banner" | "faq" | "brochure">("services");
+  const [activeTab, setActiveTab] = useState<"services" | "banner" | "faq" | "brochure" | "documents" | null>("services");
 
   // Notification Toast
   const showToast = (message: string, type?: SwalKind) => {
@@ -486,59 +487,16 @@ export default function AdminLayananPage() {
         </div>
       </div>
 
-      {/* Navigasi Tab */}
-      <div className="flex border-b border-slate-200 gap-2 flex-wrap">
-        <button
-          onClick={() => setActiveTab("services")}
-          className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "services"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          <Layers className="w-4 h-4" />
-          <span>Layanan Utama ({services.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("banner")}
-          className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "banner"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          <ImageIcon className="w-4 h-4" />
-          <span>Header Banner Layanan</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("faq")}
-          className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "faq"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          <HelpCircle className="w-4 h-4" />
-          <span>FAQ Layanan ({faqs.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("brochure")}
-          className={`flex items-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${
-            activeTab === "brochure"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          <Download className="w-4 h-4" />
-          <span>Brosur PMB &amp; Unduhan</span>
-        </button>
-      </div>
-
       {/* ── TAB 1: LAYANAN UTAMA (SERVICES) ── */}
-      {activeTab === "services" && (
+      <div className="space-y-3">
+        <AccordionRow
+          number={1}
+          title="Layanan Utama"
+          summary={`${services.length} layanan`}
+          icon={Layers}
+          open={activeTab === "services"}
+          onToggle={() => setActiveTab(activeTab === "services" ? null : "services")}
+        >
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2.5">
@@ -682,10 +640,17 @@ export default function AdminLayananPage() {
             </div>
           </div>
         </div>
-      )}
+        </AccordionRow>
 
       {/* ── TAB 2: HEADER BANNER LAYANAN ── */}
-      {activeTab === "banner" && (
+        <AccordionRow
+          number={2}
+          title="Header Banner Halaman /layanan"
+          summary={bannerTitle.split("\n")[0] || "Judul, deskripsi, dan foto banner"}
+          icon={ImageIcon}
+          open={activeTab === "banner"}
+          onToggle={() => setActiveTab(activeTab === "banner" ? null : "banner")}
+        >
         <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 max-w-4xl shadow-xs">
           <div>
             <h2 className="text-base font-bold text-slate-900">Header Banner Halaman /layanan</h2>
@@ -736,10 +701,17 @@ export default function AdminLayananPage() {
             </div>
           </div>
         </div>
-      )}
+        </AccordionRow>
 
       {/* ── TAB 3: FAQ LAYANAN TERPADU ── */}
-      {activeTab === "faq" && (
+        <AccordionRow
+          number={3}
+          title="FAQ Layanan"
+          summary={`${faqs.length} pertanyaan`}
+          icon={HelpCircle}
+          open={activeTab === "faq"}
+          onToggle={() => setActiveTab(activeTab === "faq" ? null : "faq")}
+        >
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div>
@@ -803,11 +775,17 @@ export default function AdminLayananPage() {
             ))}
           </div>
         </div>
-      )}
+        </AccordionRow>
 
       {/* ── TAB 4: BROSUR PMB & UNDUHAN ── */}
-      {activeTab === "brochure" && (
-        <div className="space-y-8">
+        <AccordionRow
+          number={4}
+          title="Brosur PMB Utama"
+          summary={brochure?.title || "Kartu unduhan brosur PMB"}
+          icon={Download}
+          open={activeTab === "brochure"}
+          onToggle={() => setActiveTab(activeTab === "brochure" ? null : "brochure")}
+        >
           {/* Section Brosur PMB */}
           {brochure && (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-5 max-w-4xl shadow-xs">
@@ -895,6 +873,16 @@ export default function AdminLayananPage() {
             </div>
           )}
 
+        </AccordionRow>
+
+        <AccordionRow
+          number={5}
+          title="Download Center Layanan"
+          summary={`${docs.length} dokumen`}
+          icon={FileText}
+          open={activeTab === "documents"}
+          onToggle={() => setActiveTab(activeTab === "documents" ? null : "documents")}
+        >
           {/* Section Dokumen Download Center */}
           <div className="space-y-4 max-w-4xl">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -974,8 +962,8 @@ export default function AdminLayananPage() {
               </table>
             </div>
           </div>
-        </div>
-      )}
+        </AccordionRow>
+      </div>
 
       {/* ── MODAL: TAMBAH / EDIT LAYANAN UTAMA ── */}
       {serviceModalOpen && (
