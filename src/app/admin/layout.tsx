@@ -1,35 +1,49 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Figtree } from "next/font/google";
+import "./admin-theme.css";
+import { getNewLeadCount } from "@/server/dashboard";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { 
+import {
   LayoutDashboard,
-  ShieldCheck, 
-  LogOut, 
-  ExternalLink, 
-  Menu, 
-  X, 
-  Clock,
+  ShieldCheck,
+  LogOut,
+  ExternalLink,
+  Menu,
+  X,
+  ChevronDown,
+  Handshake,
+  Award,
   CalendarDays,
   Newspaper,
   GraduationCap,
   Microscope,
   Bot,
-  ChevronRight,
-  ChevronDown,
-  Handshake,
-  Award,
   HelpCircle,
   Users,
   UserCheck,
   Building2,
   FileDown,
   Camera,
-  BookOpen
+  BookOpen,
+  Search,
+  Bell,
+  Sun,
+  Moon
 } from "lucide-react";
 import Image from "next/image";
 import { logoutAdminAction } from "@/app/actions/auth";
+import { featureForMenu } from "@/lib/adminFeatures";
+
+const adminFont = Figtree({ subsets: ["latin"], variable: "--font-admin" });
+
+const ROLE_LABELS: Record<string, string> = {
+  SUPERADMIN: "Super Admin",
+  STAFF_PMB: "Staf PMB",
+  CONTENT_WRITER: "Penulis Konten",
+};
 
 interface AdminUserSession {
   email: string;
@@ -212,6 +226,16 @@ const sidebarNavigation: SidebarItem[] = [
     badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
+    id: "fitur",
+    roles: ["SUPERADMIN"],
+    groupTitle: "SISTEM",
+    label: "Fitur Admin (On/Off)",
+    href: "/admin/fitur",
+    icon: ShieldCheck,
+    badge: "Super",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
+  },
+  {
     id: "users",
     roles: ["SUPERADMIN"],
     groupTitle: "SISTEM",
@@ -229,8 +253,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [session, setSession] = useState<AdminUserSession | null>(null);
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState("");
+  // Fitur yang diizinkan Super Admin untuk peran ini (dari /api/auth/me).
+  const [features, setFeatures] = useState<Record<string, boolean> | null>(null);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [query, setQuery] = useState("");
+  const [userMenu, setUserMenu] = useState(false);
+  const [newLeads, setNewLeads] = useState<number | null>(null);
 
   // Cek otorisasi sesi admin via server cookie
   useEffect(() => {
@@ -240,6 +269,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       .then((res) => res.json())
       .then((json) => {
         if (json?.ok && json.user) {
+          setFeatures(json.features ?? {});
           setSession({
             email: json.user.email,
             name: json.user.name,
@@ -251,39 +281,71 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
       })
       .catch(() => router.push("/u-gate"));
-
-    // Jam Real-Time
-    const updateClock = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleDateString("id-ID", {
-          weekday: "long",
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }) + " • " + now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " WIB"
-      );
-    };
-    updateClock();
-    const timer = setInterval(updateClock, 1000);
-    return () => clearInterval(timer);
   }, [router]);
 
-  // Breadcrumb Contextual Resolver
-  const getBreadcrumb = () => {
-    if (pathname === "/admin") {
-      return { group: "Pusat Kendali", page: "Dashboard Utama" };
-    }
-    const match = sidebarNavigation.find((item) => pathname.startsWith(item.href));
-    if (match) {
-      return { group: match.groupTitle, page: match.label };
-    }
-    return { group: "Administrator", page: "Portal UPITRA" };
+  // Tema dipasang di <html> agar popup (SweetAlert) ikut bertema, dan dilepas saat keluar dari admin.
+  useEffect(() => {
+    let saved: string | null = null;
+    try {
+      saved = window.localStorage.getItem("adm-theme");
+    } catch {}
+    if (saved === "light") setTheme("light");
+    const root = document.documentElement;
+    root.classList.add(adminFont.variable);
+    return () => {
+      root.classList.remove(adminFont.variable);
+      root.removeAttribute("data-admin-theme");
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-admin-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    try {
+      window.localStorage.setItem("adm-theme", next);
+    } catch {}
   };
-  const breadcrumb = getBreadcrumb();
-  const visibleNavigation = sidebarNavigation.filter(
-    (item) => !item.roles || (session && item.roles.includes(session.role))
-  );
+
+  // Lonceng: jumlah leads PMB yang belum ditindaklanjuti (hanya untuk peran yang berhak).
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setUserMenu(false);
+    setQuery("");
+    getNewLeadCount()
+      .then(setNewLeads)
+      .catch(() => setNewLeads(null));
+  }, [pathname]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setUserMenu(false);
+        setQuery("");
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  const isSuper = session?.role === "SUPERADMIN";
+  const visibleNavigation = sidebarNavigation.filter((item) => {
+    if (!session) return false;
+    if (isSuper) return true;
+    const feature = featureForMenu(item.id);
+    if (feature) return features?.[feature.id] === true; // diatur Super Admin di halaman Fitur Admin
+    return !item.roles || item.roles.includes(session.role);
+  });
+
+  // Halaman yang fiturnya dimatikan tidak dapat dibuka lewat URL langsung.
+  const activeItem = sidebarNavigation.find((i) => pathname.startsWith(i.href));
+  const blockedFeature = !isSuper && activeItem ? featureForMenu(activeItem.id) : undefined;
+  const isBlocked = Boolean(blockedFeature && features && features[blockedFeature.id] !== true);
+  const superOnlyBlocked = !isSuper && Boolean(activeItem && !featureForMenu(activeItem.id) && activeItem.roles && !activeItem.roles.includes(session?.role ?? ""));
 
   // Kelompokkan menu per grup (urutan sesuai kemunculan pertama).
   const navGroups: { title: string; items: SidebarItem[] }[] = [];
@@ -293,6 +355,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     else navGroups.push({ title: item.groupTitle, items: [item] });
   }
 
+  // Pencarian cepat menu.
+  const q = query.trim().toLowerCase();
+  const results = q ? visibleNavigation.filter((i) => `${i.label} ${i.groupTitle} ${i.badge}`.toLowerCase().includes(q)).slice(0, 7) : [];
+
   const handleLogout = async () => {
     await logoutAdminAction();
     router.push("/u-gate");
@@ -300,301 +366,247 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!mounted || !session) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/80 via-white to-sky-50 flex flex-col items-center justify-center text-[#06172e] font-sans">
-        <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-200 flex items-center justify-center text-blue-600 animate-spin mb-4">
-          <ShieldCheck className="w-6 h-6" />
-        </div>
-        <p className="text-xs font-semibold text-slate-500">Memuat Portal Administrator UPITRA...</p>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--adm-bg,#0a0b0d)] text-[var(--adm-muted,#9ca3af)]">
+        <ShieldCheck className="mb-4 h-8 w-8 animate-pulse text-[var(--adm-accent,#4da3ff)]" />
+        <p className="text-xs font-semibold">Memuat panel admin UPITRA…</p>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex bg-slate-50 font-sans text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
-      
-      {/* 1. SIDEBAR (Navy Blue #06172e matching UPITRA Branding) */}
-      <aside className="hidden lg:flex lg:w-64 xl:w-72 flex-col shrink-0 bg-[#006bbd] text-white border-r border-white/20 z-30 select-none shadow-xl">
-        
-        {/* Brand Header */}
-        <div className="h-16 flex items-center px-5 border-b border-white/20 bg-[#005a9e]">
-          <Link href="/admin" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md border border-white/20 shrink-0 group-hover:scale-105 transition-transform">
-              <Image
-                src="/images/logo.png"
-                alt="Logo UPITRA"
-                width={28}
-                height={28}
-                className="object-contain"
-                priority
-              />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="text-sm font-black tracking-wider text-white uppercase">UPITRA</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500 text-white font-extrabold uppercase tracking-wide">CMS</span>
-              </div>
-              <span className="text-[9.5px] text-blue-100 font-medium tracking-tight mt-1 truncate">
-                Admin Control Center
-              </span>
-            </div>
-          </Link>
-        </div>
+  const itemClass = (active: boolean) =>
+    `flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors ${
+      active
+        ? "bg-[var(--adm-accent-soft)] text-[var(--adm-accent)] font-semibold"
+        : "text-[var(--adm-muted)] hover:bg-[var(--adm-surface-2)] hover:text-[var(--adm-text)]"
+    }`;
 
-        {/* Dashboard Quick Switcher */}
-        <div className="px-3 pt-3">
-          <Link
-            href="/admin"
-            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-              pathname === "/admin"
-                ? "bg-white text-[#006bbd] shadow-md"
-                : "text-blue-50 hover:bg-white/10 hover:text-white"
-            }`}
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <LayoutDashboard className={`w-4 h-4 shrink-0 ${pathname === "/admin" ? "text-[#006bbd]" : "text-blue-100"}`} />
-              <span className="truncate">Dashboard Utama</span>
-            </div>
-            <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase bg-white/15 text-white border border-white/30">
-              Home
-            </span>
-          </Link>
-        </div>
+  const renderGroup = (group: { title: string; items: SidebarItem[] }) => {
+    const first = group.items[0];
+    const GroupIcon = first.icon;
+    const groupActive = group.items.some((i) => pathname.startsWith(i.href));
 
-        {/* Navigasi: grup dengan banyak menu berbentuk dropdown, menu tunggal berupa tautan langsung */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1 custom-scrollbar" aria-label="Menu admin">
-          {navGroups.map((group) => {
-            const first = group.items[0];
-            const GroupIcon = first.icon;
-            const groupActive = group.items.some((i) => pathname.startsWith(i.href));
+    if (group.items.length === 1) {
+      return (
+        <Link key={group.title} href={first.href} className={itemClass(groupActive)} aria-current={groupActive ? "page" : undefined}>
+          <GroupIcon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+          <span className="truncate">{first.label}</span>
+        </Link>
+      );
+    }
 
-            if (group.items.length === 1) {
+    const isOpen = openGroups[group.title] ?? groupActive;
+    return (
+      <div key={group.title}>
+        <button
+          type="button"
+          onClick={() => setOpenGroups((prev) => ({ ...prev, [group.title]: !isOpen }))}
+          aria-expanded={isOpen}
+          className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors hover:bg-[var(--adm-surface-2)] hover:text-[var(--adm-text)] ${
+            groupActive ? "text-[var(--adm-text)]" : "text-[var(--adm-muted)]"
+          }`}
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <GroupIcon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+            <span className="truncate capitalize">{group.title.toLowerCase()}</span>
+          </span>
+          <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+        </button>
+        {isOpen && (
+          <div className="mt-1 space-y-0.5">
+            {group.items.map((item) => {
+              const active = pathname.startsWith(item.href);
               return (
                 <Link
-                  key={group.title}
-                  href={first.href}
-                  className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    groupActive
-                      ? "bg-white text-[#006bbd] shadow-md"
-                      : "text-blue-50 hover:bg-white/10 hover:text-white"
+                  key={item.id}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`block truncate rounded-lg py-2 pl-[42px] pr-3 text-[13px] transition-colors ${
+                    active
+                      ? "bg-[var(--adm-accent-soft)] font-semibold text-[var(--adm-accent)]"
+                      : "text-[var(--adm-muted)] hover:bg-[var(--adm-surface-2)] hover:text-[var(--adm-text)]"
                   }`}
                 >
-                  <GroupIcon className={`w-4 h-4 shrink-0 ${groupActive ? "text-white" : "text-blue-100"}`} />
-                  <span className="truncate">{first.label}</span>
+                  {item.label}
                 </Link>
               );
-            }
-
-            const isOpen = openGroups[group.title] ?? groupActive;
-            return (
-              <div key={group.title}>
-                <button
-                  type="button"
-                  onClick={() => setOpenGroups((prev) => ({ ...prev, [group.title]: !isOpen }))}
-                  aria-expanded={isOpen}
-                  className={`w-full flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    groupActive ? "bg-white/10 text-white" : "text-blue-50 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  <span className="flex items-center gap-2.5 min-w-0">
-                    <GroupIcon className="w-4 h-4 shrink-0 text-blue-100" />
-                    <span className="truncate capitalize">{group.title.toLowerCase()}</span>
-                  </span>
-                  <span className="flex items-center gap-2 shrink-0">
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/15 text-white border border-white/30">
-                      {group.items.length}
-                    </span>
-                    <ChevronDown className={`w-4 h-4 text-sky-300/70 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
-                  </span>
-                </button>
-
-                {isOpen && (
-                  <div className="mt-1 ml-5 pl-3 border-l border-white/30 space-y-0.5">
-                    {group.items.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = pathname.startsWith(item.href);
-                      return (
-                        <Link
-                          key={item.id}
-                          href={item.href}
-                          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[11.5px] font-semibold transition-all ${
-                            isActive
-                              ? "bg-white text-[#006bbd] shadow-md"
-                              : "text-blue-50 hover:bg-white/10 hover:text-white"
-                          }`}
-                        >
-                          <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[#006bbd]" : "text-blue-100"}`} />
-                          <span className="truncate">{item.label}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </nav>
-
-        {/* User Card in Sidebar Footer */}
-        <div className="p-3.5 border-t border-white/20 bg-[#005a9e]">
-          <div className="flex items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-xs">
-                {session.name.charAt(0)}
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs font-bold text-white truncate">
-                  {session.name}
-                </div>
-                <div className="text-[9.5px] text-blue-100 flex items-center gap-1 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse"></span>
-                  <span>{session.role}</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              title="Keluar dari sesi admin (/u-gate)"
-              className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-[#005a9e] transition-colors cursor-pointer"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            })}
           </div>
+        )}
+      </div>
+    );
+  };
+
+  const mainGroups = navGroups.filter((g) => g.title !== "SISTEM" && g.title !== "PENDUKUNG");
+  const systemGroups = navGroups.filter((g) => g.title === "SISTEM" || g.title === "PENDUKUNG");
+
+  const sidebar = (
+    <>
+      <Link href="/admin" className="flex h-[72px] shrink-0 items-center gap-3 px-6">
+        <span className="adm-keep-white flex h-9 w-9 items-center justify-center rounded-lg bg-white p-1">
+          <Image src="/images/logo.png" alt="" width={28} height={28} className="object-contain" priority />
+        </span>
+        <span className="text-xl font-bold tracking-tight text-[var(--adm-text)]">UPITRA</span>
+      </Link>
+
+      <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-2" aria-label="Menu admin">
+        <Link href="/admin" className={itemClass(pathname === "/admin")} aria-current={pathname === "/admin" ? "page" : undefined}>
+          <LayoutDashboard className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+          Dashboard
+        </Link>
+        {mainGroups.map(renderGroup)}
+
+        {systemGroups.length > 0 && (
+          <div className="mt-4 space-y-1 border-t border-[var(--adm-border)] pt-4">
+            <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--adm-muted)]">Lainnya</p>
+            {systemGroups.map(renderGroup)}
+          </div>
+        )}
+
+        <div className="mt-4 space-y-1 border-t border-[var(--adm-border)] pt-4">
+          <button type="button" onClick={handleLogout} className={`w-full ${itemClass(false)}`}>
+            <LogOut className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+            Keluar
+          </button>
         </div>
+      </nav>
+    </>
+  );
 
-      </aside>
+  const iconButton =
+    "relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--adm-text)] transition-colors hover:bg-[var(--adm-surface-2)]";
 
-      {/* 2. MAIN VIEWPORT & TOPBAR */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 text-slate-800">
-        
-        {/* Top Header Bar - Crisp Pure White */}
-        <header className="h-16 shrink-0 bg-white border-b border-slate-200/90 shadow-2xs px-4 sm:px-6 flex items-center justify-between z-20">
-          
-          {/* Left: Mobile Drawer Trigger & Breadcrumb */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
-              aria-label="Buka Menu Navigasi"
-            >
-              <Menu className="w-5 h-5" />
+  return (
+    <div className="flex h-screen overflow-hidden bg-[var(--adm-bg)] font-sans text-[var(--adm-text)] antialiased">
+      <aside className="hidden w-64 shrink-0 select-none flex-col border-r border-[var(--adm-border)] bg-[var(--adm-surface)] lg:flex">{sidebar}</aside>
+
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header className="z-20 flex h-[72px] shrink-0 items-center gap-3 px-4 sm:px-8">
+          <button type="button" onClick={() => setMobileMenuOpen(true)} className={`${iconButton} lg:hidden`} aria-label="Buka menu">
+            <Menu className="h-5 w-5" />
+          </button>
+
+          {/* Pencarian menu */}
+          <form
+            role="search"
+            className="relative w-full max-w-md"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (results[0]) {
+                router.push(results[0].href);
+                setQuery("");
+              }
+            }}
+          >
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--adm-muted)]" aria-hidden="true" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Cari menu…"
+              aria-label="Cari menu admin"
+              autoComplete="off"
+              className="h-10 w-full rounded-full border border-[var(--adm-border)] bg-[var(--adm-surface)] pl-11 pr-4 text-[13px] text-[var(--adm-text)] placeholder:text-[var(--adm-muted)]"
+            />
+            {q && (
+              <ul className="absolute left-0 right-0 top-12 z-40 overflow-hidden rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface)] p-1.5 shadow-xl">
+                {results.length === 0 && <li className="px-3 py-2 text-xs text-[var(--adm-muted)]">Menu tidak ditemukan.</li>}
+                {results.map((r) => {
+                  const Icon = r.icon;
+                  return (
+                    <li key={r.id}>
+                      <Link href={r.href} onClick={() => setQuery("")} className={itemClass(false)}>
+                        <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <span className="flex-1 truncate">{r.label}</span>
+                        <span className="text-[11px] capitalize">{r.groupTitle.toLowerCase()}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </form>
+
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+            {newLeads !== null && (
+              <Link href="/admin/pmb-leads" className={iconButton} aria-label={`${newLeads} pendaftar baru`} title={`${newLeads} pendaftar baru`}>
+                <Bell className="h-5 w-5" />
+                {newLeads > 0 && (
+                  <span className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#e5484d] px-1 text-[10px] font-bold text-white">
+                    {newLeads > 99 ? "99+" : newLeads}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            <button type="button" onClick={toggleTheme} className={iconButton} aria-label={theme === "dark" ? "Pakai tema terang" : "Pakai tema gelap"} title={theme === "dark" ? "Tema terang" : "Tema gelap"}>
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
 
-            {/* Breadcrumb Navigation */}
-            <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-2 text-xs">
-              <span className="text-slate-400 font-medium">{breadcrumb.group}</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-              <span className="font-bold text-[#06172e] bg-blue-50/80 text-blue-900 px-2.5 py-1 rounded-lg border border-blue-200/60 shadow-2xs">
-                {breadcrumb.page}
-              </span>
-            </nav>
-          </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenu((v) => !v)}
+                aria-expanded={userMenu}
+                aria-haspopup="menu"
+                className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 hover:bg-[var(--adm-surface-2)]"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">{session.name.charAt(0).toUpperCase()}</span>
+                <span className="hidden text-left leading-tight sm:block">
+                  <span className="block max-w-40 truncate text-[13px] font-semibold">{session.name}</span>
+                  <span className="block text-xs text-[var(--adm-muted)]">{ROLE_LABELS[session.role] ?? session.role}</span>
+                </span>
+                <ChevronDown className="hidden h-4 w-4 text-[var(--adm-muted)] sm:block" aria-hidden="true" />
+              </button>
 
-          {/* Right: Live Status, Quick Links & Logout */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Clock Widget */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold">
-              <Clock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>{currentTime || "Sinkronisasi waktu..."}</span>
+              {userMenu && (
+                <>
+                  <button type="button" tabIndex={-1} aria-hidden="true" onClick={() => setUserMenu(false)} className="fixed inset-0 z-30 cursor-default" />
+                  <div role="menu" className="absolute right-0 top-12 z-40 w-60 rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface)] p-1.5 shadow-xl">
+                    <p className="truncate px-3 py-2 text-xs text-[var(--adm-muted)]">{session.email}</p>
+                    <Link role="menuitem" href="/" target="_blank" rel="noopener noreferrer" className={itemClass(false)}>
+                      <ExternalLink className="h-4 w-4" aria-hidden="true" /> Lihat situs
+                    </Link>
+                    <button role="menuitem" type="button" onClick={handleLogout} className={`w-full ${itemClass(false)}`}>
+                      <LogOut className="h-4 w-4" aria-hidden="true" /> Keluar
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
-
-            {/* Website Preview Link */}
-            <Link
-              href="/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-200 text-xs font-bold transition-all"
-            >
-              <span className="hidden sm:inline">Pratinjau Web</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
-
-            {/* Logout Button in Header */}
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold transition-all cursor-pointer"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Keluar</span>
-            </button>
           </div>
-
         </header>
 
-        {/* Dynamic Content Viewport */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar">
-          {children}
+        <main className="custom-scrollbar flex-1 overflow-y-auto px-4 pb-8 pt-2 sm:px-8">
+          {isBlocked || superOnlyBlocked ? (
+            <div className="mx-auto mt-16 max-w-md rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface)] p-8 text-center">
+              <ShieldCheck className="mx-auto mb-4 h-8 w-8 text-[var(--adm-accent)]" />
+              <h2 className="text-lg font-bold">Fitur tidak tersedia</h2>
+              <p className="mt-2 text-xs leading-relaxed text-[var(--adm-muted)]">
+                {isBlocked
+                  ? "Fitur ini sedang dinonaktifkan oleh Super Admin. Hubungi Super Admin bila Anda memerlukannya."
+                  : "Halaman ini hanya dapat diakses oleh Super Admin."}
+              </p>
+              <Link href="/admin" className="mt-5 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700">
+                Kembali ke Dashboard
+              </Link>
+            </div>
+          ) : (
+            children
+          )}
         </main>
-
       </div>
 
-      {/* 3. MOBILE SLIDE-OVER DRAWER */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div 
-            className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="relative w-72 max-w-xs bg-[#006bbd] text-white flex flex-col p-4 z-10 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-white/20">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-white p-1 flex items-center justify-center shrink-0">
-                  <Image src="/images/logo.png" alt="Logo" width={24} height={24} />
-                </div>
-                <span className="font-black text-sm text-white">UPITRA CMS</span>
-              </div>
-              <button 
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto py-4 space-y-2">
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold ${
-                  pathname === "/admin" ? "bg-white text-[#006bbd]" : "text-blue-50"
-                }`}
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span>Dashboard Utama</span>
-              </Link>
-
-              {visibleNavigation.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname.startsWith(item.href);
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold ${
-                      isActive ? "bg-white text-[#006bbd]" : "text-blue-50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </div>
-                    <span className="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase bg-white/10 text-slate-200">
-                      {item.badge}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-
-            <div className="pt-3 border-t border-white/20 flex items-center justify-between text-xs">
-              <span className="text-slate-400">{session.name}</span>
-              <button onClick={handleLogout} className="text-blue-100 hover:text-white font-bold">Keluar</button>
-            </div>
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <button type="button" aria-label="Tutup menu" className="fixed inset-0 bg-black/60" onClick={() => setMobileMenuOpen(false)} />
+          <div className="relative z-10 flex w-72 max-w-[85%] flex-col border-r border-[var(--adm-border)] bg-[var(--adm-surface)] shadow-2xl">
+            <button type="button" onClick={() => setMobileMenuOpen(false)} className={`${iconButton} absolute right-2 top-4`} aria-label="Tutup menu">
+              <X className="h-5 w-5" />
+            </button>
+            {sidebar}
           </div>
         </div>
       )}
-
     </div>
   );
 }

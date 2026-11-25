@@ -1,3 +1,6 @@
+"use client";
+
+import { usePageContent } from "@/lib/usePageContent";
 import Link from "next/link";
 import { 
   Target, 
@@ -16,50 +19,12 @@ import {
 
 
 
-const misiList = [
-  {
-    no: "01",
-    title: "Pendidikan Transformatif & Karakter Berbelarasa",
-    desc: "Menghadirkan pengalaman pendidikan transformatif bagi mahasiswa yang berfokus pada kedalaman pengetahuan keilmuan, kedalaman spiritualitas, kemampuan beradaptasi, kemampuan berkomunikasi, kerendahan hati, dan berbelarasa pada sesama maupun lingkungan.",
-  },
-  {
-    no: "02",
-    title: "Atmosfer Riset Kreatif & Inovatif",
-    desc: "Menciptakan atmosfer akademik yang menumbuhkan kreativitas dan semangat berinovasi melalui penelitian-penelitian yang berdampak transformatif bagi masyarakat luas.",
-  },
-  {
-    no: "03",
-    title: "Pengabdian Berbasis Teknologi & Solusi Nyata",
-    desc: "Mewujudkan atmosfer yang mendorong penerapan ilmu pengetahuan dan teknologi bagi penyelesaian masalah-masalah kemasyarakatan melalui kegiatan pengabdian kepada masyarakat.",
-  },
-  {
-    no: "04",
-    title: "Pendidikan Terjangkau & Berkelanjutan",
-    desc: "Merealisasikan pendidikan tinggi yang terjangkau bagi masyarakat luas yang dikelola secara profesional dan dikembangkan secara berkelanjutan.",
-  },
-  {
-    no: "05",
-    title: "Kerjasama Strategis Industri & Pemerintahan",
-    desc: "Mendorong terwujudnya kerjasama yang produktif dengan lembaga pendidikan, pemerintah, nonpemerintah, dan dunia usaha (Triputra Group & mitra) baik tingkat regional, nasional, maupun internasional.",
-  },
-  {
-    no: "06",
-    title: "Kampus Modern, Digital & Ramah Lingkungan",
-    desc: "Menciptakan suasana kampus modern yang kondusif untuk proses pendidikan dengan prasarana dan sarana yang berkualitas, berbasis digital, dan ramah lingkungan.",
-  },
-];
 
-const tujuanList = [
-  "Melibatkan diri dalam usaha mencerdaskan kehidupan bangsa, memupuk rasa kesatuan dan persatuan bangsa yang dilandasi nilai-nilai Pancasila, etika akademis, moral, iman, dan takwa kepada Tuhan Yang Maha Esa.",
-  "Menyelenggarakan proses pembelajaran yang transformatif dalam suasana akademik yang dinamis untuk menghasilkan lulusan yang bermoral, kompeten, berdaya saing global, mandiri, dan berkarakter Triputra DNA.",
-  "Meningkatkan kuantitas dan kualitas penelitian dasar dan terapan yang berkontribusi nyata bagi pengembangan ilmu pengetahuan, teknologi, dan penyelesaian isu strategis masyarakat.",
-  "Melaksanakan pengabdian kepada masyarakat yang berkesinambungan berbasis hasil riset dan inovasi teknologi untuk meningkatkan kesejahteraan sosial ekonomi masyarakat.",
-  "Memperluas dan memperkuat jejaring kemitraan strategis dengan dunia usaha dan industri (khususnya Triputra Group), perguruan tinggi mitra dalam dan luar negeri, serta instansi pemerintah.",
-  "Mewujudkan tata kelola perguruan tinggi yang baik (Good University Governance), transparan, akuntabel, dan berdaya saing tinggi dalam era transformasi digital.",
-  "Menyediakan sarana dan prasarana kampus yang modern, aman, inklusif, dan ramah lingkungan guna menunjang ekosistem belajar yang inspiratif dan berdaya guna."
-];
 
 export default function ProfilVisiMisiContent() {
+  const { content: __c } = usePageContent("visi-misi") as { content: Record<string, any> };
+  const misiList = ((__c.misiList as { no: string; title: string; desc: string }[]) ?? []).filter((m) => m?.title?.trim());
+  const tujuanList = ((__c.tujuanList as string[]) ?? []).filter((t) => typeof t === "string" && t.trim() !== "");
   return (
     <div className="space-y-16">
 
@@ -95,9 +60,9 @@ export default function ProfilVisiMisiContent() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {misiList.map((misi) => (
+            {misiList.map((misi, mi) => (
               <div 
-                key={misi.no}
+                key={`${misi.no}-${mi}`}
                 className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/80 shadow-xs hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">

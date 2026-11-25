@@ -114,7 +114,7 @@ export const defaultHomepageInstagram: HomepageInstagram = {
     {
       id: "ig_post_01",
       caption: "✨ Prestasi Mahasiswa UPITRA dalam ajang kompetisi nasional 2026.",
-      mediaUrl: "/images/instagram/ig-1.jpg",
+      mediaUrl: "/images/anugerah.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timeAgo: "1 hari yang lalu",
       category: "PRESTASI MAHASISWA",
@@ -122,7 +122,7 @@ export const defaultHomepageInstagram: HomepageInstagram = {
     {
       id: "ig_post_02",
       caption: "🎓 Kegiatan kampus dan perkuliahan interaktif mahasiswa UPITRA.",
-      mediaUrl: "/images/instagram/ig-2.jpg",
+      mediaUrl: "/images/kuliah-1.jpeg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timeAgo: "4 hari yang lalu",
       category: "KEGIATAN KAMPUS",
@@ -130,7 +130,7 @@ export const defaultHomepageInstagram: HomepageInstagram = {
     {
       id: "ig_post_03",
       caption: "🔥 Info Beasiswa PMB UPITRA 2026 potongan UKT & DPP hingga 100%.",
-      mediaUrl: "/images/instagram/ig-3.jpg",
+      mediaUrl: "/images/pmb/wave-ready-achievement.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timeAgo: "6 hari yang lalu",
       category: "INFO BEASISWA PMB",
@@ -138,7 +138,7 @@ export const defaultHomepageInstagram: HomepageInstagram = {
     {
       id: "ig_post_04",
       caption: "📚 Fasilitas kampus modern, laboratorium komputer, dan perpustakaan digital.",
-      mediaUrl: "/images/instagram/ig-4.jpg",
+      mediaUrl: "/images/ar-vr.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timeAgo: "1 minggu yang lalu",
       category: "FASILITAS KAMPUS",
@@ -146,7 +146,7 @@ export const defaultHomepageInstagram: HomepageInstagram = {
     {
       id: "ig_post_05",
       caption: "🤝 Kemitraan industri strategis dengan puluhan unit bisnis Triputra Group.",
-      mediaUrl: "/images/instagram/ig-5.jpg",
+      mediaUrl: "/images/kegiatan.jpg",
       permalink: "https://www.instagram.com/upitra_campus/",
       timeAgo: "2 minggu yang lalu",
       category: "KEMITRAAN INDUSTRI",

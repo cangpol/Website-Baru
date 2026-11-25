@@ -72,7 +72,8 @@ export interface AdminDownloadDoc {
 export default function AdminLayananPage() {
   const [activeTab, setActiveTab] = useState<"services" | "banner" | "faq" | "brochure">("services");
 
-  // Notification Toast  const showToast = (message: string, type?: SwalKind) => {
+  // Notification Toast
+  const showToast = (message: string, type?: SwalKind) => {
     swalToast(message, type);
   };
 

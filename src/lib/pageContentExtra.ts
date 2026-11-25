@@ -2,7 +2,7 @@
 // Editable via /admin/konten-halaman. Defaults are used until an admin saves a page.
 import type { FieldSpec } from "./pageContent";
 
-export const EXTRA_KEYS = ["pimpinan","visi-misi","prestasi-capaian","galeri-kegiatan","kalender-akademik","organisasi-mahasiswa","prestasi-mahasiswa","program-pengembangan","tugas-dan-fungsi","daftar-kerjasama","kegiatan-kerjasama","kelompok-mitra","career-center","e-learning","immersion-program","perpustakaan","tracer-study","pusat-penelitian","fakultas-feb","fakultas-fst","fakultas-fsh","fakultas-fkes","entrepreneurship","ebrochure","life-at-upitra","mitra-kerjasama","pengaturan-situs"] as const;
+export const EXTRA_KEYS = ["pimpinan","visi-misi","prestasi-capaian","galeri-kegiatan","kalender-akademik","organisasi-mahasiswa","prestasi-mahasiswa","program-pengembangan","tugas-dan-fungsi","daftar-kerjasama","kegiatan-kerjasama","kelompok-mitra","career-center","e-learning","immersion-program","perpustakaan","tracer-study","pusat-penelitian","fakultas-feb","fakultas-fst","fakultas-fsh","fakultas-fkes","entrepreneurship","ebrochure","life-at-upitra","mitra-kerjasama","pengaturan-situs","profil-tentang","profil-dna"] as const;
 
 export const EXTRA_LABELS = {
   "pimpinan": "Pimpinan",
@@ -31,7 +31,9 @@ export const EXTRA_LABELS = {
   "ebrochure": "E-Brosur",
   "life-at-upitra": "Life at UPITRA",
   "mitra-kerjasama": "Daftar Mitra Kerjasama",
-  "pengaturan-situs": "Pengaturan Situs (Footer & Kontak)"
+  "pengaturan-situs": "Pengaturan Situs (Footer & Kontak)",
+  "profil-tentang": "Profil: Tentang UPITRA",
+  "profil-dna": "Profil: UPITRA DNA"
 } as const;
 
 export const EXTRA_PATHS: Record<string, string> = {
@@ -61,7 +63,9 @@ export const EXTRA_PATHS: Record<string, string> = {
   "ebrochure": "/ebrochure",
   "life-at-upitra": "/life-at-upitra",
   "mitra-kerjasama": "/mitra-kerjasama",
-  "pengaturan-situs": "/"
+  "pengaturan-situs": "/",
+  "profil-tentang": "/profil",
+  "profil-dna": "/profil?tab=dna"
 };
 
 export const EXTRA_DEFAULTS = {
@@ -1923,6 +1927,80 @@ export const EXTRA_DEFAULTS = {
     "tiktok": "https://tiktok.com",
     "youtube": "https://youtube.com",
     "facebook": "https://facebook.com"
+  },
+  "profil-tentang": {
+    "judul": "Transformasi UPITRA",
+    "paragraf": [
+      "Universitas Pignatelli Triputra (UPITRA) adalah kampus dengan konsep \"Link and Match\" dengan dunia industri, merujuk pada hubungan yang erat antara pendidikan tinggi dan sektor industri untuk memastikan lulusan siap kerja dan relevan dengan kebutuhan pasar.",
+      "Karena UPITRA mempunyai hubungan erat dengan Triputra Group dan Persada Capital Investama. Konsep ini menekankan pentingnya kolaborasi antara institusi pendidikan dan dunia usaha dalam merancang kurikulum, magang, pelatihan, serta penelitian yang mendukung pengembangan keterampilan dan pengetahuan yang dibutuhkan oleh industri."
+    ],
+    "gambar": "/images/gedung-upitra.jpg",
+    "sejarahJudul": "Sejarah",
+    "sejarah": [
+      {
+        "judul": "Awal Mula dan Penggabungan",
+        "pengantar": "UPITRA merupakan hasil penggabungan (merger) dari dua lembaga pendidikan tinggi pendahulunya:",
+        "butir": [
+          "Akademi Bahasa Asing (ABA) Santo Pignatelli (berdiri sejak tahun 1969).",
+          "Sekolah Tinggi Ilmu Ekonomi (STIE) Santo Pignatelli (bermula dari Akademi Akuntansi yang beroperasi sejak tahun 1970)."
+        ],
+        "penutup": "Nama \"Pignatelli\" diambil dari Santo Yosef Maria Pignatelli, simbol keteladanan dan tahan uji. Fondasi awal institusi ini dinaungi oleh Yayasan Santo Yosef Maria Pignatelli Surakarta yang sudah bergerak di bidang pendidikan sejak 27 Januari 1968."
+      },
+      {
+        "judul": "Kolaborasi dengan Industri",
+        "pengantar": "Dalam perkembangannya, UPITRA menggandeng PT Triputra Edukasi Nusantara (afiliasi dari Triputra Group dan Persada Capital Investama) untuk menerapkan konsep \"Link and Match\" antara dunia pendidikan dan kebutuhan industri.",
+        "butir": [],
+        "penutup": "Saat ini, UPITRA mengelola beberapa fakultas dan program studi di bidang ekonomi, sains, serta teknologi yang berlokasi di Jl. Duwet No.1, Karangasem, Laweyan, Surakarta. Informasi lebih lanjut mengenai program dan pendaftaran dapat dilihat langsung melalui situs resmi Universitas Pignatelli Triputra."
+      }
+    ],
+    "videoJudul": "Video Profil UPITRA",
+    "videoDeskripsi": "Video ini menampilkan profil Universitas Pignatelli Triputra, peresmian gedung baru, fasilitas pembelajaran, kegiatan akademik, serta lingkungan kampus yang mendukung pengembangan mahasiswa menjadi profesional berdaya saing global."
+  },
+  "profil-dna": {
+    "badge": "Pilar Sinergi Strategis",
+    "judul": "Kolaborasi Yayasan Santo Ignatius Pignatelli & Triputra Group",
+    "deskripsi": "UPITRA memadukan pendidikan karakter berakar nilai-nilai Ignasian (hati yang berbelarasa) dengan kompetensi profesional berbasis kebutuhan industri (Triputra DNA), sehingga lulusannya memiliki integritas moral tinggi dan kesiapan berkarir global.",
+    "keunggulan": [
+      "Akreditasi Institusi BAIK SEKALI BAN-PT",
+      "Kampus Siap Kerja Ekosistem Triputra"
+    ],
+    "lambangJudul": "Makna Lambang UPITRA",
+    "lambangIsi": "Lambang UPITRA merepresentasikan perpaduan kompas kebijaksanaan, kobaran api semangat melayani, dan lingkaran kebersamaan Triputra. Simbol ini menegaskan tekad institusi menjadi mercusuar pendidikan tinggi berkarakter unggul di Indonesia.",
+    "info": [
+      {
+        "label": "Badan Penyelenggara",
+        "nilai": "Yayasan St. Ignatius Pignatelli"
+      },
+      {
+        "label": "Mitra Pendukung Industri",
+        "nilai": "Triputra Group"
+      },
+      {
+        "label": "Wilayah Pembinaan",
+        "nilai": "LLDIKTI Wilayah VI Jateng"
+      }
+    ],
+    "falsafahBadge": "Falsafah Pendidikan",
+    "falsafahJudul": "4 Nilai Pokok Triputra DNA & Semangat Ignasian",
+    "falsafahDeskripsi": "Setiap mahasiswa UPITRA dibina untuk memiliki fondasi karakter kokoh yang diakui dan dicari oleh dunia industri modern:",
+    "nilai": [
+      {
+        "judul": "Integrity & Ethics",
+        "deskripsi": "Menjunjung kejujuran, komitmen moral, ketulusan, serta integritas etika profesional dalam setiap tindakan dan pengambilan keputusan."
+      },
+      {
+        "judul": "Excellence",
+        "deskripsi": "Senantiasa mengejar standar kualitas tertinggi, berorientasi pada hasil prima, dan pantang menyerah dalam menghadapi tantangan zaman."
+      },
+      {
+        "judul": "Compassion (Belarasa)",
+        "deskripsi": "Memiliki kepedulian tulus terhadap sesama dan lingkungan sosial, menghidupi semangat solider bagi yang rentan dan membutuhkan."
+      },
+      {
+        "judul": "Humility & Service",
+        "deskripsi": "Kerendahan hati untuk terus belajar, menghargai keberagaman, dan mendedikasikan keahlian keilmuan untuk melayani kemajuan bangsa."
+      }
+    ]
   }
 };
 
@@ -3240,6 +3318,149 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "facebook",
       "label": "Tautan Facebook",
       "type": "text"
+    }
+  ],
+  "profil-tentang": [
+    {
+      "key": "judul",
+      "label": "Judul Bagian Atas",
+      "type": "text"
+    },
+    {
+      "key": "paragraf",
+      "label": "Paragraf Pengantar (satu paragraf per baris)",
+      "type": "lines"
+    },
+    {
+      "key": "gambar",
+      "label": "Foto Gedung",
+      "type": "image"
+    },
+    {
+      "key": "sejarahJudul",
+      "label": "Judul Bagian Sejarah",
+      "type": "text"
+    },
+    {
+      "key": "sejarah",
+      "label": "Subbagian Sejarah",
+      "type": "list",
+      "itemLabel": "Subbagian",
+      "fields": [
+        {
+          "key": "judul",
+          "label": "Judul Subbagian",
+          "type": "text"
+        },
+        {
+          "key": "pengantar",
+          "label": "Paragraf Pembuka",
+          "type": "textarea"
+        },
+        {
+          "key": "butir",
+          "label": "Daftar Butir (satu per baris, boleh kosong)",
+          "type": "lines"
+        },
+        {
+          "key": "penutup",
+          "label": "Paragraf Penutup",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "key": "videoJudul",
+      "label": "Judul Video Profil",
+      "type": "text"
+    },
+    {
+      "key": "videoDeskripsi",
+      "label": "Deskripsi Video Profil",
+      "type": "textarea"
+    }
+  ],
+  "profil-dna": [
+    {
+      "key": "badge",
+      "label": "Label Kecil",
+      "type": "text"
+    },
+    {
+      "key": "judul",
+      "label": "Judul",
+      "type": "text"
+    },
+    {
+      "key": "deskripsi",
+      "label": "Deskripsi",
+      "type": "textarea"
+    },
+    {
+      "key": "keunggulan",
+      "label": "Poin Keunggulan (satu per baris)",
+      "type": "lines"
+    },
+    {
+      "key": "lambangJudul",
+      "label": "Judul Makna Lambang",
+      "type": "text"
+    },
+    {
+      "key": "lambangIsi",
+      "label": "Isi Makna Lambang",
+      "type": "textarea"
+    },
+    {
+      "key": "info",
+      "label": "Info Kelembagaan",
+      "type": "list",
+      "itemLabel": "Info",
+      "fields": [
+        {
+          "key": "label",
+          "label": "Label",
+          "type": "text"
+        },
+        {
+          "key": "nilai",
+          "label": "Nilai",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "key": "falsafahBadge",
+      "label": "Label Falsafah",
+      "type": "text"
+    },
+    {
+      "key": "falsafahJudul",
+      "label": "Judul Falsafah",
+      "type": "text"
+    },
+    {
+      "key": "falsafahDeskripsi",
+      "label": "Deskripsi Falsafah",
+      "type": "textarea"
+    },
+    {
+      "key": "nilai",
+      "label": "Nilai Pokok",
+      "type": "list",
+      "itemLabel": "Nilai",
+      "fields": [
+        {
+          "key": "judul",
+          "label": "Judul",
+          "type": "text"
+        },
+        {
+          "key": "deskripsi",
+          "label": "Deskripsi",
+          "type": "textarea"
+        }
+      ]
     }
   ]
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { Loader2, Plus, Save, Trash2 } from "lucide-react";
+import { ChevronDown, Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { getPageHeaderBanner, savePageHeaderBannerAction } from "@/server/hero";
 import { getPageContent, savePageContentAction } from "@/server/page-content";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
@@ -20,6 +20,92 @@ const BANNERS = CORE_BANNERS as Record<string, Json>;
 
 const inputCls =
   "w-full px-3 py-2 text-xs rounded-xl bg-blue-50 border border-blue-200 text-slate-900 focus:outline-none focus:border-sky-500";
+
+const TITLE_KEYS = ["nama", "name", "title", "judul", "label", "kegiatan", "fakultas", "value", "angka", "tag", "no"];
+
+function rowTitle(item: Json): string {
+  for (const k of TITLE_KEYS) {
+    const v = item[k];
+    if (typeof v === "string" && v.trim()) return v.trim();
+  }
+  for (const v of Object.values(item)) if (typeof v === "string" && v.trim() && !v.startsWith("/")) return v.trim();
+  return "";
+}
+
+function rowSubtitle(item: Json, title: string): string {
+  for (const k of ["jabatan", "bidang", "kategori", "subtitle", "meta", "raihan", "desc", "deskripsi", "ringkasan"]) {
+    const v = item[k];
+    if (typeof v === "string" && v.trim() && v.trim() !== title) return v.trim();
+  }
+  return "";
+}
+
+function rowImage(item: Json): string {
+  for (const k of ["foto", "image", "gambar", "logo"]) {
+    const v = item[k];
+    if (typeof v === "string" && v.trim()) return v;
+  }
+  return "";
+}
+
+/** Satu item daftar berbentuk baris; klik untuk membuka detail dan form ubahnya. */
+function ListRow({
+  index,
+  item,
+  spec,
+  onChange,
+  onRemove,
+}: {
+  index: number;
+  item: Json;
+  spec: Extract<FieldSpec, { type: "list" }>;
+  onChange: (v: Json) => void;
+  onRemove: () => void;
+}) {
+  const blank = Object.values(item).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
+  const [open, setOpen] = useState(blank); // item yang baru ditambahkan langsung terbuka
+  const title = rowTitle(item);
+  const sub = rowSubtitle(item, title);
+  const img = rowImage(item);
+
+  return (
+    <div className={`overflow-hidden rounded-xl border bg-white ${open ? "border-blue-300 shadow-sm" : "border-blue-100"}`}>
+      <div className="flex items-center gap-3 px-3 py-2.5">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
+        >
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[11px] font-bold text-blue-700">{index + 1}</span>
+          {img && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={img} alt="" className="h-9 w-9 shrink-0 rounded-lg border border-blue-100 object-cover" />
+          )}
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-xs font-bold text-slate-900">{title || `${spec.itemLabel} baru (belum diisi)`}</span>
+            {sub && <span className="block truncate text-[11px] text-slate-500">{sub}</span>}
+          </span>
+          <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        </button>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="shrink-0 cursor-pointer rounded-lg border border-blue-200 p-1.5 text-blue-700 hover:bg-blue-50"
+          aria-label={`Hapus ${spec.itemLabel} ${index + 1}`}
+          title="Hapus"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+      {open && (
+        <div className="space-y-3 border-t border-blue-100 bg-blue-50/40 p-4">
+          <Fields specs={spec.fields} value={item} onChange={onChange} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; onChange: (v: Json) => void }) {
   const set = (key: string, v: unknown) => onChange({ ...value, [key]: v });
@@ -64,32 +150,20 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
                 </button>
               </div>
               {items.map((item, i) => (
-                <div key={i} className="border border-blue-200 rounded-xl p-4 space-y-3 bg-blue-50">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-500">
-                      {f.itemLabel} #{i + 1}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const label = item.nama ?? item.name ?? item.title ?? item.judul ?? item.label;
-                        if (await swalConfirmDelete(typeof label === "string" ? label : undefined)) {
-                          set(f.key, items.filter((_, n) => n !== i));
-                          swalToast(`${f.itemLabel} dihapus dari daftar. Klik Simpan untuk menerapkan.`, "info");
-                        }
-                      }}
-                      className="text-blue-600 hover:text-blue-700 cursor-pointer"
-                      aria-label={`Hapus ${f.itemLabel} ${i + 1}`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <Fields
-                    specs={f.fields}
-                    value={item}
-                    onChange={(v) => set(f.key, items.map((x, n) => (n === i ? v : x)))}
-                  />
-                </div>
+                <ListRow
+                  key={i}
+                  index={i}
+                  item={item}
+                  spec={f}
+                  onChange={(v) => set(f.key, items.map((x, n) => (n === i ? v : x)))}
+                  onRemove={async () => {
+                    const label = rowTitle(item);
+                    if (await swalConfirmDelete(label || undefined)) {
+                      set(f.key, items.filter((_, n) => n !== i));
+                      swalToast(`${f.itemLabel} dihapus dari daftar. Klik Simpan untuk menerapkan.`, "info");
+                    }
+                  }}
+                />
               ))}
               {items.length === 0 && <p className="text-xs text-slate-500">Belum ada item.</p>}
             </div>

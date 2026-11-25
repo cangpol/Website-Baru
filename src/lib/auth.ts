@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "crypto";
 import { Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { FEATURE_FLAGS_SETTING_KEY, featureForModule, type FeatureFlags } from "@/lib/adminFeatures";
 
 export interface SessionPayload {
   userId: string;
@@ -149,6 +150,22 @@ export async function requireRole(...allowedRoles: Role[]): Promise<SessionPaylo
 }
 
 // Izin Spesifik Berdasarkan Modul & Aksi
+/** Membaca saklar fitur yang diatur Super Admin (kosong bila belum pernah diatur). */
+export async function getFeatureFlags(): Promise<FeatureFlags> {
+  try {
+    const setting = await prisma.siteSetting.findUnique({ where: { key: FEATURE_FLAGS_SETTING_KEY } });
+    const v = setting?.value;
+    if (!v || typeof v !== "object" || Array.isArray(v)) return {};
+    const out: FeatureFlags = {};
+    for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+      if (typeof val === "boolean") out[k] = val;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 export type AdminAction = "read" | "create" | "update" | "delete" | "publish";
 
 export async function requirePermission(
@@ -161,6 +178,18 @@ export async function requirePermission(
   // SUPERADMIN memiliki akses penuh tanpa batas
   if (role === Role.SUPERADMIN) {
     return session;
+  }
+
+  // Saklar fitur dari Super Admin: OFF menolak, ON mengizinkan bagi semua peran admin.
+  const feature = featureForModule(moduleKey);
+  if (feature) {
+    const flag = (await getFeatureFlags())[feature.id];
+    if (flag === false) {
+      throw new Error("Fitur ini dinonaktifkan oleh Super Admin.");
+    }
+    if (flag === true) {
+      return session;
+    }
   }
 
   // STAFF_PMB hak akses

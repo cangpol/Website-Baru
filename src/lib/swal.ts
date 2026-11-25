@@ -4,8 +4,8 @@ import Swal from "sweetalert2";
 
 // SweetAlert2 dengan tema gelap yang serasi dengan panel admin.
 const base = Swal.mixin({
-  background: "#ffffff",
-  color: "#0f172a",
+  background: "var(--adm-surface, #ffffff)",
+  color: "var(--adm-text, #0f172a)",
   confirmButtonColor: "#0284c7",
   cancelButtonColor: "#64748b",
   iconColor: "#0284c7",

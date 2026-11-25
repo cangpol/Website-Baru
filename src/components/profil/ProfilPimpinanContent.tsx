@@ -1,3 +1,6 @@
+"use client";
+
+import { usePageContent } from "@/lib/usePageContent";
 import Link from "next/link";
 import { 
   Users, 
@@ -36,113 +39,17 @@ interface DekanItem {
   link: string;
 }
 
-const pimpinanList: PimpinanItem[] = [
-  {
-    nama: "Neil Semuel Rupidara, S.E., M.Sc., Ph.D",
-    jabatan: "Rektor Universitas Pignatelli Triputra",
-    bidang: "Pimpinan Eksekutif Tertinggi",
-    foto: "/images/pimpinan/rektor-neil-rupidara.jpg",
-    deskripsi: "Memimpin arah strategis, penguatan kelembagaan, serta kolaborasi ekosistem pendidikan UPITRA dengan Triputra Group dan mitra industri nasional.",
-    kredensial: [
-      "University of Melbourne, Australia (Ph.D)",
-      "Pakar Manajemen Strategis & Kepemimpinan Korporat",
-      "Dosen & Peneliti Transformasi Manajemen Sumber Daya Manusia"
-    ],
-  },
-  {
-    nama: "Prof. Johana Endang Prawitasari, Ph.D",
-    jabatan: "Wakil Rektor 1 (Akademik & Kemahasiswaan)",
-    bidang: "Bidang Akademik, Riset & Ormawa",
-    foto: "/images/pimpinan/wr1-johana-prawitasari.jpg",
-    deskripsi: "Bertanggung jawab atas penjaminan mutu kurikulum transformatif, peningkatan prestasi mahasiswa, kegiatan organisasi kemahasiswaan, dan riset inovatif.",
-    kredensial: [
-      "Guru Besar / Profesor Perguruan Tinggi Nasional",
-      "Pakar Psikologi Pendidikan & Pembinaan Karakter Unggul",
-      "Pengembang Kurikulum Transformatif Berorientasi Industri"
-    ],
-  },
-  {
-    nama: "Yohanes Bayu Samudro, S.Pd., M.Pd",
-    jabatan: "Wakil Rektor 2 (Operasional, Keuangan & SDM)",
-    bidang: "Bidang Sumber Daya, Keuangan & IT",
-    foto: "/images/pimpinan/wr2-bayu-samudro.jpg",
-    deskripsi: "Mengelola efisiensi operasional kampus modern, keberlanjutan keuangan, pengembangan sarana prasarana berbasis digital, serta tata kelola SDM prima.",
-    kredensial: [
-      "Magister Pendidikan (M.Pd)",
-      "Pakar Manajemen Operasional Lembaga Pendidikan Tinggi",
-      "Arsitek Pengembangan Infrastruktur Digital Kampus Modern"
-    ],
-  },
-];
 
-const dekanatList: DekanItem[] = [
-  {
-    fakultas: "Fakultas Sains & Teknologi",
-    fakultasShort: "FST",
-    nama: "Benedictus Herry Suharto, S.T., M.T.",
-    jabatan: "Dekan Fakultas Sains & Teknologi",
-    foto: "/images/dosen/1777869540_69f822e4e6193.jpg",
-    pendidikan: "S1 & S2 Teknik Elektro (Universitas Gadjah Mada)",
-    keahlian: [
-      "Internet of Things (IoT) & Embedded Robotics",
-      "Artificial Intelligence & Machine Learning Architecture",
-      "Software Engineering & Kurikulum Komputasi Industri Triputra"
-    ],
-    prodi: ["S1 Informatika", "S1 Sistem Informasi", "S1 Rekayasa Perangkat Lunak"],
-    fokus: "Transformasi komputasi digital, kecerdasan buatan (AI), rekayasa sistem cloud skala besar, dan keamanan siber.",
-    link: "/fst",
-  },
-  {
-    fakultas: "Fakultas Ekonomi & Bisnis",
-    fakultasShort: "FEB",
-    nama: "Yenni Maria Sridarta, S.E., M.M.",
-    jabatan: "Dekan Fakultas Ekonomi & Bisnis",
-    foto: "/images/dosen/1779074566_6a0a86064028b.jpg",
-    pendidikan: "S1 Manajemen (USD), S2 Manajemen (Universitas Atma Jaya Yogyakarta)",
-    keahlian: [
-      "Manajemen Keuangan Korporasi & Analisis Investasi",
-      "Manajemen Operasional Rantai Pasok Terintegrasi (Supply Chain)",
-      "Pengembangan Budaya Organisasi & Tata Kelola SDM Strategis"
-    ],
-    prodi: ["S1 Manajemen", "S1 Akuntansi"],
-    fokus: "Manajemen rantai pasok modern, akuntansi digital, technopreneurship, dan sinergi korporasi Triputra Group.",
-    link: "/feb",
-  },
-  {
-    fakultas: "Fakultas Sosial Humaniora",
-    fakultasShort: "FSH",
-    nama: "Dr. RR. Erna Sadiarti Budiningtyas, S.Sos., M.Sc.",
-    jabatan: "Dekan Fakultas Sosial Humaniora",
-    foto: "/images/dosen/1779170466_6a0bfca27b852.jpg",
-    pendidikan: "S1, S2, dan S3 Doktor Pariwisata (Universitas Gadjah Mada)",
-    keahlian: [
-      "Cultural Heritage Tourism & Ekowisata Berkelanjutan",
-      "Tata Kelola Hospitality & Destinasi Pariwisata Global",
-      "Komunikasi Bisnis Internasional & Diplomasi Budaya"
-    ],
-    prodi: ["S1 Pariwisata", "S1 Bahasa Inggris"],
-    fokus: "Hospitality global, pariwisata berkelanjutan, komunikasi bisnis internasional, dan diplomasi kebudayaan dunia.",
-    link: "/fsh",
-  },
-  {
-    fakultas: "Fakultas Kesehatan",
-    fakultasShort: "FKes",
-    nama: "Dr. Budi Santoso, S.K.M., M.Kes.",
-    jabatan: "Dekan Fakultas Kesehatan",
-    foto: "/images/dosen/1778135697_69fc329171b37.jpg",
-    pendidikan: "S1 Kesehatan Masyarakat, S2 Kesehatan Kerja (K3), S3 Ilmu Kesehatan Masyarakat",
-    keahlian: [
-      "Sistem Manajemen K3 (SMK3) Industri Manufaktur & Perkebunan",
-      "Ergonomi Okupasi & Higiene Lingkungan Industri",
-      "Penjaminan Mutu Layanan Fisioterapi & Praktik Keperawatan Vokasi"
-    ],
-    prodi: ["S1 Keselamatan & Kesehatan Kerja (K3)", "S1 Fisioterapi", "D3 Keperawatan"],
-    fokus: "K3 industri manufaktur & perkebunan Triputra, rehabilitasi muskuloskeletal/olahraga, dan keperawatan vokasional profesional.",
-    link: "/fkes",
-  },
-];
 
 export default function ProfilPimpinanContent() {
+  const { content: __c } = usePageContent("pimpinan") as { content: Record<string, any> };
+  const arr = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.trim() !== "") : []);
+  const pimpinanList = ((__c.pimpinanList as PimpinanItem[]) ?? [])
+    .filter((p) => p?.nama?.trim())
+    .map((p) => ({ ...p, kredensial: arr(p.kredensial) }));
+  const dekanatList = ((__c.dekanatList as DekanItem[]) ?? [])
+    .filter((d) => d?.nama?.trim())
+    .map((d) => ({ ...d, keahlian: arr(d.keahlian), prodi: arr(d.prodi), link: d.link?.trim() || "/akademik" }));
   return (
     <div className="space-y-16">
 

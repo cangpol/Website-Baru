@@ -37,6 +37,19 @@ function sanitize(value: unknown, key = "", depth = 0): unknown {
   throw new Error("Tipe data tidak didukung.");
 }
 
+const MODULE_BY_KEY: Record<string, string> = {
+  "profil-tentang": "profil", "profil-dna": "profil", "visi-misi": "profil", pimpinan: "profil", "prestasi-capaian": "profil",
+  kemahasiswaan: "kemahasiswaan", "galeri-kegiatan": "kemahasiswaan", "kalender-akademik": "kemahasiswaan", "organisasi-mahasiswa": "kemahasiswaan",
+  "prestasi-mahasiswa": "kemahasiswaan", "program-pengembangan": "kemahasiswaan", "tugas-dan-fungsi": "kemahasiswaan",
+  kerjasama: "kerjasama", "daftar-kerjasama": "kerjasama", "kegiatan-kerjasama": "kerjasama", "kelompok-mitra": "kerjasama", "mitra-kerjasama": "kerjasama",
+  layanan: "layanan", "career-center": "layanan", "e-learning": "layanan", "immersion-program": "layanan", perpustakaan: "layanan", "tracer-study": "layanan",
+  riset: "articles", "pusat-penelitian": "articles",
+};
+
+function moduleForPageKey(pageKey: string) {
+  return MODULE_BY_KEY[pageKey] ?? "beranda";
+}
+
 function isPageKey(key: string): key is PageContentKey {
   return (PAGE_CONTENT_KEYS as readonly string[]).includes(key);
 }
@@ -61,7 +74,8 @@ export async function getPageContent(pageKey: string) {
 }
 
 export async function savePageContentAction(pageKey: string, raw: unknown) {
-  const session = await requirePermission("beranda", "update");
+  // Izin mengikuti fitur pemilik halaman (agar saklar fitur Super Admin berlaku tepat sasaran).
+  const session = await requirePermission(moduleForPageKey(pageKey), "update");
   if (!isPageKey(pageKey)) return { ok: false, message: "Halaman tidak valid." };
 
   try {

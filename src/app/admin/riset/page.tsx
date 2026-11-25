@@ -92,7 +92,8 @@ const emptyNewsForm: AdminArticleItem = {
 };
 
 export default function AdminRisetPage() {
-  const [activeTab, setActiveTab] = useState<"berita" | "banner_profil" | "publikasi">("berita");
+  const [activeTab, setActiveTab] = useState<"berita" | "banner_profil" | "publikasi">("berita");
+
   const showToast = (message: string, type?: SwalKind) => {
     swalToast(message, type);
   };
