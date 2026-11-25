@@ -280,7 +280,7 @@ export default function AkademikOverviewPage() {
         {/* Kalender Akademik */}
         <section className="w-full bg-white" aria-labelledby="kalender-heading">
           <div className="mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-12 lg:px-[120px] lg:py-16">
-            <h2 id="kalender-heading" className="text-2xl font-extrabold uppercase tracking-tight text-[#2b6cc4] sm:text-3xl">
+            <h2 id="kalender-heading" className="text-2xl font-extrabold tracking-tight text-[#006bbd] sm:text-3xl">
               Kalender Akademik
             </h2>
             <p className="mb-6 mt-1 text-xs text-slate-600 sm:text-sm">Gelombang pendaftaran yang sedang kami buka.</p>

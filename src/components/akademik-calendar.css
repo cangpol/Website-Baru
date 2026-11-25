@@ -1,0 +1,27 @@
+/* Penyesuaian kecil di atas tema bawaan FullCalendar untuk halaman /akademik. */
+.akademik-calendar {
+  --fc-event-bg-color: #3b82f6;
+  --fc-event-border-color: #3b82f6;
+}
+
+.akademik-calendar .fc .fc-toolbar-title {
+  color: #1e293b;
+}
+
+@media (max-width: 640px) {
+  .akademik-calendar .fc {
+    font-size: 0.75rem;
+  }
+
+  /* Judul bulan pindah ke baris sendiri agar tombol tidak berdesakan. */
+  .akademik-calendar .fc .fc-header-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .akademik-calendar .fc .fc-header-toolbar .fc-toolbar-chunk:nth-child(2) {
+    order: -1;
+    width: 100%;
+    text-align: center;
+  }
+}

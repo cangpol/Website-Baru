@@ -12,6 +12,10 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.22",
+    "@fullcalendar/daygrid": "^6.1.22",
+    "@fullcalendar/list": "^6.1.22",
+    "@fullcalendar/react": "^6.1.22",
     "@prisma/client": "6.4.1",
     "@tiptap/extension-highlight": "^3.32.1",
     "@tiptap/extension-image": "^3.32.1",
