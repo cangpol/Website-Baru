@@ -32,7 +32,7 @@ export default async function ProgramsPage() {
               Fakultas & Program Studi UPITRA
             </h1>
             <p className="text-sm text-slate-200 max-w-2xl mx-auto leading-relaxed">
-              Temukan program studi impian Anda di <strong>Universitas Pignatelli Triputra (UPITRA)</strong> Surakarta. Tersedia pada <strong>Faculty Sains & Technology</strong>, <strong>Faculty Ekonomic & Bussiness</strong>, <strong>Faculty Social Humaniora</strong>, dan <strong>Faculty Health</strong>.
+              Temukan program studi impian Anda di <strong>Universitas Pignatelli Triputra (UPITRA)</strong> Surakarta. Tersedia pada <strong>Fakultas Sains & Teknologi</strong>, <strong>Fakultas Ekonomi & Bisnis</strong>, <strong>Fakultas Sosial Humaniora</strong>, dan <strong>Fakultas Kesehatan</strong>.
             </p>
           </div>
         </section>

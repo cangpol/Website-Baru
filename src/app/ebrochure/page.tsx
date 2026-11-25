@@ -43,10 +43,10 @@ export default function EBrochurePage() {
   const facultyTabs = [
     { id: "all", label: "SEMUA E-BROSUR (11)" },
     { id: "all_pmb", label: "PANDUAN PMB UMUM" },
-    { id: "fst", label: "FACULTY SAINS & TECH" },
-    { id: "feb", label: "FACULTY EKONOMIC & BUSSINESS" },
-    { id: "fsh", label: "FACULTY SOCIAL HUMANIORA" },
-    { id: "fh", label: "FACULTY HEALTH" },
+    { id: "fst", label: "FAKULTAS SAINS & TEKNOLOGI" },
+    { id: "feb", label: "FAKULTAS EKONOMI & BISNIS" },
+    { id: "fsh", label: "FAKULTAS SOSIAL HUMANIORA" },
+    { id: "fh", label: "FAKULTAS KESEHATAN" },
   ];
 
   const filteredBrochures = selectedFaculty === "all"

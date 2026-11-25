@@ -135,7 +135,7 @@ const officialPartners: PartnerItem[] = [
     logo: "/images/mitra/mitra10.png",
   },
 
-  // 3. KESEHATAN (FACULTY HEALTH) & PARIWISATA (FSH)
+  // 3. KESEHATAN (FAKULTAS KESEHATAN) & PARIWISATA (FSH)
   {
     name: "PT Persada Medika Raya",
     category: "health_tourism",

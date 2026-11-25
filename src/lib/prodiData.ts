@@ -93,7 +93,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "BAN-PT / LAM INFOKOM",
     faculty: {
-      name: "Fakultas Sains & Technology",
+      name: "Fakultas Sains & Teknologi",
       code: "FST",
       slug: "fst",
     },
@@ -277,7 +277,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "BAN-PT / LAM INFOKOM",
     faculty: {
-      name: "Fakultas Sains & Technology",
+      name: "Fakultas Sains & Teknologi",
       code: "FST",
       slug: "fst",
     },
@@ -459,7 +459,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "BAN-PT / LAM INFOKOM",
     faculty: {
-      name: "Fakultas Sains & Technology",
+      name: "Fakultas Sains & Teknologi",
       code: "FST",
       slug: "fst",
     },
@@ -641,7 +641,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "BAN-PT / LAMEMBA",
     faculty: {
-      name: "Faculty Ekonomic & Bussiness",
+      name: "Fakultas Ekonomi & Bisnis",
       code: "FEB",
       slug: "feb",
     },
@@ -825,7 +825,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "BAN-PT / LAMEMBA",
     faculty: {
-      name: "Faculty Ekonomic & Bussiness",
+      name: "Fakultas Ekonomi & Bisnis",
       code: "FEB",
       slug: "feb",
     },
@@ -1007,7 +1007,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "BAN-PT",
     faculty: {
-      name: "Fakultas Social Humaniora",
+      name: "Fakultas Sosial Humaniora",
       code: "FSH",
       slug: "fsh",
     },
@@ -1189,7 +1189,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "BAN-PT",
     faculty: {
-      name: "Fakultas Social Humaniora",
+      name: "Fakultas Sosial Humaniora",
       code: "FSH",
       slug: "fsh",
     },
@@ -1371,7 +1371,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "LAM-PTKes",
     faculty: {
-      name: "Faculty Health",
+      name: "Fakultas Kesehatan",
       code: "FH",
       slug: "fh",
     },
@@ -1553,7 +1553,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "LAM-PTKes",
     faculty: {
-      name: "Faculty Health",
+      name: "Fakultas Kesehatan",
       code: "FH",
       slug: "fh",
     },
@@ -1735,7 +1735,7 @@ export const prodiList: ProdiData[] = [
     accreditation: "Baik Sekali",
     accreditationBody: "LAM-PTKes",
     faculty: {
-      name: "Faculty Health",
+      name: "Fakultas Kesehatan",
       code: "FH",
       slug: "fh",
     },

@@ -163,20 +163,20 @@ export default function AdmissionFunnel({ programs = [] }: { programs?: ProgramO
                 ))
               ) : (
                 <>
-                  <optgroup label="Faculty Sains & Technology">
+                  <optgroup label="Fakultas Sains & Teknologi">
                     <option value="informatika">Informatika (S1)</option>
                     <option value="sistem-informasi">Sistem Informasi (S1)</option>
                     <option value="rekayasa-perangkat-lunak">Rekayasa Perangkat Lunak (S1)</option>
                   </optgroup>
-                  <optgroup label="Faculty Ekonomic & Bussiness">
+                  <optgroup label="Fakultas Ekonomi & Bisnis">
                     <option value="manajemen-bisnis">Manajemen (S1)</option>
                     <option value="akuntansi">Akuntansi (S1)</option>
                   </optgroup>
-                  <optgroup label="Faculty Social Humaniora">
+                  <optgroup label="Fakultas Sosial Humaniora">
                     <option value="pariwisata">Pariwisata (S1)</option>
                     <option value="bahasa-inggris">Bahasa Inggris (S1)</option>
                   </optgroup>
-                  <optgroup label="Faculty Health">
+                  <optgroup label="Fakultas Kesehatan">
                     <option value="kesehatan-dan-keselamatan-kerja">Kesehatan & Keselamatan Kerja (S1)</option>
                     <option value="fisioterapi">Fisioterapi (S1)</option>
                     <option value="keperawatan">Keperawatan (D3)</option>

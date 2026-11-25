@@ -12,7 +12,7 @@ export default function NumbersCounter() {
       icon: Users,
       value: "4 FAKULTAS",
       title: "FAKULTAS S1 & D3",
-      desc: "Sains & Tech, Ekonomic & Bussiness, Social Humaniora, dan Health.",
+      desc: "Sains & Teknologi, Ekonomi & Bisnis, Sosial Humaniora, dan Kesehatan.",
     },
     {
       icon: Building,

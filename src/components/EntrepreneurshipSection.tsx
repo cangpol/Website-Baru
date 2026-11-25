@@ -11,7 +11,7 @@ export default function EntrepreneurshipSection() {
     {
       icon: Lightbulb,
       title: "Pusat Inovasi & Technopreneur",
-      desc: "Fasilitas riset terapan bagi mahasiswa Fakultas Sains & Technology, Social Humaniora, dan FEB untuk melahirkan inovasi tepat guna.",
+      desc: "Fasilitas riset terapan bagi mahasiswa Fakultas Sains & Teknologi, Sosial Humaniora, dan FEB untuk melahirkan inovasi tepat guna.",
     },
     {
       icon: Users,

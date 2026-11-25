@@ -29,7 +29,7 @@ export default function BrochureSection() {
               Download Brosur UPITRA Terbaru
             </h2>
             <p className="text-sm text-slate-200 max-w-xl leading-relaxed">
-              Dapatkan informasi komprehensif mengenai kurikulum 4 Fakultas (Sains & Tech, Ekonomic & Bussiness, Social Humaniora, Health), estimasi biaya kuliah per semester, profil lulusan, jalur beasiswa prestasi Triputra, dan fasilitas kampus.
+              Dapatkan informasi komprehensif mengenai kurikulum 4 Fakultas (Sains & Teknologi, Ekonomi & Bisnis, Sosial Humaniora, Kesehatan), estimasi biaya kuliah per semester, profil lulusan, jalur beasiswa prestasi Triputra, dan fasilitas kampus.
             </p>
             <div className="pt-2">
               <Link

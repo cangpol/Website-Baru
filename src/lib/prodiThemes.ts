@@ -585,7 +585,7 @@ export interface FacultyGroupedProgram {
 
 export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
   {
-    facultyName: "Fakultas Sains & Technology",
+    facultyName: "Fakultas Sains & Teknologi",
     facultyCode: "FST",
     colorBadge: "bg-cyan-100 text-cyan-800 border-cyan-200",
     programs: [
@@ -595,7 +595,7 @@ export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
     ],
   },
   {
-    facultyName: "Faculty Ekonomic & Bussiness",
+    facultyName: "Fakultas Ekonomi & Bisnis",
     facultyCode: "FEB",
     colorBadge: "bg-amber-100 text-amber-800 border-amber-200",
     programs: [
@@ -604,7 +604,7 @@ export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
     ],
   },
   {
-    facultyName: "Faculty Social Humaniora",
+    facultyName: "Fakultas Sosial Humaniora",
     facultyCode: "FSH",
     colorBadge: "bg-purple-100 text-purple-800 border-purple-200",
     programs: [
@@ -613,7 +613,7 @@ export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
     ],
   },
   {
-    facultyName: "Faculty Health",
+    facultyName: "Fakultas Kesehatan",
     facultyCode: "FH",
     colorBadge: "bg-emerald-100 text-emerald-800 border-emerald-200",
     programs: [

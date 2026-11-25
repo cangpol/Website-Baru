@@ -33,7 +33,7 @@ export default async function PmbPage() {
   const faqs = [
     {
       q: "Apa saja fakultas dan program studi yang tersedia di UPITRA?",
-      a: "UPITRA menyelenggarakan 4 Fakultas Unggulan jenjang Sarjana (S1) dan Diploma (D3): 1) Faculty Sains & Technology (S1 Informatika, S1 Sistem Informasi, S1 Rekayasa Perangkat Lunak), 2) Faculty Ekonomic & Bussiness (S1 Manajemen, S1 Akuntansi), 3) Faculty Social Humaniora (S1 Pariwisata, S1 Bahasa Inggris), dan 4) Faculty Health (S1 Kesehatan & Keselamatan Kerja, S1 Fisioterapi, D3 Keperawatan).",
+      a: "UPITRA menyelenggarakan 4 Fakultas Unggulan jenjang Sarjana (S1) dan Diploma (D3): 1) Fakultas Sains & Teknologi (S1 Informatika, S1 Sistem Informasi, S1 Rekayasa Perangkat Lunak), 2) Fakultas Ekonomi & Bisnis (S1 Manajemen, S1 Akuntansi), 3) Fakultas Sosial Humaniora (S1 Pariwisata, S1 Bahasa Inggris), dan 4) Fakultas Kesehatan (S1 Kesehatan & Keselamatan Kerja, S1 Fisioterapi, D3 Keperawatan).",
     },
     {
       q: "Bagaimana cara mendaftar jalur beasiswa Triputra Peduli?",

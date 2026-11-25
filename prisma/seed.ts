@@ -25,10 +25,10 @@ async function main() {
   // 2. 3 Fakultas & Program Studi S1
   const facultiesData = [
     {
-      name: "Fakultas Sains & Technology",
+      name: "Fakultas Sains & Teknologi",
       code: "FST",
       slug: "sains-technology",
-      description: "Fakultas Sains & Technology UPITRA fokus pada pengembangan rekayasa perangkat lunak modern, kecerdasan buatan, infrastruktur komputasi awan, dan inovasi teknologi industri terapan.",
+      description: "Fakultas Sains & Teknologi UPITRA fokus pada pengembangan rekayasa perangkat lunak modern, kecerdasan buatan, infrastruktur komputasi awan, dan inovasi teknologi industri terapan.",
       programs: [
         {
           name: "Informatika (Computer Science)",
@@ -75,10 +75,10 @@ async function main() {
       ],
     },
     {
-      name: "Fakultas Social Humaniora",
+      name: "Fakultas Sosial Humaniora",
       code: "FSH",
       slug: "social-humaniora",
-      description: "Fakultas Social Humaniora UPITRA berfokus pada pengembangan sektor pariwisata bertaraf internasional serta komunikasi global bahasa Inggris untuk bisnis dan diplomasi.",
+      description: "Fakultas Sosial Humaniora UPITRA berfokus pada pengembangan sektor pariwisata bertaraf internasional serta komunikasi global bahasa Inggris untuk bisnis dan diplomasi.",
       programs: [
         {
           name: "Pariwisata (Hospitality & Tourism)",
@@ -111,10 +111,10 @@ async function main() {
       ],
     },
     {
-      name: "Fakultas Ekonomika & Bussiness",
+      name: "Fakultas Ekonomi & Bisnis",
       code: "FEB",
       slug: "ekonomika-bussiness",
-      description: "Fakultas Ekonomika & Bussiness UPITRA mencetak pemimpin bisnis, akuntan profesional, dan manajer keuangan beretika tinggi dengan wawasan global.",
+      description: "Fakultas Ekonomi & Bisnis UPITRA mencetak pemimpin bisnis, akuntan profesional, dan manajer keuangan beretika tinggi dengan wawasan global.",
       programs: [
         {
           name: "Manajemen Bisnis (Business Management)",
@@ -147,10 +147,10 @@ async function main() {
       ],
     },
     {
-      name: "Faculty Health",
+      name: "Fakultas Kesehatan",
       code: "FH",
       slug: "health",
-      description: "Faculty Health UPITRA berfokus pada pendidikan tenaga kesehatan profesional, keselamatan kerja korporat, fisioterapi klinis, dan keperawatan vokasi dengan dukungan jejaring rumah sakit dan layanan kesehatan Triputra Group.",
+      description: "Fakultas Kesehatan UPITRA berfokus pada pendidikan tenaga kesehatan profesional, keselamatan kerja korporat, fisioterapi klinis, dan keperawatan vokasi dengan dukungan jejaring rumah sakit dan layanan kesehatan Triputra Group.",
       programs: [
         {
           name: "Kesehatan & Keselamatan Kerja (K3)",
@@ -256,7 +256,7 @@ async function main() {
       title: "UPITRA Buka Pendaftaran Mahasiswa Baru Tahun Akademik 2026/2027",
       slug: "upitra-buka-pendaftaran-pmb-2026-2027",
       summary: "Universitas Pignatelli Triputra membuka kesempatan beasiswa penuh dan jalur prestasi untuk 3 fakultas unggulan.",
-      content: "Universitas Pignatelli Triputra (UPITRA) Surakarta resmi membuka pendaftaran penerimaan mahasiswa baru (PMB) untuk jenjang Sarjana (S1). UPITRA menawarkan program studi unggulan di bawah Fakultas Sains & Technology, Fakultas Social Humaniora, dan Fakultas Ekonomika & Bussiness dengan dukungan jejaring industri Triputra Group.",
+      content: "Universitas Pignatelli Triputra (UPITRA) Surakarta resmi membuka pendaftaran penerimaan mahasiswa baru (PMB) untuk jenjang Sarjana (S1). UPITRA menawarkan program studi unggulan di bawah Fakultas Sains & Teknologi, Fakultas Sosial Humaniora, dan Fakultas Ekonomi & Bisnis dengan dukungan jejaring industri Triputra Group.",
       category: "News",
       published: true,
       publishedAt: new Date(),
@@ -266,17 +266,17 @@ async function main() {
       title: "Kolaborasi Industri: Mahasiswa FST UPITRA Raih Magang Kerja di Triputra Group",
       slug: "kolaborasi-industri-magang-kerja-triputra-group",
       summary: "Program link and match menjamin kesiapan karir mahasiswa sejak semester akhir melalui penempatan magang terstruktur.",
-      content: "Mahasiswa program studi Informatika dan Sistem Informasi Fakultas Sains & Technology UPITRA berhasil menyelesaikan tahapan seleksi program magang bersertifikat di unit bisnis Triputra Group. Program ini mempercepat kesiapan lulusan memasuki dunia kerja profesional.",
+      content: "Mahasiswa program studi Informatika dan Sistem Informasi Fakultas Sains & Teknologi UPITRA berhasil menyelesaikan tahapan seleksi program magang bersertifikat di unit bisnis Triputra Group. Program ini mempercepat kesiapan lulusan memasuki dunia kerja profesional.",
       category: "Achievement",
       published: true,
       publishedAt: new Date(),
       coverImage: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&auto=format&fit=crop&q=80",
     },
     {
-      title: "Fakultas Social Humaniora Gelar Simposium Pariwisata Berkelanjutan",
+      title: "Fakultas Sosial Humaniora Gelar Simposium Pariwisata Berkelanjutan",
       slug: "simposium-pariwisata-berkelanjutan-fsh-upitra",
       summary: "Membahas pengembangan destinasi wisata budaya dan ecotourism berbasis komunitas di kawasan Solo Raya.",
-      content: "Program Studi Pariwisata dan Bahasa Inggris Fakultas Social Humaniora Universitas Pignatelli Triputra sukses menyelenggarakan simposium regional yang menghadirkan pakar perhotelan, dinas pariwisata, dan praktisi komunikasi internasional.",
+      content: "Program Studi Pariwisata dan Bahasa Inggris Fakultas Sosial Humaniora Universitas Pignatelli Triputra sukses menyelenggarakan simposium regional yang menghadirkan pakar perhotelan, dinas pariwisata, dan praktisi komunikasi internasional.",
       category: "Campus Life",
       published: true,
       publishedAt: new Date(),

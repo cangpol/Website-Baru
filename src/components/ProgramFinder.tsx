@@ -29,7 +29,7 @@ export interface ProgramItem {
 }
 
 const defaultPrograms: ProgramItem[] = [
-  // 1. FAKULTAS SAINS & TECHNOLOGY (FST)
+  // 1. FAKULTAS SAINS & TEKNOLOGI (FST)
   {
     id: "fst-1",
     name: "Informatics – Software Architecture & AI",
@@ -42,7 +42,7 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Software Engineer, Full-Stack Developer, AI/Machine Learning Specialist, Cloud Architect",
     tuitionFeeEst: 6500000,
     coverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Fakultas Sains & Technology", code: "FST" }
+    faculty: { name: "Fakultas Sains & Teknologi", code: "FST" }
   },
   {
     id: "fst-2",
@@ -56,7 +56,7 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Business Analyst, ERP Specialist, Data Analyst, Product Manager, IT Quality Assurance",
     tuitionFeeEst: 6500000,
     coverImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Fakultas Sains & Technology", code: "FST" }
+    faculty: { name: "Fakultas Sains & Teknologi", code: "FST" }
   },
   {
     id: "fst-3",
@@ -70,10 +70,10 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "DevOps Engineer, QA Automation Engineer, Mobile Application Architect, Software Project Lead",
     tuitionFeeEst: 6500000,
     coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Fakultas Sains & Technology", code: "FST" }
+    faculty: { name: "Fakultas Sains & Teknologi", code: "FST" }
   },
 
-  // 2. FAKULTAS SOCIAL HUMANIORA (FSH)
+  // 2. FAKULTAS SOSIAL HUMANIORA (FSH)
   {
     id: "fsh-1",
     name: "Hospitality & Tourism Business (Pariwisata)",
@@ -86,7 +86,7 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Hotel General Manager, Event & MICE Director, Tourism Destination Planner, Travel Consultant",
     tuitionFeeEst: 5800000,
     coverImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Fakultas Social Humaniora", code: "FSH" }
+    faculty: { name: "Fakultas Sosial Humaniora", code: "FSH" }
   },
   {
     id: "fsh-2",
@@ -100,10 +100,10 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Corporate Communication Specialist, Professional Translator & Interpreter, International PR Officer",
     tuitionFeeEst: 5500000,
     coverImage: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Fakultas Social Humaniora", code: "FSH" }
+    faculty: { name: "Fakultas Sosial Humaniora", code: "FSH" }
   },
 
-  // 3. FAKULTAS EKONOMIKA & BUSSINESS (FEB)
+  // 3. FAKULTAS EKONOMI & BISNIS (FEB)
   {
     id: "feb-1",
     name: "International Business Management (IBM)",
@@ -116,7 +116,7 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Business Development Manager, Marketing Director, Operations Executive, Business Consultant",
     tuitionFeeEst: 6000000,
     coverImage: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Faculty Ekonomic & Bussiness", code: "FEB" }
+    faculty: { name: "Fakultas Ekonomi & Bisnis", code: "FEB" }
   },
   {
     id: "feb-2",
@@ -130,10 +130,10 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Auditor Kantor Akuntan Publik (KAP), Tax Consultant, Financial Controller, Corporate Accountant",
     tuitionFeeEst: 6000000,
     coverImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Faculty Ekonomic & Bussiness", code: "FEB" }
+    faculty: { name: "Fakultas Ekonomi & Bisnis", code: "FEB" }
   },
 
-  // 4. FACULTY HEALTH (FH)
+  // 4. FAKULTAS KESEHATAN (FH)
   {
     id: "fh-1",
     name: "Kesehatan & Keselamatan Kerja (K3)",
@@ -146,7 +146,7 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "HSE Officer, K3 Industrial Specialist, Safety Auditor, Ergonomics Consultant, Corporate Risk Assessor",
     tuitionFeeEst: 5800000,
     coverImage: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Faculty Health", code: "FH" }
+    faculty: { name: "Fakultas Kesehatan", code: "FH" }
   },
   {
     id: "fh-2",
@@ -160,7 +160,7 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Fisioterapis Rumah Sakit, Sports Physiotherapist, Neuro-Pediatric Physical Therapist, Wellness & Rehab Director",
     tuitionFeeEst: 6000000,
     coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Faculty Health", code: "FH" }
+    faculty: { name: "Fakultas Kesehatan", code: "FH" }
   },
   {
     id: "fh-3",
@@ -174,7 +174,7 @@ const defaultPrograms: ProgramItem[] = [
     careerProspect: "Perawat Klinis Rumah Sakit & Klinik, Perawat ICU/UGD, Home Care Specialist, Medical Assistant Triputra Care",
     tuitionFeeEst: 5200000,
     coverImage: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=800&auto=format&fit=crop&q=80",
-    faculty: { name: "Faculty Health", code: "FH" }
+    faculty: { name: "Fakultas Kesehatan", code: "FH" }
   },
 ];
 
@@ -184,10 +184,10 @@ export default function ProgramFinder({ initialPrograms }: { initialPrograms?: P
 
   const faculties = [
     { code: "ALL", label: "SEMUA FAKULTAS" },
-    { code: "FST", label: "FACULTY SAINS & TECHNOLOGY" },
-    { code: "FEB", label: "FACULTY EKONOMIC & BUSSINESS" },
-    { code: "FSH", label: "FACULTY SOCIAL HUMANIORA" },
-    { code: "FH", label: "FACULTY HEALTH" },
+    { code: "FST", label: "FAKULTAS SAINS & TEKNOLOGI" },
+    { code: "FEB", label: "FAKULTAS EKONOMI & BISNIS" },
+    { code: "FSH", label: "FAKULTAS SOSIAL HUMANIORA" },
+    { code: "FH", label: "FAKULTAS KESEHATAN" },
   ];
 
   const filteredPrograms = programs.filter((p) => {
