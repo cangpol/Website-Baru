@@ -29,22 +29,6 @@ export interface NewsArticle {
   };
 }
 
-export interface CampusEvent {
-  id: string;
-  slug: string;
-  title: string;
-  category: string;
-  day: string;
-  month: string;
-  year: string;
-  time: string;
-  location: string;
-  isOnline: boolean;
-  registrationStatus: string;
-  description: string;
-  link: string;
-}
-
 export const staticArticles: NewsArticle[] = [
   {
     "id": "berita-34",
@@ -1009,54 +993,6 @@ export const staticArticles: NewsArticle[] = [
   }
 ];
 
-export const staticEvents: CampusEvent[] = [
-  {
-    id: "ev-1",
-    slug: "upitra-open-house-2026",
-    title: "UPITRA Open House & Campus Expo 2026",
-    category: "OPEN HOUSE & EXPO",
-    day: "20",
-    month: "NOV",
-    year: "2026",
-    time: "09.00 – 15.00 WIB",
-    location: "Auditorium Kampus UPITRA, Surakarta",
-    isOnline: false,
-    registrationStatus: "Pendaftaran Terbuka • Gratis",
-    description: "Jelajahi kampus terpadu UPITRA Surakarta, konsultasikan program studi impian di 4 fakultas, dan dapatkan potongan biaya pendaftaran serta voucher beasiswa prestasi.",
-    link: "https://pmb.upitra.ac.id",
-  },
-  {
-    id: "ev-2",
-    slug: "webinar-karir-industri-triputra-group",
-    title: "Webinar Karir: Peluang Emas Berkarir di Triputra Group",
-    category: "WEBINAR NASIONAL",
-    day: "10",
-    month: "DES",
-    year: "2026",
-    time: "13.30 – 16.00 WIB",
-    location: "Live via Zoom & YouTube UPITRA",
-    isOnline: true,
-    registrationStatus: "Pendaftaran Terbuka • Free E-Certificate",
-    description: "Sesi sharing interaktif bersama para manajer HRD dan praktisi industri korporasi mengenai kompetensi masa depan yang dicari di era transformasi digital.",
-    link: "https://pmb.upitra.ac.id",
-  },
-  {
-    id: "ev-3",
-    slug: "workshop-k3-ergonomi-industri",
-    title: "Workshop K3 & Simulasi Ergonomi Keselamatan Kerja",
-    category: "WORKSHOP FAKULTAS",
-    day: "15",
-    month: "JAN",
-    year: "2027",
-    time: "08.30 – 13.00 WIB",
-    location: "Lab Terpadu Fakultas Kesehatan UPITRA Solo",
-    isOnline: false,
-    registrationStatus: "Kuota Terbatas (50 Peserta)",
-    description: "Pelatihan aplikatif standar keselamatan kerja dan ergonomi industri terapan bersama pakar K3 nasional bagi mahasiswa dan praktisi manufaktur.",
-    link: "/programs#fh",
-  },
-];
-
 /**
  * Mengambil artikel berdasarkan slug
  */
@@ -1071,8 +1007,4 @@ export function getAllArticles(): NewsArticle[] {
   return [...staticArticles].sort((a, b) => {
     return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime();
   });
-}
-
-export function getUpcomingEvents(): CampusEvent[] {
-  return staticEvents;
 }

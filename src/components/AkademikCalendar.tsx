@@ -6,8 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
 import type { DatesSetArg, EventInput, EventMountArg } from "@fullcalendar/core";
 import { ChevronDown, FileText } from "lucide-react";
-import { CalendarEvent, initialAcademicEvents } from "@/components/AcademicCalendar";
-import { generateAcademicCalendarPdf } from "@/lib/generateAcademicCalendarPdf";
+import { CalendarEvent, generateAcademicCalendarPdf } from "@/lib/generateAcademicCalendarPdf";
 import "./akademik-calendar.css";
 
 type AgendaItem = CalendarEvent & { startAt?: string; endAt?: string };
@@ -48,8 +47,15 @@ const PLUGINS = [dayGridPlugin, listPlugin];
 const TOOLBAR = { left: "prev,next today", center: "title", right: "dayGridMonth,listMonth" };
 const BUTTON_TEXT = { today: "today", month: "month", list: "list" };
 
+const EMPTY_TEXT = {
+  loading: "Memuat agenda…",
+  ready: "Belum ada agenda pada bulan ini.",
+  error: "Agenda gagal dimuat.",
+};
+
 export default function AkademikCalendar() {
-  const [events, setEvents] = useState<AgendaItem[]>(initialAcademicEvents);
+  const [events, setEvents] = useState<AgendaItem[]>([]);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [period, setPeriod] = useState(() => ({ year: new Date().getFullYear(), month: new Date().getMonth() }));
   const [officialPdf, setOfficialPdf] = useState<{
     fileUrl: string;
@@ -62,40 +68,34 @@ export default function AkademikCalendar() {
     fetch("/api/events")
       .then((res) => res.json())
       .then((json) => {
-        if (!json?.ok) return;
+        if (!json?.ok || !Array.isArray(json.data)) throw new Error("Agenda tidak tersedia");
         if (json.officialPdf) setOfficialPdf(json.officialPdf);
-        if (Array.isArray(json.data) && json.data.length > 0) {
-          setEvents(
-            json.data.map(
-              (item: {
-                id: string;
-                title?: string;
-                startDate?: string;
-                endDate?: string;
-                type?: string;
-                description?: string;
-                academicYear?: string;
-                semester?: string;
-                location?: string;
-              }): AgendaItem => ({
-                id: item.id,
-                startAt: item.startDate,
-                endAt: item.endDate,
-                name: item.title || "Event Kampus",
-                start_date: item.startDate ? item.startDate.split("T")[0] : "",
-                end_date: item.endDate ? item.endDate.split("T")[0] : item.startDate ? item.startDate.split("T")[0] : "",
-                category: item.type || "Akademik",
-                description: item.description || "",
-                all_day: true,
-                academicYear: item.academicYear || "2025/2026",
-                semester: item.semester || "Gasal",
-                location: item.location || "",
-              })
-            )
-          );
-        }
+        setEvents(
+          json.data.map(
+            (item: {
+              id: string;
+              title: string;
+              startDate: string;
+              endDate: string;
+              type?: string;
+              description?: string;
+              location?: string;
+            }): AgendaItem => ({
+              id: item.id,
+              startAt: item.startDate,
+              endAt: item.endDate,
+              name: item.title,
+              start_date: item.startDate.split("T")[0],
+              end_date: item.endDate.split("T")[0],
+              category: item.type || "Akademik",
+              description: item.description || "",
+              location: item.location || "",
+            })
+          )
+        );
+        setStatus("ready");
       })
-      .catch(() => {});
+      .catch(() => setStatus("error"));
   }, []);
 
   const { year, month } = period;
@@ -106,16 +106,22 @@ export default function AkademikCalendar() {
     setPeriod((prev) => (prev.year === next.year && prev.month === next.month ? prev : next));
   }, []);
 
-  const hasMonthEvents = useMemo(() => {
-    const monthStart = toIso(new Date(year, month, 1));
-    const monthEnd = toIso(new Date(year, month + 1, 0));
-    return events.some((e) => e.start_date <= monthEnd && (e.end_date || e.start_date) >= monthStart);
-  }, [events, year, month]);
+  // PDF otomatis hanya memuat agenda pada tahun yang sedang dibuka.
+  const yearEvents = useMemo(
+    () => events.filter((e) => e.start_date <= `${year}-12-31` && e.end_date >= `${year}-01-01`),
+    [events, year]
+  );
 
   const academicYearLabel = officialPdf?.academicYear || `${month >= 6 ? year : year - 1}/${month >= 6 ? year + 1 : year}`;
 
   return (
     <div className="space-y-5">
+      {status === "error" && (
+        <p role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
+          Agenda gagal dimuat. Muat ulang halaman untuk mencoba lagi.
+        </p>
+      )}
+
       <div className="akademik-calendar">
         <FullCalendar
           plugins={PLUGINS}
@@ -128,7 +134,7 @@ export default function AkademikCalendar() {
           events={calendarEvents}
           eventDidMount={showEventTooltip}
           datesSet={handleDatesSet}
-          noEventsContent="Belum ada agenda pada bulan ini."
+          noEventsContent={EMPTY_TEXT[status]}
         />
       </div>
 
@@ -140,7 +146,13 @@ export default function AkademikCalendar() {
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold text-slate-900">Kalender Akademik {academicYearLabel}</p>
           <p className="text-xs text-slate-500">
-            Terakhir Update{officialPdf?.updatedAt ? `: ${officialPdf.updatedAt}` : ""}
+            {officialPdf
+              ? `Terakhir Update${officialPdf.updatedAt ? `: ${officialPdf.updatedAt}` : ""}`
+              : status !== "ready"
+                ? EMPTY_TEXT[status]
+                : yearEvents.length
+                  ? `PDF dibuat otomatis dari ${yearEvents.length} agenda tahun ${year}`
+                  : `Belum ada agenda pada tahun ${year}`}
           </p>
         </div>
         {officialPdf?.fileUrl ? (
@@ -156,8 +168,9 @@ export default function AkademikCalendar() {
         ) : (
           <button
             type="button"
-            onClick={() => generateAcademicCalendarPdf(year, hasMonthEvents ? events : initialAcademicEvents)}
-            className="rounded-md bg-[#006bbd] px-4 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#005a9e]"
+            onClick={() => generateAcademicCalendarPdf(year, yearEvents)}
+            disabled={yearEvents.length === 0}
+            className="rounded-md bg-[#006bbd] px-4 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#005a9e] disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             Unduh
           </button>

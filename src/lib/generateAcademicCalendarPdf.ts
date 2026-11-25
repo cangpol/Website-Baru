@@ -1,5 +1,14 @@
 import { jsPDF } from "jspdf";
-import { CalendarEvent } from "@/components/AcademicCalendar";
+
+export interface CalendarEvent {
+  id: string;
+  name: string;
+  start_date: string; // YYYY-MM-DD
+  end_date: string; // YYYY-MM-DD
+  category: string;
+  description?: string;
+  location?: string;
+}
 
 const monthNamesIndo = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -50,7 +59,7 @@ export function generateAcademicCalendarPdf(year: number, events: CalendarEvent[
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  // 1. KOP SURAT RESMI UNIVERSITAS
+  // 1. KOP SURAT UNIVERSITAS
   doc.setFillColor(6, 23, 46); // #06172e Deep Navy
   doc.rect(0, 0, pageWidth, 26, "F");
 
@@ -70,7 +79,7 @@ export function generateAcademicCalendarPdf(year: number, events: CalendarEvent[
   doc.setTextColor(12, 74, 110); // #0c4a6e
   doc.setFont("helvetica", "bold");
   doc.setFontSize(15);
-  doc.text(`KALENDER AKADEMIK RESMI TAHUN ${year}`, margin, currentY);
+  doc.text(`KALENDER AKADEMIK TAHUN ${year}`, margin, currentY);
 
   currentY += 6;
   doc.setFont("helvetica", "normal");
@@ -121,7 +130,8 @@ export function generateAcademicCalendarPdf(year: number, events: CalendarEvent[
 
     // Count events in this month
     const monthStr = `${year}-${String(m + 1).padStart(2, "0")}`;
-    const evInMonth = sortedEvents.filter(e => e.start_date.startsWith(monthStr) || e.end_date.startsWith(monthStr));
+    // Agenda beberapa bulan ikut dihitung di bulan-bulan tengahnya.
+    const evInMonth = sortedEvents.filter(e => e.start_date.slice(0, 7) <= monthStr && e.end_date.slice(0, 7) >= monthStr);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
@@ -134,7 +144,7 @@ export function generateAcademicCalendarPdf(year: number, events: CalendarEvent[
       doc.text(`• ${evInMonth.length} Kegiatan Agenda`, x + 3, y + 14);
     } else {
       doc.setTextColor(148, 163, 184); // slate-400
-      doc.text("• Perkuliahan Reguler", x + 3, y + 14);
+      doc.text("• Belum ada agenda", x + 3, y + 14);
     }
   }
 
@@ -254,32 +264,7 @@ export function generateAcademicCalendarPdf(year: number, events: CalendarEvent[
     currentY += rowHeight;
   });
 
-  // 5. TANDA TANGAN & PENGESAHAN
-  currentY += 8;
-  if (currentY > pageHeight - 35) {
-    doc.addPage();
-    currentY = 20;
-  }
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(51, 65, 85);
-  doc.text("Ditetapkan di: Surakarta", margin, currentY);
-  doc.text(`Tahun Akademik: ${year}/${year + 1}`, margin, currentY + 4);
-
-  const signX = pageWidth - margin - 60;
-  doc.text("Universitas Pignatelli Triputra", signX, currentY);
-  doc.text("Rektor,", signX, currentY + 4);
-
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(12, 74, 110);
-  doc.text("Fransisca Wahyuni, S.E., M.M.", signX, currentY + 18);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.setTextColor(100, 116, 139);
-  doc.text("NIDN. 0612057801", signX, currentY + 22);
-
-  // 6. FOOTER HALAMAN
+  // 5. FOOTER HALAMAN
   const totalPages = doc.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
@@ -287,7 +272,7 @@ export function generateAcademicCalendarPdf(year: number, events: CalendarEvent[
     doc.setFontSize(7);
     doc.setTextColor(148, 163, 184);
     doc.text(
-      `Dokumen Resmi Kalender Akademik UPITRA Tahun ${year} • Halaman ${i} dari ${totalPages}`,
+      `Kalender Akademik UPITRA Tahun ${year} • Halaman ${i} dari ${totalPages}`,
       margin,
       pageHeight - 8
     );

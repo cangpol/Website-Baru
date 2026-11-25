@@ -77,31 +77,16 @@ export default async function HomepageNewsEvents() {
       orderBy: { startDate: "asc" },
     });
 
-    if (dbEvents && dbEvents.length > 0) {
-      events = dbEvents.map((e) => ({
-        id: e.id,
-        title: e.title,
-        slug: e.slug,
-        description: e.description,
-        location: e.location,
-        startDate: e.startDate,
-        endDate: e.endDate,
-        isOnline: e.isOnline,
-      }));
-    } else {
-      events = [
-        {
-          id: "ev-1",
-          title: "Seminar Nasional Kecerdasan Buatan & Transformasi Industri",
-          slug: "seminar-nasional-ai-2026",
-          description: "Membahas aplikasi AI mutakhir dalam efisiensi operasional industri bersama praktisi Triputra Group.",
-          location: "Auditorium Kampus UPITRA Surakarta",
-          startDate: new Date(),
-          endDate: new Date(),
-          isOnline: false,
-        },
-      ];
-    }
+    events = dbEvents.map((e) => ({
+      id: e.id,
+      title: e.title,
+      slug: e.slug,
+      description: e.description,
+      location: e.location,
+      startDate: e.startDate,
+      endDate: e.endDate,
+      isOnline: e.isOnline,
+    }));
   } catch (err) {
     events = [];
   }

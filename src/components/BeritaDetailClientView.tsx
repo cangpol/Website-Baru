@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { NewsArticle, CampusEvent } from "@/lib/newsData";
+import { NewsArticle } from "@/lib/newsData";
 import { 
   Calendar, 
   Clock, 
@@ -27,17 +27,48 @@ interface BeritaDetailClientViewProps {
   initialArticle?: NewsArticle;
   slug: string;
   initialRelatedArticles: NewsArticle[];
-  upcomingEvents: CampusEvent[];
+}
+
+interface UpcomingEvent {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  location?: string;
+}
+
+const shortDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "UTC" }).toUpperCase();
+
+// Jam hanya ditulis bila tersimpan; agenda yang hanya punya tanggal tersimpan pukul 00:00.
+function eventDetail({ startDate, endDate }: UpcomingEvent) {
+  const clock = (iso: string) => iso.slice(11, 16).replace(":", ".");
+  if (!startDate.includes("T00:00:00")) return `${clock(startDate)} – ${clock(endDate)}`;
+  return endDate.slice(0, 10) > startDate.slice(0, 10) ? `s.d. ${shortDate(endDate)}` : "";
 }
 
 export default function BeritaDetailClientView({
   initialArticle,
   slug,
   initialRelatedArticles,
-  upcomingEvents,
 }: BeritaDetailClientViewProps) {
   const [article, setArticle] = useState<NewsArticle | undefined>(initialArticle);
   const [relatedArticles, setRelatedArticles] = useState<NewsArticle[]>(initialRelatedArticles);
+  // null = masih dimuat.
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[] | null>(null);
+  const [eventsFailed, setEventsFailed] = useState(false);
+
+  // Diambil di browser agar perubahan agenda dari admin langsung tampil, juga di halaman berita statis.
+  useEffect(() => {
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((json) => {
+        if (!json?.ok || !Array.isArray(json.data)) throw new Error("Agenda tidak tersedia");
+        const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD menurut jam pengunjung
+        setUpcomingEvents((json.data as UpcomingEvent[]).filter((e) => e.endDate.slice(0, 10) >= today).slice(0, 2));
+      })
+      .catch(() => setEventsFailed(true));
+  }, []);
   const [isClientChecked, setIsClientChecked] = useState(false);
 
   useEffect(() => {
@@ -371,17 +402,22 @@ export default function BeritaDetailClientView({
               </div>
 
               <div className="space-y-3">
-                {upcomingEvents.map((ev) => (
+                {(!upcomingEvents || upcomingEvents.length === 0) && (
+                  <p className="text-[11px] text-slate-500">
+                    {eventsFailed ? "Agenda gagal dimuat." : upcomingEvents ? "Belum ada agenda mendatang." : "Memuat agenda…"}
+                  </p>
+                )}
+                {upcomingEvents?.map((ev) => (
                   <div
                     key={ev.id}
                     className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition-colors space-y-2"
                   >
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 text-[10px] font-extrabold">
-                        {ev.day} {ev.month}
+                        {shortDate(ev.startDate)}
                       </span>
                       <span className="text-[10px] text-slate-500 font-medium">
-                        {ev.time}
+                        {eventDetail(ev)}
                       </span>
                     </div>
                     <h4 className="text-xs font-bold text-slate-800 leading-snug hover:text-blue-600">

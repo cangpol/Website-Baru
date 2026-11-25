@@ -8,7 +8,6 @@ import {
   getArticleBySlug as getStaticArticleBySlug, 
   getAllArticles, 
   staticArticles,
-  getUpcomingEvents,
   NewsArticle
 } from "@/lib/newsData";
 import { getArticleBySlug as getDbArticleBySlug } from "@/server/articles";
@@ -94,7 +93,6 @@ export default async function RisetBeritaDetailPage({ params }: PageProps) {
   const sameCategory = allArticles.filter((a) => a.slug !== article.slug && a.category === article.category);
   const otherCategory = allArticles.filter((a) => a.slug !== article.slug && a.category !== article.category);
   const relatedArticles = [...sameCategory, ...otherCategory].slice(0, 4);
-  const upcomingEvents = getUpcomingEvents().slice(0, 2);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans">
@@ -104,7 +102,6 @@ export default async function RisetBeritaDetailPage({ params }: PageProps) {
         initialArticle={article}
         slug={slug}
         initialRelatedArticles={relatedArticles}
-        upcomingEvents={upcomingEvents}
       />
 
       <Footer />
