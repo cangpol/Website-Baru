@@ -40,6 +40,22 @@ function rowSubtitle(item: Json, title: string): string {
   return "";
 }
 
+/** Salinan item untuk judul baris: kode pilihan diganti namanya, kode internal dibuang. */
+function readable(item: Json, fields: FieldSpec[]): Json {
+  const out: Json = { ...item };
+  for (const f of fields) {
+    if (f.type === "hidden") delete out[f.key];
+    else if (f.type === "select") out[f.key] = f.options.find((o) => o.value === item[f.key])?.label ?? "";
+  }
+  return out;
+}
+
+function newItem(fields: FieldSpec[]): Json {
+  return Object.fromEntries(
+    fields.map((x) => [x.key, x.type === "lines" ? [] : x.type === "hidden" ? `item-${Date.now().toString(36)}` : ""])
+  );
+}
+
 function rowImage(item: Json): string {
   for (const k of ["foto", "image", "gambar", "logo"]) {
     const v = item[k];
@@ -62,10 +78,11 @@ function ListRow({
   onChange: (v: Json) => void;
   onRemove: () => void;
 }) {
-  const blank = Object.values(item).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
+  const shown = readable(item, spec.fields);
+  const blank = Object.values(shown).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
   const [open, setOpen] = useState(blank); // item yang baru ditambahkan langsung terbuka
-  const title = rowTitle(item);
-  const sub = rowSubtitle(item, title);
+  const title = rowTitle(shown);
+  const sub = rowSubtitle(shown, title);
   const img = rowImage(item);
 
   return (
@@ -113,6 +130,25 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
   return (
     <div className="space-y-4">
       {specs.map((f) => {
+        if (f.type === "hidden") return null;
+        if (f.type === "select") {
+          const current: string = value[f.key] ?? "";
+          const known = f.options.some((o) => o.value === current);
+          return (
+            <div key={f.key}>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">{f.label}</label>
+              <select value={current} onChange={(e) => set(f.key, e.target.value)} className={inputCls}>
+                {!current && <option value="">Pilih…</option>}
+                {current && !known && <option value={current}>Pilihan lama (belum terdaftar)</option>}
+                {f.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        }
         if (f.type === "image") {
           return (
             <ImageUploadField key={f.key} label={f.label} value={value[f.key]} onChange={(url) => set(f.key, url)} />
@@ -134,7 +170,7 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
         }
         if (f.type === "list") {
           const items: Json[] = Array.isArray(value[f.key]) ? value[f.key] : [];
-          const blank = Object.fromEntries(f.fields.map((x) => [x.key, x.type === "lines" ? [] : ""]));
+
           return (
             <div key={f.key} className="space-y-3">
               <div className="flex items-center justify-between">
@@ -143,7 +179,7 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
                 </h3>
                 <button
                   type="button"
-                  onClick={() => set(f.key, [...items, blank])}
+                  onClick={() => set(f.key, [...items, newItem(f.fields)])}
                   className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 text-xs font-bold flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" /> Tambah {f.itemLabel}
@@ -157,7 +193,7 @@ function Fields({ specs, value, onChange }: { specs: FieldSpec[]; value: Json; o
                   spec={f}
                   onChange={(v) => set(f.key, items.map((x, n) => (n === i ? v : x)))}
                   onRemove={async () => {
-                    const label = rowTitle(item);
+                    const label = rowTitle(readable(item, f.fields));
                     if (await swalConfirmDelete(label || undefined)) {
                       set(f.key, items.filter((_, n) => n !== i));
                       swalToast(`${f.itemLabel} dihapus dari daftar. Klik Simpan untuk menerapkan.`, "info");
@@ -214,7 +250,7 @@ function rowSummary(row: EditorRow, content: Json): string {
   const first = row.specs[0];
   if (first.type === "list") {
     const items: Json[] = Array.isArray(content[first.key]) ? content[first.key] : [];
-    const names = items.map(rowTitle).filter(Boolean).slice(0, 3).join(", ");
+    const names = items.map((item) => rowTitle(readable(item, first.fields))).filter(Boolean).slice(0, 3).join(", ");
     return names ? `${items.length} item · ${names}` : `${items.length} item`;
   }
   if (row.specs.length > 1) return row.specs.map((f) => f.label).join(", ");
@@ -272,7 +308,7 @@ export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey
         nextBanner = { ...nextBanner, ...(b ?? {}) };
         nextContent = { ...nextContent, ...(c ?? {}) };
       } catch {
-        if (!cancelled) swalToast("Gagal memuat data dari database. Menampilkan isi bawaan.", "warning");
+        if (!cancelled) swalToast("Gagal memuat data tersimpan. Menampilkan isi bawaan.", "warning");
       }
       if (cancelled) return;
       setBanner(nextBanner);

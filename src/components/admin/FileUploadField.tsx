@@ -107,7 +107,7 @@ export function FileUploadField({
             <FileText className="w-6 h-6 text-blue-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-slate-700 truncate">{fileName || value}</p>
+            <p className="text-xs font-medium text-slate-700 truncate">{fileName || "Berkas dokumen"}</p>
             <p className="text-[11px] text-blue-600 mt-0.5 flex items-center gap-1">
               <CheckCircle className="w-3 h-3" /> Berkas dokumen tersimpan {fileSize ? `(${fileSize})` : ""}
             </p>
@@ -144,7 +144,7 @@ export function FileUploadField({
           {isUploading ? (
             <div className="flex flex-col items-center justify-center gap-2 py-2">
               <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-              <p className="text-xs text-blue-600 font-medium">Memvalidasi magic bytes %PDF & mengunggah...</p>
+              <p className="text-xs text-blue-600 font-medium">Memeriksa berkas PDF dan mengunggah...</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center gap-2">
@@ -156,7 +156,7 @@ export function FileUploadField({
                   Klik untuk mengunggah dokumen PDF
                 </p>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Batas maksimum 20 MB. Diverifikasi dengan magic bytes %PDF.
+                  Batas maksimum 20 MB. Isi berkas diperiksa otomatis.
                 </p>
               </div>
             </div>

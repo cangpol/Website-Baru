@@ -167,7 +167,7 @@ export default function AdminMediaPage() {
             Pustaka Media
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Kelola seluruh aset gambar dan dokumen UPITRA. Diverifikasi dengan magic bytes dan tersimpan aman.
+            Kelola seluruh aset gambar dan dokumen UPITRA. Setiap berkas diperiksa otomatis sebelum disimpan.
           </p>
         </div>
 
@@ -305,7 +305,7 @@ export default function AdminMediaPage() {
                       {item.filename}
                     </p>
                     <p className="text-[11px] text-slate-500 mt-0.5 truncate" title={item.altText}>
-                      {item.altText ? `Alt: "${item.altText}"` : "Tanpa alt text"}
+                      {item.altText ? `Keterangan: "${item.altText}"` : "Belum ada keterangan foto"}
                     </p>
                   </div>
 
@@ -324,7 +324,7 @@ export default function AdminMediaPage() {
                   <button
                     type="button"
                     onClick={() => handleCopyUrl(item)}
-                    title="Salin URL"
+                    title="Salin tautan"
                     className="p-1.5 text-slate-700 hover:text-slate-900 rounded hover:bg-blue-100"
                   >
                     {copiedId === item.id ? <Check className="w-3.5 h-3.5 text-blue-600" /> : <Copy className="w-3.5 h-3.5" />}

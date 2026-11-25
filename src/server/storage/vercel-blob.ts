@@ -23,7 +23,7 @@ export class VercelBlobStorageDriver implements StorageDriver {
       if (!process.env.BLOB_READ_WRITE_TOKEN) {
         throw new StorageUnavailableError("Vercel Blob belum terhubung: BLOB_READ_WRITE_TOKEN belum diatur.");
       }
-      throw new Error(`Gagal mengunggah berkas ke Vercel Blob: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error(`Gagal mengunggah berkas: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 

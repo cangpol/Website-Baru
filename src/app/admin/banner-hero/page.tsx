@@ -95,7 +95,7 @@ export default function AdminBannerHeroPage() {
             Manajemen Hero &amp; Banner
           </h1>
           <p className="text-slate-500 text-xs mt-1">
-            Konten hero beranda dikelola melalui CMS halaman depan. Banner header Akademik dapat dikelola di halaman ini.
+            Hero beranda dikelola di menu Halaman Depan. Banner header Akademik dapat dikelola di halaman ini.
           </p>
         </div>
 
@@ -141,13 +141,13 @@ export default function AdminBannerHeroPage() {
           <div className="max-w-2xl space-y-3">
             <h2 className="text-lg font-bold text-slate-900">Sumber hero halaman depan</h2>
             <p className="text-sm leading-relaxed text-slate-700">
-              Halaman depan dan dashboard membaca hero dari CMS yang sama. Kelola judul, deskripsi, gambar, dan tombol pada CMS Halaman Depan; data slide lama tidak digunakan oleh render publik.
+              Halaman depan dan dashboard membaca hero dari sumber yang sama. Kelola judul, deskripsi, gambar, dan tombol di menu Halaman Depan; data slide lama tidak digunakan oleh render publik.
             </p>
             <Link
               href="/admin/halaman-depan"
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-500"
             >
-              Buka CMS Halaman Depan
+              Buka Menu Halaman Depan
               <ExternalLink className="h-4 w-4" />
             </Link>
           </div>

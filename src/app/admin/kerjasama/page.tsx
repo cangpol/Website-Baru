@@ -83,7 +83,7 @@ function KerjasamaManagerContent() {
         swalToast(res.message);
       }
     } catch {
-      swalToast("Gagal menyimpan data MoU ke database.");
+      swalToast("Gagal menyimpan data MoU.");
     }
   };
 

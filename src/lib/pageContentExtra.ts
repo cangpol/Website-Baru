@@ -2018,9 +2018,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "pimpinanList",
-      "label": "Pimpinan List",
+      "label": "Daftar Pimpinan",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Pimpinan",
       "fields": [
         {
           "key": "nama",
@@ -2056,9 +2056,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "dekanatList",
-      "label": "Dekanat List",
+      "label": "Daftar Dekan",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Dekan",
       "fields": [
         {
           "key": "fakultas",
@@ -2067,7 +2067,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "fakultasShort",
-          "label": "Fakultas Short",
+          "label": "Singkatan Fakultas",
           "type": "text"
         },
         {
@@ -2107,7 +2107,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "link",
-          "label": "Link",
+          "label": "Tautan",
           "type": "text"
         }
       ]
@@ -2116,46 +2116,46 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "visi-misi": [
     {
       "key": "misiList",
-      "label": "Misi List",
+      "label": "Daftar Misi",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Misi",
       "fields": [
         {
           "key": "no",
-          "label": "No",
+          "label": "Nomor Urut",
           "type": "text"
         },
         {
           "key": "title",
-          "label": "Title",
+          "label": "Judul",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
     },
     {
       "key": "tujuanList",
-      "label": "Tujuan List (satu per baris)",
+      "label": "Daftar Tujuan (satu per baris)",
       "type": "lines"
     },
     {
       "key": "triputraValues",
-      "label": "Triputra Values",
+      "label": "Nilai Triputra",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Nilai",
       "fields": [
         {
           "key": "title",
-          "label": "Title",
+          "label": "Judul",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2166,7 +2166,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "prestasiMahasiswa",
       "label": "Prestasi Mahasiswa",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Prestasi",
       "fields": [
         {
           "key": "kegiatan",
@@ -2199,7 +2199,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "capaianInstitusi",
       "label": "Capaian Institusi",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Capaian",
       "fields": [
         {
           "key": "angka",
@@ -2218,7 +2218,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2229,7 +2229,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "galeriKegiatan",
       "label": "Galeri Kegiatan",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Kegiatan",
       "fields": [
         {
           "key": "judul",
@@ -2258,8 +2258,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "fallbackBg",
-          "label": "Fallback Bg",
-          "type": "text"
+          "label": "Warna Latar Bila Foto Tidak Tampil",
+          "type": "select",
+          "options": [{"value":"from-blue-900 to-[#06172e]","label":"Biru ke biru malam"},{"value":"from-[#0b2545] to-blue-900","label":"Biru dongker ke biru"},{"value":"from-blue-950 to-blue-800","label":"Biru gelap ke biru"},{"value":"from-[#06172e] to-blue-900","label":"Biru malam ke biru"},{"value":"from-[#092244] to-blue-950","label":"Biru dongker ke biru gelap"},{"value":"from-blue-900 to-[#0b2b54]","label":"Biru ke biru dongker"}]
         },
         {
           "key": "deskripsi",
@@ -2274,7 +2275,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "jadwalGasal",
       "label": "Jadwal Gasal",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Jadwal",
       "fields": [
         {
           "key": "kegiatan",
@@ -2297,7 +2298,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "jadwalGenap",
       "label": "Jadwal Genap",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Jadwal",
       "fields": [
         {
           "key": "kegiatan",
@@ -2322,7 +2323,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "lembagaUtama",
       "label": "Lembaga Utama",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Lembaga",
       "fields": [
         {
           "key": "nama",
@@ -2341,16 +2342,16 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
     },
     {
       "key": "hmpsList",
-      "label": "Hmps List",
+      "label": "Himpunan Mahasiswa Program Studi (HMPS)",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Himpunan",
       "fields": [
         {
           "key": "nama",
@@ -2371,9 +2372,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "ukmList",
-      "label": "Ukm List",
+      "label": "Unit Kegiatan Mahasiswa (UKM)",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "UKM",
       "fields": [
         {
           "key": "nama",
@@ -2387,7 +2388,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2396,9 +2397,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "prestasi-mahasiswa": [
     {
       "key": "prestasiList",
-      "label": "Prestasi List",
+      "label": "Daftar Prestasi",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Prestasi",
       "fields": [
         {
           "key": "tahun",
@@ -2441,13 +2442,13 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "program-pengembangan": [
     {
       "key": "programList",
-      "label": "Program List",
+      "label": "Daftar Program",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Program",
       "fields": [
         {
           "key": "title",
-          "label": "Title",
+          "label": "Judul",
           "type": "text"
         },
         {
@@ -2457,7 +2458,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -2471,13 +2472,13 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "tugas-dan-fungsi": [
     {
       "key": "tupoksiList",
-      "label": "Tupoksi List",
+      "label": "Daftar Tugas Pokok & Fungsi",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Tugas",
       "fields": [
         {
           "key": "no",
-          "label": "No",
+          "label": "Nomor Urut",
           "type": "text"
         },
         {
@@ -2496,9 +2497,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "daftar-kerjasama": [
     {
       "key": "mouList",
-      "label": "Mou List",
+      "label": "Daftar MoU",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "MoU",
       "fields": [
         {
           "key": "nomor",
@@ -2536,9 +2537,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "kegiatan-kerjasama": [
     {
       "key": "kegiatanList",
-      "label": "Kegiatan List",
+      "label": "Daftar Kegiatan",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Kegiatan",
       "fields": [
         {
           "key": "judul",
@@ -2557,7 +2558,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -2573,7 +2574,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "kelompokMitra",
       "label": "Kelompok Mitra",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Kelompok",
       "fields": [
         {
           "key": "kategori",
@@ -2582,18 +2583,31 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "badge",
-          "label": "Badge",
+          "label": "Label Penanda",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
           "key": "mitraList",
-          "label": "Mitra List (satu per baris)",
-          "type": "lines"
+          "label": "Daftar Mitra",
+          "type": "list",
+          "itemLabel": "Mitra",
+          "fields": [
+            {
+              "key": "nama",
+              "label": "Nama Mitra",
+              "type": "text"
+            },
+            {
+              "key": "sektor",
+              "label": "Bidang Usaha",
+              "type": "text"
+            }
+          ]
         }
       ]
     }
@@ -2601,9 +2615,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "career-center": [
     {
       "key": "layananCDC",
-      "label": "Layanan CDC",
+      "label": "Layanan Pusat Karier",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Layanan",
       "fields": [
         {
           "key": "judul",
@@ -2612,7 +2626,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -2626,7 +2640,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "statistikSerapan",
       "label": "Statistik Serapan",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Statistik",
       "fields": [
         {
           "key": "angka",
@@ -2640,7 +2654,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "sub",
-          "label": "Sub",
+          "label": "Keterangan Tambahan",
           "type": "text"
         }
       ]
@@ -2649,9 +2663,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "e-learning": [
     {
       "key": "fiturLMS",
-      "label": "Fitur LMS",
+      "label": "Fitur E-Learning",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Fitur",
       "fields": [
         {
           "key": "judul",
@@ -2660,7 +2674,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2669,7 +2683,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "panduanAkun",
       "label": "Panduan Akun",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Panduan",
       "fields": [
         {
           "key": "langkah",
@@ -2689,7 +2703,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "keunggulanImmersion",
       "label": "Keunggulan Immersion",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Keunggulan",
       "fields": [
         {
           "key": "judul",
@@ -2698,7 +2712,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2707,7 +2721,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "alurPendaftaran",
       "label": "Alur Pendaftaran",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Tahap",
       "fields": [
         {
           "key": "tahap",
@@ -2716,7 +2730,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2725,9 +2739,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "perpustakaan": [
     {
       "key": "layananPerpus",
-      "label": "Layanan Perpus",
+      "label": "Layanan Perpustakaan",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Layanan",
       "fields": [
         {
           "key": "judul",
@@ -2736,7 +2750,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -2750,9 +2764,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "tracer-study": [
     {
       "key": "metrikTracer",
-      "label": "Metrik Tracer",
+      "label": "Angka Tracer Study",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Angka",
       "fields": [
         {
           "key": "angka",
@@ -2766,7 +2780,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2775,7 +2789,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "testimoniAlumni",
       "label": "Testimoni Alumni",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Testimoni",
       "fields": [
         {
           "key": "nama",
@@ -2805,7 +2819,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
       "key": "roadmapRiset",
       "label": "Roadmap Riset",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Roadmap",
       "fields": [
         {
           "key": "bidang",
@@ -2826,9 +2840,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "jurnalList",
-      "label": "Jurnal List",
+      "label": "Daftar Jurnal",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Jurnal",
       "fields": [
         {
           "key": "nama",
@@ -2837,12 +2851,12 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "issn",
-          "label": "Issn",
+          "label": "Nomor ISSN",
           "type": "text"
         },
         {
           "key": "index",
-          "label": "Index",
+          "label": "Terindeks Di",
           "type": "text"
         },
         {
@@ -2861,23 +2875,23 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "fakultas-feb": [
     {
       "key": "prodiListFEB",
-      "label": "Prodi List FEB",
+      "label": "Program Studi FEB",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Program Studi",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "slug",
-          "label": "Slug",
+          "label": "Alamat Halaman Prodi (huruf kecil, contoh: manajemen)",
           "type": "text"
         },
         {
           "key": "degree",
-          "label": "Degree",
+          "label": "Gelar Lulusan",
           "type": "text"
         },
         {
@@ -2887,7 +2901,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -2899,18 +2913,18 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "labFEB",
-      "label": "Lab FEB",
+      "label": "Laboratorium FEB",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Laboratorium",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2919,23 +2933,23 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "fakultas-fst": [
     {
       "key": "prodiListFST",
-      "label": "Prodi List FST",
+      "label": "Program Studi FST",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Program Studi",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "slug",
-          "label": "Slug",
+          "label": "Alamat Halaman Prodi (huruf kecil, contoh: manajemen)",
           "type": "text"
         },
         {
           "key": "degree",
-          "label": "Degree",
+          "label": "Gelar Lulusan",
           "type": "text"
         },
         {
@@ -2945,7 +2959,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -2957,18 +2971,18 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "labFST",
-      "label": "Lab FST",
+      "label": "Laboratorium FST",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Laboratorium",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -2977,23 +2991,23 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "fakultas-fsh": [
     {
       "key": "prodiListFSH",
-      "label": "Prodi List FSH",
+      "label": "Program Studi FSH",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Program Studi",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "slug",
-          "label": "Slug",
+          "label": "Alamat Halaman Prodi (huruf kecil, contoh: manajemen)",
           "type": "text"
         },
         {
           "key": "degree",
-          "label": "Degree",
+          "label": "Gelar Lulusan",
           "type": "text"
         },
         {
@@ -3003,7 +3017,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -3015,18 +3029,18 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "labFSH",
-      "label": "Lab FSH",
+      "label": "Laboratorium FSH",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Laboratorium",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -3035,23 +3049,23 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "fakultas-fkes": [
     {
       "key": "prodiListFKes",
-      "label": "Prodi List FKes",
+      "label": "Program Studi FKes",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Program Studi",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "slug",
-          "label": "Slug",
+          "label": "Alamat Halaman Prodi (huruf kecil, contoh: manajemen)",
           "type": "text"
         },
         {
           "key": "degree",
-          "label": "Degree",
+          "label": "Gelar Lulusan",
           "type": "text"
         },
         {
@@ -3061,7 +3075,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
@@ -3073,18 +3087,18 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
     },
     {
       "key": "labFKes",
-      "label": "Lab FKes",
+      "label": "Laboratorium FKes",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Laboratorium",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -3093,38 +3107,38 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "entrepreneurship": [
     {
       "key": "alumniStartups",
-      "label": "Alumni Startups",
+      "label": "Usaha Rintisan Alumni",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Usaha",
       "fields": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Nama",
           "type": "text"
         },
         {
           "key": "category",
-          "label": "Category",
+          "label": "Bidang Usaha",
           "type": "text"
         },
         {
           "key": "founded",
-          "label": "Founded",
+          "label": "Tahun Berdiri",
           "type": "text"
         },
         {
           "key": "valuation",
-          "label": "Valuation",
+          "label": "Capaian Usaha",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
           "key": "founders",
-          "label": "Founders",
+          "label": "Pendiri",
           "type": "text"
         }
       ]
@@ -3133,63 +3147,64 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "ebrochure": [
     {
       "key": "brochureList",
-      "label": "Brochure List",
+      "label": "Daftar E-Brosur",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Brosur",
       "fields": [
         {
           "key": "id",
-          "label": "Id",
-          "type": "text"
+          "label": "Kode Internal",
+          "type": "hidden"
         },
         {
           "key": "title",
-          "label": "Title",
+          "label": "Judul",
           "type": "text"
         },
         {
           "key": "faculty",
-          "label": "Faculty",
-          "type": "text"
+          "label": "Kelompok Fakultas",
+          "type": "select",
+          "options": [{"value":"all_pmb","label":"Panduan PMB Umum"},{"value":"fst","label":"Fakultas Sains & Teknologi"},{"value":"feb","label":"Fakultas Ekonomi & Bisnis"},{"value":"fsh","label":"Fakultas Sosial Humaniora"},{"value":"fh","label":"Fakultas Kesehatan"}]
         },
         {
           "key": "facultyName",
-          "label": "Faculty Name",
+          "label": "Nama Fakultas yang Ditampilkan",
           "type": "text"
         },
         {
           "key": "degree",
-          "label": "Degree",
+          "label": "Gelar Lulusan",
           "type": "text"
         },
         {
           "key": "degreeTitle",
-          "label": "Degree Title",
+          "label": "Gelar / Jenis Dokumen",
           "type": "text"
         },
         {
           "key": "fileSize",
-          "label": "File Size",
+          "label": "Ukuran Berkas",
           "type": "text"
         },
         {
           "key": "coverImage",
-          "label": "Cover Image",
+          "label": "Foto Sampul",
           "type": "image"
         },
         {
           "key": "pdfUrl",
-          "label": "Pdf Url",
+          "label": "Tautan Berkas PDF",
           "type": "text"
         },
         {
           "key": "description",
-          "label": "Description",
+          "label": "Deskripsi",
           "type": "textarea"
         },
         {
           "key": "highlights",
-          "label": "Highlights (satu per baris)",
+          "label": "Poin Unggulan (satu per baris)",
           "type": "lines"
         }
       ]
@@ -3198,27 +3213,27 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "life-at-upitra": [
     {
       "key": "studentLifePillars",
-      "label": "Student Life Pillars",
+      "label": "Pilar Kehidupan Mahasiswa",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Pilar",
       "fields": [
         {
           "key": "title",
-          "label": "Title",
+          "label": "Judul",
           "type": "text"
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
     },
     {
       "key": "ukmList",
-      "label": "Ukm List",
+      "label": "Unit Kegiatan Mahasiswa (UKM)",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "UKM",
       "fields": [
         {
           "key": "kategori",
@@ -3232,7 +3247,7 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "desc",
-          "label": "Desc",
+          "label": "Deskripsi",
           "type": "textarea"
         }
       ]
@@ -3241,9 +3256,9 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
   "mitra-kerjasama": [
     {
       "key": "allMitraList",
-      "label": "All Mitra List",
+      "label": "Daftar Semua Mitra",
       "type": "list",
-      "itemLabel": "Item",
+      "itemLabel": "Mitra",
       "fields": [
         {
           "key": "nama",
@@ -3252,12 +3267,13 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
         },
         {
           "key": "kategori",
-          "label": "Kategori",
-          "type": "text"
+          "label": "Kelompok Mitra",
+          "type": "select",
+          "options": [{"value":"triputra","label":"Triputra Group & Afiliasi"},{"value":"industry","label":"Industri & Korporasi"},{"value":"health_tourism","label":"Kesehatan & Pariwisata"},{"value":"institution","label":"Pemerintah & Pendidikan"}]
         },
         {
           "key": "kategoriLabel",
-          "label": "Kategori Label",
+          "label": "Nama Kategori yang Ditampilkan",
           "type": "text"
         },
         {

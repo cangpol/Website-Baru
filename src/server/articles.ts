@@ -279,7 +279,7 @@ export async function saveArticleAction(id: string | null, rawInput: ArticleInpu
       if (existingSlug) {
         return {
           ok: false,
-          message: `Slug "${cleaned}" sudah digunakan oleh artikel lain. Silakan pilih slug berbeda.`,
+          message: `Alamat halaman "${cleaned}" sudah digunakan oleh artikel lain. Silakan pilih alamat lain.`,
         };
       }
       finalSlug = cleaned;
@@ -513,7 +513,7 @@ export async function saveRisetPublicationsAction(rawItems: unknown) {
     });
 
     await invalidateEntity(CACHE_TAGS.ARTICLES, "/riset");
-    return { ok: true, message: "Publikasi riset berhasil disimpan ke database." };
+    return { ok: true, message: "Publikasi riset berhasil disimpan." };
   } catch (err) {
     console.error("Error saving riset publications:", err);
     return { ok: false, message: "Gagal menyimpan publikasi riset." };

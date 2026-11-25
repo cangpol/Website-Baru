@@ -78,7 +78,7 @@ export async function validateAndSanitizeFile(
   if (lowerName.endsWith(".svg") || lowerName.endsWith(".html") || lowerName.endsWith(".php")) {
     return {
       valid: false,
-      error: "Format berkas tidak diizinkan. SVG, HTML, dan script executable ditolak demi keamanan.",
+      error: "Format berkas tidak diizinkan. Berkas SVG, HTML, dan program ditolak demi keamanan.",
       isImage: false,
     };
   }

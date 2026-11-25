@@ -273,7 +273,7 @@ export async function saveProfilSectionsAction(rawItems: unknown) {
     });
 
     await invalidateEntity(CACHE_TAGS.STAFF, "/profil");
-    return { ok: true, message: "Data profil berhasil disimpan ke database." };
+    return { ok: true, message: "Data profil berhasil disimpan." };
   } catch (err) {
     console.error("Error saving profil sections:", err);
     return { ok: false, message: "Gagal menyimpan data profil." };

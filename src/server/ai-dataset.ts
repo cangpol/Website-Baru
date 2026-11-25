@@ -91,9 +91,9 @@ export async function saveAIDatasetAction(dataset: AIDatasetItem[]) {
     });
 
     await invalidateEntity(CACHE_TAGS.AI_DATASET);
-    return { ok: true, message: "Dataset AI berhasil disimpan ke database." };
+    return { ok: true, message: "Dataset AI berhasil disimpan." };
   } catch (err) {
     console.error("Error saving AI dataset:", err);
-    return { ok: false, message: "Gagal menyimpan dataset ke database." };
+    return { ok: false, message: "Gagal menyimpan dataset." };
   }
 }

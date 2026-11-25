@@ -73,7 +73,7 @@ export default function AdminInstagramSyncPage() {
       const res = await fetch("/api/instagram", { cache: "no-store" });
       const data = await res.json();
       if (!res.ok || !data?.success) {
-        throw new Error(data?.error || "Gagal memuat konten feed CMS.");
+        throw new Error(data?.error || "Gagal memuat postingan beranda.");
       }
       setAccount((prev) => ({
         ...prev,
@@ -89,7 +89,7 @@ export default function AdminInstagramSyncPage() {
         recentPosts: data.posts || [],
       }));
     } catch (error) {
-      setErrorMsg(error instanceof Error ? error.message : "Gagal memuat konten feed CMS.");
+      setErrorMsg(error instanceof Error ? error.message : "Gagal memuat postingan beranda.");
     }
   };
 
@@ -126,7 +126,7 @@ export default function AdminInstagramSyncPage() {
       });
       const data = await res.json();
       if (!res.ok || !data?.success) {
-        throw new Error(data?.error || "Gagal menyimpan postingan ke CMS beranda.");
+        throw new Error(data?.error || "Gagal menyimpan postingan ke beranda.");
       }
 
       await fetchApiFeed();
@@ -138,7 +138,7 @@ export default function AdminInstagramSyncPage() {
         category: "Prestasi & Kolaborasi",
       });
     } catch (error) {
-      setErrorMsg(error instanceof Error ? error.message : "Gagal menyimpan postingan ke CMS beranda.");
+      setErrorMsg(error instanceof Error ? error.message : "Gagal menyimpan postingan ke beranda.");
     } finally {
       setLoading(false);
     }
@@ -173,7 +173,7 @@ export default function AdminInstagramSyncPage() {
             Konten Instagram Beranda
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Feed yang tampil berasal dari CMS beranda dan dapat dikelola di sini. OAuth Instagram Graph API belum dikonfigurasi, jadi akun, jumlah pengikut, dan statistik interaksi tidak disinkronkan.
+            Postingan yang tampil berasal dari data beranda dan dapat dikelola di sini. Akun Instagram belum terhubung otomatis, jadi akun, jumlah pengikut, dan statistik interaksi tidak disinkronkan.
           </p>
         </div>
 
@@ -183,7 +183,7 @@ export default function AdminInstagramSyncPage() {
             className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-600 hover:opacity-90 text-white text-xs font-bold shadow-md shadow-blue-600/30 transition cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Tambah Postingan CMS</span>
+            <span>Tambah Postingan</span>
           </button>
         </div>
       </div>
@@ -235,7 +235,7 @@ export default function AdminInstagramSyncPage() {
               <div className="flex items-center gap-4 pt-1 text-xs">
                 <div>
                   <span className="font-bold text-slate-900">{account.postsCount}</span>{" "}
-                  <span className="text-slate-500">Postingan di CMS beranda</span>
+                  <span className="text-slate-500">Postingan di beranda</span>
                 </div>
               </div>
             </div>
@@ -245,7 +245,7 @@ export default function AdminInstagramSyncPage() {
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-sky-400" />
               <span className="text-xs font-bold text-slate-900">
-                FEED CMS AKTIF
+                FEED BERANDA AKTIF
               </span>
             </div>
             <div className="text-[11px] text-slate-500">
@@ -261,7 +261,7 @@ export default function AdminInstagramSyncPage() {
           <div>
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Layers className="w-4 h-4 text-blue-600" />
-              <span>5 Postingan Feed Terbaru dari CMS</span>
+              <span>5 Postingan Terbaru di Beranda</span>
             </h3>
             <p className="text-xs text-slate-500">
               Postingan berikut ini sama dengan konten feed pada halaman depan.
@@ -301,7 +301,7 @@ export default function AdminInstagramSyncPage() {
                 </p>
 
                 <div className="pt-2 border-t border-blue-100 flex items-center justify-between text-[11px] text-slate-500">
-                  <span>{post.timeAgo || "Tersimpan di CMS"}</span>
+                  <span>{post.timeAgo || "Tersimpan di beranda"}</span>
                   <a
                     href={post.permalink}
                     target="_blank"
@@ -325,7 +325,7 @@ export default function AdminInstagramSyncPage() {
             <div className="flex items-center justify-between pb-3 border-b border-blue-200">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Plus className="w-4 h-4 text-blue-600" />
-                <span>Tambah Postingan ke CMS Beranda</span>
+                <span>Tambah Postingan ke Beranda</span>
               </h3>
               <button onClick={() => setIsNewPostModalOpen(false)} className="p-1 text-slate-500 hover:text-slate-900">
                 ✕

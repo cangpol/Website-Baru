@@ -149,7 +149,7 @@ export default function AdminProdiCrudPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim() || !formSlug.trim()) {
-      swalToast("Nama dan slug program studi wajib diisi.", "error");
+      swalToast("Nama dan alamat halaman program studi wajib diisi.", "error");
       return;
     }
     setSaving(true);
@@ -158,7 +158,7 @@ export default function AdminProdiCrudPage() {
       const faculties = await getFacultiesWithPrograms();
       const faculty = faculties.find((f) => f.code.toUpperCase() === formFaculty);
       if (!faculty) {
-        swalToast("Fakultas tidak ditemukan di database. Pastikan data fakultas sudah di-seed.", "error");
+        swalToast("Data fakultas belum tersedia. Hubungi pengelola sistem.", "error");
         return;
       }
       const digits = formTuition.replace(/[^0-9]/g, "");
@@ -477,7 +477,7 @@ export default function AdminProdiCrudPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Slug URL</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Alamat Halaman</label>
                   <input
                     type="text"
                     required

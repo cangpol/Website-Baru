@@ -457,7 +457,7 @@ export default function AdminAkademikCalendarPage() {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
-              CMS Akademik UPITRA
+              Akademik UPITRA
             </span>
             <span className="text-xs text-slate-400 font-medium">|</span>
             <span className="text-xs text-slate-500 font-semibold">Tahun Akademik 2025/2026</span>
@@ -563,18 +563,12 @@ export default function AdminAkademikCalendarPage() {
                   </div>
                 </div>
 
-                <div className="text-xs text-slate-300 sm:text-right">
-                  <span className="block text-[11px] text-slate-400">Tautan Berkas:</span>
-                  <code className="text-sky-300 font-mono text-[11px] truncate max-w-[240px] inline-block">
-                    {academicPdf.fileUrl}
-                  </code>
-                </div>
               </div>
             ) : (
               <div className="bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 text-xs text-sky-200 flex items-center gap-3">
                 <AlertCircle className="w-5 h-5 text-sky-400 shrink-0" />
                 <span>
-                  Belum ada dokumen PDF resmi yang diunggah. Halaman publik saat ini menggunakan dokumen PDF dinamis bawaan generator sistem.
+                  Belum ada dokumen PDF resmi yang diunggah. Halaman publik saat ini memakai dokumen PDF bawaan situs.
                 </span>
               </div>
             )}
@@ -595,7 +589,7 @@ export default function AdminAkademikCalendarPage() {
                     onFileNameChange={(name) => setPdfFormName(name)}
                     fileSize={pdfFormSize}
                     onFileSizeChange={(size) => setPdfFormSize(size)}
-                    helperText="Hanya menerima format berkas PDF dengan validasi biner magic-bytes terverifikasi."
+                    helperText="Hanya menerima berkas PDF asli. Isi berkas diperiksa otomatis."
                   />
                 </div>
 
@@ -1094,7 +1088,6 @@ export default function AdminAkademikCalendarPage() {
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                       {fak.code}
                     </span>
-                    <span className="text-xs text-slate-400 font-mono">{fak.slug}</span>
                   </div>
 
                   <h3 className="text-lg font-black text-[#0b2545]">{fak.name}</h3>

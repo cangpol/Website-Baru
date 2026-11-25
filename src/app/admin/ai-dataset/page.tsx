@@ -64,6 +64,13 @@ const emptyForm: AIDatasetItem = {
   answer: "",
 };
 
+// Kode kategori tetap dipakai chatbot; di layar ditampilkan sebagai nama biasa.
+const CATEGORY_LABELS: Record<string, string> = {
+  faq: "Tanya Jawab",
+  "auto-learn": "Belajar Otomatis",
+};
+const categoryLabel = (cat: string) => CATEGORY_LABELS[cat.toLowerCase()] ?? cat.replace(/[_-]+/g, " ");
+
 export default function AdminAiDatasetPage() {
   const [dataset, setDataset] = useState<AIDatasetItem[]>([]);
   const [search, setSearch] = useState("");
@@ -118,12 +125,12 @@ export default function AdminAiDatasetPage() {
       }));
       const res = await saveAIDatasetAction(payload);
       if (res.ok) {
-        showToast("✓ Dataset AI berhasil disimpan ke database!");
+        showToast("✓ Dataset AI berhasil disimpan!");
       } else {
         showToast("⚠️ " + res.message);
       }
     } catch {
-      showToast("Gagal menyimpan dataset ke database.");
+      showToast("Gagal menyimpan dataset.");
     }
   };
 
@@ -205,6 +212,7 @@ export default function AdminAiDatasetPage() {
 
     const payload: AIDatasetItem = {
       ...formData,
+      id: formData.id.trim() || `qa-${Date.now().toString(36)}`,
       question: formData.question.trim(),
       answer: formData.answer.trim(),
       category: formData.category.trim().toLowerCase() || "umum",
@@ -556,7 +564,7 @@ export default function AdminAiDatasetPage() {
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
               >
-                {cat} ({count})
+                {categoryLabel(cat)} ({count})
               </button>
             );
           })}
@@ -592,13 +600,10 @@ export default function AdminAiDatasetPage() {
                         <div className="font-bold text-[#06172e] group-hover:text-blue-600 transition-colors">
                           {item.question}
                         </div>
-                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                          ID: {item.id}
-                        </div>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${getCategoryBadgeColor(item.category)}`}>
-                          {item.category}
+                          {categoryLabel(item.category)}
                         </span>
                       </td>
                       <td className="py-3.5 px-4">
@@ -730,22 +735,8 @@ export default function AdminAiDatasetPage() {
             {/* Modal Body */}
             <form onSubmit={handleSaveForm} className="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs">
               
-              {/* Row: ID & Kategori */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    ID Unik (Key) *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.id}
-                    onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                    required
-                    placeholder="misal: pmb_alur_pendaftaran"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono text-xs focus:outline-hidden focus:border-blue-500 bg-slate-50"
-                  />
-                </div>
-
+              {/* Kategori */}
+              <div className="space-y-4">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
                     Kategori Topik *
@@ -753,8 +744,8 @@ export default function AdminAiDatasetPage() {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value.toLowerCase() })}
+                      value={formData.category.replace(/_/g, " ")}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value.toLowerCase().replace(/ /g, "_") })}
                       required
                       placeholder="misal: pmb, beasiswa, akademik"
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-hidden focus:border-blue-500 uppercase tracking-wider font-bold"
@@ -768,7 +759,7 @@ export default function AdminAiDatasetPage() {
                         onClick={() => setFormData({ ...formData, category: cat })}
                         className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-semibold"
                       >
-                        +{cat}
+                        +{categoryLabel(cat)}
                       </button>
                     ))}
                   </div>

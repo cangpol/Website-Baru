@@ -28,6 +28,18 @@ import {
 
 export type AdminKemahasiswaanSection = KemahasiswaanSectionItem;
 
+const TABS = [
+  { key: "tugas-fungsi", label: "Tugas & Fungsi", icon: FolderKanban },
+  { key: "pengembangan", label: "Pengembangan", icon: Sparkles },
+  { key: "ormawa", label: "Ormawa (BEM/DPM)", icon: Users },
+  { key: "prestasi", label: "Prestasi Mahasiswa", icon: Award },
+  { key: "galeri", label: "Galeri Kegiatan", icon: ImageIcon },
+  { key: "kalender", label: "Kalender Akademik", icon: Calendar },
+];
+const tabLabel = (key: string) => TABS.find((t) => t.key === key)?.label ?? "";
+// Data lama menyimpan kategori bawaan berupa kode tab (misalnya TUGAS-FUNGSI).
+const categoryText = (value: string) => TABS.find((t) => t.key.toUpperCase() === value)?.label ?? value;
+
 function KemahasiswaanManagerContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "ormawa";
@@ -114,7 +126,7 @@ function KemahasiswaanManagerContent() {
       setEditingItem(item);
       setFormData({
         title: item.title,
-        category: item.category || "",
+        category: categoryText(item.category || ""),
         description: item.description,
         dateOrSemester: item.dateOrSemester || "",
         image: item.image || "",
@@ -124,7 +136,7 @@ function KemahasiswaanManagerContent() {
       setEditingItem(null);
       setFormData({
         title: "",
-        category: activeTab.toUpperCase(),
+        category: tabLabel(activeTab),
         description: "",
         dateOrSemester: "TA 2026/2027",
         image: "/images/kegiatan.jpg",
@@ -207,20 +219,13 @@ function KemahasiswaanManagerContent() {
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Tambah Data {activeTab.toUpperCase()}</span>
+          <span>Tambah Data {tabLabel(activeTab)}</span>
         </button>
       </div>
 
       {/* Tabs Bar */}
       <div className="flex items-center gap-2 flex-wrap pb-2 border-b border-blue-100 text-xs font-bold">
-        {[
-          { key: "tugas-fungsi", label: "Tugas & Fungsi", icon: FolderKanban },
-          { key: "pengembangan", label: "Pengembangan", icon: Sparkles },
-          { key: "ormawa", label: "Ormawa (BEM/DPM)", icon: Users },
-          { key: "prestasi", label: "Prestasi Mahasiswa", icon: Award },
-          { key: "galeri", label: "Galeri Kegiatan", icon: ImageIcon },
-          { key: "kalender", label: "Kalender Akademik", icon: Calendar },
-        ].map((tab) => {
+        {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
           return (
@@ -283,7 +288,7 @@ function KemahasiswaanManagerContent() {
 
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-900/80 text-blue-600 border border-blue-700/60">
-                    {item.category}
+                    {categoryText(item.category || "")}
                   </span>
                   {item.dateOrSemester && (
                     <span className="text-[10px] text-blue-600 font-medium">

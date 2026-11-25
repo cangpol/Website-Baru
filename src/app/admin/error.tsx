@@ -30,7 +30,7 @@ export default function AdminError({
             Gagal Memuat Modul Admin
           </h2>
           <p className="text-sm text-slate-700 leading-relaxed">
-            {error.message || "Terjadi kesalahan saat memproses data modul CMS. Hak akses Anda atau data input mungkin mengalami konflik."}
+            {error.message || "Terjadi kesalahan saat memproses data di menu ini. Hak akses Anda atau data input mungkin mengalami konflik."}
           </p>
           {error.digest && (
             <p className="text-xs font-mono text-slate-500 bg-blue-50 py-1.5 px-3 rounded-lg border border-blue-100">

@@ -22,7 +22,7 @@ export default function NotFound() {
               Halaman Yang Anda Cari Belum Tersedia
             </h1>
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-md mx-auto">
-              Tautan yang Anda tuju mungkin telah dipindahkan, berganti slug, atau belum dipublikasikan oleh administrator.
+              Tautan yang Anda tuju mungkin telah dipindahkan, berganti alamat, atau belum dipublikasikan oleh administrator.
             </p>
           </div>
 

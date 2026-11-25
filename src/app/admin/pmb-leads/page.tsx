@@ -255,7 +255,7 @@ export default function AdminPmbLeadsPage() {
       case "DITERIMA_BEASISWA":
         return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600 border border-blue-200"><Award className="w-3 h-3" /> Beasiswa</span>;
       case "ENROLLED":
-        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600 border border-blue-200"><UserCheck className="w-3 h-3" /> Enrolled (NIM)</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600 border border-blue-200"><UserCheck className="w-3 h-3" /> Terdaftar (NIM)</span>;
       case "BATAL":
         return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600 border border-blue-200"><UserX className="w-3 h-3" /> Batal</span>;
       default:
@@ -333,7 +333,7 @@ export default function AdminPmbLeadsPage() {
           </p>
         </div>
         <div className="bg-white border border-blue-100 p-3.5 rounded-xl">
-          <p className="text-xs text-blue-600 flex items-center gap-1"><UserCheck className="w-3 h-3" /> Enrolled (NIM)</p>
+          <p className="text-xs text-blue-600 flex items-center gap-1"><UserCheck className="w-3 h-3" /> Terdaftar (NIM)</p>
           <p className="text-xl font-bold text-blue-600 mt-1">
             {leads.filter((l) => l.status === "ENROLLED").length}
           </p>
@@ -365,7 +365,7 @@ export default function AdminPmbLeadsPage() {
             <option value="DIHUBUNGI">Dihubungi</option>
             <option value="WAWANCARA">Wawancara</option>
             <option value="DITERIMA_BEASISWA">Diterima Beasiswa</option>
-            <option value="ENROLLED">Enrolled (NIM)</option>
+            <option value="ENROLLED">Terdaftar (NIM)</option>
             <option value="BATAL">Batal</option>
           </select>
 
@@ -458,7 +458,7 @@ export default function AdminPmbLeadsPage() {
                           <option value="DIHUBUNGI">Dihubungi</option>
                           <option value="WAWANCARA">Wawancara</option>
                           <option value="DITERIMA_BEASISWA">Diterima Beasiswa</option>
-                          <option value="ENROLLED">Enrolled (NIM)</option>
+                          <option value="ENROLLED">Terdaftar (NIM)</option>
                           <option value="BATAL">Batal</option>
                         </select>
                       </div>
@@ -618,7 +618,7 @@ export default function AdminPmbLeadsPage() {
                     <option value="DIHUBUNGI">Dihubungi</option>
                     <option value="WAWANCARA">Wawancara</option>
                     <option value="DITERIMA_BEASISWA">Diterima Beasiswa</option>
-                    <option value="ENROLLED">Enrolled (NIM)</option>
+                    <option value="ENROLLED">Terdaftar (NIM)</option>
                     <option value="BATAL">Batal</option>
                   </select>
                 </div>

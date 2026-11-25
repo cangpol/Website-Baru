@@ -101,7 +101,7 @@ export default function AdminDashboardPage() {
     return (
       <div className={`${card} mx-auto mt-12 max-w-md p-8 text-center`}>
         <p className={`text-sm font-semibold ${strong}`}>Data halaman depan gagal dimuat.</p>
-        <p className={`mt-1 text-xs ${muted}`}>Periksa koneksi database, lalu coba lagi.</p>
+        <p className={`mt-1 text-xs ${muted}`}>Data belum bisa diambil. Coba lagi sebentar lagi.</p>
         <button type="button" onClick={load} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700">
           Coba lagi
         </button>

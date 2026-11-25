@@ -20,6 +20,10 @@ export const PAGE_PATHS: Record<string, string> = {
 
 export type FieldSpec =
   | { key: string; label: string; type: "text" | "textarea" | "image" | "lines" }
+  // Nilai tersimpan tetap berupa kode; admin melihat nama pilihannya.
+  | { key: string; label: string; type: "select"; options: { value: string; label: string }[] }
+  // Kode internal: tidak ditampilkan, dibuat otomatis untuk item baru.
+  | { key: string; label: string; type: "hidden" }
   | { key: string; label: string; type: "list"; itemLabel: string; fields: FieldSpec[] };
 
 export const PAGE_LABELS: Record<PageContentKey, string> = {

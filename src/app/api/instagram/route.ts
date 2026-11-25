@@ -79,7 +79,7 @@ export async function GET() {
   } catch (error) {
     console.error("Error in GET /api/instagram:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal mengambil feed Instagram CMS." },
+      { success: false, error: "Gagal mengambil postingan Instagram." },
       { status: 500 }
     );
   }
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
   const { action, post } = parsed.data;
   if (action === "LOGIN" || action === "CONNECT" || action === "LOGOUT" || action === "DISCONNECT") {
     return NextResponse.json(
-      { success: false, error: "Koneksi Instagram OAuth belum dikonfigurasi. Feed CMS beranda tetap dapat dikelola." },
+      { success: false, error: "Akun Instagram belum terhubung otomatis. Postingan beranda tetap dapat dikelola." },
       { status: 503 }
     );
   }
@@ -169,7 +169,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Postingan berhasil disimpan ke CMS feed beranda.",
+      message: "Postingan berhasil disimpan ke beranda.",
       posts: result.data.posts.map((savedPost) => ({
         ...savedPost,
         timestamp: "",
@@ -180,7 +180,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error in POST /api/instagram:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal menyimpan postingan ke CMS feed beranda." },
+      { success: false, error: "Gagal menyimpan postingan ke beranda." },
       { status: 500 }
     );
   }

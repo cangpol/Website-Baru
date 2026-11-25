@@ -479,7 +479,7 @@ export async function saveKemahasiswaanSectionsAction(rawItems: unknown) {
     });
 
     await invalidateEntity(CACHE_TAGS.STUDENT_ORGS, "/kemahasiswaan");
-    return { ok: true, message: "Data kemahasiswaan berhasil disimpan ke database." };
+    return { ok: true, message: "Data kemahasiswaan berhasil disimpan." };
   } catch (err) {
     console.error("Error saving kemahasiswaan sections:", err);
     return { ok: false, message: "Gagal menyimpan data kemahasiswaan." };

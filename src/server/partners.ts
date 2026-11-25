@@ -286,7 +286,7 @@ export async function saveMouListAction(rawItems: unknown) {
     });
 
     await invalidateEntity(CACHE_TAGS.PARTNERS, "/kerjasama");
-    return { ok: true, message: "Daftar MoU kerjasama berhasil disimpan ke database." };
+    return { ok: true, message: "Daftar MoU kerjasama berhasil disimpan." };
   } catch (err) {
     console.error("Error saving MoU list:", err);
     return { ok: false, message: "Gagal menyimpan daftar MoU." };

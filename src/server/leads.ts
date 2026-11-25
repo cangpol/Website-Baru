@@ -179,6 +179,16 @@ function sanitizeCsvCell(value: string | number | null | undefined): string {
   return `"${escaped}"`;
 }
 
+// Nama status untuk berkas unduhan; sama dengan yang tampil di panel admin.
+const STATUS_LABELS: Record<string, string> = {
+  LEAD_SUBMITTED: "Baru Masuk",
+  CONTACTED: "Dihubungi",
+  SCHEDULED_INTERVIEW: "Wawancara",
+  ACCEPTED: "Diterima Beasiswa",
+  ENROLLED: "Terdaftar (NIM)",
+  REJECTED: "Batal",
+};
+
 export async function exportLeadsCsvAction() {
   const session = await requirePermission("pmb", "read");
 
@@ -212,7 +222,7 @@ export async function exportLeadsCsvAction() {
       sanitizeCsvCell(l.city),
       sanitizeCsvCell(l.program?.name || "Belum Menentukan"),
       sanitizeCsvCell(l.targetYear),
-      sanitizeCsvCell(l.status),
+      sanitizeCsvCell(STATUS_LABELS[l.status] ?? l.status),
       sanitizeCsvCell(l.notes),
       sanitizeCsvCell(l.createdAt.toISOString()),
     ]);

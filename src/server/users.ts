@@ -80,7 +80,7 @@ export async function saveUserAction(id: string | null, rawInput: UserInput) {
         if (superadminCount <= 1) {
           return {
             ok: false,
-            message: "Tidak dapat menurunkan peran SUPERADMIN terakhir dari sistem.",
+            message: "Tidak dapat menurunkan peran Super Admin terakhir.",
           };
         }
       }
@@ -172,7 +172,7 @@ export async function deleteUserAction(id: string) {
         where: { role: Role.SUPERADMIN, isActive: true },
       });
       if (superadminCount <= 1) {
-        return { ok: false, message: "Tidak dapat menghapus SUPERADMIN terakhir." };
+        return { ok: false, message: "Tidak dapat menghapus Super Admin terakhir." };
       }
     }
 

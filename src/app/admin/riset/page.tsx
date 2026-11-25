@@ -406,7 +406,7 @@ export default function AdminRisetPage() {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
-              CMS Riset &amp; Inovasi
+              Riset &amp; Inovasi
             </span>
             <span className="text-xs text-slate-400 font-medium">|</span>
             <span className="text-xs text-slate-500 font-semibold">LPPM UPITRA</span>
@@ -463,7 +463,7 @@ export default function AdminRisetPage() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Cari berdasarkan judul, slug, atau ringkasan riset..."
+                placeholder="Cari berdasarkan judul, alamat halaman, atau ringkasan riset..."
                 value={newsSearch}
                 onChange={(e) => setNewsSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
@@ -901,7 +901,7 @@ export default function AdminRisetPage() {
                     {newsForm.id ? "Edit Artikel / Riset" : "Tulis Artikel / Riset Baru"}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Lengkapi judul, slug, cover, lampiran dokumen, dan isi artikel dengan rich text editor.
+                    Lengkapi judul, alamat halaman, foto sampul, lampiran dokumen, dan isi artikel.
                   </p>
                 </div>
               </div>
@@ -928,18 +928,18 @@ export default function AdminRisetPage() {
                 />
               </div>
 
-              {/* Slug Field dengan Toggle Otomatis / Manual */}
+              {/* Alamat halaman: otomatis dari judul atau diisi sendiri */}
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="font-bold text-slate-700">
-                    Slug URL Halaman *
+                    Alamat Halaman *
                   </label>
                   <button
                     type="button"
                     onClick={() => setManualSlugMode(!manualSlugMode)}
                     className="text-[11px] text-blue-600 hover:underline font-semibold cursor-pointer"
                   >
-                    {manualSlugMode ? "Beralih ke Auto-Slug" : "Ubah Manual Slug"}
+                    {manualSlugMode ? "Isi Otomatis dari Judul" : "Ubah Sendiri"}
                   </button>
                 </div>
                 <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 focus-within:border-blue-500 focus-within:bg-white">

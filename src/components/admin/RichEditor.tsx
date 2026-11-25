@@ -226,7 +226,7 @@ export default function RichEditor({
     }
 
     if (!videoId) {
-      swalToast("URL YouTube tidak valid. Gunakan format: https://www.youtube.com/watch?v=ID_VIDEO");
+      swalToast("URL YouTube tidak valid. Gunakan format: https://www.youtube.com/watch?v=dQw4w9WgXcQ");
       return;
     }
 

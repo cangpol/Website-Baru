@@ -113,7 +113,7 @@ export function ImageUploadField({
             />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-slate-700 truncate">{value}</p>
+            <p className="text-xs font-medium text-slate-700 truncate" title={value}>Foto terpilih</p>
             <p className="text-[11px] text-blue-600 mt-1 flex items-center gap-1">
               ✓ Berkas terpasang
             </p>
@@ -150,7 +150,7 @@ export function ImageUploadField({
           {isUploading ? (
             <div className="flex flex-col items-center justify-center gap-2 py-2">
               <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-              <p className="text-xs text-blue-600 font-medium">Memvalidasi magic bytes & mengunggah gambar...</p>
+              <p className="text-xs text-blue-600 font-medium">Memeriksa dan mengunggah gambar...</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center gap-2">
