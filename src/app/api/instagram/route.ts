@@ -87,12 +87,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    await requirePermission("beranda", "update");
+    await requirePermission("instagram", "create");
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     const status = /harus login/i.test(message)
       ? 401
-      : /hak akses|tidak memiliki izin/i.test(message)
+      : /hak akses|tidak memiliki izin|Super Admin|ditolak/i.test(message)
         ? 403
         : 500;
     return NextResponse.json(

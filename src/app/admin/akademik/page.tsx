@@ -2,6 +2,7 @@
 
 import { swalToast, swalConfirmDelete, type SwalKind } from "@/lib/swal";
 import { AccordionRow } from "@/components/admin/AccordionRow";
+import { useAdminAccess } from "@/components/admin/AdminAccess";
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { 
@@ -54,7 +55,8 @@ export interface AdminCalendarEvent {
   end_date: string;
   startDate?: string;
   endDate?: string;
-  event_time?: string;
+  start_time?: string; // HH:mm, kosong bila agenda hanya bertanggal
+  end_time?: string;
   organizer?: string;
   status?: string;
   registration_link?: string;
@@ -63,7 +65,6 @@ export interface AdminCalendarEvent {
   isOnline?: boolean;
   academicYear?: string;
   semester?: string;
-  is_featured?: boolean;
   version?: number;
 }
 
@@ -94,7 +95,8 @@ const emptyForm: AdminCalendarEvent = {
   type: "Akademik",
   start_date: new Date().toISOString().split("T")[0],
   end_date: new Date().toISOString().split("T")[0],
-  event_time: "08:00 - Selesai WIB",
+  start_time: "",
+  end_time: "",
   location: "Kampus UPITRA Surakarta",
   organizer: "Universitas Pignatelli Triputra",
   registration_link: "",
@@ -102,8 +104,10 @@ const emptyForm: AdminCalendarEvent = {
   description: "",
   academicYear: "2025/2026",
   semester: "Gasal",
-  is_featured: false,
 };
+
+// Jam tersimpan apa adanya; pukul 00:00 berarti agenda hanya punya tanggal.
+const clockOf = (iso?: string) => (iso && iso.slice(11, 16) !== "00:00" ? iso.slice(11, 16) : "");
 
 const defaultFakultasOverview = [
   {
@@ -145,6 +149,7 @@ const defaultFakultasOverview = [
 ];
 
 export default function AdminAkademikCalendarPage() {
+  const { isSuper } = useAdminAccess();
   const [activeTab, setActiveTab] = useState<"pdf" | "calendar" | "banner" | "fakultas" | null>("pdf");
   const [viewMode, setViewMode] = useState<"table" | "calendar">("table");
   const [events, setEvents] = useState<AdminCalendarEvent[]>([]);
@@ -208,6 +213,8 @@ export default function AdminAkademikCalendarPage() {
         location: ev.location,
         start_date: ev.startDate.split("T")[0],
         end_date: ev.endDate.split("T")[0],
+        start_time: clockOf(ev.startDate),
+        end_time: clockOf(ev.startDate) ? ev.endDate.slice(11, 16) : "",
         startDate: ev.startDate,
         endDate: ev.endDate,
         bannerImage: ev.bannerImage,
@@ -297,6 +304,10 @@ export default function AdminAkademikCalendarPage() {
       showToast("Tanggal mulai dan selesai wajib diisi.", "error");
       return;
     }
+    if (form.end_time && !form.start_time) {
+      showToast("Isi Jam Mulai bila Jam Selesai diisi.", "error");
+      return;
+    }
     if (form.end_date < form.start_date) {
       showToast("Tanggal selesai tidak boleh lebih awal dari tanggal mulai.", "error");
       return;
@@ -308,8 +319,8 @@ export default function AdminAkademikCalendarPage() {
         title: form.title,
         description: form.description || "Agenda kegiatan akademik resmi UPITRA.",
         location: form.location || "Kampus UPITRA Surakarta",
-        startDate: new Date(form.start_date).toISOString(),
-        endDate: new Date(form.end_date).toISOString(),
+        startDate: `${form.start_date}T${form.start_time || "00:00"}:00.000Z`,
+        endDate: `${form.end_date}T${form.end_time || form.start_time || "00:00"}:00.000Z`,
         type: form.category || form.type || "Akademik",
         registrationUrl: form.registration_link || null,
         bannerImage: form.bannerImage || null,
@@ -466,7 +477,7 @@ export default function AdminAkademikCalendarPage() {
             Manajemen Konten Akademik
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
-            Kelola agenda kalender akademik, berkas PDF resmi rektorat, pengaturan header banner, serta penyesuaian konten fakultas dan program studi.
+            Kelola agenda kalender akademik dan dokumen PDF kalender yang tampil di halaman Akademik.
           </p>
         </div>
 
@@ -497,21 +508,21 @@ export default function AdminAkademikCalendarPage() {
           onToggle={() => setActiveTab(activeTab === "pdf" ? null : "pdf")}
         >
           {/* 1. KARTU UPLOAD DOKUMEN PDF KALENDER RESMI */}
-          <div className="adm-on-dark bg-gradient-to-br from-[#0b2545] to-blue-700 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-blue-900/40 space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-blue-200 space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-blue-100 pb-5">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
                     Dokumen Resmi SK Rektorat
                   </span>
-                  <span className="text-xs text-slate-400">Format PDF Resmi</span>
+                  <span className="text-xs text-slate-500">Format PDF Resmi</span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
-                  <FileText className="w-6 h-6 text-sky-400" />
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2.5">
+                  <FileText className="w-6 h-6 text-blue-600" />
                   <span>Berkas PDF Kalender Akademik Resmi</span>
                 </h2>
-                <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                  Unggah berkas PDF kalender akademik yang telah disahkan. Berkas ini akan langsung menjadi tujuan unduh utama pada tombol <strong>Download Kalender Akademik Disini</strong> di halaman publik <code>/akademik</code>.
+                <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
+                  Unggah berkas PDF kalender akademik yang telah disahkan. Berkas ini dipakai tombol <strong>Unduh</strong> pada kalender di halaman Akademik.
                 </p>
               </div>
 
@@ -521,7 +532,7 @@ export default function AdminAkademikCalendarPage() {
                     href={academicPdf.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 text-xs font-bold border border-sky-400/30 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200 transition-all cursor-pointer"
                   >
                     <Eye className="w-4 h-4" />
                     <span>Pratinjau PDF</span>
@@ -530,7 +541,7 @@ export default function AdminAkademikCalendarPage() {
 
                   <button
                     onClick={async () => { if (await swalConfirmDelete()) handleDeleteAcademicPdf(); }}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold border border-blue-400/30 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-blue-50 text-blue-700 text-xs font-bold border border-blue-300 transition-all cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                     <span>Hapus Berkas</span>
@@ -541,41 +552,41 @@ export default function AdminAkademikCalendarPage() {
 
             {/* Status Berkas Aktif */}
             {academicPdf?.fileUrl ? (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-300 shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-white border border-blue-200 flex items-center justify-center text-blue-600 shrink-0">
                     <FileText className="w-6 h-6" />
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white flex items-center gap-2">
+                    <div className="text-sm font-bold text-slate-900 flex items-center gap-2">
                       <span>{academicPdf.fileName}</span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/30 text-blue-200 border border-blue-400/30">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-blue-700 border border-blue-200">
                         TA {academicPdf.academicYear}
                       </span>
                     </div>
-                    <div className="text-xs text-slate-300 mt-0.5 flex flex-wrap items-center gap-3">
+                    <div className="text-xs text-slate-600 mt-0.5 flex flex-wrap items-center gap-3">
                       <span>Ukuran: {academicPdf.fileSize || "PDF Dokumen"}</span>
                       <span>•</span>
                       <span>Diperbarui: {academicPdf.updatedAt || "Baru saja"}</span>
                       <span>•</span>
-                      <span className="text-sky-300 font-medium">Status: Aktif di Halaman Publik</span>
+                      <span className="text-blue-700 font-medium">Status: Aktif di Halaman Publik</span>
                     </div>
                   </div>
                 </div>
 
               </div>
             ) : (
-              <div className="bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 text-xs text-sky-200 flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-sky-400 shrink-0" />
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-xs text-slate-700 flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-600 shrink-0" />
                 <span>
-                  Belum ada dokumen PDF resmi yang diunggah. Halaman publik saat ini memakai dokumen PDF bawaan situs.
+                  Belum ada PDF resmi yang diunggah. Sementara ini, tombol Unduh di halaman Akademik membuat PDF otomatis dari agenda kalender.
                 </span>
               </div>
             )}
 
             {/* Form Ganti / Upload PDF */}
-            <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-5 border border-white/15 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-sky-200">
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-700">
                 {academicPdf?.fileUrl ? "Ganti Dokumen PDF Resmi" : "Unggah Dokumen PDF Resmi Baru"}
               </h3>
 
@@ -595,13 +606,13 @@ export default function AdminAkademikCalendarPage() {
 
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-200 mb-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
                       Tahun Akademik
                     </label>
                     <select
                       value={pdfFormYear}
                       onChange={(e) => setPdfFormYear(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-600 px-3 py-2 rounded-xl text-white text-xs focus:outline-none focus:border-sky-400"
+                      className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 text-xs focus:outline-none focus:border-sky-400"
                     >
                       <option value="2024/2025">2024/2025</option>
                       <option value="2025/2026">2025/2026</option>
@@ -615,7 +626,7 @@ export default function AdminAkademikCalendarPage() {
                       type="button"
                       disabled={isSavingPdf || !pdfFormUrl}
                       onClick={handleSaveAcademicPdf}
-                      className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Download className="w-4 h-4" />
                       <span>{isSavingPdf ? "Menyimpan..." : "Simpan Dokumen PDF Resmi"}</span>
@@ -975,6 +986,7 @@ export default function AdminAkademikCalendarPage() {
       {/* ========================================================================= */}
       {/* TAB 2: PENGATURAN HEADER BANNER */}
       {/* ========================================================================= */}
+        {isSuper && (
         <AccordionRow
           number={3}
           title="Header Banner Halaman /akademik"
@@ -1044,10 +1056,12 @@ export default function AdminAkademikCalendarPage() {
           </form>
         </div>
         </AccordionRow>
+        )}
 
       {/* ========================================================================= */}
       {/* TAB 3: FAKULTAS & PROGRAM STUDI */}
       {/* ========================================================================= */}
+        {isSuper && (
         <AccordionRow
           number={4}
           title="Fakultas & Program Studi"
@@ -1127,6 +1141,7 @@ export default function AdminAkademikCalendarPage() {
           </div>
         </div>
         </AccordionRow>
+        )}
       </div>
 
       {/* ========================================================================= */}
@@ -1215,18 +1230,6 @@ export default function AdminAkademikCalendarPage() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Status Event *</label>
-                  <select
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
-                  >
-                    <option value="Mendatang">Mendatang</option>
-                    <option value="Berlangsung">Berlangsung</option>
-                    <option value="Selesai">Selesai</option>
-                  </select>
-                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -1254,15 +1257,25 @@ export default function AdminAkademikCalendarPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Waktu / Jam Pelaksanaan</label>
-                  <input
-                    type="text"
-                    placeholder="Misal: 08:00 - Selesai WIB"
-                    value={form.event_time || ""}
-                    onChange={(e) => setForm({ ...form, event_time: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Jam Mulai (opsional)</label>
+                    <input
+                      type="time"
+                      value={form.start_time || ""}
+                      onChange={(e) => setForm({ ...form, start_time: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Jam Selesai (opsional)</label>
+                    <input
+                      type="time"
+                      value={form.end_time || ""}
+                      onChange={(e) => setForm({ ...form, end_time: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -1303,18 +1316,6 @@ export default function AdminAkademikCalendarPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="is_featured"
-                  checked={form.is_featured || false}
-                  onChange={(e) => setForm({ ...form, is_featured: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
-                />
-                <label htmlFor="is_featured" className="font-semibold text-slate-700 cursor-pointer">
-                  Tandai sebagai Event Unggulan
-                </label>
-              </div>
 
               <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-200">
                 <button

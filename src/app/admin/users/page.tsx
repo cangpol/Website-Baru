@@ -194,7 +194,7 @@ export default function AdminUsersPage() {
       case "STAFF_PMB":
         return (
           <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600 border border-blue-200 flex items-center gap-1 w-fit">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-600" /> Staf PMB
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-600" /> Admin
           </span>
         );
       case "CONTENT_WRITER":
@@ -224,7 +224,7 @@ export default function AdminUsersPage() {
             Manajemen Pengguna & Hak Akses Admin
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Kelola akun Super Admin, Staf PMB, dan Penulis Konten beserta hak aksesnya.
+            Kelola akun Super Admin, Admin, dan Penulis Konten beserta hak aksesnya.
           </p>
         </div>
 
@@ -259,7 +259,7 @@ export default function AdminUsersPage() {
           >
             <option value="ALL">Semua Peran</option>
             <option value="SUPERADMIN">Super Admin</option>
-            <option value="STAFF_PMB">Staf PMB</option>
+            <option value="STAFF_PMB">Admin</option>
             <option value="CONTENT_WRITER">Penulis Konten</option>
           </select>
         </div>
@@ -346,19 +346,19 @@ export default function AdminUsersPage() {
           <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-100 space-y-1.5">
             <p className="font-bold text-blue-600">Super Admin</p>
             <p className="text-slate-700">
-              Akses penuh ke semua menu, termasuk mengelola akun pengguna dan menyalakan atau mematikan fitur untuk admin lain.
+              Dapat mengubah semua konten website, mengelola akun pengguna, serta menyalakan atau mematikan bagian untuk admin.
             </p>
           </div>
           <div className="p-3.5 rounded-xl bg-blue-50 border border-sky-900/30 space-y-1.5">
-            <p className="font-bold text-blue-600">Staf PMB</p>
+            <p className="font-bold text-blue-600">Admin</p>
             <p className="text-slate-700">
-              Bawaannya mengelola Akademik serta data pendaftar PMB, termasuk tindak lanjut lewat WhatsApp. Super Admin dapat menambah atau mematikan fitur.
+              Hanya mengelola Gelombang PMB, Feed Instagram, Video Profil, Fakultas & Program Studi, Kalender Akademik, Penelitian Terbaru, Halaman Kemahasiswaan, dan Galeri Kerjasama.
             </p>
           </div>
           <div className="p-3.5 rounded-xl bg-blue-50 border border-sky-900/30 space-y-1.5">
             <p className="font-bold text-blue-600">Penulis Konten</p>
             <p className="text-slate-700">
-              Bawaannya mengelola Berita & Riset serta Pustaka Media. Super Admin dapat menambah atau mematikan fitur.
+              Hak aksesnya sama dengan Admin. Super Admin dapat mematikan sebagian bagian di menu Fitur Admin.
             </p>
           </div>
         </div>
@@ -438,7 +438,7 @@ export default function AdminUsersPage() {
                     onChange={(e) => setFormRole(e.target.value as AdminUserItem["role"])}
                     className="w-full bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-blue-400"
                   >
-                    <option value="STAFF_PMB">Staf PMB</option>
+                    <option value="STAFF_PMB">Admin</option>
                     <option value="CONTENT_WRITER">Penulis Konten</option>
                     <option value="SUPERADMIN">Super Admin</option>
                   </select>

@@ -46,6 +46,7 @@ import {
   defaultHomepageVisibility
 } from "@/lib/homepageData";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { useAdminAccess } from "@/components/admin/AdminAccess";
 
 type SectionId = "hero" | "waves" | "immersion" | "stats" | "instagram" | "cta" | "visibility";
 
@@ -60,7 +61,11 @@ const SECTIONS: { id: SectionId; title: string; icon: typeof Sparkles }[] = [
 ];
 
 export default function AdminHalamanDepanPage() {
-  const [openSection, setOpenSection] = useState<SectionId | null>("hero");
+  const access = useAdminAccess();
+  const sections = access.isSuper
+    ? SECTIONS
+    : SECTIONS.filter((s) => (s.id === "waves" && access.can("gelombang")) || (s.id === "instagram" && access.can("feed-instagram")));
+  const [openSection, setOpenSection] = useState<SectionId | null>(sections[0]?.id ?? null);
 
   // Tautan "Ubah" di dasbor membuka baris yang dimaksud (?bagian=waves, dst).
   useEffect(() => {
@@ -1137,10 +1142,12 @@ export default function AdminHalamanDepanPage() {
         <div>
           <div className="flex items-center gap-2.5">
             <LayoutDashboard className="w-7 h-7 text-blue-600" />
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Manajemen Halaman Depan (Homepage)</h1>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">{access.isSuper ? "Manajemen Halaman Depan (Homepage)" : "Gelombang PMB & Feed Beranda"}</h1>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Kelola seluruh konten, gambar, teks, dan status tampil setiap bagian pada halaman utama website UPITRA.
+            {access.isSuper
+              ? "Kelola seluruh konten, gambar, teks, dan status tampil setiap bagian pada halaman utama website UPITRA."
+              : "Kelola gelombang pendaftaran dan postingan Kabar & Cerita Kampus di halaman utama."}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -1158,7 +1165,7 @@ export default function AdminHalamanDepanPage() {
 
       {/* Daftar section: klik baris untuk membuka detail, ubah data, lalu simpan */}
       <div className="space-y-3">
-        {SECTIONS.map((sec, idx) => {
+        {sections.map((sec, idx) => {
           const open = openSection === sec.id;
           const Icon = sec.icon;
           const shown = sec.id === "visibility" ? null : visibility[sec.id as keyof HomepageVisibility];

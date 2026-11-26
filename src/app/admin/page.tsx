@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { BarChart3, Briefcase, Building2, ExternalLink, GraduationCap, Microscope, Pencil, RefreshCw, UserCheck, Users, type LucideIcon } from "lucide-react";
 import { getHomepageContent } from "@/server/homepage";
+import { useAdminAccess } from "@/components/admin/AdminAccess";
 import { getAllProdi } from "@/lib/prodiData";
 import { Donut, SERIES } from "@/components/admin/charts";
 
@@ -76,7 +77,10 @@ export default function AdminDashboardPage() {
   const [data, setData] = useState<Homepage | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [canEdit, setCanEdit] = useState(false);
+  const access = useAdminAccess();
+  // Admin hanya mendapat tautan ubah untuk bagian beranda yang boleh dikelolanya.
+  const canEdit = (section: string) =>
+    access.isSuper || (section === "waves" && access.can("gelombang")) || (section === "instagram" && access.can("feed-instagram"));
 
   const load = useCallback(() => {
     setLoading(true);
@@ -89,10 +93,6 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     load();
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((j) => setCanEdit(Boolean(j?.ok && (j.user?.role === "SUPERADMIN" || j.features?.beranda))))
-      .catch(() => {});
   }, [load]);
 
   if (loading && !data) return <Skeleton />;
@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
   const faculties = prodiPerFaculty();
 
   const edit = (section: string) =>
-    canEdit ? (
+    canEdit(section) ? (
       <Link href={`/admin/halaman-depan?bagian=${section}`} className="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold text-[var(--adm-accent)] hover:underline">
         <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Ubah
       </Link>

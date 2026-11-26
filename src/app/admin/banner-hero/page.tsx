@@ -192,7 +192,7 @@ export default function AdminBannerHeroPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-sky-500/20"
+              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-sky-500/20"
             >
               {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               <span>Simpan Banner Akademik</span>

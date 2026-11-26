@@ -19,6 +19,7 @@ vi.mock("@/lib/prisma", () => ({
 
 vi.mock("@/server/storage", () => ({
   getStorageDriver: vi.fn(),
+  StorageUnavailableError: class StorageUnavailableError extends Error {},
 }));
 
 vi.mock("@/server/audit", () => ({

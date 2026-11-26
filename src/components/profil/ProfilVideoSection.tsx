@@ -2,10 +2,13 @@
 
 import ProfilVideo from "@/components/ProfilVideo";
 import { usePageContent } from "@/lib/usePageContent";
+import { youtubeId } from "@/lib/youtube";
 
 export default function ProfilVideoSection() {
   // Judul dan deskripsi diatur di Admin → Profil & Pimpinan → Tentang UPITRA.
   const { content: c } = usePageContent("profil-tentang") as { content: Record<string, any> };
+  const videoId = youtubeId(String(c.videoUrl ?? ""));
+  if (!videoId) return null; // tautan dikosongkan dari admin
 
   return (
     <section className="w-full bg-[#c5ddf1]" aria-labelledby="video-profil-heading">
@@ -19,7 +22,7 @@ export default function ProfilVideoSection() {
           </h2>
           <p className="text-xs leading-relaxed text-slate-800 sm:text-[13px]">{c.videoDeskripsi}</p>
         </div>
-        <ProfilVideo />
+        <ProfilVideo videoId={videoId} />
       </div>
     </section>
   );

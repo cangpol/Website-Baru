@@ -6,6 +6,8 @@ import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
 import { PAGE_CONTENT_KEYS, PAGE_PATHS, CONTENT_DEFAULTS, type PageContentKey } from "@/lib/pageContent";
+import { ADMIN_PAGE_RULES, SUPERADMIN_ONLY_MODULE, SUPERADMIN_ROLE } from "@/lib/adminFeatures";
+import { youtubeId } from "@/lib/youtube";
 
 const URL_KEYS = new Set(["image", "logo", "url", "sideImage"]);
 
@@ -37,19 +39,6 @@ function sanitize(value: unknown, key = "", depth = 0): unknown {
   throw new Error("Tipe data tidak didukung.");
 }
 
-const MODULE_BY_KEY: Record<string, string> = {
-  "profil-tentang": "profil", "profil-dna": "profil", "visi-misi": "profil", pimpinan: "profil", "prestasi-capaian": "profil",
-  kemahasiswaan: "kemahasiswaan", "galeri-kegiatan": "kemahasiswaan", "kalender-akademik": "kemahasiswaan", "organisasi-mahasiswa": "kemahasiswaan",
-  "prestasi-mahasiswa": "kemahasiswaan", "program-pengembangan": "kemahasiswaan", "tugas-dan-fungsi": "kemahasiswaan",
-  kerjasama: "kerjasama", "daftar-kerjasama": "kerjasama", "kegiatan-kerjasama": "kerjasama", "kelompok-mitra": "kerjasama", "mitra-kerjasama": "kerjasama",
-  layanan: "layanan", "career-center": "layanan", "e-learning": "layanan", "immersion-program": "layanan", perpustakaan: "layanan", "tracer-study": "layanan",
-  riset: "articles", "pusat-penelitian": "articles",
-};
-
-function moduleForPageKey(pageKey: string) {
-  return MODULE_BY_KEY[pageKey] ?? "beranda";
-}
-
 function isPageKey(key: string): key is PageContentKey {
   return (PAGE_CONTENT_KEYS as readonly string[]).includes(key);
 }
@@ -74,15 +63,27 @@ export async function getPageContent(pageKey: string) {
 }
 
 export async function savePageContentAction(pageKey: string, raw: unknown) {
-  // Izin mengikuti fitur pemilik halaman (agar saklar fitur Super Admin berlaku tepat sasaran).
-  const session = await requirePermission(moduleForPageKey(pageKey), "update");
+  // Halaman di luar daftar izin admin hanya dapat diubah Super Admin.
+  const rule = Object.hasOwn(ADMIN_PAGE_RULES, pageKey) ? ADMIN_PAGE_RULES[pageKey] : undefined;
+  const session = await requirePermission(rule?.module ?? SUPERADMIN_ONLY_MODULE, "update");
   if (!isPageKey(pageKey)) return { ok: false, message: "Halaman tidak valid." };
 
   try {
-    const clean = sanitize(raw) as Record<string, unknown>;
+    let clean = sanitize(raw) as Record<string, unknown>;
     const allowed = new Set(Object.keys(CONTENT_DEFAULTS[pageKey]));
     const extra = Object.keys(clean).filter((k) => !allowed.has(k));
     if (extra.length > 0) return { ok: false, message: `Bidang tidak dikenal: ${extra.join(", ")}` };
+
+    // Admin dengan izin sebagian: hanya isian yang diizinkan yang diterapkan, sisanya tetap.
+    if (session.role !== SUPERADMIN_ROLE && rule?.fields) {
+      const stored = (await getPageContent(pageKey)) ?? {};
+      const permitted = rule.fields.filter((k) => k in clean).map((k) => [k, clean[k]]);
+      clean = { ...stored, ...Object.fromEntries(permitted) };
+    }
+
+    if (typeof clean.videoUrl === "string" && clean.videoUrl.trim() && !youtubeId(clean.videoUrl)) {
+      return { ok: false, message: "Tautan video harus berupa tautan YouTube yang valid, atau dikosongkan." };
+    }
 
     const settingKey = `content_${pageKey}`;
     await prisma.siteSetting.upsert({

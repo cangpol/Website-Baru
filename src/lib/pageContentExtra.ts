@@ -1953,6 +1953,7 @@ export const EXTRA_DEFAULTS = {
         "penutup": "Saat ini, UPITRA mengelola beberapa fakultas dan program studi di bidang ekonomi, sains, serta teknologi yang berlokasi di Jl. Duwet No.1, Karangasem, Laweyan, Surakarta. Informasi lebih lanjut mengenai program dan pendaftaran dapat dilihat langsung melalui situs resmi Universitas Pignatelli Triputra."
       }
     ],
+    "videoUrl": "https://youtu.be/rVDHh02bbA4",
     "videoJudul": "Video Profil UPITRA",
     "videoDeskripsi": "Video ini menampilkan profil Universitas Pignatelli Triputra, peresmian gedung baru, fasilitas pembelajaran, kegiatan akademik, serta lingkungan kampus yang mendukung pengembangan mahasiswa menjadi profesional berdaya saing global."
   },
@@ -3384,6 +3385,11 @@ export const EXTRA_SPECS: Record<string, FieldSpec[]> = {
           "type": "textarea"
         }
       ]
+    },
+    {
+      "key": "videoUrl",
+      "label": "Tautan Video YouTube (kosongkan untuk menyembunyikan video)",
+      "type": "text"
     },
     {
       "key": "videoJudul",

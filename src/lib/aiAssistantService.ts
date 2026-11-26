@@ -1,4 +1,4 @@
-import datasetRaw from "@/data/upitraAiKnowledge.json";
+import { INTENT_ENTRY_IDS } from "@/lib/aiDataset";
 
 export interface KnowledgeItem {
   id: string;
@@ -8,8 +8,6 @@ export interface KnowledgeItem {
   answer: string;
   score?: number;
 }
-
-const dataset: KnowledgeItem[] = datasetRaw as KnowledgeItem[];
 
 const STOPWORDS = new Set([
   "apa", "apakah", "siapa", "dimana", "bagaimana", "berapa", "kapan", "mengapa",
@@ -85,6 +83,11 @@ function normalize(text: string): string {
     .trim();
 }
 
+// Cocok per kata utuh. Tanpa ini "wa" ikut cocok di dalam "beasiswa" dan "mahasiswa".
+function hasPhrase(haystack: string, phrase: string): boolean {
+  return phrase.length > 0 && ` ${haystack} `.includes(` ${phrase} `);
+}
+
 function tokenize(text: string): string[] {
   const norm = normalize(text);
   const words = norm.split(" ").filter((w) => w.length > 1 && !STOPWORDS.has(w));
@@ -98,7 +101,7 @@ function expandQuery(query: string): string[] {
 
   for (const [canonical, variants] of Object.entries(SYNONYMS)) {
     for (const v of variants) {
-      if (normQuery.includes(v)) {
+      if (hasPhrase(normQuery, normalize(v))) {
         expanded.add(basicStem(canonical));
         variants.forEach((item) => expanded.add(basicStem(item)));
       }
@@ -154,13 +157,13 @@ function keywordScore(query: string, keywords: string[]): number {
 
     if (q === k) return 3.0; // Exact match
 
-    if (k.includes(q) && q.length >= 3) {
+    if (hasPhrase(k, q) && q.length >= 3) {
       const ratio = q.length / k.length;
       bestMatch = Math.max(bestMatch, 2.5 + ratio * 0.5);
       continue;
     }
 
-    if (q.includes(k) && k.length >= 3) {
+    if (hasPhrase(q, k) && k.length >= 3) {
       const ratio = k.length / q.length;
       bestMatch = Math.max(bestMatch, 1.8 + ratio * 0.5);
       continue;
@@ -200,52 +203,24 @@ function categoryBoost(query: string, category: string): number {
 
   const hints = categoryMap[category] || [];
   for (const hint of hints) {
-    if (q.includes(hint)) return 0.4;
+    if (hasPhrase(q, normalize(hint))) return 0.4;
   }
   return 0;
 }
 
-// Intent detection for immediate, precise answers
+// Pertanyaan umum yang langsung diarahkan ke satu entri dataset (isinya diubah lewat admin).
 function detectIntent(message: string): string | null {
   const q = normalize(message);
 
-  // Kontak & WhatsApp Admisi
-  if (/(kontak|wa|whatsapp|nomor|telepon|call center|hubungi|no hp)/.test(q)) {
-    return (
-      "📞 **Kontak & Layanan Admisi UPITRA:**\n\n" +
-      "• **WhatsApp Admisi:** [0811-290-7500](https://wa.me/628112907500?text=Halo%20Admisi%20UPITRA)\n" +
-      "• **Email:** admission@upitra.ac.id / info@upitra.ac.id\n" +
-      "• **Website PMB:** [pmb.upitra.ac.id](https://pmb.upitra.ac.id)\n" +
-      "• **Jam Operasional:** Senin – Jumat, 08.00 – 16.00 WIB\n\n" +
-      "Silakan klik nomor WhatsApp di atas untuk langsung berkonsultasi dengan staf admisi kami!"
-    );
+  if (/(kontak|wa|whatsapp|call center|hubungi|menghubungi|telepon|no hp|nomor (hp|wa|telepon|admisi|kontak))/.test(q)) {
+    return INTENT_ENTRY_IDS.contact;
   }
-
-  // Lokasi & Alamat
-  if (/(lokasi|alamat|dimana|maps|letak|daerah kampus)/.test(q)) {
-    return (
-      "📍 **Lokasi Kampus Universitas Pignatelli Triputra (UPITRA):**\n\n" +
-      "Jl. Duwet No. 1, Karangasem, Kec. Laweyan, Kota Surakarta (Solo), Jawa Tengah 57145.\n\n" +
-      "Kampus kami berlokasi strategis di pusat kota Solo, mudah dijangkau dengan transportasi umum maupun kendaraan pribadi."
-    );
+  if (/(lokasi|alamat|maps|letak)|dimana (kampus|upitra)|(kampus|upitra) (itu )?dimana/.test(q)) {
+    return INTENT_ENTRY_IDS.location;
   }
-
-  // Portal PMB / Cara Daftar
-  if (/(cara daftar|daftar pmb|link pmb|registrasi maba|link pendaftaran)/.test(q)) {
-    return (
-      "🎯 **Pendaftaran Mahasiswa Baru (PMB) UPITRA:**\n\n" +
-      "Pendaftaran dapat dilakukan secara online melalui portal resmi kami:\n" +
-      "👉 **[pmb.upitra.ac.id](https://pmb.upitra.ac.id)**\n\n" +
-      "**Langkah Pendaftaran:**\n" +
-      "1. Akses portal [pmb.upitra.ac.id](https://pmb.upitra.ac.id)\n" +
-      "2. Buat akun pendaftaran baru\n" +
-      "3. Pilih Program Studi impian Anda\n" +
-      "4. Unggah berkas dokumen (Raport / Ijazah)\n" +
-      "5. Lakukan konfirmasi dan verifikasi admisi\n\n" +
-      "Butuh bantuan pengisian formulir? Silakan hubungi WhatsApp Admisi di **0811-290-7500**."
-    );
+  if (/(cara daftar|daftar pmb|link pmb|registrasi maba|link pendaftaran)/.test(q)) {
+    return INTENT_ENTRY_IDS.register;
   }
-
   return null;
 }
 
@@ -262,7 +237,8 @@ function fallbackAnswer(): string {
   );
 }
 
-export function searchAiKnowledge(query: string, customDataset?: KnowledgeItem[]): { reply: string; answered: boolean; confidence: number; matchedQuestion?: string } {
+/** Mencari jawaban hanya dari `dataset` yang diberikan (entri aktif dari admin). */
+export function searchAiKnowledge(query: string, dataset: KnowledgeItem[]): { reply: string; answered: boolean; confidence: number; matchedQuestion?: string } {
   const cleanQuery = query.trim();
   if (cleanQuery.length < 2) {
     return {
@@ -272,22 +248,24 @@ export function searchAiKnowledge(query: string, customDataset?: KnowledgeItem[]
     };
   }
 
-  // 1. Direct Intent Check
-  const intent = detectIntent(cleanQuery);
-  if (intent) {
-    return {
-      reply: intent,
-      answered: true,
-      confidence: 1.0
-    };
+  // 1. Pertanyaan atau kata kunci yang sama persis selalu menang, agar isian admin tidak kalah oleh tebakan.
+  const normalizedQuery = normalize(cleanQuery);
+  const exact = dataset.find(
+    (item) => normalize(item.question) === normalizedQuery || item.keywords.some((k) => normalize(k) === normalizedQuery)
+  );
+
+  // 2. Pertanyaan umum (kontak, lokasi, cara daftar), selama entrinya masih ada dan aktif.
+  const intentId = exact ? null : detectIntent(cleanQuery);
+  const direct = exact ?? (intentId ? dataset.find((item) => item.id === intentId) : undefined);
+  if (direct) {
+    return { reply: direct.answer, answered: true, confidence: 1.0, matchedQuestion: direct.question };
   }
 
-  // 2. Tokenized & Keyword Match Across Knowledge Base (Support custom dataset from Admin)
-  const activeDataset = (Array.isArray(customDataset) && customDataset.length > 0) ? customDataset : dataset;
+  // 3. Penilaian kemiripan atas seluruh entri.
   const queryTokens = expandQuery(cleanQuery);
   const scoredItems: (KnowledgeItem & { score: number })[] = [];
 
-  for (const item of activeDataset) {
+  for (const item of dataset) {
     const qScore = wordScore(queryTokens, item.question || "") * 2.0;
     const aScore = wordScore(queryTokens, item.answer || "") * 0.6;
     const kScore = keywordScore(cleanQuery, Array.isArray(item.keywords) ? item.keywords : []) * 1.8;

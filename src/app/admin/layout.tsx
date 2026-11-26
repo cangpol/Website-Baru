@@ -31,19 +31,16 @@ import {
   Search,
   Bell,
   Sun,
-  Moon
+  Moon,
+  Video,
+  Images
 } from "lucide-react";
 import Image from "next/image";
 import { logoutAdminAction } from "@/app/actions/auth";
-import { featureForMenu } from "@/lib/adminFeatures";
+import { ROLE_LABELS, featuresForMenu } from "@/lib/adminFeatures";
+import { AdminAccessProvider } from "@/components/admin/AdminAccess";
 
 const adminFont = Figtree({ subsets: ["latin"], variable: "--font-admin" });
-
-const ROLE_LABELS: Record<string, string> = {
-  SUPERADMIN: "Super Admin",
-  STAFF_PMB: "Staf PMB",
-  CONTENT_WRITER: "Penulis Konten",
-};
 
 interface AdminUserSession {
   email: string;
@@ -60,14 +57,11 @@ interface SidebarItem {
   icon: any;
   badge: string;
   badgeColor: string;
-  /** Peran yang boleh melihat menu ini. Kosong = semua peran. Harus selaras dengan requirePermission di server. */
-  roles?: string[];
 }
 
 const sidebarNavigation: SidebarItem[] = [
   {
     id: "halaman-depan",
-    roles: ["SUPERADMIN"],
     groupTitle: "BERANDA",
     label: "Halaman Depan",
     href: "/admin/halaman-depan",
@@ -77,7 +71,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "beranda",
-    roles: ["SUPERADMIN"],
     groupTitle: "BERANDA",
     label: "Hero & Banner",
     href: "/admin/banner-hero",
@@ -87,7 +80,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "konten-halaman",
-    roles: ["SUPERADMIN"],
     groupTitle: "BERANDA",
     label: "Konten Halaman",
     href: "/admin/konten-halaman",
@@ -97,7 +89,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "profil",
-    roles: ["SUPERADMIN"],
     groupTitle: "PROFIL",
     label: "Profil & Pimpinan",
     href: "/admin/profil",
@@ -107,9 +98,8 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "akademik",
-    roles: ["SUPERADMIN", "STAFF_PMB"],
     groupTitle: "AKADEMIK",
-    label: "Kalender & Prodi",
+    label: "Kalender Akademik",
     href: "/admin/akademik",
     icon: GraduationCap,
     badge: "Kurikulum",
@@ -117,7 +107,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "riset",
-    roles: ["SUPERADMIN", "CONTENT_WRITER"],
     groupTitle: "RISET",
     label: "Berita & Riset",
     href: "/admin/riset",
@@ -127,9 +116,8 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "kemahasiswaan",
-    roles: ["SUPERADMIN"],
     groupTitle: "KEMAHASISWAAN",
-    label: "Ormawa & Prestasi",
+    label: "Halaman Kemahasiswaan",
     href: "/admin/kemahasiswaan",
     icon: Award,
     badge: "Kegiatan",
@@ -137,7 +125,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "kerjasama",
-    roles: ["SUPERADMIN"],
     groupTitle: "KERJASAMA",
     label: "Mitra & MoU",
     href: "/admin/kerjasama",
@@ -147,7 +134,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "layanan",
-    roles: ["SUPERADMIN"],
     groupTitle: "LAYANAN",
     label: "Katalog & Unduhan",
     href: "/admin/layanan",
@@ -157,7 +143,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "pmb",
-    roles: ["SUPERADMIN", "STAFF_PMB"],
     groupTitle: "PMB & TOUR",
     label: "Data Leads & Tour",
     href: "/admin/pmb-leads",
@@ -167,7 +152,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "ai-dataset",
-    roles: ["SUPERADMIN"],
     groupTitle: "AI ASSISTANT",
     label: "AI Dataset Q&A",
     href: "/admin/ai-dataset",
@@ -177,7 +161,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "instagram-sync",
-    roles: ["SUPERADMIN"],
     groupTitle: "BERANDA",
     label: "Feed Instagram",
     href: "/admin/instagram-sync",
@@ -187,7 +170,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "prodi",
-    roles: ["SUPERADMIN", "STAFF_PMB"],
     groupTitle: "AKADEMIK",
     label: "Program Studi",
     href: "/admin/prodi",
@@ -197,7 +179,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "mitra",
-    roles: ["SUPERADMIN"],
     groupTitle: "KERJASAMA",
     label: "Logo Mitra",
     href: "/admin/mitra",
@@ -207,7 +188,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "download-center",
-    roles: ["SUPERADMIN"],
     groupTitle: "LAYANAN",
     label: "Pusat Unduhan",
     href: "/admin/download-center",
@@ -217,7 +197,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "media",
-    roles: ["SUPERADMIN", "CONTENT_WRITER"],
     groupTitle: "PENDUKUNG",
     label: "Pustaka Media",
     href: "/admin/media",
@@ -226,8 +205,43 @@ const sidebarNavigation: SidebarItem[] = [
     badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
   },
   {
+    id: "video-profil",
+    groupTitle: "PROFIL",
+    label: "Video Profil",
+    href: "/admin/video-profil",
+    icon: Video,
+    badge: "Konten",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
+  },
+  {
+    id: "halaman-fakultas",
+    groupTitle: "AKADEMIK",
+    label: "Fakultas",
+    href: "/admin/halaman-fakultas",
+    icon: Building2,
+    badge: "Konten",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
+  },
+  {
+    id: "penelitian",
+    groupTitle: "RISET",
+    label: "Penelitian Terbaru",
+    href: "/admin/penelitian",
+    icon: Microscope,
+    badge: "Konten",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
+  },
+  {
+    id: "galeri-kerjasama",
+    groupTitle: "KERJASAMA",
+    label: "Galeri Kerjasama",
+    href: "/admin/galeri-kerjasama",
+    icon: Images,
+    badge: "Konten",
+    badgeColor: "bg-blue-500/20 text-blue-100 border-blue-400/30",
+  },
+  {
     id: "fitur",
-    roles: ["SUPERADMIN"],
     groupTitle: "SISTEM",
     label: "Fitur Admin (On/Off)",
     href: "/admin/fitur",
@@ -237,7 +251,6 @@ const sidebarNavigation: SidebarItem[] = [
   },
   {
     id: "users",
-    roles: ["SUPERADMIN"],
     groupTitle: "SISTEM",
     label: "Manajemen Staf",
     href: "/admin/users",
@@ -333,19 +346,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, []);
 
   const isSuper = session?.role === "SUPERADMIN";
-  const visibleNavigation = sidebarNavigation.filter((item) => {
-    if (!session) return false;
-    if (isSuper) return true;
-    const feature = featureForMenu(item.id);
-    if (feature) return features?.[feature.id] === true; // diatur Super Admin di halaman Fitur Admin
-    return !item.roles || item.roles.includes(session.role);
-  });
+  // Admin hanya melihat menu yang bagiannya diizinkan dan masih dinyalakan Super Admin.
+  const canOpen = (id: string) => featuresForMenu(id).some((feature) => features?.[feature.id] === true);
+  const visibleNavigation = sidebarNavigation.filter((item) => Boolean(session) && (isSuper || canOpen(item.id)));
 
-  // Halaman yang fiturnya dimatikan tidak dapat dibuka lewat URL langsung.
+  // Halaman di luar hak akses tidak dapat dibuka lewat URL langsung.
   const activeItem = sidebarNavigation.find((i) => pathname.startsWith(i.href));
-  const blockedFeature = !isSuper && activeItem ? featureForMenu(activeItem.id) : undefined;
-  const isBlocked = Boolean(blockedFeature && features && features[blockedFeature.id] !== true);
-  const superOnlyBlocked = !isSuper && Boolean(activeItem && !featureForMenu(activeItem.id) && activeItem.roles && !activeItem.roles.includes(session?.role ?? ""));
+  const isBlocked = !isSuper && Boolean(activeItem && !canOpen(activeItem.id));
+  // Bagian yang sebenarnya milik admin tetapi sedang dimatikan, dibedakan pesannya.
+  const turnedOff = Boolean(activeItem && featuresForMenu(activeItem.id).length > 0);
 
   // Kelompokkan menu per grup (urutan sesuai kemunculan pertama).
   const navGroups: { title: string; items: SidebarItem[] }[] = [];
@@ -476,6 +485,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     "relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--adm-text)] transition-colors hover:bg-[var(--adm-surface-2)]";
 
   return (
+    <AdminAccessProvider value={{ role: session.role, features: features ?? {} }}>
     <div className="flex h-screen overflow-hidden bg-[var(--adm-bg)] font-sans text-[var(--adm-text)] antialiased">
       <aside className="hidden w-64 shrink-0 select-none flex-col border-r border-[var(--adm-border)] bg-[var(--adm-surface)] lg:flex">{sidebar}</aside>
 
@@ -577,12 +587,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         <main className="custom-scrollbar flex-1 overflow-y-auto px-4 pb-8 pt-2 sm:px-8">
-          {isBlocked || superOnlyBlocked ? (
+          {isBlocked ? (
             <div className="mx-auto mt-16 max-w-md rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface)] p-8 text-center">
               <ShieldCheck className="mx-auto mb-4 h-8 w-8 text-[var(--adm-accent)]" />
               <h2 className="text-lg font-bold">Fitur tidak tersedia</h2>
               <p className="mt-2 text-xs leading-relaxed text-[var(--adm-muted)]">
-                {isBlocked
+                {turnedOff
                   ? "Fitur ini sedang dinonaktifkan oleh Super Admin. Hubungi Super Admin bila Anda memerlukannya."
                   : "Halaman ini hanya dapat diakses oleh Super Admin."}
               </p>
@@ -608,5 +618,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       )}
     </div>
+    </AdminAccessProvider>
   );
 }

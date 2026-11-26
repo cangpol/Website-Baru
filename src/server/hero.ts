@@ -225,7 +225,7 @@ export async function savePageHeaderBannerAction(
   pageKey: string,
   data: { title: string; description: string; imageUrl?: string }
 ) {
-  const session = await requirePermission("beranda", "update");
+  const session = await requirePermission(pageKey === "kemahasiswaan" ? "kemahasiswaan" : "beranda", "update");
   if (!pageHeaderKeys.has(pageKey)) {
     return { ok: false, message: "Halaman banner tidak valid." };
   }

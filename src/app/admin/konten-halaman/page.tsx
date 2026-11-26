@@ -33,7 +33,7 @@ export default function AdminKontenHalamanPage() {
             type="button"
             onClick={() => setPage(k)}
             className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer ${
-              page === k ? "bg-sky-500 text-white" : "bg-blue-50 text-slate-700 border border-blue-200"
+              page === k ? "bg-blue-600 text-white" : "bg-blue-50 text-slate-700 border border-blue-200"
             }`}
           >
             {PAGE_LABELS[k]}

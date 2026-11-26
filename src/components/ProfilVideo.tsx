@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 
-const VIDEO_ID = "rVDHh02bbA4";
-
 /** Click-to-load YouTube player: no third-party requests until the visitor presses play. */
-export default function ProfilVideo() {
+export default function ProfilVideo({ videoId }: { videoId: string }) {
   const [playing, setPlaying] = useState(false);
 
   return (
@@ -14,7 +12,7 @@ export default function ProfilVideo() {
       {playing ? (
         <iframe
           className="absolute inset-0 h-full w-full"
-          src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
           title="Video Profil Universitas Pignatelli Triputra"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -29,7 +27,7 @@ export default function ProfilVideo() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg`}
+            src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
             alt=""
             className="absolute inset-0 h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
             loading="lazy"

@@ -218,7 +218,7 @@ export default function AdminMediaPage() {
             onClick={() => { setTypeFilter("ALL"); setPage(1); }}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition ${
               typeFilter === "ALL"
-                ? "bg-sky-500 text-white"
+                ? "bg-blue-600 text-white"
                 : "bg-blue-100 text-slate-700 hover:bg-blue-100"
             }`}
           >
@@ -229,7 +229,7 @@ export default function AdminMediaPage() {
             onClick={() => { setTypeFilter("IMAGE"); setPage(1); }}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition ${
               typeFilter === "IMAGE"
-                ? "bg-sky-500 text-white"
+                ? "bg-blue-600 text-white"
                 : "bg-blue-100 text-slate-700 hover:bg-blue-100"
             }`}
           >
@@ -240,7 +240,7 @@ export default function AdminMediaPage() {
             onClick={() => { setTypeFilter("DOCUMENT"); setPage(1); }}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition ${
               typeFilter === "DOCUMENT"
-                ? "bg-sky-500 text-white"
+                ? "bg-blue-600 text-white"
                 : "bg-blue-100 text-slate-700 hover:bg-blue-100"
             }`}
           >
@@ -404,7 +404,7 @@ export default function AdminMediaPage() {
                 type="button"
                 disabled={isPending}
                 onClick={handleSaveAlt}
-                className="px-4 py-2 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-white rounded-lg flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-1.5"
               >
                 {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Simpan

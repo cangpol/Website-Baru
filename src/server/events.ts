@@ -128,7 +128,7 @@ export async function getEvents(params?: { type?: string; academicYear?: string;
 }
 
 export async function saveEventAction(id: string | null, rawInput: EventInput) {
-  const session = await requirePermission("akademik", id ? "update" : "create");
+  const session = await requirePermission("kalender", id ? "update" : "create");
 
   const validated = eventInputSchema.safeParse(rawInput);
   if (!validated.success) {
@@ -242,7 +242,7 @@ export async function saveEventAction(id: string | null, rawInput: EventInput) {
 }
 
 export async function deleteEventAction(id: string) {
-  const session = await requirePermission("akademik", "delete");
+  const session = await requirePermission("kalender", "delete");
 
   try {
     const existing = await prisma.event.findUnique({ where: { id } });
@@ -289,7 +289,7 @@ export async function getAcademicCalendarDoc(): Promise<AcademicCalendarDoc | nu
 }
 
 export async function saveAcademicCalendarDocAction(rawData: unknown) {
-  const session = await requirePermission("akademik", "update");
+  const session = await requirePermission("kalender", "update");
   const validated = academicCalendarInputSchema.safeParse(rawData);
   if (!validated.success) {
     return {
@@ -369,7 +369,7 @@ export async function saveAcademicCalendarDocAction(rawData: unknown) {
 }
 
 export async function deleteAcademicCalendarDocAction() {
-  const session = await requirePermission("akademik", "delete");
+  const session = await requirePermission("kalender", "delete");
 
   try {
     await prisma.$transaction(async (tx) => {

@@ -1,110 +1,109 @@
-// Fitur admin yang dapat dinyalakan/dimatikan oleh Super Admin (dipakai klien dan server).
-// Fitur ditentukan per modul izin (requirePermission) dan per menu sidebar.
+// Aturan hak akses panel admin (dipakai klien dan server).
+// Super Admin boleh mengubah semua konten. Admin (peran selain Super Admin) hanya boleh mengelola
+// bagian di bawah ini; Super Admin dapat menyalakan/mematikan tiap bagian untuk admin.
 
-export type AdminRoleKey = "STAFF_PMB" | "CONTENT_WRITER";
+export const SUPERADMIN_ROLE = "SUPERADMIN";
+export const ADMIN_ROLES = ["STAFF_PMB", "CONTENT_WRITER"];
+
+export const ROLE_LABELS: Record<string, string> = {
+  SUPERADMIN: "Super Admin",
+  STAFF_PMB: "Admin",
+  CONTENT_WRITER: "Penulis Konten",
+};
 
 export interface AdminFeature {
   id: string;
   label: string;
   description: string;
-  /** Kunci modul pada requirePermission() yang tercakup fitur ini. */
+  /** Kunci modul pada requirePermission() yang tercakup bagian ini. */
   modules: string[];
-  /** ID menu sidebar yang tercakup fitur ini. */
+  /** ID menu sidebar yang tercakup bagian ini. */
   menuIds: string[];
-  /** Peran admin yang mendapat fitur ini secara bawaan (sebelum Super Admin mengubahnya). */
-  defaultRoles: AdminRoleKey[];
 }
 
 export const ADMIN_FEATURES: AdminFeature[] = [
   {
-    id: "beranda",
-    label: "Halaman Depan, Banner & Konten",
-    description: "Mengubah isi beranda, hero & banner, serta teks halaman publik.",
-    modules: ["beranda", "settings"],
-    menuIds: ["halaman-depan", "beranda", "konten-halaman"],
-    defaultRoles: [],
+    id: "gelombang",
+    label: "Gelombang PMB",
+    description: "Gelombang pendaftaran yang tampil di beranda.",
+    modules: ["gelombang"],
+    menuIds: ["halaman-depan"],
   },
   {
-    id: "profil",
-    label: "Profil & Pimpinan",
-    description: "Mengelola data profil universitas dan pimpinan.",
-    modules: ["profil"],
-    menuIds: ["profil"],
-    defaultRoles: [],
+    id: "feed-instagram",
+    label: "Feed Instagram",
+    description: "Postingan Kabar & Cerita Kampus di beranda.",
+    modules: ["instagram"],
+    menuIds: ["halaman-depan", "instagram-sync"],
   },
   {
-    id: "akademik",
-    label: "Kalender & Program Studi",
-    description: "Kalender akademik, agenda, dan data program studi.",
-    modules: ["akademik", "events", "programs"],
-    menuIds: ["akademik", "prodi"],
-    defaultRoles: ["STAFF_PMB"],
+    id: "video-profil",
+    label: "Video Profil UPITRA",
+    description: "Tautan, judul, dan deskripsi video di halaman Profil.",
+    modules: ["videoProfil"],
+    menuIds: ["video-profil"],
   },
   {
-    id: "riset",
-    label: "Berita & Riset",
-    description: "Menulis dan menerbitkan berita, publikasi, dan portal riset.",
-    modules: ["articles"],
-    menuIds: ["riset"],
-    defaultRoles: ["CONTENT_WRITER"],
+    id: "fakultas-prodi",
+    label: "Fakultas & Program Studi",
+    description: "Data fakultas, program studi, dan halaman tiap fakultas.",
+    modules: ["programs"],
+    menuIds: ["prodi", "halaman-fakultas"],
   },
   {
-    id: "kemahasiswaan",
-    label: "Ormawa & Prestasi",
-    description: "Data kemahasiswaan, organisasi, dan prestasi.",
+    id: "kalender-akademik",
+    label: "Kalender Akademik",
+    description: "Agenda kalender dan dokumen PDF kalender di halaman Akademik.",
+    modules: ["kalender"],
+    menuIds: ["akademik"],
+  },
+  {
+    id: "penelitian",
+    label: "Penelitian Terbaru",
+    description: "Daftar Penelitian Terbaru di halaman Riset.",
+    modules: ["penelitian"],
+    menuIds: ["penelitian"],
+  },
+  {
+    id: "halaman-kemahasiswaan",
+    label: "Halaman Kemahasiswaan",
+    description: "Isi halaman /kemahasiswaan beserta subhalamannya.",
     modules: ["kemahasiswaan"],
     menuIds: ["kemahasiswaan"],
-    defaultRoles: [],
   },
   {
-    id: "kerjasama",
-    label: "Mitra & MoU",
-    description: "Dokumen kerjasama (MoU) dan logo mitra.",
-    modules: ["kerjasama"],
-    menuIds: ["kerjasama", "mitra"],
-    defaultRoles: [],
-  },
-  {
-    id: "layanan",
-    label: "Katalog & Unduhan",
-    description: "Katalog layanan, FAQ, brosur, dan pusat unduhan.",
-    modules: ["layanan"],
-    menuIds: ["layanan", "download-center"],
-    defaultRoles: [],
-  },
-  {
-    id: "pmb",
-    label: "Data Leads & Tour PMB",
-    description: "Calon mahasiswa (leads) dan booking campus tour.",
-    modules: ["pmb", "tours"],
-    menuIds: ["pmb"],
-    defaultRoles: ["STAFF_PMB"],
-  },
-  {
-    id: "ai-dataset",
-    label: "AI Dataset Q&A",
-    description: "Basis pengetahuan asisten AI.",
-    modules: ["aiDataset"],
-    menuIds: ["ai-dataset"],
-    defaultRoles: [],
-  },
-  {
-    id: "instagram",
-    label: "Feed Instagram",
-    description: "Sinkronisasi dan pengaturan feed Instagram beranda.",
-    modules: [],
-    menuIds: ["instagram-sync"],
-    defaultRoles: [],
-  },
-  {
-    id: "media",
-    label: "Pustaka Media",
-    description: "Unggah dan kelola berkas gambar/dokumen.",
-    modules: ["media"],
-    menuIds: ["media"],
-    defaultRoles: ["CONTENT_WRITER"],
+    id: "galeri-kerjasama",
+    label: "Galeri Kerjasama",
+    description: "Galeri dan daftar kegiatan kerjasama.",
+    modules: ["galeriKerjasama"],
+    menuIds: ["galeri-kerjasama"],
   },
 ];
+
+/**
+ * Halaman publik yang kontennya boleh disunting admin. `fields` membatasi isian yang boleh diubah;
+ * tanpa `fields` seluruh isian halaman boleh diubah. Halaman lain hanya untuk Super Admin.
+ */
+export const ADMIN_PAGE_RULES: Record<string, { module: string; fields?: string[] }> = {
+  kemahasiswaan: { module: "kemahasiswaan" },
+  "tugas-dan-fungsi": { module: "kemahasiswaan" },
+  "program-pengembangan": { module: "kemahasiswaan" },
+  "organisasi-mahasiswa": { module: "kemahasiswaan" },
+  "prestasi-mahasiswa": { module: "kemahasiswaan" },
+  "galeri-kegiatan": { module: "kemahasiswaan" },
+  "kalender-akademik": { module: "kemahasiswaan" },
+  kerjasama: { module: "galeriKerjasama", fields: ["kegiatan"] },
+  "kegiatan-kerjasama": { module: "galeriKerjasama" },
+  riset: { module: "penelitian", fields: ["research"] },
+  "profil-tentang": { module: "videoProfil", fields: ["videoUrl", "videoJudul", "videoDeskripsi"] },
+  "fakultas-feb": { module: "programs" },
+  "fakultas-fst": { module: "programs" },
+  "fakultas-fsh": { module: "programs" },
+  "fakultas-fkes": { module: "programs" },
+};
+
+/** Modul semu untuk bagian yang tidak tercantum di atas; tidak dimiliki fitur mana pun. */
+export const SUPERADMIN_ONLY_MODULE = "superadmin";
 
 export type FeatureFlags = Record<string, boolean>;
 
@@ -114,19 +113,28 @@ export function featureForModule(moduleKey: string): AdminFeature | undefined {
   return ADMIN_FEATURES.find((f) => f.modules.includes(moduleKey));
 }
 
-export function featureForMenu(menuId: string): AdminFeature | undefined {
-  return ADMIN_FEATURES.find((f) => f.menuIds.includes(menuId));
+/** Satu menu bisa memuat beberapa bagian (contoh: Halaman Depan berisi Gelombang dan Feed Instagram). */
+export function featuresForMenu(menuId: string): AdminFeature[] {
+  return ADMIN_FEATURES.filter((f) => f.menuIds.includes(menuId));
 }
 
-/** Status efektif sebuah fitur untuk satu peran admin: pilihan Super Admin, atau bawaan peran bila belum dipilih. */
-export function isFeatureEnabled(feature: AdminFeature, role: string, flags: FeatureFlags): boolean {
-  const flag = flags[feature.id];
-  if (typeof flag === "boolean") return flag;
-  return feature.defaultRoles.includes(role as AdminRoleKey);
+/** Menyala kecuali dimatikan Super Admin. */
+export function isFeatureEnabled(feature: AdminFeature, flags: FeatureFlags): boolean {
+  return flags[feature.id] !== false;
 }
 
-/** Status yang ditampilkan di halaman Super Admin (tanpa memandang peran). */
-export function isFeatureOnForDisplay(feature: AdminFeature, flags: FeatureFlags): boolean {
-  const flag = flags[feature.id];
-  return typeof flag === "boolean" ? flag : feature.defaultRoles.length > 0;
+/** Keputusan izin untuk satu peran. Mengembalikan null bila boleh, atau alasan penolakannya. */
+export function denialReason(role: string, moduleKey: string, flags: FeatureFlags): string | null {
+  if (role === SUPERADMIN_ROLE) return null;
+  if (!ADMIN_ROLES.includes(role)) return "Akses ditolak: Hak akses tidak mencukupi.";
+  if (moduleKey === "dashboard") return null;
+  // Unggah berkas dibutuhkan untuk mengisi bagian mana pun yang masih menyala.
+  if (moduleKey === "upload") {
+    return ADMIN_FEATURES.some((f) => isFeatureEnabled(f, flags))
+      ? null
+      : "Akses ditolak: tidak ada bagian yang boleh Anda kelola saat ini.";
+  }
+  const feature = featureForModule(moduleKey);
+  if (!feature) return "Akses ditolak: bagian ini hanya dapat diubah oleh Super Admin.";
+  return isFeatureEnabled(feature, flags) ? null : "Fitur ini dinonaktifkan oleh Super Admin.";
 }

@@ -131,10 +131,13 @@ export default function AkademikOverviewPage() {
         if (json?.ok && Array.isArray(json.data) && json.data.length > 0) {
           setFaculties((prev) =>
             prev.map((f) => {
-              const match = json.data.find((d: { code?: string }) => d.code?.toLowerCase() === f.code.toLowerCase());
+              // Fakultas Kesehatan berkode FH di database.
+              const dbCode = f.code === "FKes" ? "FH" : f.code;
+              const match = json.data.find((d: { code?: string }) => d.code?.toUpperCase() === dbCode.toUpperCase());
               if (!match) return f;
               return {
                 ...f,
+                name: match.name || f.name,
                 cover: match.icon || f.cover,
                 desc: match.description || f.desc,
               };

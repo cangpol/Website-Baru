@@ -3,21 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ProdiData } from "@/lib/prodiData";
-import { getProdiTheme, facultyGroupedPrograms } from "@/lib/prodiThemes";
-import { 
-  Menu, 
-  X, 
-  ChevronDown, 
-  ArrowRight, 
-  Sparkles, 
-  Home, 
-  Layers, 
-  ShieldCheck, 
-  Phone,
-  Check,
-  Building2,
-  ExternalLink
-} from "lucide-react";
+import { facultyGroupedPrograms } from "@/lib/prodiThemes";
+import { Menu, X, ChevronDown, ArrowRight, Home, Layers, Check } from "lucide-react";
+
+// Menu utama dibuat sedikit agar navbar lega; sisanya ada di "Lainnya".
+const MAIN_MENU = [
+  { label: "Profil", href: "#ringkasan" },
+  { label: "Dosen", href: "#dosen" },
+  { label: "Kurikulum", href: "#kurikulum" },
+  { label: "Prospek Karir", href: "#karir" },
+  { label: "Beasiswa & Admisi", href: "#biaya" },
+];
+const MORE_MENU = [
+  { label: "Peminatan", href: "#peminatan" },
+  { label: "Fasilitas Lab", href: "#fasilitas" },
+  { label: "FAQ", href: "#faq" },
+];
+const PMB_BUTTON = "bg-[#006bbd] hover:bg-[#00589b] text-white";
 
 interface ProdiNavbarProps {
   prodi: ProdiData;
@@ -26,61 +28,15 @@ interface ProdiNavbarProps {
 export default function ProdiNavbar({ prodi }: ProdiNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [switchDropdownOpen, setSwitchDropdownOpen] = useState(false);
-  const theme = getProdiTheme(prodi.slug);
-
-  const navMenuItems = [
-    { label: "Profil", href: "#ringkasan" },
-    { label: "Dosen", href: "#dosen" },
-    { label: "Peminatan", href: "#peminatan" },
-    { label: "Kurikulum", href: "#kurikulum" },
-    { label: "Prospek Karir", href: "#karir" },
-    { label: "Fasilitas Lab", href: "#fasilitas" },
-    { label: "Beasiswa & Admisi", href: "#biaya" },
-    { label: "FAQ", href: "#faq" },
-  ];
+  const [moreOpen, setMoreOpen] = useState(false);
+  const navMenuItems = [...MAIN_MENU, ...MORE_MENU];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-200">
       
-      {/* 1. Slim Top Sub-Header Bar */}
-      <div className="bg-[#07172b] text-slate-200 text-[11px] py-1 px-4 sm:px-8 border-b border-blue-950">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1">
-          <div className="flex items-center gap-2.5 flex-wrap justify-center sm:justify-start">
-            <span className="flex items-center gap-1 font-bold text-sky-300">
-              <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
-              UPITRA Surakarta
-            </span>
-            <span className="text-slate-600 hidden sm:inline">|</span>
-            <span className="text-slate-300 font-medium">
-              {prodi.faculty.name} ({prodi.faculty.code})
-            </span>
-            <span className="text-slate-600 hidden sm:inline">|</span>
-            <span className="font-semibold text-emerald-400">
-              Akreditasi {prodi.accreditation}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 text-[11px]">
-            <Link 
-              href="/"
-              className="text-slate-300 hover:text-white flex items-center gap-1 transition-colors"
-            >
-              <Home className="w-3 h-3 text-sky-400" />
-              <span>Portal Utama UPITRA</span>
-            </Link>
-            <span className="text-slate-600">|</span>
-            <a href="tel:08112907500" className="flex items-center gap-1 text-slate-300 hover:text-sky-300 transition-colors">
-              <Phone className="w-3 h-3 text-sky-400" />
-              PMB: 0811-290-7500
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Main Single Adaptive Prodi Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
         
-        {/* Left: Brand UPITRA + Distinctive Prodi Badge */}
+        {/* Left: Brand UPITRA */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group" aria-label="UPITRA Beranda">
             <div className="w-10 h-10 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-[0_10px_25px_-4px_rgba(6,23,46,0.18),0_4px_10px_-2px_rgba(6,23,46,0.08),inset_0_1px_1px_rgba(255,255,255,1),inset_0_-2px_4px_rgba(0,0,0,0.04)] border border-slate-100 ring-1 ring-slate-900/5 group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_30px_-4px_rgba(6,23,46,0.22)] transition-all duration-300 shrink-0">
@@ -99,42 +55,56 @@ export default function ProdiNavbar({ prodi }: ProdiNavbarProps) {
               </div>
             </div>
           </Link>
-
-          <span className="hidden sm:inline-block w-px h-6 bg-slate-200" />
-
-          {/* Prodi Specialized Pill */}
-          <div className="hidden sm:flex items-center gap-1.5">
-            <span className={`px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-tight border ${theme.navbarBadgeBg} ${theme.navbarBadgeText}`}>
-              {prodi.name}
-            </span>
-            <span className="text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded">
-              {prodi.degreeTitle}
-            </span>
-          </div>
         </div>
 
-        {/* Center: In-Page Section Anchor Navigation (Visible on lg 1024px+) */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-          {navMenuItems.map((item) => (
+        {/* Menu bagian halaman (layar lebar) */}
+        <nav aria-label="Bagian halaman" className="hidden xl:flex items-center gap-1">
+          {MAIN_MENU.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="px-2.5 py-1.5 rounded-lg text-[12px] font-bold text-slate-700 hover:text-blue-600 hover:bg-slate-50 transition-all whitespace-nowrap"
+              className="px-3 py-2 rounded-lg text-[13px] font-semibold text-slate-700 hover:text-[#006bbd] hover:bg-blue-50 transition-colors whitespace-nowrap"
             >
               {item.label}
             </a>
           ))}
+          <div className="relative">
+            <button
+              type="button"
+              aria-expanded={moreOpen}
+              onClick={() => setMoreOpen(!moreOpen)}
+              onBlur={() => setTimeout(() => setMoreOpen(false), 250)}
+              className="flex items-center gap-1 px-3 py-2 rounded-lg text-[13px] font-semibold text-slate-700 hover:text-[#006bbd] hover:bg-blue-50 transition-colors cursor-pointer"
+            >
+              Lainnya
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${moreOpen ? "rotate-180" : ""}`} />
+            </button>
+            {moreOpen && (
+              <div className="absolute left-0 top-full z-50 mt-2 w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+                {MORE_MENU.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMoreOpen(false)}
+                    className="block rounded-lg px-3 py-2 text-[13px] font-semibold text-slate-700 hover:bg-blue-50 hover:text-[#006bbd]"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Right: Switch Prodi Dropdown + CTA Button */}
-        <div className="hidden md:flex items-center gap-2.5">
+        <div className="ml-auto hidden md:flex items-center gap-2.5 xl:ml-0">
           
           {/* Switch Prodi Grouped Dropdown */}
           <div className="relative">
             <button
               onClick={() => setSwitchDropdownOpen(!switchDropdownOpen)}
               onBlur={() => setTimeout(() => setSwitchDropdownOpen(false), 250)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-600 hover:bg-slate-50 border border-slate-200 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2 rounded-xl text-[13px] font-semibold text-slate-700 hover:text-[#006bbd] hover:bg-blue-50 border border-slate-200 transition-colors cursor-pointer"
             >
               <Layers className="w-3.5 h-3.5 text-blue-600" />
               <span>Ganti Prodi</span>
@@ -159,7 +129,7 @@ export default function ProdiNavbar({ prodi }: ProdiNavbarProps) {
                   {facultyGroupedPrograms.map((fac) => (
                     <div key={fac.facultyCode} className="space-y-1">
                       <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-1">
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-black border ${fac.colorBadge}`}>
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-black border bg-blue-50 text-[#006bbd] border-blue-200`}>
                           {fac.facultyCode}
                         </span>
                         <span>{fac.facultyName}</span>
@@ -207,21 +177,21 @@ export default function ProdiNavbar({ prodi }: ProdiNavbarProps) {
             href="https://pmb.upitra.ac.id"
             target="_blank"
             rel="noopener noreferrer"
-            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-sm transition-all hover:scale-105 ${theme.navbarCtaClass}`}
+            className={`whitespace-nowrap px-4 py-2 rounded-xl text-[13px] font-bold shadow-sm transition-colors ${PMB_BUTTON}`}
           >
-            DAFTAR PMB
+            Daftar PMB
           </a>
         </div>
 
         {/* Mobile Hamburger Button */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 xl:hidden">
           <a
             href="https://pmb.upitra.ac.id"
             target="_blank"
             rel="noopener noreferrer"
-            className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase ${theme.navbarCtaClass}`}
+            className={`md:hidden px-3 py-1.5 rounded-lg text-xs font-bold ${PMB_BUTTON}`}
           >
-            DAFTAR
+            Daftar
           </a>
 
           <button
@@ -237,7 +207,7 @@ export default function ProdiNavbar({ prodi }: ProdiNavbarProps) {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="xl:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-4 max-h-[85vh] overflow-y-auto">
           
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -317,7 +287,7 @@ export default function ProdiNavbar({ prodi }: ProdiNavbarProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className={`w-full flex items-center justify-center gap-1.5 py-3 rounded-xl font-black text-xs text-center uppercase tracking-wider ${theme.navbarCtaClass}`}
+              className={`w-full flex items-center justify-center gap-1.5 py-3 rounded-xl font-black text-xs text-center uppercase tracking-wider ${PMB_BUTTON}`}
             >
               <span>DAFTAR PMB SEKARANG</span>
               <ArrowRight className="w-4 h-4" />

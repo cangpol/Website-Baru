@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { Loader2, ShieldCheck, ToggleLeft } from "lucide-react";
 import { getAdminFeatureFlags, setAdminFeatureAction } from "@/server/features";
-import { ADMIN_FEATURES, isFeatureOnForDisplay, type FeatureFlags } from "@/lib/adminFeatures";
+import { ADMIN_FEATURES, isFeatureEnabled, type FeatureFlags } from "@/lib/adminFeatures";
 import { swalConfirm, swalToast } from "@/lib/swal";
 import { LoadingState } from "@/components/admin/crud-ui";
 
-const ROLE_LABEL: Record<string, string> = { STAFF_PMB: "Staf PMB", CONTENT_WRITER: "Penulis Konten" };
 
 export default function AdminFiturPage() {
   const [flags, setFlags] = useState<FeatureFlags>({});
@@ -54,7 +53,7 @@ export default function AdminFiturPage() {
     );
   }
 
-  const onCount = ADMIN_FEATURES.filter((f) => isFeatureOnForDisplay(f, flags)).length;
+  const onCount = ADMIN_FEATURES.filter((f) => isFeatureEnabled(f, flags)).length;
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -64,8 +63,8 @@ export default function AdminFiturPage() {
         </div>
         <h1 className="text-2xl font-black text-slate-900">Fitur Admin (On / Off)</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Tentukan fitur apa saja yang boleh dipakai oleh admin (Staf PMB dan Penulis Konten). Fitur yang dimatikan akan hilang dari sidebar
-          admin dan tidak bisa dibuka lewat alamat langsung. Super Admin selalu memiliki akses ke semua fitur.
+          Admin hanya dapat mengelola bagian di bawah ini; semua konten lain hanya dapat diubah Super Admin. Bagian yang
+          dimatikan akan hilang dari menu admin dan ditolak oleh server.
         </p>
         <p className="mt-3 text-xs font-semibold text-slate-600">
           {onCount} dari {ADMIN_FEATURES.length} fitur aktif untuk admin
@@ -74,7 +73,7 @@ export default function AdminFiturPage() {
 
       <ul className="divide-y divide-blue-100 overflow-hidden rounded-2xl border border-blue-100 bg-white">
         {ADMIN_FEATURES.map((f) => {
-          const on = isFeatureOnForDisplay(f, flags);
+          const on = isFeatureEnabled(f, flags);
           const busy = busyId === f.id;
           const explicit = typeof flags[f.id] === "boolean";
           return (
@@ -89,9 +88,6 @@ export default function AdminFiturPage() {
                   >
                     {on ? "AKTIF" : "NONAKTIF"}
                   </span>
-                  {!explicit && f.defaultRoles.length > 0 && (
-                    <span className="text-[10px] text-slate-400">bawaan: {f.defaultRoles.map((r) => ROLE_LABEL[r]).join(", ")}</span>
-                  )}
                 </div>
                 <p className="mt-0.5 text-xs text-slate-500">{f.description}</p>
               </div>

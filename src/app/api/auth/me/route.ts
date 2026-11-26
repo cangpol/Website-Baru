@@ -11,7 +11,7 @@ export async function GET() {
     // Fitur yang aktif untuk peran ini (Super Admin selalu memiliki semuanya).
     const flags = await getFeatureFlags();
     const features = Object.fromEntries(
-      ADMIN_FEATURES.map((f) => [f.id, session.role === "SUPERADMIN" ? true : isFeatureEnabled(f, session.role, flags)])
+      ADMIN_FEATURES.map((f) => [f.id, session.role === "SUPERADMIN" ? true : isFeatureEnabled(f, flags)])
     );
     return NextResponse.json({
       ok: true,

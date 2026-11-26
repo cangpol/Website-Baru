@@ -32,9 +32,6 @@ export interface ProdiTheme {
   accentBorder: string;
   accentLightBg: string;
   accentPill: string;
-  navbarBadgeBg: string;
-  navbarBadgeText: string;
-  navbarCtaClass: string;
   cardHighlightBorder: string;
   widget: InteractiveWidgetData;
 }
@@ -51,9 +48,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-cyan-500/40",
     accentLightBg: "bg-cyan-50/70 border-cyan-200",
     accentPill: "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
-    navbarBadgeBg: "bg-cyan-500/20 border-cyan-500/40",
-    navbarBadgeText: "text-cyan-300",
-    navbarCtaClass: "bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-600/30",
     cardHighlightBorder: "border-cyan-200 hover:border-cyan-400",
     widget: {
       type: "ai-stack",
@@ -100,9 +94,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-teal-500/40",
     accentLightBg: "bg-teal-50/70 border-teal-200",
     accentPill: "bg-teal-500/20 text-teal-300 border-teal-400/30",
-    navbarBadgeBg: "bg-teal-500/20 border-teal-500/40",
-    navbarBadgeText: "text-teal-300",
-    navbarCtaClass: "bg-teal-600 hover:bg-teal-500 text-white shadow-teal-600/30",
     cardHighlightBorder: "border-teal-200 hover:border-teal-400",
     widget: {
       type: "erp-pipeline",
@@ -149,9 +140,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-emerald-500/40",
     accentLightBg: "bg-emerald-50/70 border-emerald-200",
     accentPill: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30",
-    navbarBadgeBg: "bg-emerald-500/20 border-emerald-500/40",
-    navbarBadgeText: "text-emerald-300",
-    navbarCtaClass: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30",
     cardHighlightBorder: "border-emerald-200 hover:border-emerald-400",
     widget: {
       type: "devops-cicd",
@@ -198,9 +186,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-amber-500/40",
     accentLightBg: "bg-amber-50/70 border-amber-200",
     accentPill: "bg-amber-500/20 text-amber-300 border-amber-400/30",
-    navbarBadgeBg: "bg-amber-500/20 border-amber-500/40",
-    navbarBadgeText: "text-amber-300",
-    navbarCtaClass: "bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-amber-500/30",
     cardHighlightBorder: "border-amber-200 hover:border-amber-400",
     widget: {
       type: "case-boardroom",
@@ -247,9 +232,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-emerald-500/40",
     accentLightBg: "bg-emerald-50/70 border-emerald-200",
     accentPill: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30",
-    navbarBadgeBg: "bg-emerald-500/20 border-emerald-500/40",
-    navbarBadgeText: "text-emerald-300",
-    navbarCtaClass: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30",
     cardHighlightBorder: "border-emerald-200 hover:border-emerald-400",
     widget: {
       type: "audit-tracker",
@@ -296,9 +278,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-amber-500/40",
     accentLightBg: "bg-amber-50/70 border-amber-200",
     accentPill: "bg-amber-500/20 text-amber-300 border-amber-400/30",
-    navbarBadgeBg: "bg-amber-500/20 border-amber-500/40",
-    navbarBadgeText: "text-amber-300",
-    navbarCtaClass: "bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30",
     cardHighlightBorder: "border-amber-200 hover:border-amber-400",
     widget: {
       type: "luxury-resort",
@@ -345,9 +324,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-pink-500/40",
     accentLightBg: "bg-pink-50/70 border-pink-200",
     accentPill: "bg-pink-500/20 text-pink-300 border-pink-400/30",
-    navbarBadgeBg: "bg-pink-500/20 border-pink-500/40",
-    navbarBadgeText: "text-pink-300",
-    navbarCtaClass: "bg-pink-600 hover:bg-pink-500 text-white shadow-pink-600/30",
     cardHighlightBorder: "border-pink-200 hover:border-pink-400",
     widget: {
       type: "diplomacy-booth",
@@ -394,9 +370,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-amber-500/40",
     accentLightBg: "bg-amber-50/70 border-amber-200",
     accentPill: "bg-amber-500/20 text-amber-300 border-amber-400/30",
-    navbarBadgeBg: "bg-amber-500/20 border-amber-500/40",
-    navbarBadgeText: "text-amber-300",
-    navbarCtaClass: "bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-amber-500/30",
     cardHighlightBorder: "border-amber-200 hover:border-amber-400",
     widget: {
       type: "safety-matrix",
@@ -443,9 +416,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-teal-500/40",
     accentLightBg: "bg-teal-50/70 border-teal-200",
     accentPill: "bg-teal-500/20 text-teal-300 border-teal-400/30",
-    navbarBadgeBg: "bg-teal-500/20 border-teal-500/40",
-    navbarBadgeText: "text-teal-300",
-    navbarCtaClass: "bg-teal-600 hover:bg-teal-500 text-white shadow-teal-600/30",
     cardHighlightBorder: "border-teal-200 hover:border-teal-400",
     widget: {
       type: "sports-kinetic",
@@ -492,9 +462,6 @@ export const prodiThemes: Record<string, ProdiTheme> = {
     accentBorder: "border-sky-500/40",
     accentLightBg: "bg-sky-50/70 border-sky-200",
     accentPill: "bg-sky-500/20 text-sky-300 border-sky-400/30",
-    navbarBadgeBg: "bg-sky-500/20 border-sky-500/40",
-    navbarBadgeText: "text-sky-300",
-    navbarCtaClass: "bg-sky-600 hover:bg-sky-500 text-white shadow-sky-600/30",
     cardHighlightBorder: "border-sky-200 hover:border-sky-400",
     widget: {
       type: "hospital-ward",
@@ -575,7 +542,6 @@ export function getProdiTheme(slug: string): ProdiTheme {
 export interface FacultyGroupedProgram {
   facultyName: string;
   facultyCode: string;
-  colorBadge: string;
   programs: {
     name: string;
     slug: string;
@@ -587,7 +553,6 @@ export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
   {
     facultyName: "Fakultas Sains & Teknologi",
     facultyCode: "FST",
-    colorBadge: "bg-cyan-100 text-cyan-800 border-cyan-200",
     programs: [
       { name: "S1 Informatika", slug: "informatika", degree: "S1" },
       { name: "S1 Sistem Informasi", slug: "sistem-informasi", degree: "S1" },
@@ -597,7 +562,6 @@ export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
   {
     facultyName: "Fakultas Ekonomi & Bisnis",
     facultyCode: "FEB",
-    colorBadge: "bg-amber-100 text-amber-800 border-amber-200",
     programs: [
       { name: "S1 Manajemen", slug: "manajemen", degree: "S1" },
       { name: "S1 Akuntansi", slug: "akuntansi", degree: "S1" },
@@ -606,7 +570,6 @@ export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
   {
     facultyName: "Fakultas Sosial Humaniora",
     facultyCode: "FSH",
-    colorBadge: "bg-purple-100 text-purple-800 border-purple-200",
     programs: [
       { name: "S1 Pariwisata", slug: "pariwisata", degree: "S1" },
       { name: "S1 Bahasa Inggris", slug: "bahasa-inggris", degree: "S1" },
@@ -615,7 +578,6 @@ export const facultyGroupedPrograms: FacultyGroupedProgram[] = [
   {
     facultyName: "Fakultas Kesehatan",
     facultyCode: "FH",
-    colorBadge: "bg-emerald-100 text-emerald-800 border-emerald-200",
     programs: [
       { name: "S1 Kesehatan & Keselamatan Kerja", slug: "kesehatan-dan-keselamatan-kerja", degree: "S1" },
       { name: "S1 Fisioterapi", slug: "fisioterapi", degree: "S1" },

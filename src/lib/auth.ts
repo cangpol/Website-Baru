@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "crypto";
 import { Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { FEATURE_FLAGS_SETTING_KEY, featureForModule, type FeatureFlags } from "@/lib/adminFeatures";
+import { FEATURE_FLAGS_SETTING_KEY, type FeatureFlags, denialReason } from "@/lib/adminFeatures";
 
 export interface SessionPayload {
   userId: string;
@@ -173,45 +173,18 @@ export async function requirePermission(
   action: AdminAction = "read"
 ): Promise<SessionPayload> {
   const session = await requireUser();
-  const { role } = session;
 
   // SUPERADMIN memiliki akses penuh tanpa batas
-  if (role === Role.SUPERADMIN) {
+  if (session.role === Role.SUPERADMIN) {
     return session;
   }
 
-  // Saklar fitur dari Super Admin: OFF menolak, ON mengizinkan bagi semua peran admin.
-  const feature = featureForModule(moduleKey);
-  if (feature) {
-    const flag = (await getFeatureFlags())[feature.id];
-    if (flag === false) {
-      throw new Error("Fitur ini dinonaktifkan oleh Super Admin.");
-    }
-    if (flag === true) {
-      return session;
-    }
+  // Admin hanya boleh mengelola bagian yang diizinkan (lihat adminFeatures) dan belum dimatikan Super Admin.
+  // Di bagian tersebut seluruh aksi (`action`: tambah, ubah, hapus) diperbolehkan.
+  const reason = denialReason(session.role, moduleKey, await getFeatureFlags());
+  if (reason) {
+    console.warn(`[AKSES] ditolak: ${session.email} -> ${moduleKey}:${action}`);
+    throw new Error(reason);
   }
-
-  // STAFF_PMB hak akses
-  if (role === Role.STAFF_PMB) {
-    const allowedModules = ["pmb", "tours", "events", "akademik", "programs", "dashboard"];
-    if (allowedModules.includes(moduleKey)) {
-      if (moduleKey === "programs" && action !== "read") {
-        throw new Error("Staff PMB hanya memiliki hak baca pada kurikulum program studi.");
-      }
-      return session;
-    }
-    throw new Error("Staff PMB tidak memiliki izin untuk modul ini.");
-  }
-
-  // CONTENT_WRITER hak akses
-  if (role === Role.CONTENT_WRITER) {
-    const allowedModules = ["articles", "media", "dashboard"];
-    if (allowedModules.includes(moduleKey)) {
-      return session;
-    }
-    throw new Error("Content Writer hanya dapat mengakses modul Berita/Riset dan Media.");
-  }
-
-  throw new Error("Akses ditolak: Hak akses tidak mencukupi.");
+  return session;
 }

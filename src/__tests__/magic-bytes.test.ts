@@ -10,7 +10,7 @@ describe("validateAndSanitizeFile - Upload Security & MIME Validation", () => {
     const svgBuffer = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><circle r="10"/></svg>');
     const res = await validateAndSanitizeFile(svgBuffer, "exploit.svg");
     expect(res.valid).toBe(false);
-    expect(res.error).toContain("SVG, HTML, dan script executable ditolak");
+    expect(res.error).toContain("SVG, HTML, dan program ditolak");
   });
 
   it("rejects HTML files disguised as images", async () => {

@@ -53,12 +53,12 @@ export default function ProdiDetailView({ prodi, relatedProdi }: ProdiDetailView
   };
 
   return (
-    <div className="bg-white text-slate-800 selection:bg-blue-600 selection:text-white">
+    <div className="bg-white text-slate-800 selection:bg-blue-600 selection:text-white [&_[id]]:scroll-mt-16">
       
       {/* ========================================================= */}
       {/* 1. CINEMATIC HERO SECTION (Framer Motion Stagger Entrance) */}
       {/* ========================================================= */}
-      <section className="relative bg-[#06172e] text-white pt-10 pb-16 lg:pb-24 overflow-hidden">
+      <section className="relative bg-[#052a52] text-white pt-10 pb-14 lg:pb-16 overflow-hidden">
         {/* Background Image with Ambient Gradient & Deep Scrim */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -66,8 +66,8 @@ export default function ProdiDetailView({ prodi, relatedProdi }: ProdiDetailView
             alt={prodi.name} 
             className="w-full h-full object-cover opacity-35 filter saturate-110 scale-100"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#041122]/95 via-[#071f3d]/85 to-[#0b2545]/75" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#06172e] via-transparent to-transparent/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#04223f]/95 via-[#06396a]/85 to-[#006bbd]/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#052a52] via-transparent to-transparent" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8">
@@ -199,7 +199,7 @@ export default function ProdiDetailView({ prodi, relatedProdi }: ProdiDetailView
               href="https://pmb.upitra.ac.id"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs bg-white hover:bg-blue-50 text-[#00508f] shadow-lg shadow-black/20 transition-colors"
             >
               <span>Daftar PMB 2026/2027</span>
               <ArrowRight className="w-4 h-4" />
@@ -217,7 +217,7 @@ export default function ProdiDetailView({ prodi, relatedProdi }: ProdiDetailView
               href={`https://wa.me/628112907500?text=Halo%20Admisi%20UPITRA%2C%20saya%20tertarik%20dengan%20${encodeURIComponent(prodi.name)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-xs transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs backdrop-blur-sm transition-all"
             >
               <PhoneCall className="w-3.5 h-3.5" />
               <span>Konsultasi WhatsApp</span>
@@ -248,19 +248,19 @@ export default function ProdiDetailView({ prodi, relatedProdi }: ProdiDetailView
       {/* ========================================================= */}
       {/* 2. SECTION: WIDGET INTERAKTIF SPESIFIK BIDANG ILMU         */}
       {/* ========================================================= */}
-      <section className="py-14 bg-[#07172b] text-white border-b border-slate-800">
+      <section className="py-14 bg-[#eef5fd] border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3">
             <div>
-              <span className="inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2 bg-blue-600/30 text-sky-300 border border-blue-400/30">
+              <span className="inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2 bg-white text-[#006bbd] border border-blue-200">
                 {theme.widget.badge}
               </span>
-              <h2 className="text-xl sm:text-3xl font-black text-white tracking-tight">
+              <h2 className="text-xl sm:text-3xl font-black text-[#0b2545] tracking-tight">
                 {theme.widget.title}
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
               {theme.widget.subtitle}
             </p>
           </div>
@@ -272,23 +272,23 @@ export default function ProdiDetailView({ prodi, relatedProdi }: ProdiDetailView
                 key={idx}
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white/5 border border-white/10 hover:border-blue-400/50 rounded-2xl p-5 backdrop-blur-md transition-all flex flex-col justify-between group"
+                className="bg-white border border-blue-100 hover:border-[#006bbd]/60 shadow-xs hover:shadow-md rounded-2xl p-5 transition-all flex flex-col justify-between group"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-sky-300 uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-900/60 border border-blue-500/30">
+                    <span className="text-[10px] font-black text-[#006bbd] uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200">
                       {item.tag || `Pilar 0${idx + 1}`}
                     </span>
                     {item.metric && (
-                      <span className="text-[11px] font-extrabold text-blue-300">
+                      <span className="text-[11px] font-extrabold text-slate-600">
                         {item.metric}
                       </span>
                     )}
                   </div>
-                  <h3 className="text-sm font-bold text-white group-hover:text-sky-200 transition-colors">
+                  <h3 className="text-sm font-bold text-[#0b2545] group-hover:text-[#006bbd] transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     {item.description}
                   </p>
                 </div>

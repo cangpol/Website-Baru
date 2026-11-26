@@ -95,7 +95,7 @@ export function ImageUploadField({
           {label} {required && <span className="text-blue-600">*</span>}
         </label>
         {recommendedSize && (
-          <span className="text-[11px] font-mono text-blue-600 bg-sky-950/60 border border-sky-800/40 px-2 py-0.5 rounded">
+          <span className="text-[11px] font-mono text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
             Rekomendasi: {recommendedSize}
           </span>
         )}

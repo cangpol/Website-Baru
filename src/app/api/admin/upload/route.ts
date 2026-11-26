@@ -13,7 +13,7 @@ const MAX_UPLOAD_REQUEST_SIZE_BYTES = MAX_UPLOAD_FILE_SIZE_BYTES + 64 * 1024;
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await requirePermission("media", "create");
+    const session = await requirePermission("upload", "create");
 
     const contentLength = Number(request.headers.get("content-length"));
     if (Number.isFinite(contentLength) && contentLength > MAX_UPLOAD_REQUEST_SIZE_BYTES) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { swalToast, swalConfirm, swalConfirmDelete, type SwalKind } from "@/lib/swal";
+import { swalToast, swalConfirm, swalConfirmDelete } from "@/lib/swal";
 import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { 
@@ -27,21 +27,23 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  Zap
+  EyeOff,
+  Eye,
+  Loader2
 } from "lucide-react";
-import initialDatasetRaw from "@/data/upitraAiKnowledge.json";
-import { searchAiKnowledge, KnowledgeItem } from "@/lib/aiAssistantService";
-import { getAIDataset, saveAIDatasetAction } from "@/server/ai-dataset";
-
-export interface AIDatasetItem {
-  id: string;
-  category: string;
-  question: string;
-  keywords: string[];
-  answer: string;
-  active?: boolean;
-  updatedAt?: string;
-}
+import { searchAiKnowledge } from "@/lib/aiAssistantService";
+import type { AIDatasetItem } from "@/lib/aiDataset";
+import {
+  loadAIDatasetAction,
+  createAIEntryAction,
+  updateAIEntryAction,
+  setAIEntryActiveAction,
+  deleteAIEntryAction,
+  importAIDatasetAction,
+  resetAIDatasetAction,
+  type AIDatasetResult,
+} from "@/server/ai-dataset";
+import { useModalKeys } from "@/components/admin/crud-ui";
 
 const defaultPopularCategories = [
   "pmb",
@@ -62,6 +64,7 @@ const emptyForm: AIDatasetItem = {
   question: "",
   keywords: [],
   answer: "",
+  active: true,
 };
 
 // Kode kategori tetap dipakai chatbot; di layar ditampilkan sebagai nama biasa.
@@ -73,6 +76,9 @@ const categoryLabel = (cat: string) => CATEGORY_LABELS[cat.toLowerCase()] ?? cat
 
 export default function AdminAiDatasetPage() {
   const [dataset, setDataset] = useState<AIDatasetItem[]>([]);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
+  const [loadError, setLoadError] = useState("");
+  const [busy, setBusy] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,7 +88,6 @@ export default function AdminAiDatasetPage() {
   const [editingItem, setEditingItem] = useState<AIDatasetItem | null>(null);
   const [formData, setFormData] = useState<AIDatasetItem>(emptyForm);
   const [keywordInput, setKeywordInput] = useState("");
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Live Tester Modal State
   const [isTesterOpen, setIsTesterOpen] = useState(false);
@@ -97,42 +102,50 @@ export default function AdminAiDatasetPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load dataset from Prisma Database
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const data = await getAIDataset();
-        if (data && data.length > 0) {
-          setDataset(data);
-        }
-      } catch (err) {
-        console.error("Gagal memuat dataset AI dari database:", err);
+  const loadData = async () => {
+    setLoadState("loading");
+    try {
+      const res = await loadAIDatasetAction();
+      if (!res.ok) {
+        setLoadError(res.message);
+        setLoadState("error");
+        return;
       }
+      setDataset(res.data);
+      setLoadState("ready");
+    } catch {
+      setLoadError("Tidak dapat terhubung ke server.");
+      setLoadState("error");
     }
+  };
+
+  useEffect(() => {
     loadData();
   }, []);
 
-  const showToast = (message: string, type?: SwalKind) => {
-    swalToast(message, type);
-  };
-
-  const saveDatasetToStorage = async (updated: AIDatasetItem[]) => {
-    setDataset(updated);
+  // Tampilan hanya berubah setelah server benar-benar menyimpan.
+  const runAction = async (action: () => Promise<AIDatasetResult>) => {
+    setBusy(true);
     try {
-      const payload = updated.map((item) => ({
-        ...item,
-        active: item.active ?? true,
-      }));
-      const res = await saveAIDatasetAction(payload);
-      if (res.ok) {
-        showToast("✓ Dataset AI berhasil disimpan!");
-      } else {
-        showToast("⚠️ " + res.message);
+      const res = await action();
+      if (!res.ok) {
+        swalToast(res.message, "error");
+        return false;
       }
+      setDataset(res.data);
+      swalToast(res.message, "success");
+      return true;
     } catch {
-      showToast("Gagal menyimpan dataset.");
+      swalToast("Tidak dapat terhubung ke server. Perubahan belum tersimpan.", "error");
+      return false;
+    } finally {
+      setBusy(false);
     }
   };
+
+  const ready = loadState === "ready";
+  const locked = !ready || busy;
+  const activeEntries = useMemo(() => dataset.filter((item) => item.active), [dataset]);
 
   // Categories extraction
   const categories = useMemo(() => {
@@ -161,20 +174,17 @@ export default function AdminAiDatasetPage() {
 
   // Pagination
   const totalPages = Math.ceil(filteredDataset.length / pageSize) || 1;
+  const page = Math.min(currentPage, totalPages);
   const paginatedDataset = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
+    const start = (page - 1) * pageSize;
     return filteredDataset.slice(start, start + pageSize);
-  }, [filteredDataset, currentPage, pageSize]);
+  }, [filteredDataset, page, pageSize]);
 
   // Form Handlers
   const handleOpenCreate = () => {
     setEditingItem(null);
     setKeywordInput("");
-    setFormData({
-      ...emptyForm,
-      id: `qa-${Date.now().toString().slice(-6)}`,
-      updatedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
-    });
+    setFormData(emptyForm);
     setIsFormOpen(true);
   };
 
@@ -203,54 +213,39 @@ export default function AdminAiDatasetPage() {
     }));
   };
 
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.question.trim() || !formData.answer.trim()) {
-      swalToast("Pertanyaan dan Jawaban wajib diisi.");
-      return;
-    }
-
-    const payload: AIDatasetItem = {
-      ...formData,
-      id: formData.id.trim() || `qa-${Date.now().toString(36)}`,
-      question: formData.question.trim(),
-      answer: formData.answer.trim(),
+    // Kata kunci yang masih tertulis di kotak ikut disimpan walau belum menekan "Tambah".
+    const pending = keywordInput.trim().toLowerCase();
+    const keywords = pending && !formData.keywords.includes(pending) ? [...formData.keywords, pending] : formData.keywords;
+    const input = {
       category: formData.category.trim().toLowerCase() || "umum",
-      keywords: formData.keywords.length > 0 ? formData.keywords : [formData.question.trim().toLowerCase()],
-      updatedAt: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
+      question: formData.question,
+      answer: formData.answer,
+      keywords,
+      active: formData.active,
     };
-
-    if (editingItem) {
-      const updated = dataset.map((item) => (item.id === editingItem.id ? payload : item));
-      saveDatasetToStorage(updated);
-      showToast("Entri Q&A berhasil diperbarui!");
-    } else {
-      saveDatasetToStorage([payload, ...dataset]);
-      showToast("Entri Q&A baru berhasil ditambahkan!");
-    }
-
+    const saved = await runAction(() =>
+      editingItem ? updateAIEntryAction(editingItem.id, input) : createAIEntryAction(input)
+    );
+    if (!saved) return; // form tetap terbuka agar isian tidak hilang
     setIsFormOpen(false);
+    if (!editingItem) {
+      setSearch("");
+      setSelectedCategory("all");
+      setCurrentPage(1);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    const updated = dataset.filter((item) => item.id !== id);
-    saveDatasetToStorage(updated);
-    setDeleteConfirmId(null);
-    showToast("Entri Q&A berhasil dihapus.");
+  const handleDelete = async (item: AIDatasetItem) => {
+    if (await swalConfirmDelete(item.question)) await runAction(() => deleteAIEntryAction(item.id));
   };
+
+  const handleToggleActive = (item: AIDatasetItem) => runAction(() => setAIEntryActiveAction(item.id, !item.active));
 
   const handleResetToDefault = async () => {
-    if (await swalConfirm("Reset dataset ke bawaan?", "Apakah Anda yakin ingin mereset seluruh dataset ke basis pengetahuan resmi UPITRA (100+ entri default)? Data kustom yang tidak di-export akan tertimpa.")) {
-      const initialFormatted: AIDatasetItem[] = (initialDatasetRaw as KnowledgeItem[]).map((item) => ({
-        id: item.id || `qa-${Math.random().toString(36).substring(2, 8)}`,
-        category: item.category || "umum",
-        question: item.question || "Pertanyaan",
-        keywords: Array.isArray(item.keywords) ? item.keywords : [],
-        answer: item.answer || "",
-        updatedAt: "Bawaan Sistem"
-      }));
-      saveDatasetToStorage(initialFormatted);
-      showToast("Dataset berhasil di-reset ke basis data resmi UPITRA.");
+    if (await swalConfirm("Reset dataset ke bawaan?", `Seluruh ${dataset.length} entri akan diganti data bawaan. Unduh cadangan lewat Export JSON bila perlu.`)) {
+      await runAction(resetAIDatasetAction);
     }
   };
 
@@ -263,7 +258,7 @@ export default function AdminAiDatasetPage() {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    showToast("Dataset berhasil di-export ke file JSON!");
+    swalToast("Dataset berhasil di-export ke file JSON!", "success");
   };
 
   // Import JSON
@@ -272,25 +267,17 @@ export default function AdminAiDatasetPage() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
+      let parsed: unknown;
       try {
-        const parsed = JSON.parse(event.target?.result as string);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const formatted: AIDatasetItem[] = parsed.map((item, idx) => ({
-            id: item.id || `qa-imp-${idx}-${Date.now().toString().slice(-4)}`,
-            category: item.category || "umum",
-            question: item.question || item.pertanyaan || "Pertanyaan",
-            keywords: Array.isArray(item.keywords) ? item.keywords : [],
-            answer: item.answer || item.jawaban || "",
-            updatedAt: "Diimpor"
-          }));
-          saveDatasetToStorage(formatted);
-          showToast(`Berhasil mengimpor ${formatted.length} entri dataset!`);
-        } else {
-          swalToast("Format file JSON tidak sesuai. Harus berupa array data Q&A.");
-        }
+        parsed = JSON.parse(event.target?.result as string);
       } catch {
-        swalToast("Gagal membaca file JSON. Pastikan format file valid.");
+        swalToast("Gagal membaca file JSON. Pastikan format file valid.", "error");
+        return;
+      }
+      const rows = Array.isArray(parsed) ? parsed.length : 0;
+      if (await swalConfirm("Ganti seluruh dataset?", `${dataset.length} entri saat ini akan diganti dengan ${rows} entri dari file. Unduh cadangan lewat Export JSON bila perlu.`)) {
+        await runAction(() => importAIDatasetAction(parsed));
       }
     };
     reader.readAsText(file);
@@ -302,7 +289,8 @@ export default function AdminAiDatasetPage() {
     const q = queryToTest || testQuery;
     if (!q.trim()) return;
 
-    const result = searchAiKnowledge(q, dataset as KnowledgeItem[]);
+    // Sama seperti chatbot publik: hanya entri aktif yang dipakai.
+    const result = searchAiKnowledge(q, activeEntries);
     setTestResult(result);
     setTestHistory((prev) => [
       { query: q, reply: result.reply, answered: result.answered, confidence: result.confidence },
@@ -313,10 +301,11 @@ export default function AdminAiDatasetPage() {
   const handleOpenTesterWithItem = (item: AIDatasetItem) => {
     setTestQuery(item.question);
     setIsTesterOpen(true);
-    setTimeout(() => {
-      handleRunTest(item.question);
-    }, 100);
+    handleRunTest(item.question);
   };
+
+  useModalKeys(isFormOpen, () => setIsFormOpen(false));
+  useModalKeys(isTesterOpen, () => setIsTesterOpen(false));
 
   const getCategoryBadgeColor = (cat: string) => {
     switch (cat.toLowerCase()) {
@@ -342,8 +331,6 @@ export default function AdminAiDatasetPage() {
   return (
     <div className="space-y-8 select-none font-sans text-slate-800">
       
-      {/* Toast Notification */}
-
       {/* 1. HEADER HALAMAN: AI Dataset Assistant UPITRA */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
@@ -352,7 +339,7 @@ export default function AdminAiDatasetPage() {
               <Bot className="w-3.5 h-3.5 text-blue-600" />
               <span>Veronica</span>
             </span>
-            <span className="text-xs text-slate-500 font-medium">Knowledge Base Management</span>
+            <span className="text-xs text-slate-500 font-medium">Basis Pengetahuan Chatbot</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
             Manajemen AI Dataset (Q&amp;A Assistant)
@@ -376,7 +363,8 @@ export default function AdminAiDatasetPage() {
 
           <button
             onClick={handleExportJSON}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold shadow-2xs transition-all cursor-pointer"
+            disabled={!ready}
+            className="disabled:opacity-50 disabled:pointer-events-none inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold shadow-2xs transition-all cursor-pointer"
             title="Download Dataset JSON"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
@@ -392,7 +380,8 @@ export default function AdminAiDatasetPage() {
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold shadow-2xs transition-all cursor-pointer"
+            disabled={locked}
+            className="disabled:opacity-50 disabled:pointer-events-none inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold shadow-2xs transition-all cursor-pointer"
             title="Unggah / Timpa Dataset JSON"
           >
             <Upload className="w-3.5 h-3.5 text-slate-500" />
@@ -401,7 +390,8 @@ export default function AdminAiDatasetPage() {
 
           <button
             onClick={handleResetToDefault}
-            className="p-2.5 rounded-xl bg-white hover:bg-blue-50 text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-200 shadow-2xs transition-all cursor-pointer"
+            disabled={locked}
+            className="disabled:opacity-50 disabled:pointer-events-none p-2.5 rounded-xl bg-white hover:bg-blue-50 text-slate-500 hover:text-blue-600 border border-slate-200 hover:border-blue-200 shadow-2xs transition-all cursor-pointer"
             title="Reset ke Dataset Bawaan UPITRA"
           >
             <RotateCcw className="w-4 h-4" />
@@ -409,7 +399,8 @@ export default function AdminAiDatasetPage() {
 
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+            disabled={locked}
+            className="disabled:opacity-50 disabled:pointer-events-none inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Q&amp;A Baru</span>
@@ -432,7 +423,7 @@ export default function AdminAiDatasetPage() {
             {dataset.length}
           </div>
           <div className="text-[11px] text-blue-600 font-semibold mt-1">
-            Pertanyaan aktif terverifikasi
+            {activeEntries.length} aktif dipakai chatbot
           </div>
         </div>
 
@@ -447,7 +438,7 @@ export default function AdminAiDatasetPage() {
             {categories.length}
           </div>
           <div className="text-[11px] text-sky-600 font-semibold mt-1">
-            PMB, Beasiswa, 3+1, Fasilitas
+            {categories.slice(0, 3).map(categoryLabel).join(", ") || "Belum ada kategori"}
           </div>
         </div>
 
@@ -468,17 +459,16 @@ export default function AdminAiDatasetPage() {
 
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Status Chatbot</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Entri Nonaktif</span>
             <div className="p-2 rounded-xl bg-sky-50 text-sky-600">
-              <Zap className="w-4 h-4" />
+              <EyeOff className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black text-[#06172e] tracking-tight flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse" />
-            <span>Aktif</span>
+          <div className="text-2xl sm:text-3xl font-black text-[#06172e] tracking-tight">
+            {dataset.length - activeEntries.length}
           </div>
           <div className="text-[11px] text-sky-600 font-semibold mt-1">
-            Live di portal publik website
+            Disimpan tetapi tidak dipakai chatbot
           </div>
         </div>
 
@@ -588,9 +578,26 @@ export default function AdminAiDatasetPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {paginatedDataset.length > 0 ? (
+              {!ready ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-slate-500">
+                    {loadState === "loading" ? (
+                      <span className="inline-flex items-center gap-2 text-sm font-semibold">
+                        <Loader2 className="w-4 h-4 animate-spin" /> Memuat dataset…
+                      </span>
+                    ) : (
+                      <div role="alert" className="space-y-3">
+                        <p className="text-sm font-bold text-slate-700">{loadError}</p>
+                        <button type="button" onClick={loadData} className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                          Muat Ulang
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ) : paginatedDataset.length > 0 ? (
                 paginatedDataset.map((item, index) => {
-                  const itemIndex = (currentPage - 1) * pageSize + index + 1;
+                  const itemIndex = (page - 1) * pageSize + index + 1;
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/70 transition-colors group">
                       <td className="py-3.5 px-4 text-center font-bold text-slate-400">
@@ -600,6 +607,11 @@ export default function AdminAiDatasetPage() {
                         <div className="font-bold text-[#06172e] group-hover:text-blue-600 transition-colors">
                           {item.question}
                         </div>
+                        {!item.active && (
+                          <span className="mt-1 inline-block rounded border border-slate-300 bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
+                            Nonaktif
+                          </span>
+                        )}
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${getCategoryBadgeColor(item.category)}`}>
@@ -642,14 +654,25 @@ export default function AdminAiDatasetPage() {
                             <Play className="w-3.5 h-3.5 fill-current" />
                           </button>
                           <button
+                            onClick={() => handleToggleActive(item)}
+                            disabled={locked}
+                            aria-pressed={item.active}
+                            title={item.active ? "Nonaktifkan dari chatbot" : "Aktifkan untuk chatbot"}
+                            className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+                          >
+                            {item.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                          </button>
+                          <button
                             onClick={() => handleOpenEdit(item)}
+                            disabled={locked}
                             title="Edit Q&A"
                             className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={async () => { if (await swalConfirmDelete()) handleDelete(item.id); }}
+                            onClick={() => handleDelete(item)}
+                            disabled={locked}
                             title="Hapus Q&A"
                             className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"
                           >
@@ -676,25 +699,25 @@ export default function AdminAiDatasetPage() {
         {/* Pagination Footer */}
         <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div>
-            Menampilkan <span className="font-bold text-[#06172e]">{filteredDataset.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}</span> sampai{" "}
-            <span className="font-bold text-[#06172e]">{Math.min(currentPage * pageSize, filteredDataset.length)}</span> dari{" "}
+            Menampilkan <span className="font-bold text-[#06172e]">{filteredDataset.length > 0 ? (page - 1) * pageSize + 1 : 0}</span> sampai{" "}
+            <span className="font-bold text-[#06172e]">{Math.min(page * pageSize, filteredDataset.length)}</span> dari{" "}
             <span className="font-bold text-[#06172e]">{filteredDataset.length}</span> pertanyaan
           </div>
 
           <div className="flex items-center gap-1.5">
             <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(Math.max(page - 1, 1))}
+              disabled={page === 1}
               className="p-2 rounded-xl border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 text-slate-700 font-bold cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <span className="px-3 py-1 font-bold text-[#06172e]">
-              Hal {currentPage} / {totalPages}
+              Hal {page} / {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(Math.min(page + 1, totalPages))}
+              disabled={page === totalPages}
               className="p-2 rounded-xl border border-slate-200 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 text-slate-700 font-bold cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
@@ -866,6 +889,16 @@ export default function AdminAiDatasetPage() {
                 </div>
               )}
 
+              <label className="flex items-center gap-2 font-bold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={formData.active}
+                  onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  className="h-4 w-4 accent-blue-600"
+                />
+                Dipakai chatbot (aktif)
+              </label>
+
               {/* Modal Actions */}
               <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
                 <button
@@ -877,9 +910,10 @@ export default function AdminAiDatasetPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer"
+                  disabled={busy}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer disabled:opacity-60"
                 >
-                  Simpan Pertanyaan
+                  {busy ? "Menyimpan…" : "Simpan Pertanyaan"}
                 </button>
               </div>
 
@@ -1037,8 +1071,6 @@ export default function AdminAiDatasetPage() {
           </div>
         </div>
       )}
-
-      {/* 7. MODAL KONFIRMASI HAPUS */}
 
     </div>
   );

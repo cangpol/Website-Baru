@@ -6,6 +6,7 @@ import { requirePermission } from "@/lib/auth";
 import { invalidateEntity, CACHE_TAGS } from "@/server/cache-tags";
 import { recordAuditLog } from "@/server/audit";
 import { DegreeLevel } from "@prisma/client";
+import { getProdiBySlug } from "@/lib/prodiData";
 
 const programInputSchema = z.object({
   facultyId: z.string().min(1, "Fakultas wajib dipilih"),
@@ -25,6 +26,14 @@ const programInputSchema = z.object({
 });
 
 export type ProgramInput = z.infer<typeof programInputSchema>;
+
+// Halaman publik bisa beralamat lain dari slug database (contoh: /manajemen untuk manajemen-bisnis).
+async function revalidateProgramPage(slug: string) {
+  const page = getProdiBySlug(slug);
+  for (const path of new Set([slug, page?.slug ?? slug, ...(page?.aliases ?? [])])) {
+    await invalidateEntity(CACHE_TAGS.PROGRAMS, `/${path}`);
+  }
+}
 
 export async function getFacultiesWithPrograms() {
   try {
@@ -70,7 +79,7 @@ export async function getFacultiesWithPrograms() {
 }
 
 export async function getAllAdminPrograms() {
-  await requirePermission("akademik", "read");
+  await requirePermission("programs", "read");
 
   try {
     const programs = await prisma.program.findMany({
@@ -87,14 +96,14 @@ export async function getAllAdminPrograms() {
       name: p.name,
       slug: p.slug,
       degreeLevel: p.degreeLevel === DegreeLevel.DIPLOMA ? "D3" : "S1",
-      degreeTitle: p.degreeTitle || (p.degreeLevel === DegreeLevel.DIPLOMA ? "A.Md." : "S.Kom."),
+      degreeTitle: p.degreeTitle || "",
       accreditation: p.accreditation,
       campusLocation: p.campusLocation,
       shortDesc: p.shortDesc || "",
       fullDesc: p.fullDesc || "",
       careerProspect: p.careerProspect || "",
       tuitionFeeEst: p.tuitionFeeEst ? Number(p.tuitionFeeEst) : null,
-      coverImage: p.coverImage || "/images/banners/hero-pmb.jpg",
+      coverImage: p.coverImage || "",
       featured: p.featured,
       version: p.version,
     }));
@@ -105,7 +114,7 @@ export async function getAllAdminPrograms() {
 }
 
 export async function saveProgramAction(id: string | null, rawInput: ProgramInput) {
-  const session = await requirePermission("akademik", id ? "update" : "create");
+  const session = await requirePermission("programs", id ? "update" : "create");
 
   const validated = programInputSchema.safeParse(rawInput);
   if (!validated.success) {
@@ -158,7 +167,7 @@ export async function saveProgramAction(id: string | null, rawInput: ProgramInpu
         details: { name: updated.name, slug: updated.slug },
       });
 
-      await invalidateEntity(CACHE_TAGS.PROGRAMS, `/${updated.slug}`);
+      await revalidateProgramPage(updated.slug);
       await invalidateEntity(CACHE_TAGS.FACULTIES, "/akademik");
 
       return { ok: true, data: updated };
@@ -191,6 +200,7 @@ export async function saveProgramAction(id: string | null, rawInput: ProgramInpu
         details: { name: created.name, slug: created.slug },
       });
 
+      await revalidateProgramPage(created.slug);
       await invalidateEntity(CACHE_TAGS.PROGRAMS, "/akademik");
 
       return { ok: true, data: created };
@@ -202,7 +212,7 @@ export async function saveProgramAction(id: string | null, rawInput: ProgramInpu
 }
 
 export async function deleteFacultyAction(facultyId: string) {
-  const session = await requirePermission("akademik", "delete");
+  const session = await requirePermission("programs", "delete");
 
   try {
     // 1. Cek apakah ada program studi aktif yang berafiliasi
@@ -240,7 +250,7 @@ export async function deleteFacultyAction(facultyId: string) {
 }
 
 export async function softDeleteProgramAction(id: string) {
-  const session = await requirePermission("akademik", "delete");
+  const session = await requirePermission("programs", "delete");
 
   try {
     const program = await prisma.program.update({
@@ -257,6 +267,7 @@ export async function softDeleteProgramAction(id: string) {
       details: { name: program.name },
     });
 
+    await revalidateProgramPage(program.slug);
     await invalidateEntity(CACHE_TAGS.PROGRAMS, "/akademik");
     return { ok: true, message: `Program studi ${program.name} berhasil dihapus.` };
   } catch (error) {
@@ -267,10 +278,14 @@ export async function softDeleteProgramAction(id: string) {
 
 // Data program dari database untuk menimpa isi halaman prodi publik (sinkron dengan /admin/prodi).
 // Hanya kolom yang terisi yang dikembalikan; sisanya memakai konten bawaan halaman.
-export async function getPublicProgramOverride(slug: string) {
+export async function getPublicProgramOverride(slugs: string[]) {
   try {
-    const p = await prisma.program.findFirst({ where: { slug, deletedAt: null } });
+    // Alamat di database bisa berupa alias halaman publik (contoh: manajemen-bisnis untuk /manajemen).
+    const p = await prisma.program.findFirst({ where: { slug: { in: slugs }, deletedAt: null } });
     if (!p) return null;
+    // Data beralamat alias yang belum pernah disimpan admin (versi 1) adalah data awal;
+    // halaman publik tetap memakai teks bawaannya sampai admin benar-benar mengubahnya.
+    if (p.slug !== slugs[0] && p.version <= 1) return null;
     const text = (v: string | null | undefined) => (v && v.trim() ? v.trim() : undefined);
     return {
       name: text(p.name),
@@ -283,5 +298,46 @@ export async function getPublicProgramOverride(slug: string) {
     };
   } catch {
     return null;
+  }
+}
+
+const facultyInputSchema = z.object({
+  name: z.string().trim().min(3, "Nama fakultas minimal 3 karakter.").max(150),
+  description: z.string().trim().max(2000, "Deskripsi maksimal 2.000 karakter."),
+  // Foto kartu fakultas di halaman Akademik.
+  icon: z.string().trim().max(2048).refine((v) => v === "" || /^(\/(?!\/)|https:\/\/)/.test(v), "Alamat foto tidak valid."),
+});
+
+/** Mengubah data fakultas yang tampil di halaman Akademik. */
+export async function saveFacultyAction(facultyId: string, raw: unknown) {
+  const session = await requirePermission("programs", "update");
+  const validated = facultyInputSchema.safeParse(raw);
+  if (!validated.success) {
+    return { ok: false, message: validated.error.issues[0]?.message ?? "Isian tidak valid." };
+  }
+
+  try {
+    const faculty = await prisma.faculty.update({
+      where: { id: facultyId, deletedAt: null },
+      data: {
+        name: validated.data.name,
+        description: validated.data.description || null,
+        icon: validated.data.icon || null,
+        version: { increment: 1 },
+      },
+    });
+    await recordAuditLog({
+      userId: session.userId,
+      userEmail: session.email,
+      action: "UPDATE",
+      entity: "Faculty",
+      entityId: faculty.id,
+      details: { name: faculty.name },
+    });
+    await invalidateEntity(CACHE_TAGS.FACULTIES, "/akademik");
+    return { ok: true, message: "Data fakultas tersimpan." };
+  } catch (error) {
+    console.error("Save faculty error:", error);
+    return { ok: false, message: "Gagal menyimpan data fakultas." };
   }
 }

@@ -222,7 +222,7 @@ export async function saveHomepageHeroAction(rawData: unknown) {
 }
 
 export async function saveHomepageWavesAction(rawData: unknown) {
-  const session = await requirePermission("beranda", "update");
+  const session = await requirePermission("gelombang", "update");
   const validated = homepageWavesSchema.safeParse(rawData);
   if (!validated.success) {
     return {
@@ -375,7 +375,7 @@ export async function saveHomepageStatsAction(rawData: unknown) {
 }
 
 export async function saveHomepageInstagramAction(rawData: unknown) {
-  const session = await requirePermission("beranda", "update");
+  const session = await requirePermission("instagram", "update");
   const validated = homepageInstagramSchema.safeParse(rawData);
   if (!validated.success) {
     return {

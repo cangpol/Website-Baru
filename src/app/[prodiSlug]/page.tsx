@@ -8,8 +8,8 @@ import type { Metadata } from "next";
 import { getPublicProgramOverride } from "@/server/programs";
 
 // Gabungkan data statis dengan perubahan dari admin (database).
-async function withOverride<T extends { slug: string }>(prodi: T): Promise<T> {
-  const o = await getPublicProgramOverride(prodi.slug);
+async function withOverride<T extends { slug: string; aliases: string[] }>(prodi: T): Promise<T> {
+  const o = await getPublicProgramOverride([prodi.slug, ...prodi.aliases]);
   if (!o) return prodi;
   const clean = Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && !(Array.isArray(v) && v.length === 0)));
   return { ...prodi, ...clean };

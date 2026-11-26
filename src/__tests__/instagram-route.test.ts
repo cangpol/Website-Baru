@@ -35,7 +35,7 @@ describe("POST /api/instagram", () => {
     const response = await POST(createRequest({ action: "ADD_POST", post: {} }));
 
     expect(response.status).toBe(401);
-    expect(requirePermission).toHaveBeenCalledWith("beranda", "update");
+    expect(requirePermission).toHaveBeenCalledWith("instagram", "create");
   });
 
   it("rejects write requests from a role without homepage permission", async () => {

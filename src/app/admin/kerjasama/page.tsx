@@ -187,7 +187,7 @@ function KerjasamaManagerContent() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin/mitra"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-900/60 hover:bg-blue-900 text-blue-700 text-xs font-bold border border-blue-700/60 transition"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold border border-blue-700/60 transition"
           >
             <Building className="w-4 h-4" />
             <span>Kelola 49 Mitra</span>
@@ -217,7 +217,7 @@ function KerjasamaManagerContent() {
           onClick={() => setActiveTab("mou")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
             activeTab === "mou"
-              ? "bg-blue-600 text-slate-900 shadow-md shadow-blue-600/20"
+              ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
               : "text-slate-500 hover:text-slate-900 hover:bg-blue-50"
           }`}
         >
@@ -229,7 +229,7 @@ function KerjasamaManagerContent() {
           onClick={() => setActiveTab("kegiatan")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
             activeTab === "kegiatan"
-              ? "bg-blue-600 text-slate-900 shadow-md shadow-blue-600/20"
+              ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
               : "text-slate-500 hover:text-slate-900 hover:bg-blue-50"
           }`}
         >
@@ -307,7 +307,7 @@ function KerjasamaManagerContent() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => handleOpenModal(item)}
-                    className="p-1.5 rounded-lg bg-blue-900/50 hover:bg-blue-800 text-blue-600 hover:text-white transition cursor-pointer"
+                    className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white transition cursor-pointer"
                     title="Edit Dokumen"
                   >
                     <Edit3 className="w-3.5 h-3.5" />

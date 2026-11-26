@@ -272,7 +272,7 @@ function SaveBar({ label, saving, disabled }: { label: string; saving: boolean; 
       <button
         type="submit"
         disabled={disabled}
-        className="flex cursor-pointer items-center gap-2 rounded-xl bg-sky-500 px-6 py-2.5 text-xs font-bold text-white hover:bg-sky-400 disabled:opacity-60"
+        className="flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-60"
       >
         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
         <span>Simpan {label}</span>
@@ -282,9 +282,18 @@ function SaveBar({ label, saving, disabled }: { label: string; saving: boolean; 
 }
 
 /** Editor konten halaman publik: tiap bagian berupa baris yang dibuka dan disimpan sendiri-sendiri. */
-export default function PageContentEditor({ pageKey }: { pageKey: PageContentKey }) {
-  const hasBanner = Boolean(BANNERS[pageKey]);
-  const rows = buildRows(CONTENT_SPECS[pageKey]);
+export default function PageContentEditor({
+  pageKey,
+  onlyFields,
+  hideBanner = false,
+}: {
+  pageKey: PageContentKey;
+  /** Hanya tampilkan isian ini (halaman yang hanya sebagian boleh disunting). */
+  onlyFields?: string[];
+  hideBanner?: boolean;
+}) {
+  const hasBanner = Boolean(BANNERS[pageKey]) && !hideBanner && !onlyFields;
+  const rows = buildRows(onlyFields ? CONTENT_SPECS[pageKey].filter((f) => onlyFields.includes(f.key)) : CONTENT_SPECS[pageKey]);
   const [banner, setBanner] = useState<Json>(BANNERS[pageKey] ?? {});
   const [content, setContent] = useState<Json>(CONTENT_DEFAULTS[pageKey] as Json);
   // Salinan yang terakhir tersimpan, agar menyimpan satu baris tidak ikut menyimpan baris lain.

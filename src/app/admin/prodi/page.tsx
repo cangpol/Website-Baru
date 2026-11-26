@@ -2,6 +2,7 @@
 
 import { EmptyState, LoadingState, Pagination, useModalKeys, usePagination } from "@/components/admin/crud-ui";
 import { swalConfirmDelete } from "@/lib/swal";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { useState, useEffect } from "react";
 import { 
   GraduationCap, 
@@ -22,7 +23,7 @@ import { swalToast } from "@/lib/swal";
 export interface AdminProdiItem {
   id: string;
   facultyId?: string;
-  faculty: "FST" | "FEB" | "FSH" | "FKES";
+  faculty: string;
   facultyCode?: string;
   facultyName?: string;
   name: string;
@@ -59,34 +60,38 @@ export default function AdminProdiCrudPage() {
   const [saving, setSaving] = useState(false);
 
   // Form states
-  const [formFaculty, setFormFaculty] = useState<"FST" | "FEB" | "FSH" | "FKES">("FST");
+  // Daftar fakultas diambil dari database agar kodenya selalu cocok.
+  const [faculties, setFaculties] = useState<{ id: string; code: string; name: string }[]>([]);
+  const [formFaculty, setFormFaculty] = useState("");
   const [formName, setFormName] = useState("");
   const [formSlug, setFormSlug] = useState("");
   const [formDegree, setFormDegree] = useState<"S1" | "D3">("S1");
-  const [formDegreeTitle, setFormDegreeTitle] = useState("S.Kom.");
+  const [formDegreeTitle, setFormDegreeTitle] = useState("");
   const [formAccreditation, setFormAccreditation] = useState("Baik Sekali");
-  const [formTuition, setFormTuition] = useState("Rp 4.500.000");
+  const [formTuition, setFormTuition] = useState("");
   const [formShortDesc, setFormShortDesc] = useState("");
   const [formCareer, setFormCareer] = useState("");
-  const [formCoverImage, setFormCoverImage] = useState("/images/banners/hero-pmb.jpg");
+  const [formCoverImage, setFormCoverImage] = useState("");
 
   // Load from database
   const loadData = async () => {
     try {
-      const data = await getAllAdminPrograms();
+      const [data, facultyList] = await Promise.all([getAllAdminPrograms(), getFacultiesWithPrograms()]);
+      setFaculties(facultyList.map(({ id, code, name }) => ({ id, code, name })));
       const mapped: AdminProdiItem[] = data.map((p) => ({
         id: p.id,
         facultyId: p.facultyId,
-        faculty: (p.facultyCode as any) || "FST",
+        faculty: p.facultyCode,
         facultyCode: p.facultyCode,
         facultyName: p.facultyName,
         name: p.name,
         slug: p.slug,
-        degree: (p.degreeLevel as any) || "S1",
+        degree: p.degreeLevel as "S1" | "D3",
+        degreeLevel: p.degreeLevel,
         degreeTitle: p.degreeTitle,
         accreditation: p.accreditation,
         tuitionFeeEst: p.tuitionFeeEst,
-        tuition: p.tuitionFeeEst ? `Rp ${p.tuitionFeeEst.toLocaleString("id-ID")}` : "Rp 6.500.000",
+        tuition: p.tuitionFeeEst ? `Rp ${p.tuitionFeeEst.toLocaleString("id-ID")}` : "",
         shortDesc: p.shortDesc,
         fullDesc: p.fullDesc,
         campusLocation: p.campusLocation,
@@ -110,7 +115,7 @@ export default function AdminProdiCrudPage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const fak = params.get("fakultas");
-      if (fak && ["FST", "FEB", "FSH", "FKES"].includes(fak.toUpperCase())) {
+      if (fak) {
         setFacultyFilter(fak.toUpperCase());
       }
     }
@@ -118,16 +123,16 @@ export default function AdminProdiCrudPage() {
 
   const handleOpenCreate = () => {
     setEditingItem(null);
-    setFormFaculty("FST");
+    setFormFaculty(faculties[0]?.code ?? "");
     setFormName("");
     setFormSlug("");
     setFormDegree("S1");
-    setFormDegreeTitle("S.Kom.");
+    setFormDegreeTitle("");
     setFormAccreditation("Baik Sekali");
-    setFormTuition("Rp 4.500.000");
+    setFormTuition("");
     setFormShortDesc("");
     setFormCareer("");
-    setFormCoverImage("/images/banners/hero-pmb.jpg");
+    setFormCoverImage("");
     setModalOpen(true);
   };
 
@@ -154,11 +159,9 @@ export default function AdminProdiCrudPage() {
     }
     setSaving(true);
     try {
-      // Fakultas di database memakai ID; cocokkan lewat kode (FST/FEB/FSH/FKES).
-      const faculties = await getFacultiesWithPrograms();
-      const faculty = faculties.find((f) => f.code.toUpperCase() === formFaculty);
+      const faculty = faculties.find((f) => f.code === formFaculty);
       if (!faculty) {
-        swalToast("Data fakultas belum tersedia. Hubungi pengelola sistem.", "error");
+        swalToast("Pilih fakultas terlebih dahulu.", "error");
         return;
       }
       const digits = formTuition.replace(/[^0-9]/g, "");
@@ -233,7 +236,7 @@ export default function AdminProdiCrudPage() {
             <span className="text-xs text-slate-500">Total {prodis.length} Program Studi</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <span>Program Studi &amp; 4 Fakultas</span>
+            <span>Program Studi</span>
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Kelola kurikulum, akreditasi, biaya pendidikan, dan profil prodi yang tampil di website utama.
@@ -271,11 +274,12 @@ export default function AdminProdiCrudPage() {
             onChange={(e) => setFacultyFilter(e.target.value)}
             className="bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:border-sky-400"
           >
-            <option value="ALL">Semua Fakultas (4)</option>
-            <option value="FST">Fakultas Sains &amp; Teknologi (FST)</option>
-            <option value="FEB">Fakultas Ekonomi &amp; Bisnis (FEB)</option>
-            <option value="FSH">Fakultas Sosial Humaniora (FSH)</option>
-            <option value="FKES">Fakultas Kesehatan (FKES)</option>
+            <option value="ALL">Semua Fakultas ({faculties.length})</option>
+            {faculties.map((f) => (
+              <option key={f.id} value={f.code}>
+                {f.name}
+              </option>
+            ))}
           </select>
 
           <select
@@ -312,7 +316,7 @@ export default function AdminProdiCrudPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-800/80 overflow-hidden shrink-0">
                         <img 
-                          src={item.coverImage} 
+                          src={item.coverImage || "/images/banners/hero-kampus.jpg"} 
                           alt={item.name} 
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -354,7 +358,7 @@ export default function AdminProdiCrudPage() {
                   </td>
 
                   <td className="py-3.5 px-4 font-mono font-medium text-slate-700">
-                    {item.tuitionPerSemester}
+                    {item.tuition || <span className="text-slate-400">Belum diisi</span>}
                   </td>
 
                   <td className="py-3.5 px-4 text-right">
@@ -438,10 +442,11 @@ export default function AdminProdiCrudPage() {
                     onChange={(e) => setFormFaculty(e.target.value as any)}
                     className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900"
                   >
-                    <option value="FST">Fakultas Sains &amp; Teknologi (FST)</option>
-                    <option value="FEB">Fakultas Ekonomi &amp; Bisnis (FEB)</option>
-                    <option value="FSH">Fakultas Sosial Humaniora (FSH)</option>
-                    <option value="FKES">Fakultas Kesehatan (FKES)</option>
+                    {faculties.map((f) => (
+                      <option key={f.id} value={f.code}>
+                        {f.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -492,7 +497,6 @@ export default function AdminProdiCrudPage() {
                   <label className="block text-slate-700 font-semibold mb-1">Gelar Kelulusan</label>
                   <input
                     type="text"
-                    required
                     value={formDegreeTitle}
                     onChange={(e) => setFormDegreeTitle(e.target.value)}
                     placeholder="S.Kom., S.M., S.Par."
@@ -550,14 +554,7 @@ export default function AdminProdiCrudPage() {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">Path Gambar Cover</label>
-                <input
-                  type="text"
-                  value={formCoverImage}
-                  onChange={(e) => setFormCoverImage(e.target.value)}
-                  placeholder="/images/ar-vr.jpg"
-                  className="w-full bg-blue-50 border border-blue-100 rounded-xl p-2.5 text-slate-900 font-mono"
-                />
+                <ImageUploadField label="Foto Utama Halaman Prodi (kosongkan untuk foto bawaan)" value={formCoverImage} onChange={setFormCoverImage} />
               </div>
 
               <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-blue-200">
